@@ -1,12 +1,51 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useEffect } from 'react';
+import Header from '../components/Header';
+import Hero from '../components/Hero';
+import About from '../components/About';
+import Services from '../components/Services';
+import Contact from '../components/Contact';
+import Footer from '../components/Footer';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Index = () => {
+  useEffect(() => {
+    // Initialize GSAP animations
+    gsap.fromTo('.fade-in', 
+      { opacity: 0, y: 30 },
+      { 
+        opacity: 1, 
+        y: 0, 
+        duration: 0.8, 
+        stagger: 0.2,
+        scrollTrigger: {
+          trigger: '.fade-in',
+          start: 'top 80%',
+          toggleActions: 'play none none reverse'
+        }
+      }
+    );
+
+    // Logo animation
+    gsap.fromTo('.logo-animate',
+      { opacity: 0, scale: 0.8 },
+      { opacity: 1, scale: 1, duration: 1, delay: 0.3 }
+    );
+  }, []);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-white">
+      <Header />
+      <main>
+        <Hero />
+        <About />
+        <Services />
+        <Contact />
+      </main>
+      <Footer />
     </div>
   );
 };
