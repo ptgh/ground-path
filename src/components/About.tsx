@@ -42,7 +42,7 @@ const About = () => {
                   Ongoing Professional Development
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Currently completing Graduate Certificate in Counselling at Monash University, our workers are committed to expanding their skills to better serve our clients' diverse needs.
+                  Our staff are either Australian Counselling Association (ACA) or Psychotherapy and Counselling Federation of Australia (PACFA) members, or currently completing Graduate Certificate in Counselling at Monash University. Our workers are committed to expanding their skills to better serve our clients' diverse needs.
                 </p>
               </div>
 
