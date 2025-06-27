@@ -28,10 +28,10 @@ const Footer = () => {
           <div>
             <h3 className="font-medium mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#about" className="text-gray-400 hover:text-white transition-colors">About</a></li>
-              <li><a href="#services" className="text-gray-400 hover:text-white transition-colors">Services & Rates</a></li>
-              <li><a href="#contact" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
-              <li><a href="https://www.mable.com.au" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">Mable Profile</a></li>
+              <li><a href="#about" className="inline-block bg-sage-600 text-white px-4 py-2 rounded-lg hover:bg-sage-700 transition-colors font-medium">About</a></li>
+              <li><a href="#services" className="inline-block bg-sage-600 text-white px-4 py-2 rounded-lg hover:bg-sage-700 transition-colors font-medium">Services & Rates</a></li>
+              <li><a href="#contact" className="inline-block bg-sage-600 text-white px-4 py-2 rounded-lg hover:bg-sage-700 transition-colors font-medium">Contact</a></li>
+              <li><a href="https://www.mable.com.au" target="_blank" rel="noopener noreferrer" className="inline-block bg-sage-600 text-white px-4 py-2 rounded-lg hover:bg-sage-700 transition-colors font-medium">Mable Profile</a></li>
             </ul>
           </div>
 
