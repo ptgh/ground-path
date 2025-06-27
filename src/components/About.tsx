@@ -1,13 +1,13 @@
 
 const About = () => {
   return (
-    <section id="about" className="py-20 bg-gray-50">
+    <section id="ground-path" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-16">
             <h2 className="fade-in text-3xl sm:text-4xl font-light text-gray-900 mb-4">
-              About Paul Habermann
+              ground path
             </h2>
             <div className="fade-in w-20 h-1 bg-sage-600 mx-auto"></div>
           </div>
@@ -18,10 +18,10 @@ const About = () => {
             <div className="space-y-6">
               <div className="fade-in">
                 <h3 className="text-xl font-medium text-gray-900 mb-3">
-                  Qualified & Experienced Social Worker
+                  Qualified & Experienced Social Work
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  With over 5 years of qualified experience as a social worker, I bring expertise in mental health support, NDIS services, and child protection. My approach is grounded in care, respect, and evidence-based practice.
+                  With over 5 years of qualified experience, we provide expertise in mental health support, NDIS services, and child protection. Our approach is grounded in care, respect, and evidence-based practice.
                 </p>
               </div>
 
@@ -30,7 +30,7 @@ const About = () => {
                   Ongoing Professional Development
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Currently completing my Graduate Certificate in Counselling at Monash University, I'm committed to expanding my skills to better serve my clients' diverse needs.
+                  Currently completing Graduate Certificate in Counselling at Monash University, we're committed to expanding our skills to better serve our clients' diverse needs.
                 </p>
               </div>
 
@@ -38,7 +38,7 @@ const About = () => {
                 <h3 className="text-xl font-medium text-gray-900 mb-3">
                   Professional Credentials
                 </h3>
-                <ul className="text-gray-600 space-y-2">
+                <ul className="text-gray-600 space-y-4">
                   <li>• Accredited by AASW (Australian Association of Social Workers)</li>
                   <li>• Registered with Social Work England</li>
                   <li>• Fully insured professional practice</li>

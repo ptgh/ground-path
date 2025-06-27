@@ -50,7 +50,7 @@ const Logo = () => {
       </svg>
       
       {/* Wordmark */}
-      <div className="text-gray-800 font-light tracking-widest">
+      <div className="text-white font-light tracking-widest">
         <span className="text-xl">ground path</span>
       </div>
     </div>
