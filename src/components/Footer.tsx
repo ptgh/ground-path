@@ -52,7 +52,7 @@ const Footer = () => {
             © 2024 Ground Path. All rights reserved.
           </div>
           <div className="text-sm text-gray-400 mt-4 md:mt-0">
-            <span>Paul MSW, AASW, Social Work England</span>
+            <span>Paul</span>
           </div>
         </div>
       </div>
