@@ -52,7 +52,7 @@ const Hero = () => {
               onClick={() => scrollToSection('about')}
               className="text-gray-600 hover:text-sage-600 transition-colors underline underline-offset-4"
             >
-              About Paul
+              Paul
             </button>
             <span className="text-gray-300">•</span>
             <button className="text-gray-600 hover:text-sage-600 transition-colors underline underline-offset-4">
