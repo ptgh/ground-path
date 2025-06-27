@@ -33,7 +33,7 @@ const Header = () => {
               onClick={() => scrollToSection('ground-path')}
               className="text-gray-300 hover:text-white transition-colors font-medium"
             >
-              ground path
+              About
             </button>
             <button 
               onClick={() => scrollToSection('services')}
@@ -82,7 +82,7 @@ const Header = () => {
                 onClick={() => scrollToSection('ground-path')}
                 className="text-left text-gray-300 hover:text-white transition-colors font-medium"
               >
-                ground path
+                About
               </button>
               <button 
                 onClick={() => scrollToSection('services')}

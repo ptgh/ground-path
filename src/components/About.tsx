@@ -21,7 +21,7 @@ const About = () => {
                   Qualified & Experienced Social Work
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  With over 5 years of qualified experience, we provide expertise in mental health support, NDIS services, and child protection. Our approach is grounded in care, respect, and evidence-based practice.
+                  With qualified experience and a Master of Social Work degree, we provide expertise in mental health support, NDIS services, and child protection. Our approach is grounded in care, respect, and evidence-based practice.
                 </p>
               </div>
 
@@ -38,7 +38,7 @@ const About = () => {
                 <h3 className="text-xl font-medium text-gray-900 mb-3">
                   Professional Credentials
                 </h3>
-                <ul className="text-gray-600 space-y-4">
+                <ul className="text-gray-600 space-y-3">
                   <li>• Accredited by AASW (Australian Association of Social Workers)</li>
                   <li>• Registered with Social Work England</li>
                   <li>• Fully insured professional practice</li>
@@ -52,8 +52,8 @@ const About = () => {
             <div className="fade-in space-y-8">
               <div className="bg-white p-8 rounded-xl shadow-sm">
                 <div className="text-center">
-                  <div className="text-3xl font-light text-sage-600 mb-2">5+</div>
-                  <div className="text-gray-600">Years Qualified Experience</div>
+                  <div className="text-3xl font-light text-sage-600 mb-2">MSW</div>
+                  <div className="text-gray-600">Master of Social Work</div>
                 </div>
               </div>
 

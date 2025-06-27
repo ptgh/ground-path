@@ -94,10 +94,10 @@ const Contact = () => {
 
           {/* Contact Form */}
           <div className="fade-in">
-            <form onSubmit={handleSubmit} className="bg-white rounded-xl p-8 shadow-sm">
+            <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-sm">
               <h3 className="text-xl font-medium text-gray-900 mb-6">Send a Message</h3>
               
-              <div className="space-y-6">
+              <div className="space-y-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                     Name *
@@ -154,7 +154,7 @@ const Contact = () => {
                   <textarea
                     id="message"
                     name="message"
-                    rows={6}
+                    rows={4}
                     required
                     value={formData.message}
                     onChange={handleChange}
@@ -165,7 +165,7 @@ const Contact = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-sage-600 text-white py-4 px-6 rounded-lg hover:bg-sage-700 transition-colors font-medium text-lg"
+                  className="w-full bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium"
                 >
                   Send Message
                 </button>
