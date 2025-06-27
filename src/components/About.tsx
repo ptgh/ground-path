@@ -6,9 +6,21 @@ const About = () => {
         <div className="max-w-4xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-16">
-            <h2 className="fade-in text-3xl sm:text-4xl font-light text-gray-900 mb-4">
-              ground path
-            </h2>
+            <div className="fade-in flex items-center justify-center space-x-3 mb-4">
+              <svg width="32" height="32" viewBox="0 0 40 40">
+                <path
+                  d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
+                  fill="none"
+                  stroke="#7B9B85"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <h2 className="text-3xl sm:text-4xl font-light text-gray-900">
+                ground path
+              </h2>
+            </div>
             <div className="fade-in w-20 h-1 bg-sage-600 mx-auto"></div>
           </div>
 
@@ -21,7 +33,7 @@ const About = () => {
                   Qualified & Experienced Social Work
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  With qualified experience and a Master of Social Work degree, we provide expertise in mental health support, NDIS services, and child protection. Our approach is grounded in care, respect, and evidence-based practice.
+                  With qualified experienced staff and Master of Social Work degrees, we provide expertise in mental health support, NDIS services, and child protection. Our approach is grounded in care, respect, and evidence-based practice.
                 </p>
               </div>
 
@@ -30,7 +42,7 @@ const About = () => {
                   Ongoing Professional Development
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Currently completing Graduate Certificate in Counselling at Monash University, we're committed to expanding our skills to better serve our clients' diverse needs.
+                  Currently completing Graduate Certificate in Counselling at Monash University, our workers are committed to expanding their skills to better serve our clients' diverse needs.
                 </p>
               </div>
 

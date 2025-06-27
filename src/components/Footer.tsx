@@ -28,7 +28,7 @@ const Footer = () => {
           <div>
             <h3 className="font-medium mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#about" className="text-gray-400 hover:text-white transition-colors">About Paul</a></li>
+              <li><a href="#about" className="text-gray-400 hover:text-white transition-colors">About</a></li>
               <li><a href="#services" className="text-gray-400 hover:text-white transition-colors">Services & Rates</a></li>
               <li><a href="#contact" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
               <li><a href="https://www.mable.com.au" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">Mable Profile</a></li>
@@ -52,7 +52,7 @@ const Footer = () => {
             © 2024 Ground Path. All rights reserved.
           </div>
           <div className="text-sm text-gray-400 mt-4 md:mt-0">
-            <span>Paul Habermann MSW, AASW, Social Work England</span>
+            <span>Paul MSW, AASW, Social Work England</span>
           </div>
         </div>
       </div>

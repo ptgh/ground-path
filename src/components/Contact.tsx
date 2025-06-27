@@ -71,12 +71,12 @@ const Contact = () => {
             </div>
 
             {/* Booking Information */}
-            <div className="bg-white rounded-xl p-6">
+            <div className="bg-white rounded-xl p-6 flex flex-col h-full">
               <h4 className="font-medium text-gray-900 mb-4">Quick Booking</h4>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 mb-6 flex-grow">
                 Ready to book? Use our integrated calendar system or contact us directly.
               </p>
-              <div className="space-y-3">
+              <div className="space-y-3 mt-auto">
                 <button className="w-full bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium">
                   Book via Halaxy Calendar
                 </button>
@@ -94,10 +94,10 @@ const Contact = () => {
 
           {/* Contact Form */}
           <div className="fade-in">
-            <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-sm">
+            <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-sm flex flex-col h-full">
               <h3 className="text-xl font-medium text-gray-900 mb-6">Send a Message</h3>
               
-              <div className="space-y-4">
+              <div className="space-y-4 flex-grow">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                     Name *
@@ -147,7 +147,7 @@ const Contact = () => {
                   </select>
                 </div>
 
-                <div>
+                <div className="flex-grow">
                   <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
                     Message *
                   </label>
@@ -162,14 +162,14 @@ const Contact = () => {
                     placeholder="Tell us how we can help you..."
                   ></textarea>
                 </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium"
-                >
-                  Send Message
-                </button>
               </div>
+
+              <button
+                type="submit"
+                className="w-full bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium mt-6"
+              >
+                Send Message
+              </button>
             </form>
           </div>
         </div>
