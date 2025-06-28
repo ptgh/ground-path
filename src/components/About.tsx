@@ -1,5 +1,3 @@
-
-
 const About = () => {
   return (
     <section id="ground-path" className="py-20 bg-gray-50">
@@ -43,15 +41,8 @@ const About = () => {
                   <h3 className="text-xl font-medium text-gray-900 mb-3">
                     Ongoing Professional Development
                   </h3>
-                  <p className="text-gray-600 leading-relaxed text-sm mb-3">
-                    Our team members are either:
-                  </p>
-                  <ul className="text-gray-600 space-y-2 mb-4 ml-4 text-sm">
-                    <li>• Registered with the AASW and ACA, or PACFA</li>
-                    <li>• Completing registration with postgraduate training</li>
-                  </ul>
                   <p className="text-gray-600 leading-relaxed text-sm">
-                    All staff undertake regular clinical supervision and training.
+                    Our team members are either registered with the AASW and ACA, or PACFA, or completing registration with postgraduate training. All staff undertake regular clinical supervision and training.
                   </p>
                 </div>
 
@@ -107,4 +98,3 @@ const About = () => {
 };
 
 export default About;
-
