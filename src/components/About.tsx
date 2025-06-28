@@ -1,5 +1,4 @@
 
-
 const About = () => {
   return (
     <section id="ground-path" className="py-20 bg-gray-50">
@@ -34,7 +33,7 @@ const About = () => {
                   Qualified & Experienced Social Work
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  We are qualified professionals with Master of Social Work degrees and experience in mental health, disability services, and child protection. We provide person-centred, evidence-informed support grounded in the AASW Code of Ethics.
+                  At Ground Path, we are a team of qualified professionals with Master of Social Work degrees and extensive experience in mental health, disability services, and child protection. We provide person-centred, evidence-informed support underpinned by care, cultural safety, and ethical practice. Our approach is grounded in the Australian Association of Social Workers (AASW) Code of Ethics and aligned with best-practice mental health and community care standards.
                 </p>
               </div>
 
@@ -46,29 +45,32 @@ const About = () => {
                   Our team members are either:
                 </p>
                 <ul className="text-gray-600 space-y-2 mb-4 ml-4">
-                  <li>• Registered with the Australian Counselling Association (ACA) or PACFA</li>
-                  <li>• Or completing registration with postgraduate counselling training</li>
+                  <li>• Registered with the Australian Counselling Association (ACA) or PACFA,</li>
+                  <li>• Or in the final stages of completing registration, supported by postgraduate counselling training.</li>
                 </ul>
                 <p className="text-gray-600 leading-relaxed">
-                  All staff undertake regular clinical supervision and training to meet our clients' diverse needs.
+                  Ground Path is committed to continual growth and professional development. All staff undertake regular clinical supervision and training to ensure we meet the diverse and evolving needs of our clients.
                 </p>
               </div>
 
               <div className="fade-in">
                 <h3 className="text-xl font-medium text-gray-900 mb-3">
-                  NDIS Services
+                  NDIS Services for Plan- and Self-Managed Participants
                 </h3>
                 <p className="text-gray-600 leading-relaxed mb-3">
-                  We offer flexible services to plan-managed and self-managed NDIS participants, following the NDIS Code of Conduct with full ethical compliance.
+                  Ground Path offers high-quality, flexible services to NDIS participants who are plan-managed or self-managed (we do not currently provide supports to NDIA-managed participants). We follow the NDIS Code of Conduct and maintain full compliance with ethical and legal standards for unregistered providers.
+                </p>
+                <p className="text-gray-600 leading-relaxed mb-3">
+                  We offer:
                 </p>
                 <ul className="text-gray-600 space-y-2 mb-4 ml-4">
-                  <li>• Counselling and therapeutic support</li>
+                  <li>• Counselling and therapeutic support (Improved Daily Living – Capacity Building)</li>
                   <li>• Psychosocial recovery coaching</li>
                   <li>• Support coordination</li>
-                  <li>• Community participation support</li>
+                  <li>• Community participation and social inclusion support</li>
                 </ul>
                 <p className="text-gray-600 leading-relaxed">
-                  All services are trauma-informed, culturally respectful, and recovery-oriented.
+                  All services are delivered with a trauma-informed, culturally respectful, and recovery-oriented approach.
                 </p>
               </div>
             </div>
@@ -84,17 +86,16 @@ const About = () => {
 
               <div className="bg-white p-8 rounded-xl shadow-sm">
                 <div className="text-center">
-                  <div className="text-3xl font-light text-sage-600 mb-2">ACA</div>
-                  <div className="text-gray-600">Australian Counselling</div>
-                  <div className="text-sm text-gray-500 mt-1">Association Registered</div>
+                  <div className="text-3xl font-light text-sage-600 mb-2">100%</div>
+                  <div className="text-gray-600">NDIS & Professional Screening</div>
                 </div>
               </div>
 
               <div className="bg-white p-8 rounded-xl shadow-sm">
                 <div className="text-center">
-                  <div className="text-3xl font-light text-sage-600 mb-2">100%</div>
-                  <div className="text-gray-600">NDIS Compliant</div>
-                  <div className="text-sm text-gray-500 mt-1">Fully Screened</div>
+                  <div className="text-3xl font-light text-sage-600 mb-2">2</div>
+                  <div className="text-gray-600">Countries Registered</div>
+                  <div className="text-sm text-gray-500 mt-1">Australia & UK</div>
                 </div>
               </div>
             </div>
@@ -106,4 +107,3 @@ const About = () => {
 };
 
 export default About;
-
