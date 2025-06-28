@@ -1,4 +1,3 @@
-
 const About = () => {
   return (
     <section id="ground-path" className="py-20 bg-gray-50">
@@ -34,7 +33,7 @@ const About = () => {
                     Qualified & Experienced Social Work
                   </h3>
                   <p className="text-gray-600 leading-relaxed text-sm">
-                    We are qualified professionals with Master of Social Work degrees providing person-centred, evidence-informed support grounded in the AASW Code of Ethics and best-practice standards.
+                    At Ground Path, we are a team of qualified professionals with Master of Social Work degrees providing person-centred, evidence-informed support grounded in the AASW Code of Ethics and best-practice standards.
                   </p>
                 </div>
 
