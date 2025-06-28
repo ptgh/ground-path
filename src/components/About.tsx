@@ -1,4 +1,5 @@
 
+
 const About = () => {
   return (
     <section id="ground-path" className="py-20 bg-gray-50">
@@ -46,7 +47,7 @@ const About = () => {
                     Our team members are either:
                   </p>
                   <ul className="text-gray-600 space-y-2 mb-4 ml-4 text-sm">
-                    <li>• Registered with ACA or PACFA</li>
+                    <li>• Registered with the AASW and ACA, or PACFA</li>
                     <li>• Completing registration with postgraduate training</li>
                   </ul>
                   <p className="text-gray-600 leading-relaxed text-sm">
@@ -106,3 +107,4 @@ const About = () => {
 };
 
 export default About;
+
