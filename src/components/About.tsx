@@ -1,5 +1,3 @@
-
-
 const About = () => {
   return (
     <section id="ground-path" className="py-20 bg-gray-50">
@@ -69,7 +67,7 @@ const About = () => {
             </div>
 
             {/* Stats/Highlights */}
-            <div className="fade-in space-y-4">
+            <div className="fade-in space-y-6">
               <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                 <div className="text-center">
                   <div className="text-2xl font-light text-sage-600 mb-1">MSW</div>
@@ -89,7 +87,7 @@ const About = () => {
               <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                 <div className="text-center">
                   <div className="text-2xl font-light text-sage-600 mb-1">NDIS</div>
-                  <div className="text-gray-600 mb-1 text-sm">Registered Provider</div>
+                  <div className="text-gray-600 mb-1 text-sm">Aligned</div>
                   <div className="text-xs text-gray-500">Plan-managed & self-managed support</div>
                 </div>
               </div>
@@ -110,4 +108,3 @@ const About = () => {
 };
 
 export default About;
-
