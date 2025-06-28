@@ -1,3 +1,4 @@
+
 const About = () => {
   return (
     <section id="ground-path" className="py-20 bg-gray-50">
@@ -53,12 +54,12 @@ const About = () => {
                   <p className="text-gray-600 leading-relaxed text-sm mb-3">
                     High-quality services for plan-managed and self-managed participants:
                   </p>
-                  <ul className="text-gray-600 space-y-2 mb-4 ml-4 text-sm">
-                    <li>• Counselling and therapeutic support</li>
-                    <li>• Psychosocial recovery coaching</li>
-                    <li>• Support coordination</li>
-                    <li>• Community participation support</li>
-                  </ul>
+                  <div className="text-gray-600 space-y-1 mb-3 text-sm">
+                    <div>Counselling and therapeutic support</div>
+                    <div>Psychosocial recovery coaching</div>
+                    <div>Support coordination</div>
+                    <div>Community participation support</div>
+                  </div>
                   <p className="text-gray-600 leading-relaxed text-sm">
                     Delivered with trauma-informed, culturally respectful approach.
                   </p>
