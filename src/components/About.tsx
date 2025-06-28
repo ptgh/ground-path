@@ -69,36 +69,36 @@ const About = () => {
             </div>
 
             {/* Stats/Highlights */}
-            <div className="fade-in space-y-6">
-              <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+            <div className="fade-in space-y-4">
+              <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                 <div className="text-center">
-                  <div className="text-3xl font-light text-sage-600 mb-2">MSW</div>
-                  <div className="text-gray-600 mb-2">Master of Social Work</div>
-                  <div className="text-sm text-gray-500">Qualified professionals with advanced degrees</div>
+                  <div className="text-2xl font-light text-sage-600 mb-1">MSW</div>
+                  <div className="text-gray-600 mb-1 text-sm">Master of Social Work</div>
+                  <div className="text-xs text-gray-500">Qualified professionals with advanced degrees</div>
                 </div>
               </div>
 
-              <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+              <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                 <div className="text-center">
-                  <div className="text-3xl font-light text-sage-600 mb-2">AASW</div>
-                  <div className="text-gray-600 mb-2">Professional Registration</div>
-                  <div className="text-sm text-gray-500">Australian Association of Social Workers</div>
+                  <div className="text-2xl font-light text-sage-600 mb-1">AASW</div>
+                  <div className="text-gray-600 mb-1 text-sm">Professional Registration</div>
+                  <div className="text-xs text-gray-500">Australian Association of Social Workers</div>
                 </div>
               </div>
 
-              <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+              <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                 <div className="text-center">
-                  <div className="text-3xl font-light text-sage-600 mb-2">NDIS</div>
-                  <div className="text-gray-600 mb-2">Registered Provider</div>
-                  <div className="text-sm text-gray-500">Plan-managed & self-managed support</div>
+                  <div className="text-2xl font-light text-sage-600 mb-1">NDIS</div>
+                  <div className="text-gray-600 mb-1 text-sm">Registered Provider</div>
+                  <div className="text-xs text-gray-500">Plan-managed & self-managed support</div>
                 </div>
               </div>
 
-              <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+              <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                 <div className="text-center">
-                  <div className="text-3xl font-light text-sage-600 mb-2">2</div>
-                  <div className="text-gray-600 mb-2">Countries Registered</div>
-                  <div className="text-sm text-gray-500">Australia & UK</div>
+                  <div className="text-2xl font-light text-sage-600 mb-1">2</div>
+                  <div className="text-gray-600 mb-1 text-sm">Countries Registered</div>
+                  <div className="text-xs text-gray-500">Australia & UK</div>
                 </div>
               </div>
             </div>
