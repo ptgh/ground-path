@@ -1,3 +1,4 @@
+
 const About = () => {
   return (
     <section id="ground-path" className="py-20 bg-gray-50">
@@ -26,14 +27,14 @@ const About = () => {
           {/* Main Content */}
           <div className="grid md:grid-cols-2 gap-12 items-start">
             {/* Services Info Box */}
-            <div className="fade-in bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow duration-300">
+            <div className="fade-in bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
               <div className="space-y-6">
                 <div>
                   <h3 className="text-xl font-medium text-gray-900 mb-3">
                     Qualified & Experienced Social Work
                   </h3>
                   <p className="text-gray-600 leading-relaxed text-sm">
-                    At Ground Path, we are a team of qualified professionals with Master of Social Work degrees providing person-centred, evidence-informed support grounded in the AASW Code of Ethics and best-practice standards.
+                    At Ground Path, we are a team of qualified professionals with Master of Social Work degrees, providing person-centred, evidence-based support grounded in the AASW Code of Ethics and best-practice standards.
                   </p>
                 </div>
 
