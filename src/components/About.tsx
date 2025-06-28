@@ -1,4 +1,5 @@
 
+
 const About = () => {
   return (
     <section id="ground-path" className="py-20 bg-gray-50">
@@ -68,26 +69,36 @@ const About = () => {
             </div>
 
             {/* Stats/Highlights */}
-            <div className="fade-in space-y-8">
-              <div className="bg-white p-8 rounded-xl shadow-sm">
+            <div className="fade-in space-y-6">
+              <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                 <div className="text-center">
                   <div className="text-3xl font-light text-sage-600 mb-2">MSW</div>
-                  <div className="text-gray-600">Master of Social Work</div>
+                  <div className="text-gray-600 mb-2">Master of Social Work</div>
+                  <div className="text-sm text-gray-500">Qualified professionals with advanced degrees</div>
                 </div>
               </div>
 
-              <div className="bg-white p-8 rounded-xl shadow-sm">
+              <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                 <div className="text-center">
-                  <div className="text-3xl font-light text-sage-600 mb-2">100%</div>
-                  <div className="text-gray-600">NDIS & Professional Screening</div>
+                  <div className="text-3xl font-light text-sage-600 mb-2">AASW</div>
+                  <div className="text-gray-600 mb-2">Professional Registration</div>
+                  <div className="text-sm text-gray-500">Australian Association of Social Workers</div>
                 </div>
               </div>
 
-              <div className="bg-white p-8 rounded-xl shadow-sm">
+              <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <div className="text-center">
+                  <div className="text-3xl font-light text-sage-600 mb-2">NDIS</div>
+                  <div className="text-gray-600 mb-2">Registered Provider</div>
+                  <div className="text-sm text-gray-500">Plan-managed & self-managed support</div>
+                </div>
+              </div>
+
+              <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                 <div className="text-center">
                   <div className="text-3xl font-light text-sage-600 mb-2">2</div>
-                  <div className="text-gray-600">Countries Registered</div>
-                  <div className="text-sm text-gray-500 mt-1">Australia & UK</div>
+                  <div className="text-gray-600 mb-2">Countries Registered</div>
+                  <div className="text-sm text-gray-500">Australia & UK</div>
                 </div>
               </div>
             </div>
@@ -99,3 +110,4 @@ const About = () => {
 };
 
 export default About;
+
