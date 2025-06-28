@@ -24,83 +24,79 @@ const About = () => {
             <div className="fade-in w-20 h-1 bg-sage-600 mx-auto"></div>
           </div>
 
-          {/* Main Content - Services Style Card */}
-          <div className="grid md:grid-cols-1 gap-6 mb-12">
-            <div className="fade-in bg-white rounded-xl p-8 hover:shadow-lg transition-shadow duration-300 shadow-sm">
-              <div className="space-y-8">
-                {/* Qualified & Experienced Social Work */}
-                <div>
-                  <h3 className="text-xl font-medium text-gray-900 mb-4">
-                    Qualified & Experienced Social Work
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    At Ground Path, we are a team of qualified professionals with Master of Social Work degrees and extensive experience in mental health, disability services, and child protection. We provide person-centred, evidence-informed support underpinned by care, cultural safety, and ethical practice. Our approach is grounded in the Australian Association of Social Workers (AASW) Code of Ethics and aligned with best-practice mental health and community care standards.
-                  </p>
-                </div>
-
-                {/* Ongoing Professional Development */}
-                <div className="pt-6 border-t border-gray-200">
-                  <h3 className="text-xl font-medium text-gray-900 mb-4">
-                    Ongoing Professional Development
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed mb-3">
-                    Our team members are either:
-                  </p>
-                  <ul className="text-gray-600 space-y-2 mb-4 ml-4">
-                    <li>• Registered with the Australian Counselling Association (ACA) or PACFA</li>
-                    <li>• Or in the final stages of completing registration, supported by postgraduate counselling training</li>
-                  </ul>
-                  <p className="text-gray-600 leading-relaxed">
-                    Ground Path is committed to continual growth and professional development. All staff undertake regular clinical supervision and training to ensure we meet the diverse and evolving needs of our clients.
-                  </p>
-                </div>
-
-                {/* NDIS Services */}
-                <div className="pt-6 border-t border-gray-200">
-                  <h3 className="text-xl font-medium text-gray-900 mb-4">
-                    NDIS Services for Plan- and Self-Managed Participants
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed mb-3">
-                    Ground Path offers high-quality, flexible services to NDIS participants who are plan-managed or self-managed (we do not currently provide supports to NDIA-managed participants). We follow the NDIS Code of Conduct and maintain full compliance with ethical and legal standards for unregistered providers.
-                  </p>
-                  <p className="text-gray-600 leading-relaxed mb-3">
-                    We offer:
-                  </p>
-                  <ul className="text-gray-600 space-y-2 mb-4 ml-4">
-                    <li>• Counselling and therapeutic support (Improved Daily Living – Capacity Building)</li>
-                    <li>• Psychosocial recovery coaching</li>
-                    <li>• Support coordination</li>
-                    <li>• Community participation and social inclusion support</li>
-                  </ul>
-                  <p className="text-gray-600 leading-relaxed">
-                    All services are delivered with a trauma-informed, culturally respectful, and recovery-oriented approach.
-                  </p>
-                </div>
+          {/* Main Content */}
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Text Content */}
+            <div className="space-y-6">
+              <div className="fade-in">
+                <h3 className="text-xl font-medium text-gray-900 mb-3">
+                  Qualified & Experienced Social Work
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  At Ground Path, we are a team of qualified professionals with Master of Social Work degrees and extensive experience in mental health, disability services, and child protection. We provide person-centred, evidence-informed support underpinned by care, cultural safety, and ethical practice. Our approach is grounded in the Australian Association of Social Workers (AASW) Code of Ethics and aligned with best-practice mental health and community care standards.
+                </p>
               </div>
-            </div>
-          </div>
 
-          {/* Stats/Highlights */}
-          <div className="fade-in grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <div className="text-center">
-                <div className="text-3xl font-light text-sage-600 mb-2">MSW</div>
-                <div className="text-gray-600">Master of Social Work</div>
+              <div className="fade-in">
+                <h3 className="text-xl font-medium text-gray-900 mb-3">
+                  Ongoing Professional Development
+                </h3>
+                <p className="text-gray-600 leading-relaxed mb-3">
+                  Our team members are either:
+                </p>
+                <ul className="text-gray-600 space-y-2 mb-4 ml-4">
+                  <li>• Registered with the Australian Counselling Association (ACA) or PACFA,</li>
+                  <li>• Or in the final stages of completing registration, supported by postgraduate counselling training.</li>
+                </ul>
+                <p className="text-gray-600 leading-relaxed">
+                  Ground Path is committed to continual growth and professional development. All staff undertake regular clinical supervision and training to ensure we meet the diverse and evolving needs of our clients.
+                </p>
+              </div>
+
+              <div className="fade-in">
+                <h3 className="text-xl font-medium text-gray-900 mb-3">
+                  NDIS Services for Plan- and Self-Managed Participants
+                </h3>
+                <p className="text-gray-600 leading-relaxed mb-3">
+                  Ground Path offers high-quality, flexible services to NDIS participants who are plan-managed or self-managed (we do not currently provide supports to NDIA-managed participants). We follow the NDIS Code of Conduct and maintain full compliance with ethical and legal standards for unregistered providers.
+                </p>
+                <p className="text-gray-600 leading-relaxed mb-3">
+                  We offer:
+                </p>
+                <ul className="text-gray-600 space-y-2 mb-4 ml-4">
+                  <li>• Counselling and therapeutic support (Improved Daily Living – Capacity Building)</li>
+                  <li>• Psychosocial recovery coaching</li>
+                  <li>• Support coordination</li>
+                  <li>• Community participation and social inclusion support</li>
+                </ul>
+                <p className="text-gray-600 leading-relaxed">
+                  All services are delivered with a trauma-informed, culturally respectful, and recovery-oriented approach.
+                </p>
               </div>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <div className="text-center">
-                <div className="text-3xl font-light text-sage-600 mb-2">100%</div>
-                <div className="text-gray-600">NDIS & Professional Screening</div>
+            {/* Stats/Highlights */}
+            <div className="fade-in space-y-8">
+              <div className="bg-white p-8 rounded-xl shadow-sm">
+                <div className="text-center">
+                  <div className="text-3xl font-light text-sage-600 mb-2">MSW</div>
+                  <div className="text-gray-600">Master of Social Work</div>
+                </div>
               </div>
-            </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <div className="text-center">
-                <div className="text-3xl font-light text-sage-600 mb-2">ACA</div>
-                <div className="text-gray-600">Registered Members</div>
-                <div className="text-sm text-gray-500 mt-1">Australia</div>
+              <div className="bg-white p-8 rounded-xl shadow-sm">
+                <div className="text-center">
+                  <div className="text-3xl font-light text-sage-600 mb-2">100%</div>
+                  <div className="text-gray-600">NDIS & Professional Screening</div>
+                </div>
+              </div>
+
+              <div className="bg-white p-8 rounded-xl shadow-sm">
+                <div className="text-center">
+                  <div className="text-3xl font-light text-sage-600 mb-2">2</div>
+                  <div className="text-gray-600">Countries Registered</div>
+                  <div className="text-sm text-gray-500 mt-1">Australia & UK</div>
+                </div>
               </div>
             </div>
           </div>
