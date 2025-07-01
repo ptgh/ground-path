@@ -50,8 +50,8 @@ const Contact = () => {
                   <Mail className="h-5 w-5 text-sage-600" />
                   <div>
                     <div className="font-medium text-gray-900">Email</div>
-                    <a href="mailto:enquiries@groundpath.com.au" className="text-sage-600 hover:text-sage-700">
-                      enquiries@groundpath.com.au
+                    <a href="mailto:connect@groundpath.com.au" className="text-sage-600 hover:text-sage-700">
+                      connect@groundpath.com.au
                     </a>
                   </div>
                 </div>

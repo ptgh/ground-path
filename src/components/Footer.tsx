@@ -39,7 +39,7 @@ const Footer = () => {
           <div>
             <h3 className="font-medium mb-4">Contact</h3>
             <div className="space-y-2 text-sm text-gray-400">
-              <p>enquiries@groundpath.com.au</p>
+              <p>connect@groundpath.com.au</p>
               <p>Perth, Western Australia</p>
               <p>London, UK (on request)</p>
             </div>
