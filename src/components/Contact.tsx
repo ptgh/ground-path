@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { Mail } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -18,10 +19,17 @@ const Contact = () => {
     setFormData({ name: '', email: '', subject: '', message: '' });
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleSelectChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      subject: value
     }));
   };
 
@@ -80,14 +88,6 @@ const Contact = () => {
                 <button className="w-full bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium">
                   Book via Halaxy Calendar
                 </button>
-                <a 
-                  href="https://www.mable.com.au" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="block w-full text-center border-2 border-sage-600 text-sage-600 py-3 px-4 rounded-lg hover:bg-sage-600 hover:text-white transition-colors font-medium"
-                >
-                  Book via Mable
-                </a>
               </div>
             </div>
           </div>
@@ -132,19 +132,17 @@ const Contact = () => {
                   <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
                     Subject
                   </label>
-                  <select
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent"
-                  >
-                    <option value="">Select a subject</option>
-                    <option value="booking">Booking Enquiry</option>
-                    <option value="services">Services Information</option>
-                    <option value="ndis">NDIS Support</option>
-                    <option value="general">General Enquiry</option>
-                  </select>
+                  <Select value={formData.subject} onValueChange={handleSelectChange}>
+                    <SelectTrigger className="w-full px-4 py-3 h-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent">
+                      <SelectValue placeholder="Select a subject" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                      <SelectItem value="booking">Booking Enquiry</SelectItem>
+                      <SelectItem value="services">Services Information</SelectItem>
+                      <SelectItem value="ndis">NDIS Support</SelectItem>
+                      <SelectItem value="general">General Enquiry</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div>

@@ -31,7 +31,6 @@ const Footer = () => {
               <li><a href="#about" className="text-gray-400 hover:text-white transition-colors">About</a></li>
               <li><a href="#services" className="text-gray-400 hover:text-white transition-colors">Services & Rates</a></li>
               <li><a href="#contact" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
-              <li><a href="https://www.mable.com.au" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">Mable Profile</a></li>
             </ul>
           </div>
 
@@ -39,7 +38,9 @@ const Footer = () => {
           <div>
             <h3 className="font-medium mb-4">Contact</h3>
             <div className="space-y-2 text-sm text-gray-400">
-              <p>connect@groundpath.com.au</p>
+              <a href="mailto:connect@groundpath.com.au" className="hover:text-white transition-colors">
+                connect@groundpath.com.au
+              </a>
               <p>Perth, Western Australia</p>
               <p>London, UK (on request)</p>
             </div>
