@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import { Mail } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useContactFormSubmission } from '@/hooks/useMailingList';
+import MailingListModal from './MailingListModal';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -10,13 +12,29 @@ const Contact = () => {
     subject: '',
     message: ''
   });
+  const [isMailingListOpen, setIsMailingListOpen] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const contactFormMutation = useContactFormSubmission();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Integrate with Supabase for form submission
-    console.log('Form submitted:', formData);
-    alert('Thank you for your message. We\'ll get back to you soon!');
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    
+    if (!formData.name || !formData.email || !formData.message) {
+      return;
+    }
+
+    await contactFormMutation.mutateAsync({
+      name: formData.name,
+      email: formData.email,
+      subject: formData.subject || 'General Enquiry',
+      message: formData.message,
+      status: 'new'
+    });
+
+    // Reset form on success
+    if (!contactFormMutation.error) {
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -87,6 +105,12 @@ const Contact = () => {
               <div className="space-y-3">
                 <button className="w-full bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium">
                   Book via Halaxy Calendar
+                </button>
+                <button 
+                  onClick={() => setIsMailingListOpen(true)}
+                  className="w-full border border-sage-600 text-sage-600 py-3 px-4 rounded-lg hover:bg-sage-50 transition-colors font-medium"
+                >
+                  Join Mailing List
                 </button>
               </div>
             </div>
@@ -164,14 +188,20 @@ const Contact = () => {
 
               <button
                 type="submit"
-                className="w-full bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium mt-6"
+                disabled={contactFormMutation.isPending}
+                className="w-full bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Send Message
+                {contactFormMutation.isPending ? 'Sending...' : 'Send Message'}
               </button>
             </form>
           </div>
         </div>
       </div>
+
+      <MailingListModal 
+        isOpen={isMailingListOpen} 
+        onClose={() => setIsMailingListOpen(false)} 
+      />
     </section>
   );
 };

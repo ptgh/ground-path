@@ -1,5 +1,10 @@
 
+import { useState } from 'react';
+import MailingListModal from './MailingListModal';
+
 const Hero = () => {
+  const [isMailingListOpen, setIsMailingListOpen] = useState(false);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     element?.scrollIntoView({ behavior: 'smooth' });
@@ -46,12 +51,12 @@ const Hero = () => {
               About
             </button>
             <span className="text-gray-300">•</span>
-            <a 
-              href="mailto:connect@groundpath.com.au?subject=Mailing List Signup&body=Hi, I'd like to join your mailing list to receive updates about your services."
+            <button 
+              onClick={() => setIsMailingListOpen(true)}
               className="text-gray-600 hover:text-sage-600 transition-colors underline underline-offset-4"
             >
               Join Mailing List
-            </a>
+            </button>
           </div>
         </div>
 
@@ -66,6 +71,11 @@ const Hero = () => {
           </div>
         </div>
       </div>
+
+      <MailingListModal 
+        isOpen={isMailingListOpen} 
+        onClose={() => setIsMailingListOpen(false)} 
+      />
     </section>
   );
 };
