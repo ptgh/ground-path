@@ -28,15 +28,6 @@ const Hero = () => {
             >
               Book a Session
             </button>
-            
-            <a 
-              href="https://www.mable.com.au" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="border-2 border-sage-600 text-sage-600 px-8 py-4 rounded-lg hover:bg-sage-600 hover:text-white transition-all duration-300 font-medium text-lg"
-            >
-              View on Mable
-            </a>
           </div>
 
           {/* Secondary CTAs */}
@@ -55,9 +46,12 @@ const Hero = () => {
               About
             </button>
             <span className="text-gray-300">•</span>
-            <button className="text-gray-600 hover:text-sage-600 transition-colors underline underline-offset-4">
+            <a 
+              href="mailto:connect@groundpath.com.au?subject=Mailing List Signup&body=Hi, I'd like to join your mailing list to receive updates about your services."
+              className="text-gray-600 hover:text-sage-600 transition-colors underline underline-offset-4"
+            >
               Join Mailing List
-            </button>
+            </a>
           </div>
         </div>
 
@@ -66,7 +60,7 @@ const Hero = () => {
           <div className="inline-flex items-center space-x-8 bg-gray-50 px-8 py-4 rounded-lg">
             <span className="text-sm text-gray-600 font-medium">AASW Accredited</span>
             <span className="text-gray-300">•</span>
-            <span className="text-sm text-gray-600 font-medium">NDIS Registered</span>
+            <span className="text-sm text-gray-600 font-medium">NDIS Services</span>
             <span className="text-gray-300">•</span>
             <span className="text-sm text-gray-600 font-medium">Fully Insured</span>
           </div>
