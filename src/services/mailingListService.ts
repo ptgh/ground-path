@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface MailingListSubscriber {
@@ -134,7 +133,7 @@ class MailingListService {
       throw new Error('Failed to submit contact form. Please try again.');
     }
 
-    await this.sendContactFormNotification(result as ContactFormSubmission);
+    await this.sendContactFormNotification(result as unknown as ContactFormSubmission);
     return result;
   }
 
