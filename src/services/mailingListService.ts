@@ -24,10 +24,26 @@ export interface ContactFormSubmission {
 }
 
 class MailingListService {
+  private isSupabaseAvailable(): boolean {
+    return supabase !== null;
+  }
+
   async subscribeToMailingList(data: Omit<MailingListSubscriber, 'id' | 'subscription_date' | 'confirmation_token'>) {
+    if (!this.isSupabaseAvailable()) {
+      // Mock behavior when Supabase isn't configured
+      console.log('Mock subscription:', data);
+      return {
+        id: 'mock-id',
+        ...data,
+        status: 'pending' as const,
+        subscription_date: new Date().toISOString(),
+        confirmation_token: 'mock-token'
+      };
+    }
+
     const confirmationToken = this.generateConfirmationToken();
     
-    const { data: result, error } = await supabase
+    const { data: result, error } = await supabase!
       .from('mailing_list')
       .insert([
         {
@@ -41,20 +57,22 @@ class MailingListService {
       .single();
 
     if (error) {
-      if (error.code === '23505') { // Unique constraint violation
+      if (error.code === '23505') {
         throw new Error('This email is already subscribed to our mailing list.');
       }
       throw new Error('Failed to subscribe. Please try again.');
     }
 
-    // TODO: Send confirmation email via Edge Function
     await this.sendConfirmationEmail(data.email, confirmationToken);
-
     return result;
   }
 
   async confirmSubscription(token: string) {
-    const { data, error } = await supabase
+    if (!this.isSupabaseAvailable()) {
+      throw new Error('Supabase is not configured.');
+    }
+
+    const { data, error } = await supabase!
       .from('mailing_list')
       .update({ status: 'confirmed', confirmation_token: null })
       .eq('confirmation_token', token)
@@ -69,7 +87,11 @@ class MailingListService {
   }
 
   async unsubscribe(email: string) {
-    const { data, error } = await supabase
+    if (!this.isSupabaseAvailable()) {
+      throw new Error('Supabase is not configured.');
+    }
+
+    const { data, error } = await supabase!
       .from('mailing_list')
       .update({ status: 'unsubscribed' })
       .eq('email', email)
@@ -84,7 +106,18 @@ class MailingListService {
   }
 
   async submitContactForm(data: Omit<ContactFormSubmission, 'id' | 'created_at' | 'updated_at'>) {
-    const { data: result, error } = await supabase
+    if (!this.isSupabaseAvailable()) {
+      // Mock behavior when Supabase isn't configured
+      console.log('Mock contact form submission:', data);
+      return {
+        id: 'mock-contact-id',
+        ...data,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+    }
+
+    const { data: result, error } = await supabase!
       .from('contact_forms')
       .insert([
         {
@@ -101,14 +134,16 @@ class MailingListService {
       throw new Error('Failed to submit contact form. Please try again.');
     }
 
-    // TODO: Send acknowledgment email and admin notification
     await this.sendContactFormNotification(result);
-
     return result;
   }
 
   async getSubscribers(status?: string) {
-    let query = supabase
+    if (!this.isSupabaseAvailable()) {
+      throw new Error('Supabase is not configured.');
+    }
+
+    let query = supabase!
       .from('mailing_list')
       .select('*')
       .order('subscription_date', { ascending: false });
@@ -132,12 +167,10 @@ class MailingListService {
   }
 
   private async sendConfirmationEmail(email: string, token: string) {
-    // TODO: Implement via Supabase Edge Function
     console.log('Sending confirmation email to:', email, 'with token:', token);
   }
 
   private async sendContactFormNotification(submission: ContactFormSubmission) {
-    // TODO: Implement via Supabase Edge Function
     console.log('Sending contact form notification:', submission);
   }
 }

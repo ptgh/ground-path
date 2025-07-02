@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Mail, Check, Loader2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useMailingListSubscription } from '@/hooks/useMailingList';
 
 interface MailingListModalProps {
   isOpen: boolean;
@@ -14,9 +14,9 @@ interface MailingListModalProps {
 const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { toast } = useToast();
+  
+  const subscriptionMutation = useMailingListSubscription();
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -26,28 +26,18 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
     e.preventDefault();
     
     if (!validateEmail(email)) {
-      toast({
-        title: "Invalid Email",
-        description: "Please enter a valid email address.",
-        variant: "destructive",
-      });
       return;
     }
 
-    setIsLoading(true);
-
     try {
-      // TODO: Replace with actual Supabase integration
-      console.log('Subscribing:', { email, name, source: 'hero_section' });
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setIsSuccess(true);
-      toast({
-        title: "Welcome aboard! 🎉",
-        description: "Thanks for joining our mailing list. Check your email to confirm your subscription.",
+      await subscriptionMutation.mutateAsync({
+        email,
+        name: name || undefined,
+        status: 'pending',
+        source: 'hero_section'
       });
+
+      setIsSuccess(true);
 
       setTimeout(() => {
         onClose();
@@ -57,13 +47,7 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
       }, 2000);
       
     } catch (error) {
-      toast({
-        title: "Oops! Something went wrong",
-        description: "Please try again later or contact us directly.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      // Error handling is done in the hook
     }
   };
 
@@ -132,16 +116,16 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
                 variant="outline"
                 onClick={onClose}
                 className="flex-1"
-                disabled={isLoading}
+                disabled={subscriptionMutation.isPending}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 className="flex-1 bg-sage-600 hover:bg-sage-700"
-                disabled={isLoading || !email}
+                disabled={subscriptionMutation.isPending || !email}
               >
-                {isLoading ? (
+                {subscriptionMutation.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     Subscribing...
