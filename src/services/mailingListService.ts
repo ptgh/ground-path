@@ -134,7 +134,7 @@ class MailingListService {
       throw new Error('Failed to submit contact form. Please try again.');
     }
 
-    await this.sendContactFormNotification(result);
+    await this.sendContactFormNotification(result as ContactFormSubmission);
     return result;
   }
 
