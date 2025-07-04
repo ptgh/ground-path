@@ -15,10 +15,11 @@ const Services = () => {
       ndis: true
     },
     {
-      name: "Counselling (Student/Supervised)",
+      name: "Counselling",
+      subheading: "Student Supervised Sessions",
       format: "Telehealth (50 mins)",
       rate: "$80",
-      description: "Counselling sessions under supervision as part of Monash training"
+      description: "Professional counselling sessions under supervision as part of Monash training"
     },
     {
       name: "In-Person Support",
@@ -47,7 +48,12 @@ const Services = () => {
           {services.map((service, index) => (
             <div key={index} className="fade-in bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow duration-300">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-medium text-gray-900">{service.name}</h3>
+                <div>
+                  <h3 className="text-xl font-medium text-gray-900">{service.name}</h3>
+                  {service.subheading && (
+                    <p className="text-sm text-gray-600 mt-1">{service.subheading}</p>
+                  )}
+                </div>
                 {service.ndis && (
                   <span className="bg-sage-100 text-sage-700 px-3 py-1 rounded-full text-sm font-medium">
                     NDIS
