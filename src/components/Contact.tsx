@@ -89,7 +89,7 @@ const Contact = () => {
                     <div className="text-gray-600">
                       Perth-based (in-person sessions)<br />
                       London availability on request<br />
-                      Telehealth Australia-wide
+                      Telehealth Worldwide
                     </div>
                   </div>
                 </div>
