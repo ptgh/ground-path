@@ -34,6 +34,19 @@ const Index = () => {
       { opacity: 0, scale: 0.8 },
       { opacity: 1, scale: 1, duration: 1, delay: 0.3 }
     );
+
+    // Secondary CTA buttons animation
+    gsap.fromTo('.secondary-cta',
+      { opacity: 0, y: 10 },
+      { 
+        opacity: 1, 
+        y: 0, 
+        duration: 0.6, 
+        stagger: 0.1,
+        delay: 1.2,
+        ease: "power2.out"
+      }
+    );
   }, []);
 
   return (

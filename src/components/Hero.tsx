@@ -39,21 +39,21 @@ const Hero = () => {
           <div className="fade-in mt-8 flex flex-wrap gap-4 justify-center text-sm">
             <button 
               onClick={() => scrollToSection('services')}
-              className="text-gray-600 hover:text-sage-600 transition-colors underline underline-offset-4"
+              className="secondary-cta text-gray-600 hover:text-sage-600 transition-all duration-300 underline underline-offset-4 hover:underline-offset-2 transform hover:scale-105"
             >
               View Services & Rates
             </button>
             <span className="text-gray-300">•</span>
             <button 
               onClick={() => scrollToSection('about')}
-              className="text-gray-600 hover:text-sage-600 transition-colors underline underline-offset-4"
+              className="secondary-cta text-gray-600 hover:text-sage-600 transition-all duration-300 underline underline-offset-4 hover:underline-offset-2 transform hover:scale-105"
             >
               About
             </button>
             <span className="text-gray-300">•</span>
             <button 
               onClick={() => setIsMailingListOpen(true)}
-              className="text-gray-600 hover:text-sage-600 transition-colors underline underline-offset-4"
+              className="secondary-cta text-gray-600 hover:text-sage-600 transition-all duration-300 underline underline-offset-4 hover:underline-offset-2 transform hover:scale-105"
             >
               Join Mailing List
             </button>
