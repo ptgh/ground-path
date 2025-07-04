@@ -65,13 +65,13 @@ const Contact = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-start">
+        <div className="grid lg:grid-cols-2 gap-12 items-stretch">
           {/* Contact Information */}
-          <div className="fade-in space-y-8">
-            <div>
+          <div className="fade-in flex flex-col">
+            <div className="flex-1">
               <h3 className="text-xl font-medium text-gray-900 mb-6">Contact Information</h3>
               
-              <div className="space-y-4">
+              <div className="space-y-6 mb-8">
                 <div className="flex items-center space-x-4">
                   <Mail className="h-5 w-5 text-sage-600" />
                   <div>
@@ -97,7 +97,7 @@ const Contact = () => {
             </div>
 
             {/* Booking Information */}
-            <div className="bg-white rounded-xl p-6 h-fit">
+            <div className="bg-white rounded-xl p-6 shadow-sm">
               <h4 className="font-medium text-gray-900 mb-4">Quick Booking</h4>
               <p className="text-gray-600 mb-6">
                 Ready to book? Use our integrated calendar system or contact us directly.
@@ -118,10 +118,10 @@ const Contact = () => {
 
           {/* Contact Form */}
           <div className="fade-in">
-            <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-sm h-fit">
+            <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-sm h-full flex flex-col">
               <h3 className="text-xl font-medium text-gray-900 mb-6">Send a Message</h3>
               
-              <div className="space-y-4">
+              <div className="space-y-4 flex-1">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                     Name *
@@ -169,7 +169,7 @@ const Contact = () => {
                   </Select>
                 </div>
 
-                <div>
+                <div className="flex-1">
                   <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
                     Message *
                   </label>
@@ -180,7 +180,7 @@ const Contact = () => {
                     required
                     value={formData.message}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent resize-none"
+                    className="w-full h-full min-h-[100px] px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent resize-none"
                     placeholder="Tell us how we can help you..."
                   ></textarea>
                 </div>
