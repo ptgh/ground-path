@@ -67,7 +67,7 @@ const Hero = () => {
             <span className="text-gray-300">•</span>
             <span className="text-sm text-gray-600 font-medium">NDIS Services</span>
             <span className="text-gray-300">•</span>
-            <span className="text-sm text-gray-600 font-medium">Fully Insured</span>
+            <span className="text-sm text-gray-600 font-medium">Professional Indemnity Insurance</span>
           </div>
         </div>
       </div>
