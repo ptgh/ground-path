@@ -45,7 +45,7 @@ const About = () => {
           <div className="grid md:grid-cols-2 gap-12 items-start">
             {/* Services Info Box */}
             <div className="fade-in bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
-              <div className="space-y-6">
+              <div className="space-y-5">
                 <div>
                   <h3 className="text-xl font-medium text-gray-900 mb-3">
                     Qualified & Experienced Social Work
