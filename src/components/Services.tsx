@@ -5,7 +5,7 @@ const Services = () => {
       name: "Mental Health Support",
       format: "Telehealth (50 mins)",
       rate: "$120",
-      description: "Professional mental health support sessions via secure video calls"
+      description: "AASW Accredited Mental Health Social Worker providing professional support via secure video calls"
     },
     {
       name: "Psychosocial Recovery Coaching",
