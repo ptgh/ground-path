@@ -1,13 +1,19 @@
 
 import { useState } from 'react';
+import MSWModal from './MSWModal';
 import ProfessionalIndemnityModal from './ProfessionalIndemnityModal';
 import AASWRegistrationModal from './AASWRegistrationModal';
 import CPDModal from './CPDModal';
+import SWEModal from './SWEModal';
+import NDISModal from './NDISModal';
 
 const About = () => {
+  const [isMSWOpen, setIsMSWOpen] = useState(false);
   const [isProfessionalIndemnityOpen, setIsProfessionalIndemnityOpen] = useState(false);
   const [isAASWOpen, setIsAASWOpen] = useState(false);
   const [isCPDOpen, setIsCPDOpen] = useState(false);
+  const [isSWEOpen, setIsSWEOpen] = useState(false);
+  const [isNDISOpen, setIsNDISOpen] = useState(false);
 
   return (
     <section id="about" className="py-20 bg-gray-50">
@@ -79,22 +85,14 @@ const About = () => {
             {/* Stats/Highlights */}
             <div className="fade-in h-full flex flex-col">
               <div className="flex-1 space-y-3">
-                <div className="bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <button 
+                  onClick={() => setIsMSWOpen(true)}
+                  className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                >
                   <div className="text-center">
                     <div className="text-lg font-light text-sage-600 mb-1">MSW</div>
                     <div className="text-gray-600 mb-1 text-xs">Master of Social Work</div>
                     <div className="text-xs text-gray-500">Qualified professionals with advanced degrees</div>
-                  </div>
-                </div>
-
-                <button 
-                  onClick={() => setIsProfessionalIndemnityOpen(true)}
-                  className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
-                >
-                  <div className="text-center">
-                    <div className="text-lg font-light text-sage-600 mb-1">Professional Indemnity</div>
-                    <div className="text-gray-600 mb-1 text-xs">Insurance Coverage</div>
-                    <div className="text-xs text-gray-500">Client protection & professional liability</div>
                   </div>
                 </button>
 
@@ -120,21 +118,38 @@ const About = () => {
                   </div>
                 </button>
 
-                <div className="bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <button 
+                  onClick={() => setIsSWEOpen(true)}
+                  className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                >
                   <div className="text-center">
                     <div className="text-lg font-light text-sage-600 mb-1">SWE</div>
                     <div className="text-gray-600 mb-1 text-xs">Professional Registration</div>
                     <div className="text-xs text-gray-500">Social Work England</div>
                   </div>
-                </div>
+                </button>
 
-                <div className="bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <button 
+                  onClick={() => setIsNDISOpen(true)}
+                  className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                >
                   <div className="text-center">
                     <div className="text-lg font-light text-sage-600 mb-1">NDIS</div>
                     <div className="text-gray-600 mb-1 text-xs">National Disability Insurance Scheme</div>
                     <div className="text-xs text-gray-500">Plan-managed & self-managed support</div>
                   </div>
-                </div>
+                </button>
+
+                <button 
+                  onClick={() => setIsProfessionalIndemnityOpen(true)}
+                  className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                >
+                  <div className="text-center">
+                    <div className="text-lg font-light text-sage-600 mb-1">Professional Indemnity</div>
+                    <div className="text-gray-600 mb-1 text-xs">Insurance Coverage</div>
+                    <div className="text-xs text-gray-500">Client protection & professional liability</div>
+                  </div>
+                </button>
               </div>
 
               {/* Bottom aligned box - using margin-top auto to push to bottom */}
@@ -152,6 +167,10 @@ const About = () => {
         </div>
       </div>
 
+      <MSWModal 
+        isOpen={isMSWOpen} 
+        onClose={() => setIsMSWOpen(false)} 
+      />
       <ProfessionalIndemnityModal 
         isOpen={isProfessionalIndemnityOpen} 
         onClose={() => setIsProfessionalIndemnityOpen(false)} 
@@ -163,6 +182,14 @@ const About = () => {
       <CPDModal 
         isOpen={isCPDOpen} 
         onClose={() => setIsCPDOpen(false)} 
+      />
+      <SWEModal 
+        isOpen={isSWEOpen} 
+        onClose={() => setIsSWEOpen(false)} 
+      />
+      <NDISModal 
+        isOpen={isNDISOpen} 
+        onClose={() => setIsNDISOpen(false)} 
       />
     </section>
   );

@@ -1,0 +1,143 @@
+import { useEffect, useRef } from 'react';
+import { X } from 'lucide-react';
+import { gsap } from 'gsap';
+
+interface NDISModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const NDISModal = ({ isOpen, onClose }: NDISModalProps) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      gsap.set(modalRef.current, { display: 'flex' });
+      gsap.fromTo(backdropRef.current, 
+        { opacity: 0 }, 
+        { opacity: 1, duration: 0.3, ease: "power2.out" }
+      );
+      gsap.fromTo(contentRef.current, 
+        { opacity: 0, scale: 0.9, y: 30 }, 
+        { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: "power2.out", delay: 0.1 }
+      );
+    } else if (modalRef.current) {
+      gsap.to(backdropRef.current, { opacity: 0, duration: 0.2, ease: "power2.in" });
+      gsap.to(contentRef.current, 
+        { 
+          opacity: 0, 
+          scale: 0.9, 
+          y: -20, 
+          duration: 0.2, 
+          ease: "power2.in",
+          onComplete: () => {
+            if (modalRef.current) {
+              gsap.set(modalRef.current, { display: 'none' });
+            }
+          }
+        }
+      );
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div 
+      ref={modalRef}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 hidden"
+    >
+      <div 
+        ref={backdropRef}
+        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      
+      <div 
+        ref={contentRef}
+        className="relative bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden border border-white/20"
+      >
+        <div className="flex items-center justify-between p-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-sm">
+          <h2 className="text-2xl font-light text-gray-900">NDIS Services</h2>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100/50 rounded-lg transition-colors"
+          >
+            <X className="h-5 w-5 text-gray-500" />
+          </button>
+        </div>
+
+        <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
+          <div className="p-6 space-y-6">
+            <section>
+              <h3 className="text-lg font-medium text-gray-900 mb-3">National Disability Insurance Scheme</h3>
+              <p className="text-gray-600 leading-relaxed text-sm">
+                Ground Path provides specialised NDIS services for plan-managed and self-managed participants. Our approach integrates disability support with professional social work practice, ensuring holistic, person-centred care that promotes independence and community participation.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-medium text-gray-900 mb-3">Core NDIS Services</h3>
+              <div className="text-gray-600 leading-relaxed text-sm space-y-2">
+                <p>We provide evidence-based support including:</p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Counselling and therapeutic support (capacity building)</li>
+                  <li>Psychosocial recovery coaching</li>
+                  <li>Support coordination and plan implementation</li>
+                  <li>Community participation support</li>
+                  <li>Behaviour support and positive behaviour planning</li>
+                  <li>Family and carer support services</li>
+                  <li>Transition and life skills development</li>
+                </ul>
+              </div>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-medium text-gray-900 mb-3">Participant-Centred Approach</h3>
+              <div className="text-gray-600 leading-relaxed text-sm space-y-2">
+                <p>Our NDIS practice emphasises:</p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Choice and control for participants</li>
+                  <li>Strengths-based, goal-oriented support</li>
+                  <li>Cultural safety and inclusive practice</li>
+                  <li>Trauma-informed approaches</li>
+                  <li>Family-inclusive service delivery</li>
+                  <li>Community integration and social connection</li>
+                </ul>
+              </div>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-medium text-gray-900 mb-3">Plan Management & Self-Management</h3>
+              <p className="text-gray-600 leading-relaxed text-sm">
+                We work with both plan-managed and self-managed participants, providing flexible service delivery that respects participant choice. Our team assists with plan utilisation, goal setting, and connecting with other support services as needed.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-medium text-gray-900 mb-3">Professional Standards</h3>
+              <p className="text-gray-600 leading-relaxed text-sm">
+                All NDIS services are delivered in accordance with NDIS Quality and Safeguarding Commission standards, professional social work codes of ethics, and best-practice disability support frameworks. Regular review and evaluation ensure service quality and participant satisfaction.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-medium text-gray-900 mb-3">Flexible Service Delivery</h3>
+              <p className="text-gray-600 leading-relaxed text-sm">
+                Services can be delivered face-to-face, via telehealth, or through community-based settings depending on participant preferences and needs. We prioritise accessibility and work to remove barriers to service participation.
+              </p>
+            </section>
+
+            <p className="text-xs text-gray-500 mt-6 pb-6">
+              NDIS service agreements and quality frameworks available upon request
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default NDISModal;
