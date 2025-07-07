@@ -81,7 +81,7 @@ const About = () => {
                 <div className="bg-white p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                   <div className="text-center">
                     <div className="text-lg font-light text-sage-600 mb-1">AASW</div>
-                    <div className="text-gray-600 mb-1 text-xs">Professional Registration</div>
+                    <div className="text-gray-600 mb-1 text-xs">Member #486997</div>
                     <div className="text-xs text-gray-500">Australian Association of Social Workers</div>
                   </div>
                 </div>
@@ -97,7 +97,7 @@ const About = () => {
                 <div className="bg-white p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                   <div className="text-center">
                     <div className="text-lg font-light text-sage-600 mb-1">ACA</div>
-                    <div className="text-gray-600 mb-1 text-xs">Registered Counsellors</div>
+                    <div className="text-gray-600 mb-1 text-xs">Registration Pending</div>
                     <div className="text-xs text-gray-500">Australian Counselling Association</div>
                   </div>
                 </div>

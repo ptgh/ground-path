@@ -50,7 +50,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <div className="text-sm text-gray-400">
-            © 2024 Ground Path. All rights reserved.
+            © 2024 Ground Path. All rights reserved. • ABN: 98 434 283 298
           </div>
           <div className="text-sm text-gray-400 mt-4 md:mt-0">
             <span>Paul</span>
