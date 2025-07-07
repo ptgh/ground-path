@@ -161,9 +161,9 @@ const About = () => {
                   className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
                 >
                   <div className="text-center">
-                    <div className="text-lg font-light text-sage-600 mb-1">2</div>
-                    <div className="text-gray-600 mb-1 text-xs">Countries Registered</div>
-                    <div className="text-xs text-gray-500">Australia & UK</div>
+                    <div className="text-lg font-light text-sage-600 mb-1">UK & AUS</div>
+                    <div className="text-gray-600 mb-1 text-xs">Dual Country Registration</div>
+                    <div className="text-xs text-gray-500">Australia & United Kingdom</div>
                   </div>
                 </button>
               </div>

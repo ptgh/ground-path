@@ -112,9 +112,9 @@ const CountriesModal = ({ isOpen, onClose }: CountriesModalProps) => {
                   <div>
                     <h4 className="font-medium text-gray-900 text-sm mb-2">Practice Areas</h4>
                     <ul className="text-gray-600 text-sm space-y-1">
-                      <li>• Remote consultations with UK clients</li>
-                      <li>• In-person sessions (London visits)</li>
-                      <li>• Cross-cultural practice expertise</li>
+                      <li>• Telehealth consultations with UK clients</li>
+                      <li>• In-person sessions (London-based)</li>
+                      <li>• Dual country practice expertise</li>
                       <li>• International supervision</li>
                     </ul>
                   </div>
@@ -123,15 +123,15 @@ const CountriesModal = ({ isOpen, onClose }: CountriesModalProps) => {
             </div>
 
             <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">Cross-Cultural Competency</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-3">International Practice Competency</h3>
               <div className="text-gray-600 leading-relaxed text-sm space-y-2">
-                <p>Our international registration enables unique cross-cultural practice capabilities:</p>
+                <p>Our dual country registration enables unique international practice capabilities:</p>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Understanding of both Australian and UK social work frameworks</li>
-                  <li>Experience with diverse cultural contexts and practice settings</li>
+                  <li>Experience with diverse international contexts and practice settings</li>
                   <li>Knowledge of international best practices and evidence-based approaches</li>
-                  <li>Ability to provide culturally sensitive support to international clients</li>
-                  <li>Expertise in managing complex cross-border practice considerations</li>
+                  <li>Ability to provide culturally sensitive support to global clients</li>
+                  <li>Expertise in managing complex international practice considerations</li>
                 </ul>
               </div>
             </section>
@@ -152,7 +152,7 @@ const CountriesModal = ({ isOpen, onClose }: CountriesModalProps) => {
                   <li>In-person appointments in both countries</li>
                   <li>Support for expatriate communities</li>
                   <li>International relocation support</li>
-                  <li>Cross-cultural family therapy and support</li>
+                  <li>International family therapy and support</li>
                 </ul>
               </div>
             </section>
