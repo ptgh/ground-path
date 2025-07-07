@@ -77,15 +77,9 @@ const About = () => {
                   <h3 className="text-xl font-medium text-gray-900 mb-3">
                     NDIS Services
                   </h3>
-                  <p className="text-gray-600 leading-relaxed text-sm mb-2">
-                    High-quality services for plan-managed and self-managed participants:
+                  <p className="text-gray-600 leading-relaxed text-sm mb-3">
+                    High-quality services for plan-managed and self-managed participants including counselling and therapeutic support, psychosocial recovery coaching, support coordination, and community participation support.
                   </p>
-                  <div className="text-gray-600 space-y-0.5 mb-2 text-sm">
-                    <div>• Counselling and therapeutic support</div>
-                    <div>• Psychosocial recovery coaching</div>
-                    <div>• Support coordination</div>
-                    <div>• Community participation support</div>
-                  </div>
                   <p className="text-gray-600 leading-relaxed text-sm">
                     Delivered with trauma-informed, culturally respectful approach.
                   </p>
