@@ -6,6 +6,7 @@ import AASWRegistrationModal from './AASWRegistrationModal';
 import CPDModal from './CPDModal';
 import SWEModal from './SWEModal';
 import NDISModal from './NDISModal';
+import CountriesModal from './CountriesModal';
 
 const About = () => {
   const [isMSWOpen, setIsMSWOpen] = useState(false);
@@ -14,6 +15,7 @@ const About = () => {
   const [isCPDOpen, setIsCPDOpen] = useState(false);
   const [isSWEOpen, setIsSWEOpen] = useState(false);
   const [isNDISOpen, setIsNDISOpen] = useState(false);
+  const [isCountriesOpen, setIsCountriesOpen] = useState(false);
 
   return (
     <section id="about" className="py-20 bg-gray-50">
@@ -154,13 +156,16 @@ const About = () => {
 
               {/* Bottom aligned box - using margin-top auto to push to bottom */}
               <div className="mt-auto pt-3">
-                <div className="bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <button 
+                  onClick={() => setIsCountriesOpen(true)}
+                  className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                >
                   <div className="text-center">
                     <div className="text-lg font-light text-sage-600 mb-1">2</div>
                     <div className="text-gray-600 mb-1 text-xs">Countries Registered</div>
                     <div className="text-xs text-gray-500">Australia & UK</div>
                   </div>
-                </div>
+                </button>
               </div>
             </div>
           </div>
@@ -190,6 +195,10 @@ const About = () => {
       <NDISModal 
         isOpen={isNDISOpen} 
         onClose={() => setIsNDISOpen(false)} 
+      />
+      <CountriesModal 
+        isOpen={isCountriesOpen} 
+        onClose={() => setIsCountriesOpen(false)} 
       />
     </section>
   );
