@@ -77,18 +77,15 @@ const About = () => {
                   <h3 className="text-xl font-medium text-gray-900 mb-3">
                     NDIS Services
                   </h3>
-                  <p className="text-gray-600 leading-relaxed text-sm mb-3">
-                    High-quality services for plan-managed and self-managed participants including counselling and therapeutic support, psychosocial recovery coaching, support coordination, and community participation support.
-                  </p>
                   <p className="text-gray-600 leading-relaxed text-sm">
-                    Delivered with trauma-informed, culturally respectful approach.
+                    High-quality services for plan-managed and self-managed participants including counselling and therapeutic support, psychosocial recovery coaching, support coordination, and community participation support. Delivered with trauma-informed, culturally respectful approach.
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Stats/Highlights */}
-            <div className="fade-in space-y-5">
+            <div className="fade-in space-y-4">
               <button 
                 onClick={() => setIsMSWOpen(true)}
                 className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
