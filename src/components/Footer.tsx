@@ -50,10 +50,12 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <div className="text-sm text-gray-400">
-            © 2024 Ground Path. All rights reserved. • ABN: 98 434 283 298
+            © 2024 Ground Path. All rights reserved. • ABN: 98 434 283 298 • AASW Member #486997
           </div>
-          <div className="text-sm text-gray-400 mt-4 md:mt-0">
-            <span>Paul</span>
+          <div className="text-sm text-gray-400 mt-4 md:mt-0 space-x-4">
+            <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>
+            <span>•</span>
+            <a href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</a>
           </div>
         </div>
       </div>

@@ -40,10 +40,16 @@ const About = () => {
 
                 <div>
                   <h3 className="text-xl font-medium text-gray-900 mb-3">
-                    Ongoing Professional Development
+                    Professional Standards & Compliance
                   </h3>
+                  <p className="text-gray-600 leading-relaxed text-sm mb-3">
+                    All team members maintain current professional registration and undertake regular clinical supervision. Continuing Professional Development (CPD) requirements are met annually in accordance with professional body standards.
+                  </p>
+                  <p className="text-gray-600 leading-relaxed text-sm mb-3">
+                    Professional indemnity insurance is maintained in accordance with professional standards. Cultural safety principles are integrated into all service delivery, with commitment to inclusive and respectful practice.
+                  </p>
                   <p className="text-gray-600 leading-relaxed text-sm">
-                    Our team members are either registered with the AASW and ACA, or PACFA, or completing registration with postgraduate training. All staff undertake regular clinical supervision and training.
+                    Feedback and complaints processes are available upon request, with pathways through both internal processes and relevant professional bodies.
                   </p>
                 </div>
 
@@ -80,9 +86,9 @@ const About = () => {
 
                 <div className="bg-white p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                   <div className="text-center">
-                    <div className="text-lg font-light text-sage-600 mb-1">AASW</div>
-                    <div className="text-gray-600 mb-1 text-xs">Member #486997</div>
-                    <div className="text-xs text-gray-500">Australian Association of Social Workers</div>
+                    <div className="text-lg font-light text-sage-600 mb-1">Professional Registration</div>
+                    <div className="text-gray-600 mb-1 text-xs">AASW, SWE, ACA</div>
+                    <div className="text-xs text-gray-500">Multiple jurisdictions maintained</div>
                   </div>
                 </div>
 

@@ -97,7 +97,7 @@ const Contact = () => {
             </div>
 
             {/* Booking Information */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
               <h4 className="font-medium text-gray-900 mb-4">Quick Booking</h4>
               <p className="text-gray-600 mb-6">
                 Ready to book? Use our integrated calendar system or contact us directly.
@@ -112,6 +112,17 @@ const Contact = () => {
                 >
                   Join Mailing List
                 </button>
+              </div>
+            </div>
+
+            {/* Professional Standards */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h4 className="font-medium text-gray-900 mb-4">Professional Standards</h4>
+              <div className="space-y-3 text-sm text-gray-600">
+                <div>✓ Working with Children Check current</div>
+                <div>✓ Professional indemnity insurance maintained</div>
+                <div>✓ Cultural safety principles integrated</div>
+                <div>✓ Complaints process available via AASW</div>
               </div>
             </div>
           </div>
