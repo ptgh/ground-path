@@ -1,5 +1,11 @@
 
+import { useState } from 'react';
+import PrivacyPolicyModal from './PrivacyPolicyModal';
+import TermsOfServiceModal from './TermsOfServiceModal';
+
 const Footer = () => {
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
   return (
     <footer className="bg-gray-900 text-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,12 +59,31 @@ const Footer = () => {
             © 2024 Ground Path. All rights reserved. • ABN: 98 434 283 298 • AASW Member #486997
           </div>
           <div className="text-sm text-gray-400 mt-4 md:mt-0 space-x-4">
-            <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>
+            <button 
+              onClick={() => setIsPrivacyOpen(true)}
+              className="hover:text-white transition-colors"
+            >
+              Privacy Policy
+            </button>
             <span>•</span>
-            <a href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</a>
+            <button 
+              onClick={() => setIsTermsOpen(true)}
+              className="hover:text-white transition-colors"
+            >
+              Terms of Service
+            </button>
           </div>
         </div>
       </div>
+
+      <PrivacyPolicyModal 
+        isOpen={isPrivacyOpen} 
+        onClose={() => setIsPrivacyOpen(false)} 
+      />
+      <TermsOfServiceModal 
+        isOpen={isTermsOpen} 
+        onClose={() => setIsTermsOpen(false)} 
+      />
     </footer>
   );
 };
