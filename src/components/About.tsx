@@ -1,5 +1,14 @@
 
+import { useState } from 'react';
+import ProfessionalIndemnityModal from './ProfessionalIndemnityModal';
+import AASWRegistrationModal from './AASWRegistrationModal';
+import CPDModal from './CPDModal';
+
 const About = () => {
+  const [isProfessionalIndemnityOpen, setIsProfessionalIndemnityOpen] = useState(false);
+  const [isAASWOpen, setIsAASWOpen] = useState(false);
+  const [isCPDOpen, setIsCPDOpen] = useState(false);
+
   return (
     <section id="about" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -42,14 +51,8 @@ const About = () => {
                   <h3 className="text-xl font-medium text-gray-900 mb-3">
                     Professional Standards & Compliance
                   </h3>
-                  <p className="text-gray-600 leading-relaxed text-sm mb-3">
-                    All team members maintain current professional registration and undertake regular clinical supervision. Continuing Professional Development (CPD) requirements are met annually in accordance with professional body standards.
-                  </p>
-                  <p className="text-gray-600 leading-relaxed text-sm mb-3">
-                    Professional indemnity insurance is maintained in accordance with professional standards. Cultural safety principles are integrated into all service delivery, with commitment to inclusive and respectful practice.
-                  </p>
                   <p className="text-gray-600 leading-relaxed text-sm">
-                    Feedback and complaints processes are available upon request, with pathways through both internal processes and relevant professional bodies.
+                    All team members maintain current professional registration, undertake regular clinical supervision, and meet annual CPD requirements. Professional indemnity insurance, cultural safety principles, and comprehensive feedback processes ensure the highest standards of ethical practice.
                   </p>
                 </div>
 
@@ -76,7 +79,7 @@ const About = () => {
             {/* Stats/Highlights */}
             <div className="fade-in h-full flex flex-col">
               <div className="flex-1 space-y-3">
-                <div className="bg-white p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <div className="bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                   <div className="text-center">
                     <div className="text-lg font-light text-sage-600 mb-1">MSW</div>
                     <div className="text-gray-600 mb-1 text-xs">Master of Social Work</div>
@@ -84,15 +87,40 @@ const About = () => {
                   </div>
                 </div>
 
-                <div className="bg-white p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <button 
+                  onClick={() => setIsProfessionalIndemnityOpen(true)}
+                  className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                >
                   <div className="text-center">
-                    <div className="text-lg font-light text-sage-600 mb-1">Professional Registration</div>
-                    <div className="text-gray-600 mb-1 text-xs">AASW, SWE, ACA</div>
-                    <div className="text-xs text-gray-500">Multiple jurisdictions maintained</div>
+                    <div className="text-lg font-light text-sage-600 mb-1">Professional Indemnity</div>
+                    <div className="text-gray-600 mb-1 text-xs">Insurance Coverage</div>
+                    <div className="text-xs text-gray-500">Client protection & professional liability</div>
                   </div>
-                </div>
+                </button>
 
-                <div className="bg-white p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <button 
+                  onClick={() => setIsAASWOpen(true)}
+                  className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                >
+                  <div className="text-center">
+                    <div className="text-lg font-light text-sage-600 mb-1">AASW</div>
+                    <div className="text-gray-600 mb-1 text-xs">Professional Registration</div>
+                    <div className="text-xs text-gray-500">Australian Association of Social Workers</div>
+                  </div>
+                </button>
+
+                <button 
+                  onClick={() => setIsCPDOpen(true)}
+                  className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                >
+                  <div className="text-center">
+                    <div className="text-lg font-light text-sage-600 mb-1">CPD</div>
+                    <div className="text-gray-600 mb-1 text-xs">Continuing Professional Development</div>
+                    <div className="text-xs text-gray-500">30+ hours annual training</div>
+                  </div>
+                </button>
+
+                <div className="bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                   <div className="text-center">
                     <div className="text-lg font-light text-sage-600 mb-1">SWE</div>
                     <div className="text-gray-600 mb-1 text-xs">Professional Registration</div>
@@ -100,15 +128,7 @@ const About = () => {
                   </div>
                 </div>
 
-                <div className="bg-white p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
-                  <div className="text-center">
-                    <div className="text-lg font-light text-sage-600 mb-1">ACA</div>
-                    <div className="text-gray-600 mb-1 text-xs">Registration Pending</div>
-                    <div className="text-xs text-gray-500">Australian Counselling Association</div>
-                  </div>
-                </div>
-
-                <div className="bg-white p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <div className="bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                   <div className="text-center">
                     <div className="text-lg font-light text-sage-600 mb-1">NDIS</div>
                     <div className="text-gray-600 mb-1 text-xs">National Disability Insurance Scheme</div>
@@ -119,7 +139,7 @@ const About = () => {
 
               {/* Bottom aligned box - using margin-top auto to push to bottom */}
               <div className="mt-auto pt-3">
-                <div className="bg-white p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <div className="bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
                   <div className="text-center">
                     <div className="text-lg font-light text-sage-600 mb-1">2</div>
                     <div className="text-gray-600 mb-1 text-xs">Countries Registered</div>
@@ -131,6 +151,19 @@ const About = () => {
           </div>
         </div>
       </div>
+
+      <ProfessionalIndemnityModal 
+        isOpen={isProfessionalIndemnityOpen} 
+        onClose={() => setIsProfessionalIndemnityOpen(false)} 
+      />
+      <AASWRegistrationModal 
+        isOpen={isAASWOpen} 
+        onClose={() => setIsAASWOpen(false)} 
+      />
+      <CPDModal 
+        isOpen={isCPDOpen} 
+        onClose={() => setIsCPDOpen(false)} 
+      />
     </section>
   );
 };
