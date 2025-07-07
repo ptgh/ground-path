@@ -60,7 +60,16 @@ const About = () => {
                     Professional Standards & Compliance
                   </h3>
                   <p className="text-gray-600 leading-relaxed text-sm">
-                    All team members maintain current professional registration, undertake regular clinical supervision, and meet annual CPD requirements. Professional indemnity insurance, cultural safety principles, and comprehensive feedback processes ensure the highest standards of ethical practice.
+                    All team members maintain current professional registration, undertake regular clinical supervision, and meet annual CPD requirements. Cultural safety principles and comprehensive feedback processes ensure the highest standards of ethical practice.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-medium text-gray-900 mb-3">
+                    Service Delivery & Approach
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed text-sm">
+                    We offer flexible service delivery including telehealth consultations and in-person sessions. Our evidence-based therapeutic approaches are trauma-informed and culturally responsive, with quality assurance through regular supervision and client feedback processes to ensure optimal outcomes.
                   </p>
                 </div>
 
@@ -85,7 +94,7 @@ const About = () => {
             </div>
 
             {/* Stats/Highlights */}
-            <div className="fade-in space-y-3">
+            <div className="fade-in space-y-5">
               <button 
                 onClick={() => setIsMSWOpen(true)}
                 className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
@@ -142,17 +151,6 @@ const About = () => {
               </button>
 
               <button 
-                onClick={() => setIsProfessionalIndemnityOpen(true)}
-                className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
-              >
-                <div className="text-center">
-                  <div className="text-lg font-light text-sage-600 mb-1">Professional Indemnity</div>
-                  <div className="text-gray-600 mb-1 text-xs">Insurance Coverage</div>
-                  <div className="text-xs text-gray-500">Client protection & professional liability</div>
-                </div>
-              </button>
-
-              <button 
                 onClick={() => setIsCountriesOpen(true)}
                 className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
               >
@@ -160,6 +158,17 @@ const About = () => {
                   <div className="text-lg font-light text-sage-600 mb-1">UK & AUS</div>
                   <div className="text-gray-600 mb-1 text-xs">Dual Country Registration</div>
                   <div className="text-xs text-gray-500">Australia & United Kingdom</div>
+                </div>
+              </button>
+
+              <button 
+                onClick={() => setIsProfessionalIndemnityOpen(true)}
+                className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+              >
+                <div className="text-center">
+                  <div className="text-lg font-light text-sage-600 mb-1">Professional Indemnity</div>
+                  <div className="text-gray-600 mb-1 text-xs">Insurance Coverage</div>
+                  <div className="text-xs text-gray-500">Client protection & professional liability</div>
                 </div>
               </button>
             </div>
