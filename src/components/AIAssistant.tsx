@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageCircle, Send, Bot, User, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Message {
   id: string;
@@ -14,12 +16,13 @@ interface Message {
 }
 
 export const AIAssistant = () => {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       role: 'assistant',
-      content: 'Hello! I\'m here to help with questions about social work, mental health, NDIS support, and counselling services. How can I assist you today?',
+      content: 'Hello! I\'m your AI assistant specialized in social work and mental health. I can provide guidance on AASW standards, NDIS processes, ethical considerations, and evidence-based practices. How can I help you today?',
       timestamp: new Date()
     }
   ]);
@@ -38,43 +41,48 @@ export const AIAssistant = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const messageContent = input.trim();
     setInput('');
     setIsLoading(true);
 
     try {
-      // For now, show a message that backend setup is needed
-      // This will be replaced with actual OpenAI integration via Supabase Edge Functions
-      
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+      // Convert messages to conversation history format
+      const conversationHistory = messages.map(msg => ({
+        role: msg.role === 'user' ? 'user' as const : 'assistant' as const,
+        content: msg.content
+      }));
+
+      // Call the AI assistant edge function
+      const { data, error } = await supabase.functions.invoke('ai-assistant', {
+        body: {
+          message: messageContent,
+          conversationHistory,
+          userId: user?.id,
+        },
+      });
+
+      if (error) {
+        console.error('Error calling AI assistant:', error);
+        throw new Error(error.message || 'Failed to get AI response');
+      }
+
+      if (!data || !data.response) {
+        throw new Error('Invalid response from AI service');
+      }
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `Thank you for your question! I'm an AI assistant designed to help with social work, mental health, and NDIS support questions.
-
-To fully activate this feature, you'll need to:
-1. Connect to Supabase (click the green Supabase button)
-2. Add your OpenAI API key to Supabase Edge Function Secrets
-3. Deploy the AI assistant edge function
-
-For immediate assistance, please:
-• Call us directly for urgent matters
-• Book an appointment through our contact form
-• Email us with your specific questions
-
-Emergency contacts:
-• Emergency services: 000
-• Lifeline: 13 11 14
-• Beyond Blue: 1300 22 4636`,
+        content: data.response,
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('AI Assistant error:', error);
       toast({
-        title: "Connection Error",
-        description: "Unable to connect to AI assistant. Please try again or contact us directly.",
+        title: "AI Assistant Error",
+        description: error.message || "Failed to get response from AI assistant. Please try again.",
         variant: "destructive"
       });
       
