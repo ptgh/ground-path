@@ -2,10 +2,12 @@
 import { useState } from 'react';
 import PrivacyPolicyModal from './PrivacyPolicyModal';
 import TermsOfServiceModal from './TermsOfServiceModal';
+import DocumentTransparencyModal from './DocumentTransparencyModal';
 
 const Footer = () => {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isDocumentOpen, setIsDocumentOpen] = useState(false);
   return (
     <footer className="bg-gray-900 text-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -72,6 +74,13 @@ const Footer = () => {
             >
               Terms of Service
             </button>
+            <span>•</span>
+            <button 
+              onClick={() => setIsDocumentOpen(true)}
+              className="hover:text-white transition-colors"
+            >
+              PDF, EPUB, MOBI
+            </button>
           </div>
         </div>
       </div>
@@ -83,6 +92,10 @@ const Footer = () => {
       <TermsOfServiceModal 
         isOpen={isTermsOpen} 
         onClose={() => setIsTermsOpen(false)} 
+      />
+      <DocumentTransparencyModal 
+        isOpen={isDocumentOpen} 
+        onClose={() => setIsDocumentOpen(false)} 
       />
     </footer>
   );
