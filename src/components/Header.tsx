@@ -99,7 +99,7 @@ const Header = () => {
                       </p>
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/practitioner/dashboard'}>
+                  <DropdownMenuItem onClick={() => navigate('/practitioner/dashboard')}>
                     <User className="mr-2 h-4 w-4" />
                     <span>Dashboard</span>
                   </DropdownMenuItem>
@@ -117,14 +117,12 @@ const Header = () => {
                 >
                   Book a Session
                 </Button>
-                <Button 
+                <button 
                   onClick={() => navigate('/practitioner/auth')}
-                  variant="ghost"
-                  size="sm"
-                  className="text-xs text-muted-foreground hover:text-foreground px-2 py-1"
+                  className="text-xs text-gray-400 hover:text-gray-300 transition-colors underline underline-offset-2"
                 >
-                  Professionals
-                </Button>
+                  Professional Login
+                </button>
               </>
             )}
           </div>
@@ -176,9 +174,9 @@ const Header = () => {
                   </button>
                   <button 
                     onClick={() => navigate('/practitioner/auth')}
-                    className="text-left text-xs text-muted-foreground hover:text-foreground px-2 py-1"
+                    className="text-left text-xs text-gray-400 hover:text-gray-300 transition-colors underline underline-offset-2"
                   >
-                    Professional Access
+                    Professional Login
                   </button>
                 </>
               )}
