@@ -23,7 +23,7 @@ const Footer = () => {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span className="text-lg font-light tracking-wide">ground path</span>
+              <span className="text-lg font-light tracking-wide">groundpath</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
               Professional social work and mental health support, grounded in care and evidence-based practice.
