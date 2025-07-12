@@ -113,7 +113,7 @@ const Header = () => {
               <>
                 <Button 
                   onClick={() => scrollToSection('contact')}
-                  className="bg-sage-600 text-white px-6 py-2 rounded-lg hover:bg-sage-700 transition-colors font-medium"
+                  className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors font-medium"
                 >
                   Book a Session
                 </Button>
@@ -168,7 +168,7 @@ const Header = () => {
                 <>
                   <button 
                     onClick={() => scrollToSection('contact')}
-                    className="text-left bg-sage-600 text-white px-4 py-2 rounded-lg hover:bg-sage-700 transition-colors font-medium w-fit"
+                    className="text-left bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors font-medium w-fit"
                   >
                     Book a Session
                   </button>
