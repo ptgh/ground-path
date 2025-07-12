@@ -23,7 +23,7 @@ const AuthPage = () => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        window.location.href = '/practitioner/dashboard';
+        navigate('/practitioner/dashboard');
       }
     };
     checkUser();
@@ -66,7 +66,7 @@ const AuthPage = () => {
         title: "Welcome back!",
         description: "You have been signed in successfully.",
       });
-      window.location.href = '/practitioner/dashboard';
+      navigate('/practitioner/dashboard');
     } catch (error: any) {
       toast({
         title: "Sign in failed",

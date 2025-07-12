@@ -6,12 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 import Logo from './Logo';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -116,7 +118,7 @@ const Header = () => {
                   Book a Session
                 </Button>
                 <Button 
-                  onClick={() => window.location.href = '/practitioner/auth'}
+                  onClick={() => navigate('/practitioner/auth')}
                   variant="ghost"
                   size="sm"
                   className="text-xs text-muted-foreground hover:text-foreground px-2 py-1"
@@ -173,7 +175,7 @@ const Header = () => {
                     Book a Session
                   </button>
                   <button 
-                    onClick={() => window.location.href = '/practitioner/auth'}
+                    onClick={() => navigate('/practitioner/auth')}
                     className="text-left text-xs text-muted-foreground hover:text-foreground px-2 py-1"
                   >
                     Professional Access

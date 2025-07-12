@@ -26,7 +26,7 @@ const PractitionerProtectedRoute = ({ children }: { children: React.ReactNode })
   }
 
   if (!user || (!isSocialWorker() && !isMentalHealthProfessional() && !isAdmin())) {
-    return <Navigate to="/practitioner/auth" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
