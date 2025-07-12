@@ -6,6 +6,7 @@ import About from '../components/About';
 import Services from '../components/Services';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
+import { AIAssistant } from '../components/AIAssistant';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -59,6 +60,7 @@ const Index = () => {
         <Contact />
       </main>
       <Footer />
+      <AIAssistant />
     </div>
   );
 };
