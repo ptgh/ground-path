@@ -39,11 +39,11 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<Index />} />
           {/* Redirect /auth to /practitioner/auth for backwards compatibility */}
           <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
           <Route path="/practitioner/auth" element={<AuthPage />} />
           <Route path="/practitioner/dashboard" element={<PractitionerProtectedRoute><div className="min-h-screen bg-background p-8"><h1 className="text-3xl font-bold">Practitioner Dashboard</h1><p className="text-muted-foreground mt-2">Welcome to your professional workspace.</p></div></PractitionerProtectedRoute>} />
-          <Route path="/" element={<Index />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
