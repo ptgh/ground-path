@@ -73,25 +73,36 @@ const AuthAwareSection = () => {
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showAuth, setShowAuth] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Debug logging for navigation tracking
+  console.log('Header rendering - Current route:', location.pathname);
 
-  // Only check auth when we're on auth-related routes or user explicitly triggers it
-  useEffect(() => {
-    if (location.pathname.includes('/practitioner/') || showAuth) {
-      setShowAuth(true);
-    }
-  }, [location.pathname, showAuth]);
+  // Determine if we should show auth based purely on current route
+  const shouldShowAuth = location.pathname.includes('/practitioner/');
+  
+  console.log('Should show auth:', shouldShowAuth, 'for route:', location.pathname);
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    element?.scrollIntoView({ behavior: 'smooth' });
+    // If we're not on the home page, navigate there first
+    if (location.pathname !== '/') {
+      console.log('Navigating to home page to access section:', sectionId);
+      navigate('/');
+      // Let the page load, then scroll
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        element?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      const element = document.getElementById(sectionId);
+      element?.scrollIntoView({ behavior: 'smooth' });
+    }
     setIsMenuOpen(false);
   };
 
   const handleProfessionalLogin = () => {
-    setShowAuth(true);
+    console.log('Professional login clicked - navigating to /practitioner/auth');
     navigate('/practitioner/auth');
   };
 
@@ -100,7 +111,10 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
-          <div className="logo-animate">
+          <div className="logo-animate cursor-pointer" onClick={() => {
+            console.log('Logo clicked - navigating to home');
+            navigate('/');
+          }}>
             <Logo />
           </div>
 
@@ -134,7 +148,7 @@ const Header = () => {
 
           {/* Practitioner Menu */}
           <div className="hidden md:flex items-center gap-4">
-            {showAuth ? (
+            {shouldShowAuth ? (
               <AuthAwareSection />
             ) : (
               <>
@@ -191,7 +205,7 @@ const Header = () => {
               >
                 Contact
               </button>
-              {!showAuth && (
+              {!shouldShowAuth && (
                 <>
                   <button 
                     onClick={() => scrollToSection('contact')}
