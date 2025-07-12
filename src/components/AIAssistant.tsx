@@ -120,49 +120,87 @@ export const AIAssistant = () => {
     setInput(question);
   };
 
-  // GSAP Animations
+  // Professional GSAP Animations
   useEffect(() => {
-    if (chatButtonRef.current) {
-      // Floating animation for chat button
-      gsap.to(chatButtonRef.current, {
-        y: -8,
-        duration: 2,
-        ease: "power2.inOut",
-        repeat: -1,
-        yoyo: true
-      });
+    let tl: GSAPTimeline;
+    
+    const initAnimations = () => {
+      if (chatButtonRef.current) {
+        tl = gsap.timeline();
+        
+        // Entrance animation - more professional
+        tl.from(chatButtonRef.current, {
+          duration: 0.6,
+          scale: 0,
+          opacity: 0,
+          ease: "back.out(1.4)"
+        });
 
-      // Pulse effect
-      gsap.set(chatButtonRef.current, {
-        boxShadow: "0 0 0 0 rgba(59, 130, 246, 0.7)"
-      });
-      
-      gsap.to(chatButtonRef.current, {
-        boxShadow: "0 0 0 20px rgba(59, 130, 246, 0)",
-        duration: 2,
-        ease: "power2.out",
-        repeat: -1
-      });
-    }
+        // Subtle floating animation
+        gsap.to(chatButtonRef.current, {
+          y: -4,
+          duration: 3,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true
+        });
+
+        // Professional pulse effect with reduced intensity
+        gsap.set(chatButtonRef.current, {
+          boxShadow: "0 0 0 0 hsla(var(--primary), 0.3)"
+        });
+        
+        gsap.to(chatButtonRef.current, {
+          boxShadow: "0 0 0 15px hsla(var(--primary), 0)",
+          duration: 3,
+          ease: "power2.out",
+          repeat: -1
+        });
+      }
+    };
+
+    initAnimations();
+
+    return () => {
+      if (tl) tl.kill();
+      gsap.killTweensOf(chatButtonRef.current);
+    };
   }, []);
 
   useEffect(() => {
     if (isOpen && dialogRef.current) {
-      // Dialog entrance animation
-      gsap.fromTo(dialogRef.current, 
+      const tl = gsap.timeline();
+      
+      // Professional dialog entrance
+      tl.fromTo(dialogRef.current, 
         { 
-          scale: 0.8, 
+          scale: 0.9, 
           opacity: 0,
-          y: 50
+          y: 20 
         },
         { 
-          scale: 1, 
+          duration: 0.4,
+          scale: 1,
           opacity: 1,
           y: 0,
-          duration: 0.4,
-          ease: "back.out(1.7)"
+          ease: "power2.out"
         }
       );
+      
+      // Animate content elements sequentially
+      tl.from(".dialog-header", {
+        duration: 0.3,
+        opacity: 0,
+        y: -10,
+        ease: "power1.out"
+      }, "-=0.2");
+      
+      tl.from(".chat-messages", {
+        duration: 0.3,
+        opacity: 0,
+        y: 10,
+        ease: "power1.out"
+      }, "-=0.1");
     }
   }, [isOpen]);
 
@@ -185,9 +223,9 @@ export const AIAssistant = () => {
           ref={dialogRef}
           className="sm:max-w-md h-[700px] flex flex-col p-0 border-0 shadow-2xl bg-gradient-to-b from-background to-background/95 backdrop-blur-md"
         >
-          <DialogHeader className="p-6 border-b border-border/50 bg-gradient-to-r from-primary/5 to-transparent">
+          <DialogHeader className="dialog-header p-6 border-b border-border/50 bg-gradient-to-r from-primary/5 to-transparent">
             <DialogTitle className="flex items-center gap-3 text-xl">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center shadow-md">
                 <Bot className="h-5 w-5 text-white" />
               </div>
               Professional AI Assistant
@@ -198,7 +236,7 @@ export const AIAssistant = () => {
           </DialogHeader>
 
           {/* Chat Messages */}
-          <ScrollArea className="flex-1 p-4">
+          <ScrollArea className="flex-1 p-4 chat-messages">
             <div className="space-y-4">
               {messages.map((message) => (
                 <div
