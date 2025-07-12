@@ -64,16 +64,16 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				sage: {
-					50: '#f6f7f6',
-					100: '#e3e7e3',
-					200: '#c7d0c7',
-					300: '#a3b1a3',
-					400: '#7B9B85',
-					500: '#7B9B85',
-					600: '#7B9B85',
-					700: '#5a7061',
-					800: '#485a4e',
-					900: '#3d4a42',
+					50: 'hsl(var(--sage-50))',
+					100: 'hsl(var(--sage-100))',
+					200: 'hsl(var(--sage-200))',
+					300: 'hsl(var(--sage-300))',
+					400: 'hsl(var(--sage-400))',
+					500: 'hsl(var(--sage-500))',
+					600: 'hsl(var(--sage-600))',
+					700: 'hsl(var(--sage-700))',
+					800: 'hsl(var(--sage-800))',
+					900: 'hsl(var(--sage-900))',
 				}
 			},
 			borderRadius: {

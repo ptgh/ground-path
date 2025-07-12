@@ -18,6 +18,9 @@ const AuthPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Debug log to ensure component is rendering
+  console.log('AuthPage component rendering', { authMode, loading });
+
   useEffect(() => {
     // Check if user is already authenticated
     const checkUser = async () => {

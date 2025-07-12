@@ -41,9 +41,14 @@
     /* Sage color palette for the design system */
     --sage-50: 125 20% 98%;
     --sage-100: 125 20% 95%;
+    --sage-200: 125 15% 88%;
+    --sage-300: 125 15% 75%;
+    --sage-400: 125 15% 60%;
     --sage-500: 125 20% 70%;
     --sage-600: 125 30% 45%;
     --sage-700: 125 40% 35%;
+    --sage-800: 125 45% 25%;
+    --sage-900: 125 50% 18%;
 
     --sidebar-background: 0 0% 98%;
 
