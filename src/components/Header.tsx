@@ -117,10 +117,11 @@ const Header = () => {
                 </Button>
                 <Button 
                   onClick={() => window.location.href = '/practitioner/auth'}
-                  variant="outline"
-                  className="border-sage-600 text-sage-600 hover:bg-sage-600 hover:text-white px-4 py-2 rounded-lg transition-colors font-medium"
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-muted-foreground hover:text-foreground px-2 py-1"
                 >
-                  Practitioner Login
+                  Professionals
                 </Button>
               </>
             )}
@@ -173,9 +174,9 @@ const Header = () => {
                   </button>
                   <button 
                     onClick={() => window.location.href = '/practitioner/auth'}
-                    className="text-left border border-sage-600 text-sage-600 px-4 py-2 rounded-lg hover:bg-sage-600 hover:text-white transition-colors font-medium w-fit"
+                    className="text-left text-xs text-muted-foreground hover:text-foreground px-2 py-1"
                   >
-                    Practitioner Login
+                    Professional Access
                   </button>
                 </>
               )}

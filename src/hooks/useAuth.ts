@@ -47,23 +47,36 @@ export const useAuth = () => {
 
   useEffect(() => {
     let mounted = true;
+    let initialized = false;
 
     // Set up auth state listener FIRST to avoid missing events
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (!mounted) return;
+        
+        // Prevent rapid state changes
+        if (initialized && session === null && event === 'SIGNED_OUT') {
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setRoles([]);
+          setLoading(false);
+          return;
+        }
+        
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        initialized = true;
         
         // Defer profile fetching to prevent deadlocks
-        if (session?.user && event === 'SIGNED_IN') {
+        if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
           setTimeout(() => {
             if (mounted) {
               fetchProfile(session.user.id);
             }
-          }, 0);
-        } else {
+          }, 100);
+        } else if (!session) {
           setProfile(null);
           setRoles([]);
         }
@@ -76,9 +89,14 @@ export const useAuth = () => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      initialized = true;
       
       if (session?.user) {
-        fetchProfile(session.user.id);
+        setTimeout(() => {
+          if (mounted) {
+            fetchProfile(session.user.id);
+          }
+        }, 100);
       }
     });
 
