@@ -145,13 +145,13 @@ export const AIAssistant = () => {
           yoyo: true
         });
 
-        // Professional pulse effect with reduced intensity
+        // Professional pulse effect with valid colors
         gsap.set(chatButtonRef.current, {
-          boxShadow: "0 0 0 0 hsla(var(--primary), 0.3)"
+          boxShadow: "0 0 0 0 rgba(139, 155, 133, 0.3)"
         });
         
         gsap.to(chatButtonRef.current, {
-          boxShadow: "0 0 0 15px hsla(var(--primary), 0)",
+          boxShadow: "0 0 0 15px rgba(139, 155, 133, 0)",
           duration: 3,
           ease: "power2.out",
           repeat: -1
