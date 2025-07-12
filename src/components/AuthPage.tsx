@@ -21,16 +21,7 @@ const AuthPage = () => {
   // Debug log to ensure component is rendering
   console.log('AuthPage component rendering', { authMode, loading });
 
-  useEffect(() => {
-    // Check if user is already authenticated
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate('/practitioner/dashboard');
-      }
-    };
-    checkUser();
-  }, [navigate]);
+  // Only redirect after successful login, not on page load
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
