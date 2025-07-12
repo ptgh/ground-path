@@ -2,10 +2,12 @@
 import { useState } from 'react';
 import PrivacyPolicyModal from './PrivacyPolicyModal';
 import TermsOfServiceModal from './TermsOfServiceModal';
+import ABNLookupModal from './ABNLookupModal';
 
 const Footer = () => {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isABNOpen, setIsABNOpen] = useState(false);
   return (
     <footer className="bg-gray-900 text-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,7 +58,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <div className="text-sm text-gray-400">
-            © 2024 Ground Path. All rights reserved. • ABN: 98 434 283 298 • AASW Member #486997
+            © 2024 ground path. All rights reserved. • ABN: 98 434 283 298 • AASW Member #486997
           </div>
           <div className="text-sm text-gray-400 mt-4 md:mt-0 space-x-4">
             <button 
@@ -73,14 +75,12 @@ const Footer = () => {
               Terms of Service
             </button>
             <span>•</span>
-            <a 
-              href="https://abr.business.gov.au/ABN/View?id=98434283298"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button 
+              onClick={() => setIsABNOpen(true)}
               className="hover:text-white transition-colors"
             >
               ABN Lookup
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -92,6 +92,10 @@ const Footer = () => {
       <TermsOfServiceModal 
         isOpen={isTermsOpen} 
         onClose={() => setIsTermsOpen(false)} 
+      />
+      <ABNLookupModal 
+        isOpen={isABNOpen} 
+        onClose={() => setIsABNOpen(false)} 
       />
     </footer>
   );
