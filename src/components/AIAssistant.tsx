@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,7 @@ import { MessageCircle, Send, Bot, User, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { gsap } from 'gsap';
 
 interface Message {
   id: string;
@@ -29,6 +30,8 @@ export const AIAssistant = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const chatButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
@@ -117,28 +120,80 @@ export const AIAssistant = () => {
     setInput(question);
   };
 
+  // GSAP Animations
+  useEffect(() => {
+    if (chatButtonRef.current) {
+      // Floating animation for chat button
+      gsap.to(chatButtonRef.current, {
+        y: -8,
+        duration: 2,
+        ease: "power2.inOut",
+        repeat: -1,
+        yoyo: true
+      });
+
+      // Pulse effect
+      gsap.set(chatButtonRef.current, {
+        boxShadow: "0 0 0 0 rgba(59, 130, 246, 0.7)"
+      });
+      
+      gsap.to(chatButtonRef.current, {
+        boxShadow: "0 0 0 20px rgba(59, 130, 246, 0)",
+        duration: 2,
+        ease: "power2.out",
+        repeat: -1
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isOpen && dialogRef.current) {
+      // Dialog entrance animation
+      gsap.fromTo(dialogRef.current, 
+        { 
+          scale: 0.8, 
+          opacity: 0,
+          y: 50
+        },
+        { 
+          scale: 1, 
+          opacity: 1,
+          y: 0,
+          duration: 0.4,
+          ease: "back.out(1.7)"
+        }
+      );
+    }
+  }, [isOpen]);
+
   return (
     <>
       {/* Floating Chat Button */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button
+            ref={chatButtonRef}
             size="lg"
-            className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 z-50"
+            className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 z-50 border-2 border-primary/20 backdrop-blur-sm transition-all duration-300 hover:scale-110"
           >
-            <MessageCircle className="h-6 w-6" />
+            <MessageCircle className="h-7 w-7 text-white" />
             <span className="sr-only">Open AI Assistant</span>
           </Button>
         </DialogTrigger>
         
-        <DialogContent className="sm:max-w-md h-[600px] flex flex-col p-0">
-          <DialogHeader className="p-4 border-b">
-            <DialogTitle className="flex items-center gap-2">
-              <Bot className="h-5 w-5 text-primary" />
-              AI Assistant
+        <DialogContent 
+          ref={dialogRef}
+          className="sm:max-w-md h-[700px] flex flex-col p-0 border-0 shadow-2xl bg-gradient-to-b from-background to-background/95 backdrop-blur-md"
+        >
+          <DialogHeader className="p-6 border-b border-border/50 bg-gradient-to-r from-primary/5 to-transparent">
+            <DialogTitle className="flex items-center gap-3 text-xl">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center">
+                <Bot className="h-5 w-5 text-white" />
+              </div>
+              Professional AI Assistant
             </DialogTitle>
-            <p className="text-sm text-muted-foreground">
-              Get instant help with social work and counselling questions
+            <p className="text-sm text-muted-foreground mt-2">
+              Expert guidance for social work and mental health professionals
             </p>
           </DialogHeader>
 
@@ -200,15 +255,15 @@ export const AIAssistant = () => {
 
           {/* Quick Questions */}
           {messages.length === 1 && (
-            <div className="px-4 py-2 border-t bg-muted/30">
-              <p className="text-sm font-medium mb-2">Quick questions:</p>
-              <div className="grid grid-cols-1 gap-1">
+            <div className="px-6 py-4 border-t bg-gradient-to-r from-muted/20 to-transparent">
+              <p className="text-sm font-semibold mb-3 text-foreground">Quick questions:</p>
+              <div className="grid grid-cols-1 gap-2">
                 {quickQuestions.map((question, index) => (
                   <Button
                     key={index}
                     variant="ghost"
                     size="sm"
-                    className="justify-start h-auto p-2 text-xs"
+                    className="justify-start h-auto p-3 text-xs hover:bg-primary/10 border border-transparent hover:border-primary/20 rounded-lg transition-all duration-200"
                     onClick={() => handleQuickQuestion(question)}
                   >
                     {question}
@@ -219,26 +274,27 @@ export const AIAssistant = () => {
           )}
 
           {/* Input Area */}
-          <div className="p-4 border-t">
-            <div className="flex gap-2">
+          <div className="p-6 border-t border-border/50 bg-gradient-to-r from-background to-muted/10">
+            <div className="flex gap-3">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me anything about social work or counselling..."
                 disabled={isLoading}
-                className="flex-1"
+                className="flex-1 border-border/50 focus:border-primary/50 bg-background/50 backdrop-blur-sm"
               />
               <Button 
                 onClick={sendMessage} 
                 disabled={!input.trim() || isLoading}
                 size="sm"
+                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-md hover:shadow-lg transition-all duration-200"
               >
                 <Send className="h-4 w-4" />
                 <span className="sr-only">Send message</span>
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-xs text-muted-foreground mt-3 text-center">
               This AI assistant provides general information only. For emergencies, call 000 or Lifeline 13 11 14.
             </p>
           </div>

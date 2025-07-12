@@ -72,8 +72,8 @@ const Header = () => {
             </button>
           </nav>
 
-          {/* User Menu */}
-          <div className="hidden md:block">
+          {/* Practitioner Menu */}
+          <div className="hidden md:flex items-center gap-4">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -97,6 +97,10 @@ const Header = () => {
                       </p>
                     </div>
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/practitioner/dashboard'}>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Dashboard</span>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Sign out</span>
@@ -104,12 +108,21 @@ const Header = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button 
-                onClick={() => scrollToSection('contact')}
-                className="bg-sage-600 text-white px-6 py-2 rounded-lg hover:bg-sage-700 transition-colors font-medium"
-              >
-                Book a Session
-              </Button>
+              <>
+                <Button 
+                  onClick={() => scrollToSection('contact')}
+                  className="bg-sage-600 text-white px-6 py-2 rounded-lg hover:bg-sage-700 transition-colors font-medium"
+                >
+                  Book a Session
+                </Button>
+                <Button 
+                  onClick={() => window.location.href = '/practitioner/auth'}
+                  variant="outline"
+                  className="border-sage-600 text-sage-600 hover:bg-sage-600 hover:text-white px-4 py-2 rounded-lg transition-colors font-medium"
+                >
+                  Practitioner Login
+                </Button>
+              </>
             )}
           </div>
 
@@ -150,12 +163,22 @@ const Header = () => {
               >
                 Contact
               </button>
-              <button 
-                onClick={() => scrollToSection('contact')}
-                className="text-left bg-sage-600 text-white px-4 py-2 rounded-lg hover:bg-sage-700 transition-colors font-medium w-fit"
-              >
-                Book a Session
-              </button>
+              {!user && (
+                <>
+                  <button 
+                    onClick={() => scrollToSection('contact')}
+                    className="text-left bg-sage-600 text-white px-4 py-2 rounded-lg hover:bg-sage-700 transition-colors font-medium w-fit"
+                  >
+                    Book a Session
+                  </button>
+                  <button 
+                    onClick={() => window.location.href = '/practitioner/auth'}
+                    className="text-left border border-sage-600 text-sage-600 px-4 py-2 rounded-lg hover:bg-sage-600 hover:text-white transition-colors font-medium w-fit"
+                  >
+                    Practitioner Login
+                  </button>
+                </>
+              )}
             </nav>
           </div>
         )}

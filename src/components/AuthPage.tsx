@@ -23,7 +23,7 @@ const AuthPage = () => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate('/');
+        navigate('/practitioner/dashboard');
       }
     };
     checkUser();
@@ -66,7 +66,7 @@ const AuthPage = () => {
         title: "Welcome back!",
         description: "You have been signed in successfully.",
       });
-      navigate('/');
+      navigate('/practitioner/dashboard');
     } catch (error: any) {
       toast({
         title: "Sign in failed",
@@ -83,7 +83,7 @@ const AuthPage = () => {
     setLoading(true);
 
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/practitioner/dashboard`;
       
       const { error } = await supabase.auth.signUp({
         email,
@@ -139,9 +139,9 @@ const AuthPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">Social Work Pro</CardTitle>
+          <CardTitle className="text-2xl font-bold">Practitioner Access</CardTitle>
           <CardDescription>
-            Professional tools for social workers and mental health professionals
+            Sign in to access professional tools and resources for social workers and mental health professionals
           </CardDescription>
         </CardHeader>
         <CardContent>
