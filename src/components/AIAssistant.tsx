@@ -49,8 +49,8 @@ export const AIAssistant = () => {
     setIsLoading(true);
 
     try {
-      // Convert messages to conversation history format
-      const conversationHistory = messages.map(msg => ({
+      // Convert messages to conversation history format - add null check
+      const conversationHistory = (messages || []).map(msg => ({
         role: msg.role === 'user' ? 'user' as const : 'assistant' as const,
         content: msg.content
       }));
@@ -238,7 +238,7 @@ export const AIAssistant = () => {
           {/* Chat Messages */}
           <ScrollArea className="flex-1 p-4 chat-messages">
             <div className="space-y-4">
-              {messages.map((message) => (
+              {(messages || []).map((message) => (
                 <div
                   key={message.id}
                   className={`flex items-start gap-3 ${
@@ -292,11 +292,11 @@ export const AIAssistant = () => {
           </ScrollArea>
 
           {/* Quick Questions */}
-          {messages.length === 1 && (
+          {messages && messages.length === 1 && (
             <div className="px-6 py-4 border-t bg-gradient-to-r from-muted/20 to-transparent">
               <p className="text-sm font-semibold mb-3 text-foreground">Quick questions:</p>
               <div className="grid grid-cols-1 gap-2">
-                {quickQuestions.map((question, index) => (
+                {(quickQuestions || []).map((question, index) => (
                   <Button
                     key={index}
                     variant="ghost"
