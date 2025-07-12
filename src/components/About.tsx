@@ -88,9 +88,9 @@ const About = () => {
             <div className="fade-in space-y-4">
               <button 
                 onClick={() => setIsMSWOpen(true)}
-                className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                className="w-full bg-white h-20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
               >
-                <div className="text-center">
+                <div className="flex flex-col items-center justify-center h-full">
                   <div className="text-lg font-light text-sage-600 mb-1">MSW</div>
                   <div className="text-gray-600 mb-1 text-xs">Master of Social Work</div>
                   <div className="text-xs text-gray-500">Qualified professionals with advanced degrees</div>
@@ -99,9 +99,9 @@ const About = () => {
 
               <button 
                 onClick={() => setIsAASWOpen(true)}
-                className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                className="w-full bg-white h-20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
               >
-                <div className="text-center">
+                <div className="flex flex-col items-center justify-center h-full">
                   <div className="text-lg font-light text-sage-600 mb-1">AASW</div>
                   <div className="text-gray-600 mb-1 text-xs">Professional Registration</div>
                   <div className="text-xs text-gray-500">Australian Association of Social Workers</div>
@@ -110,9 +110,9 @@ const About = () => {
 
               <button 
                 onClick={() => setIsCPDOpen(true)}
-                className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                className="w-full bg-white h-20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
               >
-                <div className="text-center">
+                <div className="flex flex-col items-center justify-center h-full">
                   <div className="text-lg font-light text-sage-600 mb-1">CPD</div>
                   <div className="text-gray-600 mb-1 text-xs">Continuing Professional Development</div>
                   <div className="text-xs text-gray-500">30+ hours annual training</div>
@@ -121,9 +121,9 @@ const About = () => {
 
               <button 
                 onClick={() => setIsSWEOpen(true)}
-                className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                className="w-full bg-white h-20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
               >
-                <div className="text-center">
+                <div className="flex flex-col items-center justify-center h-full">
                   <div className="text-lg font-light text-sage-600 mb-1">SWE</div>
                   <div className="text-gray-600 mb-1 text-xs">Professional Registration</div>
                   <div className="text-xs text-gray-500">Social Work England</div>
@@ -132,9 +132,9 @@ const About = () => {
 
               <button 
                 onClick={() => setIsNDISOpen(true)}
-                className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                className="w-full bg-white h-20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
               >
-                <div className="text-center">
+                <div className="flex flex-col items-center justify-center h-full">
                   <div className="text-lg font-light text-sage-600 mb-1">NDIS</div>
                   <div className="text-gray-600 mb-1 text-xs">National Disability Insurance Scheme</div>
                   <div className="text-xs text-gray-500">Plan-managed & self-managed support</div>
@@ -143,9 +143,9 @@ const About = () => {
 
               <button 
                 onClick={() => setIsCountriesOpen(true)}
-                className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                className="w-full bg-white h-20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
               >
-                <div className="text-center">
+                <div className="flex flex-col items-center justify-center h-full">
                   <div className="text-lg font-light text-sage-600 mb-1">UK & AUS</div>
                   <div className="text-gray-600 mb-1 text-xs">Dual Country Registration</div>
                   <div className="text-xs text-gray-500">Australia & United Kingdom</div>
@@ -154,9 +154,9 @@ const About = () => {
 
               <button 
                 onClick={() => setIsProfessionalIndemnityOpen(true)}
-                className="w-full bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                className="w-full bg-white h-20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
               >
-                <div className="text-center">
+                <div className="flex flex-col items-center justify-center h-full">
                   <div className="text-lg font-light text-sage-600 mb-1">Professional Indemnity</div>
                   <div className="text-gray-600 mb-1 text-xs">Insurance Coverage</div>
                   <div className="text-xs text-gray-500">Client protection & professional liability</div>
