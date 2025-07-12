@@ -1,25 +1,19 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, X, User, LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Logo from './Logo';
 
-const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+// Auth-aware component that only loads auth when needed
+const AuthAwareSection = () => {
   const { user, profile, signOut } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    element?.scrollIntoView({ behavior: 'smooth' });
-    setIsMenuOpen(false);
-  };
 
   const handleSignOut = async () => {
     try {
@@ -35,6 +29,70 @@ const Header = () => {
         variant: "destructive",
       });
     }
+  };
+
+  if (user) {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={profile?.avatar_url} />
+              <AvatarFallback>
+                <User className="h-4 w-4" />
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuItem className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">
+                {profile?.display_name || user.email}
+              </p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {user.email}
+              </p>
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate('/practitioner/dashboard')}>
+            <User className="mr-2 h-4 w-4" />
+            <span>Dashboard</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleSignOut}>
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Sign out</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
+
+  return null;
+};
+
+const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Only check auth when we're on auth-related routes or user explicitly triggers it
+  useEffect(() => {
+    if (location.pathname.includes('/practitioner/') || showAuth) {
+      setShowAuth(true);
+    }
+  }, [location.pathname, showAuth]);
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    element?.scrollIntoView({ behavior: 'smooth' });
+    setIsMenuOpen(false);
+  };
+
+  const handleProfessionalLogin = () => {
+    setShowAuth(true);
+    navigate('/practitioner/auth');
   };
 
   return (
@@ -76,39 +134,8 @@ const Header = () => {
 
           {/* Practitioner Menu */}
           <div className="hidden md:flex items-center gap-4">
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={profile?.avatar_url} />
-                      <AvatarFallback>
-                        <User className="h-4 w-4" />
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuItem className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">
-                        {profile?.display_name || user.email}
-                      </p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {user.email}
-                      </p>
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/practitioner/dashboard')}>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Dashboard</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Sign out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+            {showAuth ? (
+              <AuthAwareSection />
             ) : (
               <>
                 <Button 
@@ -118,7 +145,7 @@ const Header = () => {
                   Book a Session
                 </Button>
                 <button 
-                  onClick={() => navigate('/practitioner/auth')}
+                  onClick={handleProfessionalLogin}
                   className="text-xs text-gray-400 hover:text-gray-300 transition-colors underline underline-offset-2"
                 >
                   Professional Login
@@ -164,7 +191,7 @@ const Header = () => {
               >
                 Contact
               </button>
-              {!user && (
+              {!showAuth && (
                 <>
                   <button 
                     onClick={() => scrollToSection('contact')}
@@ -173,7 +200,7 @@ const Header = () => {
                     Book a Session
                   </button>
                   <button 
-                    onClick={() => navigate('/practitioner/auth')}
+                    onClick={handleProfessionalLogin}
                     className="text-left text-xs text-gray-400 hover:text-gray-300 transition-colors underline underline-offset-2"
                   >
                     Professional Login
