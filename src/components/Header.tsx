@@ -139,6 +139,12 @@ const Header = () => {
               Services
             </button>
             <button 
+              onClick={() => navigate('/resources')}
+              className="text-gray-300 hover:text-white transition-colors font-medium"
+            >
+              Resources
+            </button>
+            <button 
               onClick={() => scrollToSection('contact')}
               className="text-gray-300 hover:text-white transition-colors font-medium"
             >
@@ -198,6 +204,12 @@ const Header = () => {
                 className="text-left text-gray-300 hover:text-white transition-colors font-medium"
               >
                 Services
+              </button>
+              <button 
+                onClick={() => navigate('/resources')}
+                className="text-left text-gray-300 hover:text-white transition-colors font-medium"
+              >
+                Resources
               </button>
               <button 
                 onClick={() => scrollToSection('contact')}
