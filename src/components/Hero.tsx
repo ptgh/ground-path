@@ -13,7 +13,7 @@ const Hero = () => {
 
   useEffect(() => {
     if (ctaButtonsRef.current) {
-      const buttons = ctaButtonsRef.current.querySelectorAll('.secondary-cta');
+      const buttons = ctaButtonsRef.current.querySelectorAll('.hero-cta');
       
       buttons.forEach((button) => {
         const handleMouseEnter = () => {
@@ -61,32 +61,28 @@ const Hero = () => {
           </p>
 
           {/* CTA Buttons */}
-          <div className="fade-in flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div ref={ctaButtonsRef} className="fade-in flex flex-wrap gap-4 justify-center">
             <button 
               onClick={() => scrollToSection('contact')}
-              className="bg-sage-600 text-white px-8 py-4 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="hero-cta bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               Book a Session
             </button>
-          </div>
-
-          {/* Secondary CTAs */}
-          <div ref={ctaButtonsRef} className="fade-in mt-8 flex flex-wrap gap-4 justify-center">
             <button 
               onClick={() => scrollToSection('services')}
-              className="secondary-cta bg-sage-600 text-white px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="hero-cta bg-sage-600 text-white px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               View Services & Rates
             </button>
             <button 
               onClick={() => scrollToSection('about')}
-              className="secondary-cta bg-sage-600 text-white px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="hero-cta bg-sage-600 text-white px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               About
             </button>
             <button 
               onClick={() => setIsMailingListOpen(true)}
-              className="secondary-cta bg-sage-600 text-white px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="hero-cta bg-sage-600 text-white px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               Join Mailing List
             </button>
