@@ -214,7 +214,16 @@ export const AIAssistant = () => {
               size="lg"
               className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-2xl bg-sage-600 hover:bg-sage-700 z-50 border-2 border-sage-500/20 backdrop-blur-sm transition-all duration-300 hover:scale-110"
             >
-              <MessageCircle className="h-7 w-7 text-white" />
+              <svg width="28" height="28" viewBox="0 0 40 40" className="text-white">
+                <path
+                  d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
               <span className="sr-only">Open Professional Assistant</span>
             </Button>
         </DialogTrigger>
@@ -226,7 +235,16 @@ export const AIAssistant = () => {
           <DialogHeader className="dialog-header p-6 border-b border-gray-200 bg-gradient-to-r from-sage-50 to-white">
             <DialogTitle className="flex items-center gap-3 text-xl text-gray-900">
               <div className="h-8 w-8 rounded-full bg-sage-600 flex items-center justify-center shadow-md">
-                <Bot className="h-5 w-5 text-white" />
+                <svg width="20" height="20" viewBox="0 0 40 40" className="text-white">
+                  <path
+                    d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </div>
               Professional Assistant
             </DialogTitle>
@@ -253,7 +271,16 @@ export const AIAssistant = () => {
                     {message.role === 'user' ? (
                       <User className="h-4 w-4" />
                     ) : (
-                      <Bot className="h-4 w-4 text-sage-600" />
+                      <svg width="16" height="16" viewBox="0 0 40 40" className="text-sage-600">
+                        <path
+                          d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                     )}
                   </div>
                   <div className={`flex-1 space-y-1 ${
@@ -279,7 +306,16 @@ export const AIAssistant = () => {
               {isLoading && (
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
-                    <Bot className="h-4 w-4 text-sage-600" />
+                    <svg width="16" height="16" viewBox="0 0 40 40" className="text-sage-600">
+                      <path
+                        d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   </div>
                   <div className="flex-1 space-y-1">
                     <div className="inline-block px-3 py-2 rounded-lg bg-gray-50">

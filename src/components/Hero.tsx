@@ -71,24 +71,22 @@ const Hero = () => {
           </div>
 
           {/* Secondary CTAs */}
-          <div ref={ctaButtonsRef} className="fade-in mt-8 flex flex-wrap gap-4 justify-center text-sm">
+          <div ref={ctaButtonsRef} className="fade-in mt-8 flex flex-wrap gap-4 justify-center">
             <button 
               onClick={() => scrollToSection('services')}
-              className="secondary-cta text-gray-600 hover:text-sage-600 transition-colors duration-300 underline underline-offset-4 hover:underline-offset-2 px-2 py-1 rounded"
+              className="secondary-cta bg-sage-600 text-white px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               View Services & Rates
             </button>
-            <span className="text-gray-300">•</span>
             <button 
               onClick={() => scrollToSection('about')}
-              className="secondary-cta text-gray-600 hover:text-sage-600 transition-colors duration-300 underline underline-offset-4 hover:underline-offset-2 px-2 py-1 rounded"
+              className="secondary-cta bg-sage-600 text-white px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               About
             </button>
-            <span className="text-gray-300">•</span>
             <button 
               onClick={() => setIsMailingListOpen(true)}
-              className="secondary-cta text-gray-600 hover:text-sage-600 transition-colors duration-300 underline underline-offset-4 hover:underline-offset-2 px-2 py-1 rounded"
+              className="secondary-cta bg-sage-600 text-white px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               Join Mailing List
             </button>

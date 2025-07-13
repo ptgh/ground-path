@@ -160,7 +160,7 @@ const Header = () => {
                 </Button>
                 <button 
                   onClick={handleProfessionalLogin}
-                  className="text-xs text-gray-400 hover:text-gray-300 transition-colors underline underline-offset-2"
+                  className="bg-sage-600 text-white px-4 py-2 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                 >
                   Professional Login
                 </button>
@@ -215,7 +215,7 @@ const Header = () => {
                   </button>
                   <button 
                     onClick={handleProfessionalLogin}
-                    className="text-left text-xs text-gray-400 hover:text-gray-300 transition-colors underline underline-offset-2"
+                    className="text-left bg-sage-600 text-white px-4 py-2 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-fit"
                   >
                     Professional Login
                   </button>
