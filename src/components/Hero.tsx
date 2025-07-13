@@ -1,13 +1,49 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { gsap } from 'gsap';
 import MailingListModal from './MailingListModal';
 
 const Hero = () => {
   const [isMailingListOpen, setIsMailingListOpen] = useState(false);
+  const ctaButtonsRef = useRef<HTMLDivElement>(null);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     element?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    if (ctaButtonsRef.current) {
+      const buttons = ctaButtonsRef.current.querySelectorAll('.secondary-cta');
+      
+      buttons.forEach((button) => {
+        const handleMouseEnter = () => {
+          gsap.to(button, {
+            scale: 1.05,
+            y: -2,
+            duration: 0.3,
+            ease: "power2.out"
+          });
+        };
+        
+        const handleMouseLeave = () => {
+          gsap.to(button, {
+            scale: 1,
+            y: 0,
+            duration: 0.3,
+            ease: "power2.out"
+          });
+        };
+        
+        button.addEventListener('mouseenter', handleMouseEnter);
+        button.addEventListener('mouseleave', handleMouseLeave);
+        
+        return () => {
+          button.removeEventListener('mouseenter', handleMouseEnter);
+          button.removeEventListener('mouseleave', handleMouseLeave);
+        };
+      });
+    }
+  }, []);
 
   return (
     <section id="home" className="pt-20 pb-16 px-4 sm:px-6 lg:px-8">
@@ -35,24 +71,24 @@ const Hero = () => {
           </div>
 
           {/* Secondary CTAs */}
-          <div className="fade-in mt-8 flex flex-wrap gap-4 justify-center text-sm">
+          <div ref={ctaButtonsRef} className="fade-in mt-8 flex flex-wrap gap-4 justify-center text-sm">
             <button 
               onClick={() => scrollToSection('services')}
-              className="secondary-cta text-gray-600 hover:text-sage-600 transition-all duration-300 underline underline-offset-4 hover:underline-offset-2 transform hover:scale-105"
+              className="secondary-cta text-gray-600 hover:text-sage-600 transition-colors duration-300 underline underline-offset-4 hover:underline-offset-2 px-2 py-1 rounded"
             >
               View Services & Rates
             </button>
             <span className="text-gray-300">•</span>
             <button 
               onClick={() => scrollToSection('about')}
-              className="secondary-cta text-gray-600 hover:text-sage-600 transition-all duration-300 underline underline-offset-4 hover:underline-offset-2 transform hover:scale-105"
+              className="secondary-cta text-gray-600 hover:text-sage-600 transition-colors duration-300 underline underline-offset-4 hover:underline-offset-2 px-2 py-1 rounded"
             >
               About
             </button>
             <span className="text-gray-300">•</span>
             <button 
               onClick={() => setIsMailingListOpen(true)}
-              className="secondary-cta text-gray-600 hover:text-sage-600 transition-all duration-300 underline underline-offset-4 hover:underline-offset-2 transform hover:scale-105"
+              className="secondary-cta text-gray-600 hover:text-sage-600 transition-colors duration-300 underline underline-offset-4 hover:underline-offset-2 px-2 py-1 rounded"
             >
               Join Mailing List
             </button>

@@ -23,7 +23,7 @@ export const AIAssistant = () => {
     {
       id: '1',
       role: 'assistant',
-      content: 'Hello! I\'m your AI assistant specialized in social work and mental health. I can provide guidance on AASW standards, NDIS processes, ethical considerations, and evidence-based practices. How can I help you today?',
+      content: 'Hello! I\'m your professional assistant specialized in social work and mental health. I provide guidance on AASW standards, NDIS processes, ethical considerations, and evidence-based practices for professionals and the community. How can I help you today?',
       timestamp: new Date()
     }
   ]);
@@ -209,29 +209,29 @@ export const AIAssistant = () => {
       {/* Floating Chat Button */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button
-            ref={chatButtonRef}
-            size="lg"
-            className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 z-50 border-2 border-primary/20 backdrop-blur-sm transition-all duration-300 hover:scale-110"
-          >
-            <MessageCircle className="h-7 w-7 text-white" />
-            <span className="sr-only">Open AI Assistant</span>
-          </Button>
+            <Button
+              ref={chatButtonRef}
+              size="lg"
+              className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-2xl bg-sage-600 hover:bg-sage-700 z-50 border-2 border-sage-500/20 backdrop-blur-sm transition-all duration-300 hover:scale-110"
+            >
+              <MessageCircle className="h-7 w-7 text-white" />
+              <span className="sr-only">Open Professional Assistant</span>
+            </Button>
         </DialogTrigger>
         
         <DialogContent 
           ref={dialogRef}
-          className="sm:max-w-md h-[700px] flex flex-col p-0 border-0 shadow-2xl bg-gradient-to-b from-background to-background/95 backdrop-blur-md"
+          className="sm:max-w-md h-[700px] flex flex-col p-0 border-0 shadow-2xl bg-white backdrop-blur-md"
         >
-          <DialogHeader className="dialog-header p-6 border-b border-border/50 bg-gradient-to-r from-primary/5 to-transparent">
-            <DialogTitle className="flex items-center gap-3 text-xl">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center shadow-md">
+          <DialogHeader className="dialog-header p-6 border-b border-gray-200 bg-gradient-to-r from-sage-50 to-white">
+            <DialogTitle className="flex items-center gap-3 text-xl text-gray-900">
+              <div className="h-8 w-8 rounded-full bg-sage-600 flex items-center justify-center shadow-md">
                 <Bot className="h-5 w-5 text-white" />
               </div>
-              Professional AI Assistant
+              Professional Assistant
             </DialogTitle>
-            <p className="text-sm text-muted-foreground mt-2">
-              Expert guidance for social work and mental health professionals
+            <p className="text-sm text-gray-600 mt-2">
+              Expert guidance for professionals and the community - AASW standards, NDIS processes, and evidence-based practices
             </p>
           </DialogHeader>
 
@@ -247,13 +247,13 @@ export const AIAssistant = () => {
                 >
                   <div className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center ${
                     message.role === 'user' 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-muted'
+                      ? 'bg-sage-600 text-white' 
+                      : 'bg-gray-100'
                   }`}>
                     {message.role === 'user' ? (
                       <User className="h-4 w-4" />
                     ) : (
-                      <Bot className="h-4 w-4" />
+                      <Bot className="h-4 w-4 text-sage-600" />
                     )}
                   </div>
                   <div className={`flex-1 space-y-1 ${
@@ -261,29 +261,29 @@ export const AIAssistant = () => {
                   }`}>
                     <div className={`inline-block px-3 py-2 rounded-lg max-w-[80%] ${
                       message.role === 'user'
-                        ? 'bg-primary text-primary-foreground ml-auto'
-                        : 'bg-muted'
+                        ? 'bg-sage-600 text-white ml-auto'
+                        : 'bg-gray-50 text-gray-900'
                     }`}>
                       <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      {message.timestamp.toLocaleTimeString([], { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
-                    </p>
+                     <p className="text-xs text-gray-500">
+                       {message.timestamp.toLocaleTimeString([], { 
+                         hour: '2-digit', 
+                         minute: '2-digit' 
+                       })}
+                     </p>
                   </div>
                 </div>
               ))}
               
               {isLoading && (
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-                    <Bot className="h-4 w-4" />
+                  <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                    <Bot className="h-4 w-4 text-sage-600" />
                   </div>
                   <div className="flex-1 space-y-1">
-                    <div className="inline-block px-3 py-2 rounded-lg bg-muted">
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                    <div className="inline-block px-3 py-2 rounded-lg bg-gray-50">
+                      <Loader2 className="h-4 w-4 animate-spin text-sage-600" />
                     </div>
                   </div>
                 </div>
@@ -293,15 +293,15 @@ export const AIAssistant = () => {
 
           {/* Quick Questions */}
           {messages && messages.length === 1 && (
-            <div className="px-6 py-4 border-t bg-gradient-to-r from-muted/20 to-transparent">
-              <p className="text-sm font-semibold mb-3 text-foreground">Quick questions:</p>
+            <div className="px-6 py-4 border-t border-gray-200 bg-sage-50/50">
+              <p className="text-sm font-semibold mb-3 text-gray-900">Quick questions:</p>
               <div className="grid grid-cols-1 gap-2">
                 {(quickQuestions || []).map((question, index) => (
                   <Button
                     key={index}
                     variant="ghost"
                     size="sm"
-                    className="justify-start h-auto p-3 text-xs hover:bg-primary/10 border border-transparent hover:border-primary/20 rounded-lg transition-all duration-200"
+                    className="justify-start h-auto p-3 text-xs hover:bg-sage-100 border border-transparent hover:border-sage-200 rounded-lg transition-all duration-200 text-gray-700"
                     onClick={() => handleQuickQuestion(question)}
                   >
                     {question}
@@ -312,7 +312,7 @@ export const AIAssistant = () => {
           )}
 
           {/* Input Area */}
-          <div className="p-6 border-t border-border/50 bg-gradient-to-r from-background to-muted/10">
+          <div className="p-6 border-t border-gray-200 bg-white">
             <div className="flex gap-3">
               <Input
                 value={input}
@@ -320,20 +320,20 @@ export const AIAssistant = () => {
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me anything about social work or counselling..."
                 disabled={isLoading}
-                className="flex-1 border-border/50 focus:border-primary/50 bg-background/50 backdrop-blur-sm"
+                className="flex-1 border-gray-300 focus:border-sage-500 bg-white"
               />
               <Button 
                 onClick={sendMessage} 
                 disabled={!input.trim() || isLoading}
                 size="sm"
-                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-md hover:shadow-lg transition-all duration-200"
+                className="bg-sage-600 hover:bg-sage-700 shadow-md hover:shadow-lg transition-all duration-200"
               >
                 <Send className="h-4 w-4" />
                 <span className="sr-only">Send message</span>
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground mt-3 text-center">
-              This AI assistant provides general information only. For emergencies, call 000 or Lifeline 13 11 14.
+            <p className="text-xs text-gray-500 mt-3 text-center">
+              This assistant provides general information only. For emergencies, call 000 or Lifeline 13 11 14.
             </p>
           </div>
         </DialogContent>
