@@ -23,7 +23,7 @@ export const AIAssistant = () => {
     {
       id: '1',
       role: 'assistant',
-      content: 'Hello! I\'m your professional assistant specialized in social work and mental health. I provide guidance on AASW standards, NDIS processes, ethical considerations, and evidence-based practices for professionals and the community. How can I help you today?',
+      content: 'Hi! I\'m your professional assistant for social work and mental health guidance. How can I help you today?',
       timestamp: new Date()
     }
   ]);
@@ -214,7 +214,7 @@ export const AIAssistant = () => {
               size="lg"
               className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-2xl bg-sage-600 hover:bg-sage-700 z-50 border-2 border-sage-500/20 backdrop-blur-sm transition-all duration-300 hover:scale-110"
             >
-              <svg width="28" height="28" viewBox="0 0 40 40" className="text-white">
+              <svg width="36" height="36" viewBox="0 0 40 40" className="text-white">
                 <path
                   d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
                   fill="none"
@@ -235,7 +235,7 @@ export const AIAssistant = () => {
           <DialogHeader className="dialog-header p-6 border-b border-gray-200 bg-gradient-to-r from-sage-50 to-white">
             <DialogTitle className="flex items-center gap-3 text-xl text-gray-900">
               <div className="h-8 w-8 rounded-full bg-sage-600 flex items-center justify-center shadow-md">
-                <svg width="20" height="20" viewBox="0 0 40 40" className="text-white">
+                <svg width="24" height="24" viewBox="0 0 40 40" className="text-white">
                   <path
                     d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
                     fill="none"
@@ -271,7 +271,7 @@ export const AIAssistant = () => {
                     {message.role === 'user' ? (
                       <User className="h-4 w-4" />
                     ) : (
-                      <svg width="16" height="16" viewBox="0 0 40 40" className="text-sage-600">
+                       <svg width="20" height="20" viewBox="0 0 40 40" className="text-sage-600">
                         <path
                           d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
                           fill="none"
@@ -306,7 +306,7 @@ export const AIAssistant = () => {
               {isLoading && (
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
-                    <svg width="16" height="16" viewBox="0 0 40 40" className="text-sage-600">
+                    <svg width="20" height="20" viewBox="0 0 40 40" className="text-sage-600">
                       <path
                         d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
                         fill="none"
@@ -354,7 +354,7 @@ export const AIAssistant = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask me anything about social work or counselling..."
+                placeholder="Ask about..."
                 disabled={isLoading}
                 className="flex-1 border-gray-300 focus:border-sage-500 bg-white"
               />
