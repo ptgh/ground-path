@@ -60,7 +60,7 @@ const AuthPage = () => {
         title: "Welcome back!",
         description: "You have been signed in successfully.",
       });
-      navigate('/practitioner/dashboard');
+      navigate('/');
     } catch (error: any) {
       toast({
         title: "Sign in failed",
@@ -77,7 +77,7 @@ const AuthPage = () => {
     setLoading(true);
 
     try {
-      const redirectUrl = `${window.location.origin}/practitioner/dashboard`;
+      const redirectUrl = `${window.location.origin}/`;
       
       const { error } = await supabase.auth.signUp({
         email,
