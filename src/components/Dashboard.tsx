@@ -37,6 +37,7 @@ const Dashboard = () => {
   // Redirect to auth if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
+      console.log('Dashboard: Redirecting unauthenticated user to auth page');
       navigate('/practitioner/auth');
     }
   }, [user, authLoading, navigate]);
