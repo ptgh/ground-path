@@ -119,7 +119,6 @@ const Contact = () => {
             <div className="bg-white rounded-xl p-6 shadow-sm">
               <h4 className="font-medium text-gray-900 mb-4">Professional Standards</h4>
               <div className="space-y-3 text-sm text-gray-600">
-                <div>✓ Working with Children Check current</div>
                 <div>✓ Professional indemnity insurance maintained</div>
                 <div>✓ Cultural safety principles integrated</div>
                 <div>✓ Complaints process available via AASW</div>

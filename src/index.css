@@ -113,10 +113,14 @@
 
   body {
     @apply bg-background text-foreground font-sans;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   html {
     scroll-behavior: smooth;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

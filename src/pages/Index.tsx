@@ -14,40 +14,54 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Index = () => {
   useEffect(() => {
-    // Initialize GSAP animations
-    gsap.fromTo('.fade-in', 
-      { opacity: 0, y: 30 },
-      { 
-        opacity: 1, 
-        y: 0, 
-        duration: 0.8, 
-        stagger: 0.2,
-        scrollTrigger: {
-          trigger: '.fade-in',
-          start: 'top 80%',
-          toggleActions: 'play none none reverse'
+    // Initialize GSAP animations with better targeting
+    const fadeElements = document.querySelectorAll('.fade-in');
+    if (fadeElements.length > 0) {
+      gsap.fromTo(fadeElements, 
+        { opacity: 0, y: 30 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          duration: 0.8, 
+          stagger: 0.2,
+          scrollTrigger: {
+            trigger: fadeElements[0],
+            start: 'top 80%',
+            toggleActions: 'play none none reverse'
+          }
         }
-      }
-    );
+      );
+    }
 
-    // Logo animation
-    gsap.fromTo('.logo-animate',
-      { opacity: 0, scale: 0.8 },
-      { opacity: 1, scale: 1, duration: 1, delay: 0.3 }
-    );
+    // Logo animation with better targeting
+    const logoElements = document.querySelectorAll('.logo-animate');
+    if (logoElements.length > 0) {
+      gsap.fromTo(logoElements,
+        { opacity: 0, scale: 0.8 },
+        { opacity: 1, scale: 1, duration: 1, delay: 0.3 }
+      );
+    }
 
-    // Secondary CTA buttons animation
-    gsap.fromTo('.secondary-cta',
-      { opacity: 0, y: 10 },
-      { 
-        opacity: 1, 
-        y: 0, 
-        duration: 0.6, 
-        stagger: 0.1,
-        delay: 1.2,
-        ease: "power2.out"
-      }
-    );
+    // Secondary CTA buttons animation with better targeting
+    const ctaElements = document.querySelectorAll('.secondary-cta');
+    if (ctaElements.length > 0) {
+      gsap.fromTo(ctaElements,
+        { opacity: 0, y: 10 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          duration: 0.6, 
+          stagger: 0.1,
+          delay: 1.2,
+          ease: "power2.out"
+        }
+      );
+    }
+
+    // Prevent scroll restoration on page load (fixes mobile scroll-to-top issue)
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
   }, []);
 
   return (

@@ -80,7 +80,33 @@ export const AIAssistant = () => {
         timestamp: new Date()
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      // Simulate streaming response
+      const words = data.response.split(' ');
+      let displayedWords = '';
+      let wordIndex = 0;
+
+      const streamMessage = () => {
+        if (wordIndex < words.length) {
+          displayedWords += (wordIndex > 0 ? ' ' : '') + words[wordIndex];
+          wordIndex++;
+          
+          const streamingMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: displayedWords,
+            timestamp: new Date()
+          };
+
+          setMessages(prev => {
+            const filtered = prev.filter(msg => msg.id !== (Date.now() + 1).toString());
+            return [...filtered, streamingMessage];
+          });
+
+          setTimeout(streamMessage, 50); // Adjust speed here (50ms between words)
+        }
+      };
+
+      streamMessage();
     } catch (error: any) {
       console.error('AI Assistant error:', error);
       toast({
@@ -212,7 +238,7 @@ export const AIAssistant = () => {
             <Button
               ref={chatButtonRef}
               size="lg"
-              className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-2xl bg-sage-600 hover:bg-sage-700 z-50 border-2 border-sage-500/20 backdrop-blur-sm transition-all duration-300 hover:scale-110"
+              className="fixed bottom-20 right-6 h-16 w-16 rounded-full shadow-2xl bg-sage-600 hover:bg-sage-700 z-50 border-2 border-sage-500/20 backdrop-blur-sm transition-all duration-300 hover:scale-110"
             >
               <svg width="36" height="36" viewBox="0 0 40 40" className="text-white">
                 <path

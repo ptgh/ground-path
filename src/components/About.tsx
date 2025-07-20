@@ -51,7 +51,7 @@ const About = () => {
                     Qualified & Experienced Social Work
                   </h3>
                   <p className="text-gray-600 leading-relaxed text-sm">
-                    At Ground Path, we are a team of qualified professionals with Master of Social Work degrees, providing person-centred, evidence-based support grounded in the AASW Code of Ethics and best-practice standards.
+                    At Ground Path, we are a team of qualified professionals, providing person-centred, evidence-based support grounded in the AASW Code of Ethics and best-practice standards.
                   </p>
                 </div>
 

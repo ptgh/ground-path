@@ -57,7 +57,7 @@ const Hero = () => {
           
           {/* Subheading */}
           <p className="fade-in text-xl sm:text-2xl text-gray-600 mb-12 font-light leading-relaxed">
-            AASW Social Work & Mental Health Support — Online & In-Person
+            Social Work & Mental Health Support — Online & In-Person
           </p>
 
           {/* CTA Buttons */}
@@ -91,12 +91,12 @@ const Hero = () => {
 
         {/* Professional Credentials */}
         <div className="fade-in mt-16 text-center">
-          <div className="inline-flex items-center space-x-8 bg-gray-50 px-8 py-4 rounded-lg">
-            <span className="text-sm text-gray-600 font-medium">AASW Accredited Mental Health Social Worker</span>
-            <span className="text-gray-300">•</span>
-            <span className="text-sm text-gray-600 font-medium">NDIS Services</span>
-            <span className="text-gray-300">•</span>
-            <span className="text-sm text-gray-600 font-medium">Professional Indemnity Insurance</span>
+          <div className="inline-flex flex-col md:flex-row items-center md:space-x-4 space-y-2 md:space-y-0 bg-gray-50 px-6 py-4 rounded-lg">
+            <span className="text-sm text-gray-600 font-medium text-center">AASW Accredited Mental Health Social Worker</span>
+            <span className="text-gray-300 hidden md:inline">•</span>
+            <span className="text-sm text-gray-600 font-medium text-center">NDIS Services</span>
+            <span className="text-gray-300 hidden md:inline">•</span>
+            <span className="text-sm text-gray-600 font-medium text-center">Professional Indemnity Insurance</span>
           </div>
         </div>
       </div>
