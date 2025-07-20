@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { AIAssistant } from "@/components/AIAssistant";
 
 const Resources = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -173,8 +174,8 @@ const Resources = () => {
   );
 
   const ResourceCard = ({ resource }: { resource: any }) => (
-    <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02] border-gray-200">
-      <CardHeader>
+    <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02] border-gray-200 flex flex-col h-full">
+      <CardHeader className="flex-shrink-0">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-sage-100 text-sage-600">
@@ -192,13 +193,13 @@ const Resources = () => {
           {resource.type === 'phone' && <Phone className="h-4 w-4 text-gray-400" />}
         </div>
       </CardHeader>
-      <CardContent>
-        <CardDescription className="text-gray-600 mb-4">
+      <CardContent className="flex flex-col flex-grow">
+        <CardDescription className="text-gray-600 mb-4 flex-grow">
           {resource.description}
         </CardDescription>
         <Button 
           variant="outline" 
-          className="w-full border-sage-200 text-sage-700 hover:bg-sage-50"
+          className="w-full border-sage-200 text-sage-700 hover:bg-sage-50 mt-auto"
           onClick={() => {
             if (resource.type === 'phone') {
               window.open(`tel:${resource.url}`, '_self');
@@ -318,6 +319,7 @@ const Resources = () => {
       </div>
 
       <Footer />
+      <AIAssistant />
     </div>
   );
 };
