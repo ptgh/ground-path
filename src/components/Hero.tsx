@@ -92,7 +92,9 @@ const Hero = () => {
         {/* Professional Credentials */}
         <div className="fade-in mt-16 text-center">
           <div className="inline-flex flex-col md:flex-row items-center md:space-x-4 space-y-2 md:space-y-0 bg-gray-50 px-6 py-4 rounded-lg">
-            <span className="text-sm text-gray-600 font-medium text-center">AASW Accredited Mental Health Social Worker</span>
+            <span className="text-sm text-gray-600 font-medium text-center">Accredited Mental Health Social Worker</span>
+            <span className="text-gray-300 hidden md:inline">•</span>
+            <span className="text-sm text-gray-600 font-medium text-center">Counselling</span>
             <span className="text-gray-300 hidden md:inline">•</span>
             <span className="text-sm text-gray-600 font-medium text-center">NDIS Services</span>
             <span className="text-gray-300 hidden md:inline">•</span>

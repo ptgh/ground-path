@@ -186,7 +186,7 @@ const Header = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-800">
-            <nav className="flex flex-col space-y-4">
+            <nav className="flex flex-col space-y-3 px-2">
               <button 
                 onClick={() => scrollToSection('home')}
                 className="text-left text-gray-300 hover:text-white transition-colors font-medium"
