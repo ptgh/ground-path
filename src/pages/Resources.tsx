@@ -15,7 +15,8 @@ import {
   Heart,
   Scale,
   FileText,
-  Phone
+  Phone,
+  X
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -178,6 +179,45 @@ const Resources = () => {
     resource.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Filter each category based on search term
+  const filteredProfessionalStandards = professionalStandards.filter(resource =>
+    resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    resource.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredNdisResources = ndisResources.filter(resource =>
+    resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    resource.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredClinicalTools = clinicalTools.filter(resource =>
+    resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    resource.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredProfessionalDevelopment = professionalDevelopment.filter(resource =>
+    resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    resource.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredEmergencyContacts = emergencyContacts.filter(resource =>
+    resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    resource.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const NoResults = () => (
+    <div className="text-center py-12">
+      <Search className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+      <h3 className="text-lg font-medium text-gray-900 mb-2">No resources found</h3>
+      <p className="text-gray-600">Try adjusting your search terms or browse all resources.</p>
+    </div>
+  );
+
   const ResourceCard = ({ resource }: { resource: any }) => (
     <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02] border-gray-200 flex flex-col h-full">
       <CardHeader className="flex-shrink-0">
@@ -244,9 +284,23 @@ const Resources = () => {
                 placeholder="Search resources..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 border-gray-300 focus:border-sage-500"
+                className="pl-10 pr-10 border-gray-300 focus:border-sage-500"
               />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="Clear search"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
+            {searchTerm && (
+              <p className="text-sm text-gray-500 mt-2 text-center">
+                Searching for "{searchTerm}" - {filteredResources.length} result{filteredResources.length !== 1 ? 's' : ''} found
+              </p>
+            )}
           </div>
 
           {/* Content Tabs */}
@@ -280,51 +334,75 @@ const Resources = () => {
             </TabsList>
 
             <TabsContent value="all">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredResources.map((resource, index) => (
-                  <ResourceCard key={index} resource={resource} />
-                ))}
-              </div>
+              {filteredResources.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredResources.map((resource, index) => (
+                    <ResourceCard key={index} resource={resource} />
+                  ))}
+                </div>
+              ) : (
+                <NoResults />
+              )}
             </TabsContent>
 
             <TabsContent value="standards">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {professionalStandards.map((resource, index) => (
-                  <ResourceCard key={index} resource={resource} />
-                ))}
-              </div>
+              {filteredProfessionalStandards.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredProfessionalStandards.map((resource, index) => (
+                    <ResourceCard key={index} resource={resource} />
+                  ))}
+                </div>
+              ) : (
+                <NoResults />
+              )}
             </TabsContent>
 
             <TabsContent value="ndis">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {ndisResources.map((resource, index) => (
-                  <ResourceCard key={index} resource={resource} />
-                ))}
-              </div>
+              {filteredNdisResources.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredNdisResources.map((resource, index) => (
+                    <ResourceCard key={index} resource={resource} />
+                  ))}
+                </div>
+              ) : (
+                <NoResults />
+              )}
             </TabsContent>
 
             <TabsContent value="clinical">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {clinicalTools.map((resource, index) => (
-                  <ResourceCard key={index} resource={resource} />
-                ))}
-              </div>
+              {filteredClinicalTools.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredClinicalTools.map((resource, index) => (
+                    <ResourceCard key={index} resource={resource} />
+                  ))}
+                </div>
+              ) : (
+                <NoResults />
+              )}
             </TabsContent>
 
             <TabsContent value="development">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {professionalDevelopment.map((resource, index) => (
-                  <ResourceCard key={index} resource={resource} />
-                ))}
-              </div>
+              {filteredProfessionalDevelopment.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredProfessionalDevelopment.map((resource, index) => (
+                    <ResourceCard key={index} resource={resource} />
+                  ))}
+                </div>
+              ) : (
+                <NoResults />
+              )}
             </TabsContent>
 
             <TabsContent value="emergency">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {emergencyContacts.map((resource, index) => (
-                  <ResourceCard key={index} resource={resource} />
-                ))}
-              </div>
+              {filteredEmergencyContacts.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredEmergencyContacts.map((resource, index) => (
+                    <ResourceCard key={index} resource={resource} />
+                  ))}
+                </div>
+              ) : (
+                <NoResults />
+              )}
             </TabsContent>
           </Tabs>
         </div>
