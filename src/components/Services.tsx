@@ -15,7 +15,7 @@ const Services = () => {
       ndis: true
     },
     {
-      name: "Counselling",
+      name: "Australian Counselling Association Counsellors",
       format: "Telehealth (50 mins)",
       rate: "$80",
       description: "Qualified and trusted Registered Counsellors"

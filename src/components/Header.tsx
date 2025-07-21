@@ -164,12 +164,12 @@ const Header = () => {
                 >
                   Book a Session
                 </Button>
-                <button 
+                <Button 
                   onClick={handleProfessionalLogin}
-                  className="bg-sage-600 text-white px-4 py-2 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  className="bg-sage-600 text-white px-6 py-2 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium"
                 >
                   Professional Login
-                </button>
+                </Button>
               </>
             )}
           </div>
@@ -219,18 +219,18 @@ const Header = () => {
               </button>
               {!shouldShowAuth && (
                 <>
-                  <button 
+                  <Button 
                     onClick={() => scrollToSection('contact')}
-                    className="text-left bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors font-medium w-fit"
+                    className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors font-medium w-full mb-2"
                   >
                     Book a Session
-                  </button>
-                  <button 
+                  </Button>
+                  <Button 
                     onClick={handleProfessionalLogin}
-                    className="text-left bg-sage-600 text-white px-4 py-2 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-fit"
+                    className="bg-sage-600 text-white px-6 py-2 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium w-full"
                   >
                     Professional Login
-                  </button>
+                  </Button>
                 </>
               )}
             </nav>

@@ -251,7 +251,14 @@ const Resources = () => {
 
           {/* Content Tabs */}
           <Tabs defaultValue="all" className="w-full">
-            <TabsList className="grid w-full grid-cols-6 mb-8 bg-gray-100">
+            <TabsList className="grid w-full grid-cols-6 mb-8 bg-gray-100 p-1 gap-1 overflow-x-auto">
+              <style>{`
+                @media (max-width: 768px) {
+                  .grid-cols-6 {
+                    grid-template-columns: repeat(6, minmax(100px, 1fr));
+                  }
+                }
+              `}</style>
               <TabsTrigger value="all" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white">
                 All Resources
               </TabsTrigger>
