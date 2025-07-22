@@ -152,11 +152,11 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Tabs defaultValue="basic" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="basic">Basic Info</TabsTrigger>
-              <TabsTrigger value="registration">Registration</TabsTrigger>
-              <TabsTrigger value="insurance">Insurance & CPD</TabsTrigger>
-              <TabsTrigger value="qualifications">Qualifications</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1 h-auto p-1">
+              <TabsTrigger value="basic" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Basic Info</TabsTrigger>
+              <TabsTrigger value="registration" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Registration</TabsTrigger>
+              <TabsTrigger value="insurance" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Insurance & CPD</TabsTrigger>
+              <TabsTrigger value="qualifications" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Qualifications</TabsTrigger>
             </TabsList>
 
             <TabsContent value="basic" className="space-y-4">

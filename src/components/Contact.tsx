@@ -63,6 +63,21 @@ const Contact = () => {
           <p className="fade-in text-lg text-gray-600 max-w-2xl mx-auto">
             Ready to start your journey? Contact us to book a session or ask any questions
           </p>
+          <div className="fade-in flex justify-center mt-6">
+            <a 
+              href="https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sage-600 hover:text-sage-700 transition-colors"
+            >
+              <img 
+                src="https://cdn.halaxy.com/h/images/logo.png" 
+                alt="Book with Halaxy"
+                className="h-6 w-auto"
+              />
+              <span className="text-sm font-medium">Book Online</span>
+            </a>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-stretch">
@@ -103,9 +118,26 @@ const Contact = () => {
                 Ready to book? Use our integrated calendar system or contact us directly.
               </p>
               <div className="space-y-3">
-                <button className="w-full bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium">
-                  Book via Halaxy Calendar
-                </button>
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => window.open('https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983', '_blank')}
+                    className="flex-1 bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium"
+                  >
+                    Halaxy Profile
+                  </button>
+                  <a 
+                    href="https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-shrink-0"
+                  >
+                    <img 
+                      src="https://cdn.halaxy.com/h/images/logo.png" 
+                      alt="Halaxy Profile"
+                      className="h-10 w-auto hover:opacity-80 transition-opacity"
+                    />
+                  </a>
+                </div>
                 <button 
                   onClick={() => setIsMailingListOpen(true)}
                   className="w-full border border-sage-600 text-sage-600 py-3 px-4 rounded-lg hover:bg-sage-50 transition-colors font-medium"

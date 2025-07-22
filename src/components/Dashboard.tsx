@@ -292,7 +292,7 @@ const Dashboard = () => {
                           className="flex-1"
                           size="sm"
                         >
-                          Book via Halaxy Calendar
+                          Halaxy Profile
                         </Button>
                         <a 
                           href="https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983"
@@ -486,7 +486,7 @@ const Dashboard = () => {
                        onClick={() => window.open('https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983', '_blank')}
                        className="w-full"
                      >
-                       Book via Halaxy Calendar
+                       Halaxy Profile
                      </Button>
                    </div>
                 </CardContent>
