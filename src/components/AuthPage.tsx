@@ -60,7 +60,7 @@ const AuthPage = () => {
         title: "Welcome back!",
         description: "You have been signed in successfully.",
       });
-      navigate('/');
+      navigate('/dashboard');
     } catch (error: any) {
       toast({
         title: "Sign in failed",
@@ -78,14 +78,14 @@ const AuthPage = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/`
+          redirectTo: `${window.location.origin}/dashboard`
         }
       });
 
       if (error) {
         toast({
-          title: "Social login failed",
-          description: error.message,
+          title: "Social login not available",
+          description: `${provider.charAt(0).toUpperCase() + provider.slice(1)} sign-in is not configured. Please use email/password.`,
           variant: "destructive",
         });
       }
@@ -105,7 +105,7 @@ const AuthPage = () => {
     setLoading(true);
 
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/dashboard`;
       
       const { error } = await supabase.auth.signUp({
         email,

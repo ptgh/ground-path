@@ -263,11 +263,21 @@ const Dashboard = () => {
                       </div>
                     </div>
                     <Separator />
-                    <Button variant="outline" className="w-full" size="sm">
-                      <ProfessionalProfileModal>
-                        <span>Update Professional Info</span>
-                      </ProfessionalProfileModal>
-                    </Button>
+                   <div className="space-y-2">
+                     <ProfessionalProfileModal>
+                       <Button variant="outline" className="w-full" size="sm">
+                         Update Professional Info
+                       </Button>
+                     </ProfessionalProfileModal>
+                     <Button
+                       variant="outline"
+                       onClick={() => window.open('https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983', '_blank')}
+                       className="w-full"
+                       size="sm"
+                     >
+                       View Halaxy Profile
+                     </Button>
+                   </div>
                   </CardContent>
                 </Card>
               </div>
@@ -437,7 +447,18 @@ const Dashboard = () => {
                       {profile?.bio || 'No bio provided'}
                     </p>
                   </div>
-                  <Button>Update Profile</Button>
+                   <div className="space-y-2">
+                     <ProfessionalProfileModal>
+                       <Button>Update Professional Profile</Button>
+                     </ProfessionalProfileModal>
+                     <Button
+                       variant="outline"
+                       onClick={() => window.open('https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983', '_blank')}
+                       className="w-full"
+                     >
+                       View Halaxy Profile
+                     </Button>
+                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
