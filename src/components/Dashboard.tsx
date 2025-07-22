@@ -140,25 +140,41 @@ const Dashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Welcome Section */}
           <div className="mb-8">
-            <div className="flex items-center space-x-4 mb-4">
-              <Avatar className="h-16 w-16">
-                <AvatarImage src={profile?.avatar_url} />
-                <AvatarFallback className="text-lg">
-                  {profile?.display_name?.[0] || user.email?.[0] || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h1 className="text-3xl font-bold text-foreground">{getWelcomeMessage()}</h1>
-                <p className="text-muted-foreground">
-                  {profile?.display_name || user.email}
-                </p>
-                <div className="flex gap-2 mt-2">
-                  {userRoles.map(role => (
-                    <Badge key={role} variant="secondary" className={getProfessionBadgeColor(role)}>
-                      {role.replace('_', ' ').toUpperCase()}
-                    </Badge>
-                  ))}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-4">
+                <Avatar className="h-16 w-16">
+                  <AvatarImage src={profile?.avatar_url} />
+                  <AvatarFallback className="text-lg">
+                    {profile?.display_name?.[0] || user.email?.[0] || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground">{getWelcomeMessage()}</h1>
+                  <p className="text-muted-foreground">
+                    {profile?.display_name || user.email}
+                  </p>
+                  <div className="flex gap-2 mt-2">
+                    {userRoles.map(role => (
+                      <Badge key={role} variant="secondary" className={getProfessionBadgeColor(role)}>
+                        {role.replace('_', ' ').toUpperCase()}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
+              </div>
+              <div className="hidden md:block">
+                <a 
+                  href="https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block"
+                >
+                  <img 
+                    src="https://cdn.halaxy.com/h/images/logo.png" 
+                    alt="Book with Halaxy"
+                    className="h-12 w-auto opacity-70 hover:opacity-100 transition-opacity"
+                  />
+                </a>
               </div>
             </div>
           </div>
@@ -263,21 +279,35 @@ const Dashboard = () => {
                       </div>
                     </div>
                     <Separator />
-                   <div className="space-y-2">
-                     <ProfessionalProfileModal>
-                       <Button variant="outline" className="w-full" size="sm">
-                         Update Professional Info
-                       </Button>
-                     </ProfessionalProfileModal>
-                     <Button
-                       variant="outline"
-                       onClick={() => window.open('https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983', '_blank')}
-                       className="w-full"
-                       size="sm"
-                     >
-                       Book via Halaxy Calendar
-                     </Button>
-                   </div>
+                    <div className="space-y-2">
+                      <ProfessionalProfileModal>
+                        <Button variant="outline" className="w-full" size="sm">
+                          Update Professional Info
+                        </Button>
+                      </ProfessionalProfileModal>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => window.open('https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983', '_blank')}
+                          className="flex-1"
+                          size="sm"
+                        >
+                          Book via Halaxy Calendar
+                        </Button>
+                        <a 
+                          href="https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-shrink-0"
+                        >
+                          <img 
+                            src="https://cdn.halaxy.com/h/images/logo.png" 
+                            alt="Halaxy"
+                            className="h-8 w-auto"
+                          />
+                        </a>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
