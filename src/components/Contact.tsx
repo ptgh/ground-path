@@ -123,7 +123,7 @@ const Contact = () => {
                     onClick={() => window.open('https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983', '_blank')}
                     className="flex-1 bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium"
                   >
-                    Halaxy Profile
+                    Book via Halaxy Calendar
                   </button>
                   <a 
                     href="https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983"
