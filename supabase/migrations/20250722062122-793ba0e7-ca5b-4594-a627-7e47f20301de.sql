@@ -1,0 +1,22 @@
+-- Add professional profile fields to the profiles table
+ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS registration_number text,
+ADD COLUMN IF NOT EXISTS registration_body text,
+ADD COLUMN IF NOT EXISTS insurance_provider text,
+ADD COLUMN IF NOT EXISTS insurance_policy_number text,
+ADD COLUMN IF NOT EXISTS insurance_expiry date,
+ADD COLUMN IF NOT EXISTS registration_expiry date,
+ADD COLUMN IF NOT EXISTS ahpra_number text,
+ADD COLUMN IF NOT EXISTS ahpra_profession text,
+ADD COLUMN IF NOT EXISTS years_experience integer,
+ADD COLUMN IF NOT EXISTS specializations text[],
+ADD COLUMN IF NOT EXISTS qualifications text[],
+ADD COLUMN IF NOT EXISTS cpd_hours_current_year integer DEFAULT 0,
+ADD COLUMN IF NOT EXISTS cpd_requirements integer DEFAULT 0,
+ADD COLUMN IF NOT EXISTS supervisor_details jsonb DEFAULT '{}',
+ADD COLUMN IF NOT EXISTS emergency_contact jsonb DEFAULT '{}',
+ADD COLUMN IF NOT EXISTS preferred_contact_method text DEFAULT 'email',
+ADD COLUMN IF NOT EXISTS practice_location text,
+ADD COLUMN IF NOT EXISTS website_url text,
+ADD COLUMN IF NOT EXISTS linkedin_profile text,
+ADD COLUMN IF NOT EXISTS halaxy_integration jsonb DEFAULT '{}';

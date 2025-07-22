@@ -10,6 +10,26 @@ interface Profile {
   bio?: string;
   profession?: string;
   license_number?: string;
+  registration_number?: string;
+  registration_body?: string;
+  registration_expiry?: string;
+  ahpra_number?: string;
+  ahpra_profession?: string;
+  years_experience?: number;
+  insurance_provider?: string;
+  insurance_policy_number?: string;
+  insurance_expiry?: string;
+  cpd_hours_current_year?: number;
+  cpd_requirements?: number;
+  practice_location?: string;
+  website_url?: string;
+  linkedin_profile?: string;
+  preferred_contact_method?: string;
+  specializations?: string[];
+  qualifications?: string[];
+  supervisor_details?: any;
+  emergency_contact?: any;
+  halaxy_integration?: any;
 }
 
 interface UserRole {

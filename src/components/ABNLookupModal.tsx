@@ -87,7 +87,7 @@ const ABNLookupModal = ({ isOpen, onClose }: ABNLookupModalProps) => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-gray-700">ABN:</span>
-                  <span className="text-sm text-gray-900">98 434 283 298</span>
+                  <span className="text-sm text-gray-900 whitespace-nowrap">98 434 283 298</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-gray-700">Status:</span>

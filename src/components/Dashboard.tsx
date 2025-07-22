@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import Header from './Header';
 import Footer from './Footer';
+import ProfessionalProfileModal from './ProfessionalProfileModal';
 
 const Dashboard = () => {
   const { user, profile, roles, loading: authLoading } = useAuth();
@@ -263,7 +264,9 @@ const Dashboard = () => {
                     </div>
                     <Separator />
                     <Button variant="outline" className="w-full" size="sm">
-                      Update Professional Info
+                      <ProfessionalProfileModal>
+                        <span>Update Professional Info</span>
+                      </ProfessionalProfileModal>
                     </Button>
                   </CardContent>
                 </Card>

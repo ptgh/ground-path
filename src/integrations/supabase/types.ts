@@ -118,37 +118,97 @@ export type Database = {
       }
       profiles: {
         Row: {
+          ahpra_number: string | null
+          ahpra_profession: string | null
           avatar_url: string | null
           bio: string | null
+          cpd_hours_current_year: number | null
+          cpd_requirements: number | null
           created_at: string | null
           display_name: string | null
+          emergency_contact: Json | null
+          halaxy_integration: Json | null
           id: string
+          insurance_expiry: string | null
+          insurance_policy_number: string | null
+          insurance_provider: string | null
           license_number: string | null
+          linkedin_profile: string | null
+          practice_location: string | null
+          preferred_contact_method: string | null
           profession: string | null
+          qualifications: string[] | null
+          registration_body: string | null
+          registration_expiry: string | null
+          registration_number: string | null
+          specializations: string[] | null
+          supervisor_details: Json | null
           updated_at: string | null
           user_id: string
+          website_url: string | null
+          years_experience: number | null
         }
         Insert: {
+          ahpra_number?: string | null
+          ahpra_profession?: string | null
           avatar_url?: string | null
           bio?: string | null
+          cpd_hours_current_year?: number | null
+          cpd_requirements?: number | null
           created_at?: string | null
           display_name?: string | null
+          emergency_contact?: Json | null
+          halaxy_integration?: Json | null
           id?: string
+          insurance_expiry?: string | null
+          insurance_policy_number?: string | null
+          insurance_provider?: string | null
           license_number?: string | null
+          linkedin_profile?: string | null
+          practice_location?: string | null
+          preferred_contact_method?: string | null
           profession?: string | null
+          qualifications?: string[] | null
+          registration_body?: string | null
+          registration_expiry?: string | null
+          registration_number?: string | null
+          specializations?: string[] | null
+          supervisor_details?: Json | null
           updated_at?: string | null
           user_id: string
+          website_url?: string | null
+          years_experience?: number | null
         }
         Update: {
+          ahpra_number?: string | null
+          ahpra_profession?: string | null
           avatar_url?: string | null
           bio?: string | null
+          cpd_hours_current_year?: number | null
+          cpd_requirements?: number | null
           created_at?: string | null
           display_name?: string | null
+          emergency_contact?: Json | null
+          halaxy_integration?: Json | null
           id?: string
+          insurance_expiry?: string | null
+          insurance_policy_number?: string | null
+          insurance_provider?: string | null
           license_number?: string | null
+          linkedin_profile?: string | null
+          practice_location?: string | null
+          preferred_contact_method?: string | null
           profession?: string | null
+          qualifications?: string[] | null
+          registration_body?: string | null
+          registration_expiry?: string | null
+          registration_number?: string | null
+          specializations?: string[] | null
+          supervisor_details?: Json | null
           updated_at?: string | null
           user_id?: string
+          website_url?: string | null
+          years_experience?: number | null
         }
         Relationships: []
       }
