@@ -164,11 +164,11 @@ const Dashboard = () => {
           </div>
 
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="tools">Professional Tools</TabsTrigger>
-              <TabsTrigger value="notes">Notes & Activities</TabsTrigger>
-              <TabsTrigger value="profile">Profile Settings</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-1">
+              <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+              <TabsTrigger value="tools" className="text-xs sm:text-sm">Professional</TabsTrigger>
+              <TabsTrigger value="notes" className="text-xs sm:text-sm">Notes</TabsTrigger>
+              <TabsTrigger value="profile" className="text-xs sm:text-sm">Settings</TabsTrigger>
             </TabsList>
 
             {/* Overview Tab */}
