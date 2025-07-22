@@ -275,7 +275,7 @@ const Dashboard = () => {
                        className="w-full"
                        size="sm"
                      >
-                       View Halaxy Profile
+                       Book via Halaxy Calendar
                      </Button>
                    </div>
                   </CardContent>
@@ -456,7 +456,7 @@ const Dashboard = () => {
                        onClick={() => window.open('https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983', '_blank')}
                        className="w-full"
                      >
-                       View Halaxy Profile
+                       Book via Halaxy Calendar
                      </Button>
                    </div>
                 </CardContent>
