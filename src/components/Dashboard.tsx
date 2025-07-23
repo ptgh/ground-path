@@ -170,7 +170,7 @@ const Dashboard = () => {
               </div>
               <div className="hidden md:block">
                 <a 
-                  href="https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983"
+                  href="https://www.halaxy.com/book/paul-habermann/location/1321025"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block"
@@ -294,14 +294,14 @@ const Dashboard = () => {
                       <div className="flex items-center gap-2">
                         <Button
                           variant="outline"
-                          onClick={() => window.open('https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983', '_blank')}
+                          onClick={() => window.open('https://www.halaxy.com/book/paul-habermann/location/1321025', '_blank')}
                           className="flex-1"
                           size="sm"
                         >
                           Halaxy Profile
                         </Button>
                         <a 
-                          href="https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983"
+                          href="https://www.halaxy.com/book/paul-habermann/location/1321025"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex-shrink-0"
@@ -487,13 +487,13 @@ const Dashboard = () => {
                      <ProfessionalProfileModal>
                        <Button>Update Professional Profile</Button>
                      </ProfessionalProfileModal>
-                     <Button
-                       variant="outline"
-                       onClick={() => window.open('https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983', '_blank')}
-                       className="w-full"
-                     >
-                       Halaxy Profile
-                     </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => window.open('https://www.halaxy.com/book/paul-habermann/location/1321025', '_blank')}
+                        className="w-full"
+                      >
+                        Halaxy Profile
+                      </Button>
                    </div>
                 </CardContent>
               </Card>
