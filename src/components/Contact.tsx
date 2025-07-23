@@ -126,15 +126,15 @@ const Contact = () => {
                     Book via Halaxy Calendar
                   </button>
                   <a 
-                    href="https://www.halaxy.com/book/paul-habermann/location/1321025"
+                    href="https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-shrink-0"
+                    className="flex-shrink-0 cursor-pointer"
                   >
                     <img 
                       src="https://cdn.halaxy.com/h/images/logo.png" 
                       alt="Halaxy Profile"
-                      className="h-10 w-auto hover:opacity-80 transition-opacity"
+                      className="h-10 w-auto hover:opacity-80 transition-opacity cursor-pointer"
                     />
                   </a>
                 </div>
