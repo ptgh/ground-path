@@ -154,11 +154,17 @@ const Dashboard = () => {
                     {profile?.display_name || user.email}
                   </p>
                   <div className="flex gap-2 mt-2">
-                    {userRoles.map(role => (
-                      <Badge key={role} variant="secondary" className={getProfessionBadgeColor(role)}>
-                        {role.replace('_', ' ').toUpperCase()}
+                    {userRoles.length > 0 ? (
+                      userRoles.map(role => (
+                        <Badge key={role} variant="secondary" className={getProfessionBadgeColor(role)}>
+                          {role.replace('_', ' ').toUpperCase()}
+                        </Badge>
+                      ))
+                    ) : (
+                      <Badge variant="secondary" className="bg-gray-100 text-gray-800">
+                        PRACTITIONER
                       </Badge>
-                    ))}
+                    )}
                   </div>
                 </div>
               </div>
@@ -180,11 +186,11 @@ const Dashboard = () => {
           </div>
 
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-1">
-              <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
-              <TabsTrigger value="tools" className="text-xs sm:text-sm">Professional</TabsTrigger>
-              <TabsTrigger value="notes" className="text-xs sm:text-sm">Notes</TabsTrigger>
-              <TabsTrigger value="profile" className="text-xs sm:text-sm">Settings</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-auto p-1">
+              <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 px-3 data-[state=active]:text-foreground">Overview</TabsTrigger>
+              <TabsTrigger value="tools" className="text-xs sm:text-sm py-2 px-3 data-[state=active]:text-foreground">Professional</TabsTrigger>
+              <TabsTrigger value="notes" className="text-xs sm:text-sm py-2 px-3 data-[state=active]:text-foreground">Notes</TabsTrigger>
+              <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-3 data-[state=active]:text-foreground">Settings</TabsTrigger>
             </TabsList>
 
             {/* Overview Tab */}
