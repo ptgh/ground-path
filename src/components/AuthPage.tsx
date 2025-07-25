@@ -18,10 +18,16 @@ const AuthPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Debug log to ensure component is rendering
-  console.log('AuthPage component rendering', { authMode, loading });
-
-  // Only redirect after successful login, not on page load
+  // Check authentication state on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate('/practitioner/dashboard');
+      }
+    };
+    checkAuth();
+  }, [navigate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,9 +89,10 @@ const AuthPage = () => {
       });
 
       if (error) {
+        console.error(`${provider} auth error:`, error);
         toast({
-          title: "Social login not available",
-          description: `${provider.charAt(0).toUpperCase() + provider.slice(1)} sign-in is not configured. Please use email/password.`,
+          title: "Social login unavailable",
+          description: `${provider.charAt(0).toUpperCase() + provider.slice(1)} sign-in is not currently configured. Please contact support or use email/password.`,
           variant: "destructive",
         });
       }

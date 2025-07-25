@@ -108,8 +108,10 @@ const Contact = () => {
             >
               <img 
                 src="https://cdn.halaxy.com/h/images/logo.png" 
-                alt="Book with Halaxy"
+                alt="Halaxy booking system logo"
                 className="h-6 w-auto"
+                loading="lazy"
+                decoding="async"
               />
               <span className="text-sm font-medium">Book Online</span>
             </a>
@@ -158,6 +160,7 @@ const Contact = () => {
                   <button 
                     onClick={() => window.open('https://www.halaxy.com/book/paul-habermann/location/1321025', '_blank')}
                     className="flex-1 bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium"
+                    aria-label="Book appointment via Halaxy Calendar"
                   >
                     Book via Halaxy Calendar
                   </button>
@@ -171,6 +174,7 @@ const Contact = () => {
                       src="https://cdn.halaxy.com/h/images/logo.png" 
                       alt="Halaxy Profile"
                       className="h-10 w-auto hover:opacity-80 transition-opacity cursor-pointer"
+                      loading="lazy"
                     />
                   </a>
                 </div>

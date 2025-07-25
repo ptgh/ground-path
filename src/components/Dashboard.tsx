@@ -179,6 +179,8 @@ const Dashboard = () => {
                     src="https://cdn.halaxy.com/h/images/logo.png" 
                     alt="Book with Halaxy"
                     className="h-12 w-auto opacity-70 hover:opacity-100 transition-opacity"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </a>
               </div>
@@ -308,8 +310,10 @@ const Dashboard = () => {
                         >
                           <img 
                             src="https://cdn.halaxy.com/h/images/logo.png" 
-                            alt="Halaxy"
+                            alt="Halaxy booking system"
                             className="h-8 w-auto"
+                            loading="lazy"
+                            decoding="async"
                           />
                         </a>
                       </div>
