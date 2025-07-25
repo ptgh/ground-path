@@ -80,33 +80,48 @@ export const AIAssistant = () => {
         timestamp: new Date()
       };
 
-      // Simulate streaming response
-      const words = data.response.split(' ');
-      let displayedWords = '';
-      let wordIndex = 0;
+      // Simulate natural character-by-character streaming
+      const fullResponse = data.response;
+      let displayedContent = '';
+      let charIndex = 0;
+      const messageId = (Date.now() + 1).toString();
 
-      const streamMessage = () => {
-        if (wordIndex < words.length) {
-          displayedWords += (wordIndex > 0 ? ' ' : '') + words[wordIndex];
-          wordIndex++;
+      const getTypingDelay = (char: string, nextChar?: string) => {
+        // Faster typing for spaces and common characters
+        if (char === ' ') return 30;
+        // Longer pauses after sentences and commas for natural flow
+        if (char === '.' || char === '!' || char === '?') return 200;
+        if (char === ',' || char === ';') return 100;
+        if (char === '\n') return 150;
+        // Variable speed for regular characters (more natural)
+        return Math.random() * 40 + 40; // 40-80ms range
+      };
+
+      const streamCharacter = () => {
+        if (charIndex < fullResponse.length) {
+          displayedContent += fullResponse[charIndex];
+          const currentChar = fullResponse[charIndex];
+          const nextChar = fullResponse[charIndex + 1];
+          charIndex++;
           
           const streamingMessage: Message = {
-            id: (Date.now() + 1).toString(),
+            id: messageId,
             role: 'assistant',
-            content: displayedWords,
+            content: displayedContent,
             timestamp: new Date()
           };
 
           setMessages(prev => {
-            const filtered = prev.filter(msg => msg.id !== (Date.now() + 1).toString());
+            const filtered = prev.filter(msg => msg.id !== messageId);
             return [...filtered, streamingMessage];
           });
 
-          setTimeout(streamMessage, 50); // Adjust speed here (50ms between words)
+          const delay = getTypingDelay(currentChar, nextChar);
+          setTimeout(streamCharacter, delay);
         }
       };
 
-      streamMessage();
+      streamCharacter();
     } catch (error: any) {
       console.error('AI Assistant error:', error);
       toast({
