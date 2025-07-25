@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Mail, Check, Loader2 } from 'lucide-react';
 import { useMailingListSubscription } from '@/hooks/useMailingList';
+import { mailingListSchema, checkRateLimit } from '@/lib/validation';
+import { useToast } from '@/hooks/use-toast';
 
 interface MailingListModalProps {
   isOpen: boolean;
@@ -15,24 +17,35 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   
   const subscriptionMutation = useMailingListSubscription();
-
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
     
-    if (!validateEmail(email)) {
+    // Rate limiting check
+    const clientIdentifier = `mailing_${email}_${Date.now().toString().slice(0, -3)}`;
+    if (!checkRateLimit(clientIdentifier, 2, 300000)) { // 2 requests per 5 minutes
+      toast({
+        title: "Too many requests",
+        description: "Please wait a few minutes before subscribing again.",
+        variant: "destructive"
+      });
       return;
     }
 
     try {
-      await subscriptionMutation.mutateAsync({
+      const validatedData = mailingListSchema.parse({
         email,
-        name: name || undefined,
+        name: name || undefined
+      });
+
+      await subscriptionMutation.mutateAsync({
+        email: validatedData.email,
+        name: validatedData.name,
         status: 'pending',
         source: 'hero_section'
       });
@@ -44,10 +57,23 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
         setIsSuccess(false);
         setEmail('');
         setName('');
+        setErrors({});
       }, 2000);
       
-    } catch (error) {
-      // Error handling is done in the hook
+    } catch (error: any) {
+      if (error.errors) {
+        const newErrors: Record<string, string> = {};
+        error.errors.forEach((err: any) => {
+          const field = err.path[0];
+          newErrors[field] = err.message;
+        });
+        setErrors(newErrors);
+      }
+      toast({
+        title: "Validation Error",
+        description: "Please check your input and try again.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -85,8 +111,11 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
                 required
-                className="focus:ring-sage-500 focus:border-sage-500"
+                className={`focus:ring-sage-500 focus:border-sage-500 ${
+                  errors.email ? 'border-red-500' : ''
+                }`}
               />
+              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
             </div>
 
             <div>
@@ -99,8 +128,11 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your first name"
-                className="focus:ring-sage-500 focus:border-sage-500"
+                className={`focus:ring-sage-500 focus:border-sage-500 ${
+                  errors.name ? 'border-red-500' : ''
+                }`}
               />
+              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
             </div>
 
             <div className="bg-gray-50 p-3 rounded-lg">

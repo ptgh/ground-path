@@ -24,6 +24,53 @@ interface ChatRequest {
   userId?: string;
 }
 
+// Security utilities
+const sanitizeInput = (input: string): string => {
+  if (!input || typeof input !== 'string') return '';
+  
+  // Remove potential XSS vectors and limit length
+  return input
+    .slice(0, 4000) // Max 4000 characters
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+\s*=/gi, '')
+    .trim();
+};
+
+const checkForPromptInjection = (message: string): boolean => {
+  const suspiciousPatterns = [
+    /ignore\s+previous\s+instructions/i,
+    /forget\s+everything/i,
+    /you\s+are\s+now/i,
+    /system\s*:?\s*ignore/i,
+    /override\s+your\s+instructions/i,
+    /pretend\s+to\s+be/i,
+    /role\s*play/i
+  ];
+  
+  return suspiciousPatterns.some(pattern => pattern.test(message));
+};
+
+// Rate limiting storage (in memory for this edge function)
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+const checkRateLimit = (identifier: string, maxRequests: number = 10, windowMs: number = 60000): boolean => {
+  const now = Date.now();
+  const record = rateLimitStore.get(identifier);
+  
+  if (!record || now > record.resetTime) {
+    rateLimitStore.set(identifier, { count: 1, resetTime: now + windowMs });
+    return true;
+  }
+  
+  if (record.count >= maxRequests) {
+    return false;
+  }
+  
+  record.count++;
+  return true;
+};
+
 const systemPrompt = `You are a specialized AI assistant for social workers and mental health professionals. Your primary purpose is to provide guidance, support, and information related to:
 
 1. **Social Work Practice**: AASW (Australian Association of Social Workers) guidelines, ethical considerations, case management, and professional development
@@ -62,17 +109,46 @@ serve(async (req) => {
   try {
     const { message, conversationHistory = [], userId }: ChatRequest = await req.json();
 
-    console.log('AI Assistant request:', { message, userId, historyLength: conversationHistory.length });
+    console.log('AI Assistant request:', { userId, historyLength: conversationHistory.length, messageLength: message?.length });
 
+    // Input validation and sanitization
     if (!message || typeof message !== 'string') {
       throw new Error('Message is required and must be a string');
     }
 
-    // Build conversation context
+    const sanitizedMessage = sanitizeInput(message);
+    if (!sanitizedMessage) {
+      throw new Error('Message cannot be empty after sanitization');
+    }
+
+    if (sanitizedMessage.length < 1 || sanitizedMessage.length > 4000) {
+      throw new Error('Message length must be between 1 and 4000 characters');
+    }
+
+    // Check for prompt injection attempts
+    if (checkForPromptInjection(sanitizedMessage)) {
+      throw new Error('Message contains prohibited content');
+    }
+
+    // Rate limiting
+    const identifier = userId || 'anonymous';
+    if (!checkRateLimit(identifier, 10, 60000)) { // 10 requests per minute
+      throw new Error('Rate limit exceeded. Please wait before sending another message.');
+    }
+
+    // Build conversation context with sanitized history
+    const sanitizedHistory = conversationHistory
+      .slice(-8) // Keep last 8 messages for context (reduced for security)
+      .map(msg => ({
+        role: msg.role,
+        content: sanitizeInput(msg.content)
+      }))
+      .filter(msg => msg.content); // Remove empty messages
+
     const messages: ChatMessage[] = [
       { role: 'system', content: systemPrompt },
-      ...conversationHistory.slice(-10), // Keep last 10 messages for context
-      { role: 'user', content: message }
+      ...sanitizedHistory,
+      { role: 'user', content: sanitizedMessage }
     ];
 
     // Call OpenAI API
@@ -82,14 +158,15 @@ serve(async (req) => {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages,
-        max_tokens: 1000,
-        temperature: 0.7,
-        presence_penalty: 0.1,
-        frequency_penalty: 0.1,
-      }),
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages,
+          max_tokens: 800, // Reduced for security
+          temperature: 0.7,
+          presence_penalty: 0.1,
+          frequency_penalty: 0.1,
+          user: userId, // Track user for OpenAI safety
+        }),
     });
 
     if (!response.ok) {
@@ -108,11 +185,15 @@ serve(async (req) => {
       try {
         const conversationData = {
           messages: [
-            ...conversationHistory.slice(-9), // Keep 9 previous + new exchange
-            { role: 'user', content: message },
+            ...sanitizedHistory.slice(-7), // Keep 7 previous + new exchange
+            { role: 'user', content: sanitizedMessage },
             { role: 'assistant', content: assistantResponse }
           ],
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          metadata: {
+            user_agent: req.headers.get('user-agent')?.slice(0, 200),
+            ip_hash: req.headers.get('x-forwarded-for')?.split(',')[0]?.slice(0, 45) // Store hash for security monitoring
+          }
         };
 
         await supabase
@@ -121,7 +202,7 @@ serve(async (req) => {
             {
               user_id: userId,
               title: `AI Conversation - ${new Date().toLocaleDateString()}`,
-              content: message,
+              content: sanitizedMessage.slice(0, 500), // Limit content stored
               conversation_data: conversationData,
             }
           ]);

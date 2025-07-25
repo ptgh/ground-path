@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Mail } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useContactFormSubmission } from '@/hooks/useMailingList';
+import { contactFormSchema, checkRateLimit } from '@/lib/validation';
+import { useToast } from '@/hooks/use-toast';
 import MailingListModal from './MailingListModal';
 
 const Contact = () => {
@@ -13,27 +15,61 @@ const Contact = () => {
     message: ''
   });
   const [isMailingListOpen, setIsMailingListOpen] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const contactFormMutation = useContactFormSubmission();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
     
-    if (!formData.name || !formData.email || !formData.message) {
+    // Rate limiting check
+    const clientIdentifier = `contact_${formData.email}_${Date.now().toString().slice(0, -3)}`;
+    if (!checkRateLimit(clientIdentifier, 3, 300000)) { // 3 requests per 5 minutes
+      toast({
+        title: "Too many requests",
+        description: "Please wait a few minutes before submitting again.",
+        variant: "destructive"
+      });
       return;
     }
 
-    await contactFormMutation.mutateAsync({
-      name: formData.name,
-      email: formData.email,
-      subject: formData.subject || 'General Enquiry',
-      message: formData.message,
-      status: 'new'
-    });
+    // Validate form data
+    try {
+      const validatedData = contactFormSchema.parse({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject || 'General Enquiry',
+        message: formData.message
+      });
 
-    // Reset form on success
-    if (!contactFormMutation.error) {
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      await contactFormMutation.mutateAsync({
+        name: validatedData.name,
+        email: validatedData.email,
+        subject: validatedData.subject,
+        message: validatedData.message,
+        status: 'new'
+      });
+
+      // Reset form on success
+      if (!contactFormMutation.error) {
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      }
+    } catch (error: any) {
+      if (error.errors) {
+        const newErrors: Record<string, string> = {};
+        error.errors.forEach((err: any) => {
+          const field = err.path[0];
+          newErrors[field] = err.message;
+        });
+        setErrors(newErrors);
+      }
+      toast({
+        title: "Validation Error",
+        description: "Please check your input and try again.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -175,8 +211,11 @@ const Contact = () => {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent ${
+                      errors.name ? 'border-red-500' : 'border-gray-200'
+                    }`}
                   />
+                  {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                 </div>
 
                 <div>
@@ -190,8 +229,11 @@ const Contact = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent ${
+                      errors.email ? 'border-red-500' : 'border-gray-200'
+                    }`}
                   />
+                  {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                 </div>
 
                 <div>
@@ -222,9 +264,12 @@ const Contact = () => {
                     required
                     value={formData.message}
                     onChange={handleChange}
-                    className="w-full h-full min-h-[100px] px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent resize-none"
+                    className={`w-full h-full min-h-[100px] px-4 py-3 border rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent resize-none ${
+                      errors.message ? 'border-red-500' : 'border-gray-200'
+                    }`}
                     placeholder="Tell us how we can help you..."
                   ></textarea>
+                  {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
                 </div>
               </div>
 
