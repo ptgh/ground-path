@@ -40,31 +40,58 @@ const handler = async (req: Request): Promise<Response> => {
 
     switch (type) {
       case 'contact_form':
-        subject = `New Contact Form Submission: ${data.subject}`;
+        subject = `New Contact Form Submission: ${data.subject} - Ground Path`;
         emailContent = `
-          <h1>New Contact Form Submission</h1>
-          <p><strong>Name:</strong> ${data.name}</p>
-          <p><strong>Email:</strong> ${data.email}</p>
-          <p><strong>Subject:</strong> ${data.subject}</p>
-          <p><strong>Message:</strong></p>
-          <p>${data.message.replace(/\n/g, '<br>')}</p>
-          <p><em>Submitted at: ${new Date().toLocaleString()}</em></p>
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h1 style="color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">New Contact Form Submission - Ground Path</h1>
+            <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p style="margin: 10px 0;"><strong>Name:</strong> ${data.name}</p>
+              <p style="margin: 10px 0;"><strong>Email:</strong> ${data.email}</p>
+              <p style="margin: 10px 0;"><strong>Subject:</strong> ${data.subject}</p>
+              <div style="margin: 20px 0;">
+                <strong>Message:</strong>
+                <div style="background-color: white; padding: 15px; border-radius: 4px; margin-top: 10px; border-left: 4px solid #2563eb;">
+                  ${data.message.replace(/\n/g, '<br>')}
+                </div>
+              </div>
+              <p style="margin: 10px 0; color: #64748b; font-size: 14px;"><em>Submitted at: ${new Date().toLocaleString()}</em></p>
+            </div>
+            <p style="color: #64748b; font-size: 14px; margin-top: 30px;">
+              This message was sent through the Ground Path contact form.
+            </p>
+          </div>
         `;
         break;
       
       case 'mailing_list_confirmation':
-        subject = 'Welcome to Social Work Pro - Confirm Your Subscription';
+        subject = 'Confirm your subscription - Ground Path';
         emailContent = `
-          <h1>Welcome to Social Work Pro!</h1>
-          <p>Thank you for subscribing to our newsletter. You'll receive updates about:</p>
-          <ul>
-            <li>Social work best practices and resources</li>
-            <li>NDIS updates and guidance</li>
-            <li>Professional development opportunities</li>
-            <li>Mental health support tools</li>
-          </ul>
-          <p>If you have any questions, please don't hesitate to contact us.</p>
-          <p>Best regards,<br>The Social Work Pro Team</p>
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h1 style="color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">Welcome to Ground Path!</h1>
+            <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p style="font-size: 16px; line-height: 1.6;">Thank you for subscribing to our mailing list. We're excited to keep you updated with the latest in social work and mental health support.</p>
+              <p style="font-size: 16px; line-height: 1.6; margin: 20px 0;">You'll receive updates about:</p>
+              <ul style="font-size: 16px; line-height: 1.6; margin: 15px 0; padding-left: 20px;">
+                <li style="margin: 8px 0;">Social work best practices and resources</li>
+                <li style="margin: 8px 0;">NDIS updates and guidance</li>
+                <li style="margin: 8px 0;">Professional development opportunities</li>
+                <li style="margin: 8px 0;">Mental health support tools</li>
+                <li style="margin: 8px 0;">Industry insights and news</li>
+              </ul>
+              ${data.confirmationUrl ? `
+              <p style="font-size: 16px; line-height: 1.6; margin: 20px 0;">Please click the button below to confirm your subscription:</p>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${data.confirmationUrl}" style="background-color: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Confirm Subscription</a>
+              </div>
+              ` : ''}
+              <p style="color: #64748b; font-size: 14px;">If you didn't subscribe to this mailing list, you can safely ignore this email.</p>
+            </div>
+            <p style="color: #64748b; font-size: 14px; margin-top: 30px;">
+              Best regards,<br>
+              The Ground Path Team<br>
+              Supporting social workers and mental health professionals across Australia
+            </p>
+          </div>
         `;
         break;
       
@@ -73,7 +100,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // For contact forms, send to admin; for confirmations, send to subscriber
-    const recipient = type === 'contact_form' ? 'admin@socialworkpro.com' : to;
+    const recipient = type === 'contact_form' ? to : to;
 
     const emailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -82,7 +109,7 @@ const handler = async (req: Request): Promise<Response> => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Social Work Pro <noreply@socialworkpro.com>',
+        from: 'Ground Path <noreply@groundpath.com.au>',
         to: [recipient],
         subject,
         html: emailContent,

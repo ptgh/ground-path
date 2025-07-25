@@ -166,11 +166,46 @@ class MailingListService {
   }
 
   private async sendConfirmationEmail(email: string, token: string) {
-    console.log('Sending confirmation email to:', email, 'with token:', token);
+    try {
+      const { error } = await supabase!.functions.invoke('send-email', {
+        body: {
+          type: 'mailing_list_confirmation',
+          to: email,
+          data: {
+            token,
+            confirmationUrl: `${window.location.origin}/confirm?token=${token}`
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Failed to send confirmation email:', error);
+      } else {
+        console.log('Confirmation email sent successfully to:', email);
+      }
+    } catch (error) {
+      console.error('Error sending confirmation email:', error);
+    }
   }
 
   private async sendContactFormNotification(submission: ContactFormSubmission) {
-    console.log('Sending contact form notification:', submission);
+    try {
+      const { error } = await supabase!.functions.invoke('send-email', {
+        body: {
+          type: 'contact_form',
+          to: 'admin@groundpath.com.au',
+          data: submission
+        }
+      });
+
+      if (error) {
+        console.error('Failed to send contact form notification:', error);
+      } else {
+        console.log('Contact form notification sent successfully');
+      }
+    } catch (error) {
+      console.error('Error sending contact form notification:', error);
+    }
   }
 }
 
