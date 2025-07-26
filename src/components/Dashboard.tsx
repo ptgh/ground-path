@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,6 +36,7 @@ import { notesService, Note } from '@/services/notesService';
 const Dashboard = () => {
   const { user, profile, roles, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [notes, setNotes] = useState<Note[]>([]);
   const [loadingNotes, setLoadingNotes] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
@@ -56,6 +57,14 @@ const Dashboard = () => {
       loadNotes();
     }
   }, [user]);
+
+  // Reset modal state when navigating to dashboard
+  useEffect(() => {
+    if (location.pathname === '/practitioner/dashboard') {
+      setIsNoteModalOpen(false);
+      setSelectedNote(null);
+    }
+  }, [location.pathname]);
 
   // Cleanup modal state on unmount
   useEffect(() => {
