@@ -1,27 +1,23 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { X, Save } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { notesService, Note } from '@/services/notesService';
 
 interface NoteModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   note?: Note | null;
   onSave: (note: Note) => void;
 }
 
-const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) => {
-  const modalRef = useRef<HTMLDivElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
+const NoteModal: React.FC<NoteModalProps> = ({ open, onOpenChange, note, onSave }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [saving, setSaving] = useState(false);
-
-  console.log('NoteModal render - isOpen:', isOpen);
 
   useEffect(() => {
     if (note) {
@@ -33,69 +29,13 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
     }
   }, [note]);
 
+  // Reset form when modal closes
   useEffect(() => {
-    if (isOpen) {
-      // Enhanced GSAP show animation with elegant effects
-      gsap.set([overlayRef.current, modalRef.current], { 
-        display: 'flex',
-        opacity: 0 
-      });
-      gsap.set(modalRef.current, { 
-        scale: 0.7, 
-        y: 60, 
-        rotationX: -15,
-        transformPerspective: 1000
-      });
-      
-      const tl = gsap.timeline();
-      
-      // Backdrop fade in with blur effect
-      tl.to(overlayRef.current, { 
-        opacity: 1, 
-        duration: 0.4,
-        ease: "power2.out"
-      })
-      // Modal entrance with elegant 3D effect
-      .to(modalRef.current, { 
-        opacity: 1, 
-        scale: 1, 
-        y: 0,
-        rotationX: 0,
-        duration: 0.6, 
-        ease: "elastic.out(1, 0.8)" 
-      }, 0.15)
-      // Subtle glow effect
-      .to(modalRef.current, {
-        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)",
-        duration: 0.3,
-        ease: "power2.out"
-      }, 0.3);
-      
-    } else {
-      // Enhanced GSAP hide animation
-      const tl = gsap.timeline();
-      
-      tl.to(modalRef.current, { 
-        opacity: 0, 
-        scale: 0.8, 
-        y: -30,
-        rotationX: 15,
-        duration: 0.3,
-        ease: "power2.in"
-      })
-      .to(overlayRef.current, { 
-        opacity: 0, 
-        duration: 0.2,
-        ease: "power2.in",
-        onComplete: () => {
-          gsap.set([overlayRef.current, modalRef.current], { 
-            display: 'none',
-            clearProps: "all" 
-          });
-        }
-      }, 0.1);
+    if (!open) {
+      setTitle('');
+      setContent('');
     }
-  }, [isOpen]);
+  }, [open]);
 
   const handleSave = async () => {
     if (!title.trim()) {
@@ -124,7 +64,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
       }
 
       onSave(savedNote);
-      onClose(); // Direct close after save - no animation delay
+      onOpenChange(false); // Close modal after successful save
     } catch (error) {
       console.error('Error saving note:', error);
       toast.error('Failed to save note');
@@ -133,68 +73,14 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
     }
   };
 
-  const handleClose = () => {
-    console.log('NoteModal handleClose called, saving:', saving);
-    if (saving) return;
-    
-    // CRITICAL FIX: Call onClose immediately to prevent stuck modal
-    onClose();
-    
-    // Reset form state
-    setTitle('');
-    setContent('');
-    
-    // Kill any running GSAP animations to prevent conflicts
-    gsap.killTweensOf([modalRef.current, overlayRef.current]);
-    
-    // Animate close as visual effect only (not blocking state)
-    const tl = gsap.timeline();
-    tl.to(modalRef.current, { 
-      opacity: 0, 
-      scale: 0.8, 
-      y: -30,
-      rotationX: 15,
-      duration: 0.3,
-      ease: "power2.in"
-    })
-    .to(overlayRef.current, { 
-      opacity: 0, 
-      duration: 0.2,
-      ease: "power2.in",
-      onComplete: () => {
-        gsap.set([overlayRef.current, modalRef.current], { 
-          display: 'none',
-          clearProps: "all" 
-        });
-      }
-    }, 0.1);
-  };
-
   return (
-    <div
-      ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-1 sm:p-4"
-      style={{ display: 'none' }}
-      onClick={(e) => e.target === overlayRef.current && handleClose()}
-    >
-      <div
-        ref={modalRef}
-        className="w-full max-w-sm sm:max-w-lg bg-background rounded-lg shadow-lg border p-3 sm:p-6 space-y-2 sm:space-y-4 max-h-[85vh] sm:max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="w-full max-w-sm sm:max-w-lg p-3 sm:p-6 space-y-2 sm:space-y-4 max-h-[85vh] sm:max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>
             {note ? 'Edit Note' : 'Create New Note'}
-          </h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleClose}
-            disabled={saving}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
 
         <div className="space-y-3 sm:space-y-4">
           <div>
@@ -224,7 +110,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
         <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:space-x-2 sm:gap-0">
           <Button
             variant="outline"
-            onClick={handleClose}
+            onClick={() => onOpenChange(false)}
             disabled={saving}
             className="w-full sm:w-auto"
           >
@@ -245,8 +131,8 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
             )}
           </Button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

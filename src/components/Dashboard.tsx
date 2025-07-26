@@ -586,11 +586,8 @@ const Dashboard = () => {
       <Footer />
       
       <NoteModal
-        isOpen={isNoteModalOpen}
-        onClose={() => {
-          console.log('Dashboard onClose called');
-          setIsNoteModalOpen(false);
-        }}
+        open={isNoteModalOpen}
+        onOpenChange={setIsNoteModalOpen}
         note={selectedNote}
         onSave={handleNoteSave}
       />
