@@ -121,50 +121,81 @@ const FormHistory = ({ onViewForm }: FormHistoryProps) => {
   };
 
   const handlePrint = (submission: FormSubmission) => {
-    // Create a printable version of the form
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      const client = clients.find(c => c.id === submission.client_id);
-      const clientName = client ? `${client.first_name} ${client.last_name}` : 'Unknown Client';
-      
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>${submission.form_type} - ${clientName}</title>
-            <style>
-              body { font-family: Arial, sans-serif; margin: 20px; }
-              .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
-              .section { margin-bottom: 15px; }
-              .label { font-weight: bold; }
-              .score-box { background: #f5f5f5; padding: 15px; border: 1px solid #ddd; margin: 15px 0; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <h1>Ground Path Professional Services</h1>
-              <h2>${submission.form_type}</h2>
-              <p><strong>Patient:</strong> ${clientName}</p>
-              <p><strong>Date:</strong> ${new Date(submission.completed_at).toLocaleDateString()}</p>
+    const client = clients.find(c => c.id === submission.client_id);
+    const clientName = client ? `${client.first_name} ${client.last_name}` : 'Unknown Client';
+    
+    // Create a temporary div for printing
+    const printContent = document.createElement('div');
+    printContent.innerHTML = `
+      <div style="font-family: Arial, sans-serif; margin: 0; padding: 20px;">
+        <div style="border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+          <h1 style="margin: 0; color: #333;">Ground Path Professional Services</h1>
+          <h2 style="margin: 10px 0; color: #666;">${submission.form_type}</h2>
+          <p style="margin: 5px 0;"><strong>Patient:</strong> ${clientName}</p>
+          <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(submission.completed_at).toLocaleDateString()}</p>
+          <p style="margin: 5px 0;"><strong>Time:</strong> ${new Date(submission.completed_at).toLocaleTimeString()}</p>
+        </div>
+        <div>
+          ${submission.score !== null ? `
+            <div style="background: #f8f9fa; padding: 15px; border: 1px solid #dee2e6; border-radius: 4px; margin: 15px 0;">
+              <div style="font-weight: bold; font-size: 16px; margin-bottom: 10px;">Assessment Results</div>
+              <div style="font-weight: bold;">Total Score: ${submission.score}</div>
+              ${submission.interpretation ? `<p style="margin: 10px 0 0 0;"><strong>Clinical Interpretation:</strong> ${submission.interpretation}</p>` : ''}
             </div>
-            <div class="content">
-              ${submission.score !== null ? `
-                <div class="score-box">
-                  <div class="label">Total Score: ${submission.score}</div>
-                  ${submission.interpretation ? `<p><strong>Interpretation:</strong> ${submission.interpretation}</p>` : ''}
-                </div>
-              ` : ''}
-              <div class="section">
-                <h3>Form Data:</h3>
-                <pre>${JSON.stringify(submission.form_data, null, 2)}</pre>
-              </div>
+          ` : ''}
+          <div style="margin-bottom: 15px;">
+            <h3 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Assessment Details</h3>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; white-space: pre-wrap; font-family: monospace; font-size: 12px;">
+${JSON.stringify(submission.form_data, null, 2)}
             </div>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-    }
+          </div>
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666;">
+            <p><strong>Confidential Document</strong> - This assessment contains confidential patient information and should be handled according to privacy regulations.</p>
+            <p>Generated on ${new Date().toLocaleString()} | Ground Path Professional Services</p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Create print styles
+    const printStyles = document.createElement('style');
+    printStyles.innerHTML = `
+      @media print {
+        body * { visibility: hidden; }
+        .print-content, .print-content * { visibility: visible; }
+        .print-content { 
+          position: absolute; 
+          left: 0; 
+          top: 0; 
+          width: 100%; 
+          margin: 0;
+          padding: 0;
+        }
+        @page { 
+          margin: 1in; 
+          size: A4;
+        }
+      }
+    `;
+
+    // Add styles and content to document
+    document.head.appendChild(printStyles);
+    printContent.className = 'print-content';
+    printContent.style.display = 'none';
+    document.body.appendChild(printContent);
+
+    // Print and cleanup
+    printContent.style.display = 'block';
+    window.print();
+    
+    setTimeout(() => {
+      if (document.head.contains(printStyles)) {
+        document.head.removeChild(printStyles);
+      }
+      if (document.body.contains(printContent)) {
+        document.body.removeChild(printContent);
+      }
+    }, 1000);
   };
 
   const formTypes = [...new Set(submissions.map(s => s.form_type))];
