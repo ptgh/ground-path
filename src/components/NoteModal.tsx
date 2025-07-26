@@ -122,7 +122,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
       }
 
       onSave(savedNote);
-      onClose();
+      handleClose();
     } catch (error) {
       console.error('Error saving note:', error);
       toast.error('Failed to save note');
