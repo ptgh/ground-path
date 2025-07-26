@@ -9,7 +9,11 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
+import { Users } from 'lucide-react';
 import InteractiveFormLayout from './InteractiveFormLayout';
+import { ClientSelectionModal } from './ClientSelectionModal';
+import { clientService, Client } from '@/services/clientService';
 
 const phq9Schema = z.object({
   patientName: z.string().min(1, 'Patient name is required'),
@@ -56,6 +60,8 @@ const difficultyOptions = [
 
 const PHQ9Form = () => {
   const [score, setScore] = useState<number | null>(null);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [showClientModal, setShowClientModal] = useState(false);
   
   const form = useForm<PHQ9FormData>({
     resolver: zodResolver(phq9Schema),
@@ -79,10 +85,28 @@ const PHQ9Form = () => {
     return { level: 'Severe', color: 'bg-red-200 text-red-900', description: 'Severe depression' };
   };
 
-  const onSubmit = (data: PHQ9FormData) => {
+  const onSubmit = async (data: PHQ9FormData) => {
     const totalScore = calculateScore(data);
+    const interpretation = getScoreInterpretation(totalScore);
     setScore(totalScore);
-    console.log('PHQ-9 Form Data:', { ...data, totalScore });
+
+    // Save to database if client is selected
+    if (selectedClient) {
+      try {
+        await clientService.saveFormSubmission({
+          client_id: selectedClient.id,
+          form_type: 'PHQ-9',
+          form_data: data,
+          score: totalScore,
+          interpretation: `${interpretation.level} - ${interpretation.description}`,
+          completed_at: new Date().toISOString()
+        });
+        toast.success('PHQ-9 assessment saved successfully');
+      } catch (error) {
+        console.error('Error saving PHQ-9 assessment:', error);
+        toast.error('Failed to save assessment');
+      }
+    }
   };
 
   const handlePrint = () => {
@@ -98,17 +122,45 @@ const PHQ9Form = () => {
     document.body.removeChild(link);
   };
 
+  const handleClientSelected = (client: Client) => {
+    setSelectedClient(client);
+    setShowClientModal(false);
+    form.setValue('patientName', `${client.first_name} ${client.last_name}`);
+  };
+
   return (
     <InteractiveFormLayout
       title="PHQ-9 Depression Questionnaire"
       description="Patient Health Questionnaire for depression screening"
       source="Developed by Drs. Robert L. Spitzer, Janet B.W. Williams, Kurt Kroenke and colleagues"
       sourceUrl="https://www.phqscreeners.com/select-screener"
+      onSave={selectedClient ? form.handleSubmit(onSubmit) : undefined}
       onPrint={handlePrint}
       onDownload={handleDownload}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Client Selection */}
+          <Card className="border-2 border-primary/20">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-primary" />
+                  <span className="font-medium">
+                    {selectedClient ? `${selectedClient.first_name} ${selectedClient.last_name}` : 'No client selected'}
+                  </span>
+                </div>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowClientModal(true)}
+                >
+                  {selectedClient ? 'Change Client' : 'Select Client'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
           {/* Patient Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
@@ -228,7 +280,7 @@ const PHQ9Form = () => {
           {/* Submit Button */}
           <div className="flex justify-center">
             <Button type="submit" size="lg" className="px-8">
-              Calculate Score
+              {selectedClient ? 'Calculate & Save' : 'Calculate Score'}
             </Button>
           </div>
 
@@ -258,6 +310,12 @@ const PHQ9Form = () => {
           )}
         </form>
       </Form>
+
+      <ClientSelectionModal
+        isOpen={showClientModal}
+        onClose={() => setShowClientModal(false)}
+        onClientSelected={handleClientSelected}
+      />
     </InteractiveFormLayout>
   );
 };

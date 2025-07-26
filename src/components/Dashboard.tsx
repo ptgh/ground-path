@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,11 +29,12 @@ import {
 import Header from './Header';
 import Footer from './Footer';
 import ProfessionalProfileModal from './ProfessionalProfileModal';
+import { notesService, Note } from '@/services/notesService';
 
 const Dashboard = () => {
   const { user, profile, roles, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [loadingNotes, setLoadingNotes] = useState(true);
 
   // Redirect to auth if not authenticated
@@ -46,16 +48,36 @@ const Dashboard = () => {
   // Load user notes
   useEffect(() => {
     if (user) {
-      // Simulate loading notes - in real app, fetch from Supabase
-      setTimeout(() => {
-        setNotes([
-          { id: 1, title: 'Client Session Notes', created_at: '2024-01-10', content: 'Progress noted in therapy...' },
-          { id: 2, title: 'Professional Development Plan', created_at: '2024-01-08', content: 'Goals for 2024...' }
-        ]);
-        setLoadingNotes(false);
-      }, 1000);
+      loadNotes();
     }
   }, [user]);
+
+  const loadNotes = async () => {
+    try {
+      setLoadingNotes(true);
+      const userNotes = await notesService.getNotes();
+      setNotes(userNotes);
+    } catch (error) {
+      console.error('Error loading notes:', error);
+      toast.error('Failed to load notes');
+    } finally {
+      setLoadingNotes(false);
+    }
+  };
+
+  const createNewNote = async () => {
+    try {
+      const newNote = await notesService.createNote({
+        title: 'New Note',
+        content: 'Start writing your note here...'
+      });
+      setNotes(prev => [newNote, ...prev]);
+      toast.success('New note created');
+    } catch (error) {
+      console.error('Error creating note:', error);
+      toast.error('Failed to create note');
+    }
+  };
 
   if (authLoading) {
     return (
@@ -97,7 +119,7 @@ const Dashboard = () => {
       title: 'Create Note', 
       description: 'Document client interactions', 
       icon: PlusCircle, 
-      action: () => console.log('Create note')
+      action: createNewNote
     },
     { 
       title: 'View Resources', 
@@ -244,10 +266,12 @@ const Dashboard = () => {
                       </div>
                     ) : notes.length > 0 ? (
                       <div className="space-y-3">
-                        {notes.slice(0, 3).map((note: any) => (
+                        {notes.slice(0, 3).map((note) => (
                           <div key={note.id} className="border-l-2 border-primary pl-4">
                             <h4 className="font-medium">{note.title}</h4>
-                            <p className="text-sm text-muted-foreground">{note.created_at}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {new Date(note.created_at).toLocaleDateString()}
+                            </p>
                           </div>
                         ))}
                         <Button variant="ghost" className="w-full mt-4" size="sm">
@@ -417,7 +441,10 @@ const Dashboard = () => {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      <Button className="w-full md:w-auto">
+                      <Button 
+                        className="w-full md:w-auto"
+                        onClick={createNewNote}
+                      >
                         <PlusCircle className="h-4 w-4 mr-2" />
                         Create New Note
                       </Button>
