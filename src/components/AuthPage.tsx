@@ -30,6 +30,22 @@ const AuthPage = () => {
     checkAuth();
   }, [navigate]);
 
+  // Handle OAuth redirects - fixes Apple login stuck on auth page
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        console.log('User signed in via OAuth:', session.user);
+        // Force redirect using window.location.href for OAuth flows
+        // This is more reliable than navigate() after OAuth redirects
+        window.location.href = '/practitioner/dashboard';
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
