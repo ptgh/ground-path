@@ -133,6 +133,8 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
 
   const handleClose = () => {
     if (saving) return;
+    setTitle('');
+    setContent('');
     onClose();
   };
 
