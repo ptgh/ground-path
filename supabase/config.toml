@@ -10,8 +10,8 @@ max_rows = 1000
 [auth]
 enabled = true
 port = 9999
-site_url = "http://localhost:3000"
-additional_redirect_urls = ["https://localhost:3000"]
+site_url = "https://groundpath.com.au"
+additional_redirect_urls = ["https://localhost:3000", "https://groundpath.com.au"]
 jwt_expiry = 600
 refresh_token_rotation_enabled = true
 refresh_token_reuse_interval = 10
@@ -21,7 +21,7 @@ enable_signup = true
 enabled = true
 client_id = ""
 secret = ""
-redirect_uri = "http://localhost:3000/auth/callback"
+redirect_uri = "https://groundpath.com.au/practitioner/auth/callback"
 
 [db]
 enabled = true

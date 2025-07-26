@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AuthPage from "@/components/AuthPage";
+import AuthCallback from "@/components/AuthCallback";
 import Dashboard from "@/components/Dashboard";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -37,6 +38,7 @@ const App = () => {
             {/* Redirect /auth to /practitioner/auth for backwards compatibility */}
             <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
             <Route path="/practitioner/auth" element={<AuthPage />} />
+            <Route path="/practitioner/auth/callback" element={<AuthCallback />} />
             <Route path="/practitioner/dashboard" element={<Dashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
