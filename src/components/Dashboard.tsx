@@ -46,13 +46,16 @@ const Dashboard = () => {
   // Debug logging
   console.log('Dashboard render - isNoteModalOpen:', isNoteModalOpen);
 
-  // Redirect to auth if not authenticated
+  // Development bypass for testing (remove in production)
+  const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  
+  // Redirect to auth if not authenticated (bypass in development)
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (!authLoading && !user && !isDevelopment) {
       console.log('Dashboard: Redirecting unauthenticated user to auth page');
       navigate('/practitioner/auth');
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, navigate, isDevelopment]);
 
   // Load user notes
   useEffect(() => {

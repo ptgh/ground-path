@@ -124,7 +124,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
       }
 
       onSave(savedNote);
-      handleClose();
+      onClose(); // Direct close after save - no animation delay
     } catch (error) {
       console.error('Error saving note:', error);
       toast.error('Failed to save note');
@@ -137,14 +137,17 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
     console.log('NoteModal handleClose called, saving:', saving);
     if (saving) return;
     
-    // Kill any running GSAP animations to prevent conflicts
-    gsap.killTweensOf([modalRef.current, overlayRef.current]);
+    // CRITICAL FIX: Call onClose immediately to prevent stuck modal
+    onClose();
     
     // Reset form state
     setTitle('');
     setContent('');
     
-    // Force close animation
+    // Kill any running GSAP animations to prevent conflicts
+    gsap.killTweensOf([modalRef.current, overlayRef.current]);
+    
+    // Animate close as visual effect only (not blocking state)
     const tl = gsap.timeline();
     tl.to(modalRef.current, { 
       opacity: 0, 
@@ -163,7 +166,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
           display: 'none',
           clearProps: "all" 
         });
-        onClose();
       }
     }, 0.1);
   };
