@@ -112,13 +112,13 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4"
       style={{ display: 'none' }}
       onClick={(e) => e.target === overlayRef.current && handleClose()}
     >
       <div
         ref={modalRef}
-        className="w-full max-w-lg bg-background rounded-lg shadow-lg border p-6 space-y-4"
+        className="w-full max-w-lg bg-background rounded-lg shadow-lg border p-4 sm:p-6 space-y-3 sm:space-y-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -135,40 +135,44 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
           </Button>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">Title</label>
+            <label className="text-sm font-medium mb-1.5 sm:mb-2 block">Title</label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter note title..."
               disabled={saving}
+              className="text-base sm:text-sm"
             />
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Content</label>
+            <label className="text-sm font-medium mb-1.5 sm:mb-2 block">Content</label>
             <Textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Start writing your note here..."
-              rows={6}
+              rows={4}
               disabled={saving}
+              className="text-base sm:text-sm min-h-[120px] sm:min-h-[140px] resize-none"
             />
           </div>
         </div>
 
-        <div className="flex justify-end space-x-2">
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:space-x-2 sm:gap-0">
           <Button
             variant="outline"
             onClick={handleClose}
             disabled={saving}
+            className="w-full sm:w-auto"
           >
             Cancel
           </Button>
           <Button
             onClick={handleSave}
             disabled={saving || !title.trim()}
+            className="w-full sm:w-auto"
           >
             {saving ? (
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
