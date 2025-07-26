@@ -57,12 +57,17 @@ export const clientService = {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) throw new Error('Not authenticated');
 
+    // Clean up empty date fields to prevent database errors
+    const cleanedClient = {
+      ...client,
+      date_of_birth: client.date_of_birth === '' ? null : client.date_of_birth,
+      intake_date: client.intake_date === '' ? null : client.intake_date,
+      practitioner_id: userData.user.id
+    };
+
     const { data, error } = await supabase
       .from('clients')
-      .insert({
-        ...client,
-        practitioner_id: userData.user.id
-      })
+      .insert(cleanedClient)
       .select()
       .single();
     
