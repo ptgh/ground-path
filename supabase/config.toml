@@ -17,6 +17,12 @@ refresh_token_rotation_enabled = true
 refresh_token_reuse_interval = 10
 enable_signup = true
 
+[auth.external.apple]
+enabled = true
+client_id = ""
+secret = ""
+redirect_uri = "http://localhost:3000/auth/callback"
+
 [db]
 enabled = true
 port = 54322

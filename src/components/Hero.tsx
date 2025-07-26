@@ -57,7 +57,7 @@ const Hero = () => {
           
           {/* Subheading */}
           <p className="fade-in text-xl sm:text-2xl text-gray-600 mb-12 font-light leading-relaxed">
-            Social Work & Mental Health Support — Online & In-Person
+            Social Work, Counselling & Mental Health Support — Online & In-Person
           </p>
 
           {/* CTA Buttons */}
