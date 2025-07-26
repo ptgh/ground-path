@@ -9,6 +9,7 @@ import { clientService, Client, FormSubmission } from '@/services/clientService'
 import { pdfService } from '@/services/pdfService';
 import { notesService, Note } from '@/services/notesService';
 import { toast } from 'sonner';
+import FormViewModal from '@/components/FormViewModal';
 import { 
   FileText, 
   Download, 
@@ -35,6 +36,9 @@ const FormHistory = ({ onViewForm }: FormHistoryProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFormType, setSelectedFormType] = useState<string>('all');
   const [selectedClient, setSelectedClient] = useState<string>('all');
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedData, setSelectedData] = useState<FormSubmission | Note | null>(null);
+  const [modalType, setModalType] = useState<'form' | 'note'>('form');
 
   useEffect(() => {
     loadData();
@@ -198,6 +202,18 @@ ${JSON.stringify(submission.form_data, null, 2)}
     }, 1000);
   };
 
+  const handleViewSubmission = (submission: FormSubmission) => {
+    setSelectedData(submission);
+    setModalType('form');
+    setIsViewModalOpen(true);
+  };
+
+  const handleViewNote = (note: Note) => {
+    setSelectedData(note);
+    setModalType('note');
+    setIsViewModalOpen(true);
+  };
+
   const formTypes = [...new Set(submissions.map(s => s.form_type))];
   const filteredSubmissions = filterSubmissions();
 
@@ -306,8 +322,8 @@ ${JSON.stringify(submission.form_data, null, 2)}
               </Card>
             ) : (
               filteredSubmissions.map((submission) => (
-                <Card key={submission.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4 sm:p-6">
+                <Card key={submission.id} className="hover:shadow-lg transition-all duration-200 cursor-pointer hover:scale-[1.01]">
+                  <CardContent className="p-4 sm:p-6" onClick={() => handleViewSubmission(submission)}>
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                       <div className="space-y-2 flex-1">
                         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -346,31 +362,40 @@ ${JSON.stringify(submission.form_data, null, 2)}
                       
                       <div className="flex flex-row sm:flex-col lg:flex-row gap-2">
                         {onViewForm && (
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => onViewForm(submission)}
-                            className="flex-1 sm:flex-none"
-                          >
-                            <Eye className="h-4 w-4 sm:mr-2" />
-                            <span className="hidden sm:inline">View</span>
-                          </Button>
-                        )}
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handlePrint(submission)}
-                          className="flex-1 sm:flex-none"
-                        >
-                          <Printer className="h-4 w-4 sm:mr-2" />
-                          <span className="hidden sm:inline">Print</span>
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleDownloadPDF(submission)}
-                          className="flex-1 sm:flex-none"
-                        >
+                           <Button 
+                             variant="outline" 
+                             size="sm"
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               onViewForm(submission);
+                             }}
+                             className="flex-1 sm:flex-none"
+                           >
+                             <Eye className="h-4 w-4 sm:mr-2" />
+                             <span className="hidden sm:inline">View</span>
+                           </Button>
+                         )}
+                         <Button 
+                           variant="outline" 
+                           size="sm"
+                           onClick={(e) => {
+                             e.stopPropagation();
+                             handlePrint(submission);
+                           }}
+                           className="flex-1 sm:flex-none"
+                         >
+                           <Printer className="h-4 w-4 sm:mr-2" />
+                           <span className="hidden sm:inline">Print</span>
+                         </Button>
+                         <Button 
+                           variant="outline" 
+                           size="sm"
+                           onClick={(e) => {
+                             e.stopPropagation();
+                             handleDownloadPDF(submission);
+                           }}
+                           className="flex-1 sm:flex-none"
+                         >
                           <Download className="h-4 w-4 sm:mr-2" />
                           <span className="hidden sm:inline">PDF</span>
                         </Button>
@@ -397,8 +422,8 @@ ${JSON.stringify(submission.form_data, null, 2)}
               </Card>
             ) : (
               notes.map((note) => (
-                <Card key={note.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
+                <Card key={note.id} className="hover:shadow-lg transition-all duration-200 cursor-pointer hover:scale-[1.01]">
+                  <CardContent className="p-6" onClick={() => handleViewNote(note)}>
                     <div className="flex items-start justify-between">
                       <div className="space-y-2">
                         <h3 className="font-semibold text-lg flex items-center gap-2">
@@ -434,6 +459,17 @@ ${JSON.stringify(submission.form_data, null, 2)}
           </div>
         </TabsContent>
       </Tabs>
+
+      <FormViewModal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        data={selectedData}
+        type={modalType}
+        onDownloadPDF={handleDownloadPDF}
+        onPrint={handlePrint}
+        getClientName={getClientName}
+        getFormTypeColor={getFormTypeColor}
+      />
     </div>
   );
 };

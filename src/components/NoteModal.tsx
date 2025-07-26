@@ -33,38 +33,65 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
 
   useEffect(() => {
     if (isOpen) {
-      // Show modal with GSAP animation
+      // Enhanced GSAP show animation with elegant effects
       gsap.set([overlayRef.current, modalRef.current], { 
         display: 'flex',
         opacity: 0 
       });
-      gsap.set(modalRef.current, { scale: 0.8, y: 50 });
+      gsap.set(modalRef.current, { 
+        scale: 0.7, 
+        y: 60, 
+        rotationX: -15,
+        transformPerspective: 1000
+      });
       
-      gsap.timeline()
-        .to(overlayRef.current, { opacity: 1, duration: 0.2 })
-        .to(modalRef.current, { 
-          opacity: 1, 
-          scale: 1, 
-          y: 0, 
-          duration: 0.3, 
-          ease: "back.out(1.7)" 
-        }, 0.1);
+      const tl = gsap.timeline();
+      
+      // Backdrop fade in with blur effect
+      tl.to(overlayRef.current, { 
+        opacity: 1, 
+        duration: 0.4,
+        ease: "power2.out"
+      })
+      // Modal entrance with elegant 3D effect
+      .to(modalRef.current, { 
+        opacity: 1, 
+        scale: 1, 
+        y: 0,
+        rotationX: 0,
+        duration: 0.6, 
+        ease: "elastic.out(1, 0.8)" 
+      }, 0.15)
+      // Subtle glow effect
+      .to(modalRef.current, {
+        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)",
+        duration: 0.3,
+        ease: "power2.out"
+      }, 0.3);
+      
     } else {
-      // Hide modal with GSAP animation
-      gsap.timeline()
-        .to(modalRef.current, { 
-          opacity: 0, 
-          scale: 0.8, 
-          y: 50, 
-          duration: 0.2 
-        })
-        .to(overlayRef.current, { 
-          opacity: 0, 
-          duration: 0.2,
-          onComplete: () => {
-            gsap.set([overlayRef.current, modalRef.current], { display: 'none' });
-          }
-        }, 0.1);
+      // Enhanced GSAP hide animation
+      const tl = gsap.timeline();
+      
+      tl.to(modalRef.current, { 
+        opacity: 0, 
+        scale: 0.8, 
+        y: -30,
+        rotationX: 15,
+        duration: 0.3,
+        ease: "power2.in"
+      })
+      .to(overlayRef.current, { 
+        opacity: 0, 
+        duration: 0.2,
+        ease: "power2.in",
+        onComplete: () => {
+          gsap.set([overlayRef.current, modalRef.current], { 
+            display: 'none',
+            clearProps: "all" 
+          });
+        }
+      }, 0.1);
     }
   }, [isOpen]);
 
