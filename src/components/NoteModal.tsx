@@ -133,9 +133,36 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
 
   const handleClose = () => {
     if (saving) return;
+    
+    // Kill any running GSAP animations to prevent conflicts
+    gsap.killTweensOf([modalRef.current, overlayRef.current]);
+    
+    // Reset form state
     setTitle('');
     setContent('');
-    onClose();
+    
+    // Force close animation
+    const tl = gsap.timeline();
+    tl.to(modalRef.current, { 
+      opacity: 0, 
+      scale: 0.8, 
+      y: -30,
+      rotationX: 15,
+      duration: 0.3,
+      ease: "power2.in"
+    })
+    .to(overlayRef.current, { 
+      opacity: 0, 
+      duration: 0.2,
+      ease: "power2.in",
+      onComplete: () => {
+        gsap.set([overlayRef.current, modalRef.current], { 
+          display: 'none',
+          clearProps: "all" 
+        });
+        onClose();
+      }
+    }, 0.1);
   };
 
   return (
