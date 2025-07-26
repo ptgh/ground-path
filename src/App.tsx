@@ -13,6 +13,9 @@ import Resources from "./pages/Resources";
 import ProfessionalForms from "./pages/ProfessionalForms";
 import PHQ9Form from "./components/forms/PHQ9Form";
 import GAD7Form from "./components/forms/GAD7Form";
+import { DASS21Form } from "./components/forms/DASS21Form";
+import { MSEForm } from "./components/forms/MSEForm";
+import { SuicideRiskForm } from "./components/forms/SuicideRiskForm";
 
 const queryClient = new QueryClient();
 
@@ -39,8 +42,11 @@ const App = () => {
             <Route path="/" element={<Index />} />
             <Route path="/resources" element={<Resources />} />
             <Route path="/practitioner/forms" element={<ProfessionalForms />} />
-            <Route path="/practitioner/forms/phq-9/fill" element={<PHQ9Form />} />
-            <Route path="/practitioner/forms/gad-7/fill" element={<GAD7Form />} />
+        <Route path="/practitioner/forms/phq-9/fill" element={<PHQ9Form />} />
+        <Route path="/practitioner/forms/gad-7/fill" element={<GAD7Form />} />
+        <Route path="/practitioner/forms/dass-21/fill" element={<DASS21Form />} />
+        <Route path="/practitioner/forms/mental-status-exam/fill" element={<MSEForm />} />
+        <Route path="/practitioner/forms/suicide-risk-assessment/fill" element={<SuicideRiskForm />} />
             {/* Redirect /auth to /practitioner/auth for backwards compatibility */}
             <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
             <Route path="/practitioner/auth" element={<AuthPage />} />

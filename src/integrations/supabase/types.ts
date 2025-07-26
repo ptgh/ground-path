@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      clients: {
+        Row: {
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string | null
+          date_of_birth: string | null
+          emergency_contact: Json | null
+          first_name: string
+          id: string
+          intake_date: string | null
+          last_name: string
+          notes: string | null
+          practitioner_id: string
+          presenting_concerns: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          emergency_contact?: Json | null
+          first_name: string
+          id?: string
+          intake_date?: string | null
+          last_name: string
+          notes?: string | null
+          practitioner_id: string
+          presenting_concerns?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          emergency_contact?: Json | null
+          first_name?: string
+          id?: string
+          intake_date?: string | null
+          last_name?: string
+          notes?: string | null
+          practitioner_id?: string
+          presenting_concerns?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       contact_forms: {
         Row: {
           created_at: string | null
@@ -46,6 +97,53 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      form_submissions: {
+        Row: {
+          client_id: string | null
+          completed_at: string | null
+          created_at: string | null
+          form_data: Json
+          form_type: string
+          id: string
+          interpretation: string | null
+          practitioner_id: string
+          score: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          form_data?: Json
+          form_type: string
+          id?: string
+          interpretation?: string | null
+          practitioner_id: string
+          score?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          form_data?: Json
+          form_type?: string
+          id?: string
+          interpretation?: string | null
+          practitioner_id?: string
+          score?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "form_submissions_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mailing_list: {
         Row: {
