@@ -17,11 +17,6 @@ refresh_token_rotation_enabled = true
 refresh_token_reuse_interval = 10
 enable_signup = true
 
-[auth.external.apple]
-enabled = true
-client_id = ""
-secret = ""
-redirect_uri = "https://groundpath.com.au/practitioner/auth/callback"
 
 [db]
 enabled = true
