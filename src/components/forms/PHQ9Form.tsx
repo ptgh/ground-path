@@ -113,13 +113,28 @@ const PHQ9Form = () => {
     window.print();
   };
 
-  const handleDownload = () => {
-    const link = document.createElement('a');
-    link.href = '/forms/PHQ-9.pdf';
-    link.download = 'PHQ-9-Depression-Questionnaire.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownload = async () => {
+    const watchedValues = form.watch();
+    if (!watchedValues.patientName || !watchedValues.date) {
+      toast.error('Please fill in patient name and date first');
+      return;
+    }
+    
+    try {
+      const { pdfService } = await import('@/services/pdfService');
+      await pdfService.downloadPDF({
+        formType: 'PHQ-9',
+        patientName: watchedValues.patientName,
+        date: watchedValues.date,
+        formData: watchedValues,
+        score,
+        interpretation: score !== null ? getScoreInterpretation(score).description : undefined
+      });
+      toast.success('PDF downloaded successfully');
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      toast.error('Failed to download PDF');
+    }
   };
 
   const handleClientSelected = (client: Client) => {

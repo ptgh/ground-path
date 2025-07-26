@@ -161,13 +161,34 @@ export const DASS21Form = () => {
     window.print();
   };
 
-  const handleDownload = () => {
-    const link = document.createElement('a');
-    link.href = '/forms/DASS-21.pdf';
-    link.download = 'DASS-21-Scale.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownload = async () => {
+    const watchedValues = form.watch();
+    if (!watchedValues.patientName || !watchedValues.date) {
+      toast.error('Please fill in patient name and date first');
+      return;
+    }
+    
+    try {
+      const { pdfService } = await import('@/services/pdfService');
+      await pdfService.downloadPDF({
+        formType: 'DASS-21',
+        patientName: watchedValues.patientName,
+        date: watchedValues.date,
+        formData: {
+          ...watchedValues,
+          depressionScore: scores?.depression,
+          anxietyScore: scores?.anxiety,
+          stressScore: scores?.stress
+        },
+        interpretation: scores ? 
+          `Depression: ${getInterpretation(scores.depression, 'depression').level}, Anxiety: ${getInterpretation(scores.anxiety, 'anxiety').level}, Stress: ${getInterpretation(scores.stress, 'stress').level}` 
+          : undefined
+      });
+      toast.success('PDF downloaded successfully');
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      toast.error('Failed to download PDF');
+    }
   };
 
   const handleClientSelected = (client: Client) => {

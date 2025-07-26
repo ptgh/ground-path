@@ -108,13 +108,28 @@ const GAD7Form = () => {
     window.print();
   };
 
-  const handleDownload = () => {
-    const link = document.createElement('a');
-    link.href = '/forms/GAD-7.pdf';
-    link.download = 'GAD-7-Anxiety-Scale.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownload = async () => {
+    const watchedValues = form.watch();
+    if (!watchedValues.patientName || !watchedValues.date) {
+      toast.error('Please fill in patient name and date first');
+      return;
+    }
+    
+    try {
+      const { pdfService } = await import('@/services/pdfService');
+      await pdfService.downloadPDF({
+        formType: 'GAD-7',
+        patientName: watchedValues.patientName,
+        date: watchedValues.date,
+        formData: watchedValues,
+        score,
+        interpretation: score !== null ? getScoreInterpretation(score).description : undefined
+      });
+      toast.success('PDF downloaded successfully');
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      toast.error('Failed to download PDF');
+    }
   };
 
   const handleClientSelected = (client: Client) => {

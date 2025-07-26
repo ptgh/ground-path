@@ -29,6 +29,7 @@ import {
 import Header from './Header';
 import Footer from './Footer';
 import ProfessionalProfileModal from './ProfessionalProfileModal';
+import FormHistory from './FormHistory';
 import { notesService, Note } from '@/services/notesService';
 
 const Dashboard = () => {
@@ -210,9 +211,10 @@ const Dashboard = () => {
           </div>
 
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-auto p-1">
+            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-auto p-1">
               <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 px-3 data-[state=active]:text-foreground">Overview</TabsTrigger>
               <TabsTrigger value="tools" className="text-xs sm:text-sm py-2 px-3 data-[state=active]:text-foreground">Professional</TabsTrigger>
+              <TabsTrigger value="history" className="text-xs sm:text-sm py-2 px-3 data-[state=active]:text-foreground">Form History</TabsTrigger>
               <TabsTrigger value="notes" className="text-xs sm:text-sm py-2 px-3 data-[state=active]:text-foreground">Notes</TabsTrigger>
               <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-3 data-[state=active]:text-foreground">Settings</TabsTrigger>
             </TabsList>
@@ -420,6 +422,11 @@ const Dashboard = () => {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* Form History Tab */}
+            <TabsContent value="history" className="space-y-6">
+              <FormHistory />
             </TabsContent>
 
             {/* Notes Tab */}

@@ -160,13 +160,26 @@ export const MSEForm = () => {
     window.print();
   };
 
-  const handleDownload = () => {
-    const link = document.createElement('a');
-    link.href = '/forms/MSE.pdf';
-    link.download = 'Mental-Status-Examination.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownload = async () => {
+    const watchedValues = form.watch();
+    if (!watchedValues.clientName || !watchedValues.date) {
+      toast.error('Please fill in client name and date first');
+      return;
+    }
+    
+    try {
+      const { pdfService } = await import('@/services/pdfService');
+      await pdfService.downloadPDF({
+        formType: 'MSE',
+        patientName: watchedValues.clientName,
+        date: watchedValues.date,
+        formData: watchedValues
+      });
+      toast.success('PDF downloaded successfully');
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      toast.error('Failed to download PDF');
+    }
   };
 
   const handleClientSelected = (client: Client) => {
