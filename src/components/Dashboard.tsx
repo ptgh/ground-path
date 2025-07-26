@@ -37,6 +37,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [notes, setNotes] = useState<Note[]>([]);
   const [loadingNotes, setLoadingNotes] = useState(true);
+  const [activeTab, setActiveTab] = useState('overview');
 
   // Redirect to auth if not authenticated
   useEffect(() => {
@@ -210,7 +211,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="overview" className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-auto p-1">
               <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 px-3 data-[state=active]:text-foreground">Overview</TabsTrigger>
               <TabsTrigger value="tools" className="text-xs sm:text-sm py-2 px-3 data-[state=active]:text-foreground">Professional</TabsTrigger>
@@ -276,7 +277,12 @@ const Dashboard = () => {
                             </p>
                           </div>
                         ))}
-                        <Button variant="ghost" className="w-full mt-4" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          className="w-full mt-4" 
+                          size="sm"
+                          onClick={() => setActiveTab('notes')}
+                        >
                           View All Notes <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
                       </div>
