@@ -30,6 +30,7 @@ import Header from './Header';
 import Footer from './Footer';
 import ProfessionalProfileModal from './ProfessionalProfileModal';
 import FormHistory from './FormHistory';
+import NoteModal from './NoteModal';
 import { notesService, Note } from '@/services/notesService';
 
 const Dashboard = () => {
@@ -38,6 +39,8 @@ const Dashboard = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loadingNotes, setLoadingNotes] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
   // Redirect to auth if not authenticated
   useEffect(() => {
@@ -67,17 +70,20 @@ const Dashboard = () => {
     }
   };
 
-  const createNewNote = async () => {
-    try {
-      const newNote = await notesService.createNote({
-        title: 'New Note',
-        content: 'Start writing your note here...'
-      });
-      setNotes(prev => [newNote, ...prev]);
-      toast.success('New note created');
-    } catch (error) {
-      console.error('Error creating note:', error);
-      toast.error('Failed to create note');
+  const handleNoteModal = (note?: Note) => {
+    setSelectedNote(note || null);
+    setIsNoteModalOpen(true);
+  };
+
+  const handleNoteSave = (savedNote: Note) => {
+    if (selectedNote) {
+      // Update existing note
+      setNotes(prev => prev.map(note => 
+        note.id === savedNote.id ? savedNote : note
+      ));
+    } else {
+      // Add new note
+      setNotes(prev => [savedNote, ...prev]);
     }
   };
 
@@ -121,7 +127,7 @@ const Dashboard = () => {
       title: 'Create Note', 
       description: 'Document client interactions', 
       icon: PlusCircle, 
-      action: createNewNote
+      action: () => handleNoteModal()
     },
     { 
       title: 'View Resources', 
@@ -456,19 +462,27 @@ const Dashboard = () => {
                     <div className="space-y-4">
                       <Button 
                         className="w-full md:w-auto"
-                        onClick={createNewNote}
+                        onClick={() => handleNoteModal()}
                       >
                         <PlusCircle className="h-4 w-4 mr-2" />
                         Create New Note
                       </Button>
                       {notes.length > 0 ? (
                         <div className="space-y-3">
-                          {notes.map((note: any) => (
-                            <Card key={note.id}>
+                          {notes.map((note: Note) => (
+                            <Card 
+                              key={note.id} 
+                              className="cursor-pointer hover:shadow-md transition-shadow"
+                              onClick={() => handleNoteModal(note)}
+                            >
                               <CardContent className="p-4">
                                 <h4 className="font-medium">{note.title}</h4>
-                                <p className="text-sm text-muted-foreground mt-1">{note.content}</p>
-                                <p className="text-xs text-muted-foreground mt-2">{note.created_at}</p>
+                                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                                  {note.content || 'No content'}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-2">
+                                  {new Date(note.created_at).toLocaleString()}
+                                </p>
                               </CardContent>
                             </Card>
                           ))}
@@ -547,6 +561,13 @@ const Dashboard = () => {
       </main>
 
       <Footer />
+      
+      <NoteModal
+        isOpen={isNoteModalOpen}
+        onClose={() => setIsNoteModalOpen(false)}
+        note={selectedNote}
+        onSave={handleNoteSave}
+      />
     </div>
   );
 };

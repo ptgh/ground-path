@@ -1,0 +1,188 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import { X, Save } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
+import { notesService, Note } from '@/services/notesService';
+
+interface NoteModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  note?: Note | null;
+  onSave: (note: Note) => void;
+}
+
+const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (note) {
+      setTitle(note.title);
+      setContent(note.content || '');
+    } else {
+      setTitle('');
+      setContent('');
+    }
+  }, [note]);
+
+  useEffect(() => {
+    if (isOpen) {
+      // Show modal with GSAP animation
+      gsap.set([overlayRef.current, modalRef.current], { 
+        display: 'flex',
+        opacity: 0 
+      });
+      gsap.set(modalRef.current, { scale: 0.8, y: 50 });
+      
+      gsap.timeline()
+        .to(overlayRef.current, { opacity: 1, duration: 0.2 })
+        .to(modalRef.current, { 
+          opacity: 1, 
+          scale: 1, 
+          y: 0, 
+          duration: 0.3, 
+          ease: "back.out(1.7)" 
+        }, 0.1);
+    } else {
+      // Hide modal with GSAP animation
+      gsap.timeline()
+        .to(modalRef.current, { 
+          opacity: 0, 
+          scale: 0.8, 
+          y: 50, 
+          duration: 0.2 
+        })
+        .to(overlayRef.current, { 
+          opacity: 0, 
+          duration: 0.2,
+          onComplete: () => {
+            gsap.set([overlayRef.current, modalRef.current], { display: 'none' });
+          }
+        }, 0.1);
+    }
+  }, [isOpen]);
+
+  const handleSave = async () => {
+    if (!title.trim()) {
+      toast.error('Please enter a title');
+      return;
+    }
+
+    try {
+      setSaving(true);
+      let savedNote: Note;
+
+      if (note) {
+        // Update existing note
+        savedNote = await notesService.updateNote(note.id, {
+          title: title.trim(),
+          content: content.trim()
+        });
+        toast.success('Note updated successfully');
+      } else {
+        // Create new note
+        savedNote = await notesService.createNote({
+          title: title.trim(),
+          content: content.trim()
+        });
+        toast.success('Note created successfully');
+      }
+
+      onSave(savedNote);
+      onClose();
+    } catch (error) {
+      console.error('Error saving note:', error);
+      toast.error('Failed to save note');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleClose = () => {
+    if (saving) return;
+    onClose();
+  };
+
+  return (
+    <div
+      ref={overlayRef}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      style={{ display: 'none' }}
+      onClick={(e) => e.target === overlayRef.current && handleClose()}
+    >
+      <div
+        ref={modalRef}
+        className="w-full max-w-lg bg-background rounded-lg shadow-lg border p-6 space-y-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">
+            {note ? 'Edit Note' : 'Create New Note'}
+          </h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClose}
+            disabled={saving}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium mb-2 block">Title</label>
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter note title..."
+              disabled={saving}
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium mb-2 block">Content</label>
+            <Textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Start writing your note here..."
+              rows={6}
+              disabled={saving}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end space-x-2">
+          <Button
+            variant="outline"
+            onClick={handleClose}
+            disabled={saving}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSave}
+            disabled={saving || !title.trim()}
+          >
+            {saving ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                {note ? 'Update' : 'Create'}
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default NoteModal;
