@@ -10,6 +10,7 @@ import Dashboard from "@/components/Dashboard";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Resources from "./pages/Resources";
+import ProfessionalForms from "./pages/ProfessionalForms";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/practitioner/forms" element={<ProfessionalForms />} />
             {/* Redirect /auth to /practitioner/auth for backwards compatibility */}
             <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
             <Route path="/practitioner/auth" element={<AuthPage />} />

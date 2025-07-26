@@ -109,7 +109,7 @@ const Dashboard = () => {
       title: 'Professional Forms', 
       description: 'Access specialized forms', 
       icon: FileText, 
-      action: () => console.log('Forms')
+      action: () => navigate('/practitioner/forms')
     },
     { 
       title: 'Schedule Session', 
@@ -389,7 +389,7 @@ const Dashboard = () => {
                       <BookOpen className="h-4 w-4 mr-2" />
                       Resource Library
                     </Button>
-                    <Button variant="outline">
+                    <Button variant="outline" onClick={() => navigate('/practitioner/forms')}>
                       <FileText className="h-4 w-4 mr-2" />
                       Professional Forms
                     </Button>
