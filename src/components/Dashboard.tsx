@@ -57,6 +57,14 @@ const Dashboard = () => {
     }
   }, [user]);
 
+  // Cleanup modal state on unmount
+  useEffect(() => {
+    return () => {
+      setIsNoteModalOpen(false);
+      setSelectedNote(null);
+    };
+  }, []);
+
   const loadNotes = async () => {
     try {
       setLoadingNotes(true);
