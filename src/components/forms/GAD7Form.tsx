@@ -85,7 +85,12 @@ const GAD7Form = () => {
   };
 
   const handleDownload = () => {
-    console.log('Downloading GAD-7 form...');
+    const link = document.createElement('a');
+    link.href = '/forms/GAD-7.pdf';
+    link.download = 'GAD-7-Anxiety-Scale.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (

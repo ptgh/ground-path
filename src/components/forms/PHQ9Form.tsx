@@ -90,8 +90,12 @@ const PHQ9Form = () => {
   };
 
   const handleDownload = () => {
-    // In a real app, this would generate a PDF
-    console.log('Downloading PHQ-9 form...');
+    const link = document.createElement('a');
+    link.href = '/forms/PHQ-9.pdf';
+    link.download = 'PHQ-9-Depression-Questionnaire.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (

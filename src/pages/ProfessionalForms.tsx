@@ -319,12 +319,21 @@ const ProfessionalForms = () => {
         break;
       case 'download':
         if (form.downloadUrl) {
-          const link = document.createElement('a');
-          link.href = form.downloadUrl;
-          link.download = `${form.title.replace(/\s+/g, '-')}.pdf`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+          try {
+            const link = document.createElement('a');
+            link.href = form.downloadUrl;
+            link.download = `${form.title.replace(/\s+/g, '-')}.pdf`;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => {
+              document.body.removeChild(link);
+            }, 100);
+          } catch (error) {
+            console.error('Download failed:', error);
+            // Fallback: open in new tab
+            window.open(form.downloadUrl, '_blank');
+          }
         }
         break;
       case 'fill':
