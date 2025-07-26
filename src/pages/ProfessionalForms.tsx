@@ -56,146 +56,217 @@ const ProfessionalForms = () => {
 
   const formCategories: FormCategory[] = [
     {
-      id: 'client-management',
-      title: 'Client Management',
-      description: 'Forms for client intake, assessment, and ongoing management',
-      icon: User,
-      color: 'text-blue-600',
+      id: 'standardized-assessments',
+      title: 'Standardized Assessments',
+      description: 'Validated clinical assessment tools and questionnaires',
+      icon: ClipboardCheck,
+      color: 'text-emerald-600',
       forms: [
         {
-          id: 'client-intake',
-          title: 'Client Intake Form',
-          description: 'Comprehensive client information and background assessment',
-          category: 'client-management',
+          id: 'phq-9',
+          title: 'PHQ-9 Depression Questionnaire',
+          description: 'Patient Health Questionnaire for depression screening',
+          category: 'standardized-assessments',
           required: true,
           formType: 'interactive',
-          lastUpdated: '2024-01-15'
+          downloadUrl: '/forms/PHQ-9.pdf',
+          lastUpdated: '2024-01-20'
         },
         {
-          id: 'risk-assessment',
-          title: 'Risk Assessment Form',
-          description: 'Evaluate client safety and risk factors',
-          category: 'client-management',
+          id: 'gad-7',
+          title: 'GAD-7 Anxiety Scale',
+          description: 'Generalized Anxiety Disorder 7-item scale',
+          category: 'standardized-assessments',
           required: true,
           formType: 'interactive',
-          lastUpdated: '2024-01-10'
+          downloadUrl: '/forms/GAD-7.pdf',
+          lastUpdated: '2024-01-20'
         },
         {
-          id: 'case-review',
-          title: 'Case Review Template',
-          description: 'Structured template for case review meetings',
-          category: 'client-management',
+          id: 'dass-21',
+          title: 'DASS-21 Scale',
+          description: 'Depression, Anxiety and Stress Scale - 21 Items',
+          category: 'standardized-assessments',
           required: false,
-          formType: 'template',
-          lastUpdated: '2024-01-05'
+          formType: 'interactive',
+          downloadUrl: '/forms/DASS-21.pdf',
+          lastUpdated: '2024-01-18'
+        },
+        {
+          id: 'beck-depression',
+          title: 'Beck Depression Inventory',
+          description: 'BDI-II for assessing depression severity',
+          category: 'standardized-assessments',
+          required: false,
+          formType: 'pdf',
+          downloadUrl: '/forms/BDI-II.pdf',
+          lastUpdated: '2024-01-15'
         }
       ]
     },
     {
-      id: 'mental-health',
-      title: 'Mental Health Assessment',
-      description: 'Specialized forms for mental health evaluation and treatment',
+      id: 'clinical-assessments',
+      title: 'Clinical Assessments',
+      description: 'Professional clinical evaluation and diagnostic tools',
       icon: Brain,
-      color: 'text-green-600',
+      color: 'text-blue-600',
       forms: [
         {
           id: 'mental-status-exam',
           title: 'Mental Status Examination',
-          description: 'Comprehensive mental health assessment tool',
-          category: 'mental-health',
+          description: 'Comprehensive mental state assessment',
+          category: 'clinical-assessments',
           required: true,
           formType: 'interactive',
-          lastUpdated: '2024-01-12'
+          downloadUrl: '/forms/MSE.pdf',
+          lastUpdated: '2024-01-22'
         },
         {
-          id: 'treatment-plan',
-          title: 'Treatment Planning Form',
-          description: 'Develop and document treatment goals and interventions',
-          category: 'mental-health',
+          id: 'suicide-risk-assessment',
+          title: 'Suicide Risk Assessment',
+          description: 'Comprehensive suicide risk evaluation tool',
+          category: 'clinical-assessments',
           required: true,
           formType: 'interactive',
-          lastUpdated: '2024-01-08'
+          downloadUrl: '/forms/Suicide-Risk-Assessment.pdf',
+          lastUpdated: '2024-01-20'
         },
         {
-          id: 'therapy-notes',
-          title: 'Therapy Session Notes',
-          description: 'Template for documenting therapy sessions',
-          category: 'mental-health',
+          id: 'gaf-scale',
+          title: 'Global Assessment of Functioning',
+          description: 'GAF scale for overall functioning assessment',
+          category: 'clinical-assessments',
           required: false,
+          formType: 'interactive',
+          downloadUrl: '/forms/GAF.pdf',
+          lastUpdated: '2024-01-18'
+        }
+      ]
+    },
+    {
+      id: 'crisis-safety',
+      title: 'Crisis & Safety Planning',
+      description: 'Emergency intervention and safety planning tools',
+      icon: AlertTriangle,
+      color: 'text-red-600',
+      forms: [
+        {
+          id: 'safety-planning',
+          title: 'Stanley-Brown Safety Plan',
+          description: 'Evidence-based safety planning intervention',
+          category: 'crisis-safety',
+          required: true,
+          formType: 'interactive',
+          downloadUrl: '/forms/Safety-Plan.pdf',
+          lastUpdated: '2024-01-25'
+        },
+        {
+          id: 'crisis-intervention',
+          title: 'Crisis Intervention Form',
+          description: 'Documentation for crisis intervention sessions',
+          category: 'crisis-safety',
+          required: true,
+          formType: 'interactive',
+          downloadUrl: '/forms/Crisis-Intervention.pdf',
+          lastUpdated: '2024-01-22'
+        },
+        {
+          id: 'incident-report',
+          title: 'Critical Incident Report',
+          description: 'Report critical incidents and adverse events',
+          category: 'crisis-safety',
+          required: true,
           formType: 'template',
+          downloadUrl: '/forms/Incident-Report.pdf',
           lastUpdated: '2024-01-20'
         }
       ]
     },
     {
-      id: 'crisis-intervention',
-      title: 'Crisis & Safety',
-      description: 'Forms for crisis intervention and safety planning',
-      icon: AlertTriangle,
-      color: 'text-red-600',
+      id: 'client-management',
+      title: 'Client Management',
+      description: 'General client intake, assessment and case management',
+      icon: User,
+      color: 'text-indigo-600',
       forms: [
         {
-          id: 'safety-plan',
-          title: 'Safety Planning Form',
-          description: 'Create comprehensive safety plans for at-risk clients',
-          category: 'crisis-intervention',
+          id: 'client-intake',
+          title: 'Client Intake Assessment',
+          description: 'Comprehensive client information and background',
+          category: 'client-management',
           required: true,
           formType: 'interactive',
-          lastUpdated: '2024-01-18'
+          downloadUrl: '/forms/Client-Intake.pdf',
+          lastUpdated: '2024-01-24'
         },
         {
-          id: 'incident-report',
-          title: 'Incident Report Form',
-          description: 'Document critical incidents and responses',
-          category: 'crisis-intervention',
+          id: 'treatment-plan',
+          title: 'Treatment Planning Form',
+          description: 'Structured treatment goals and intervention planning',
+          category: 'client-management',
           required: true,
           formType: 'interactive',
-          lastUpdated: '2024-01-14'
+          downloadUrl: '/forms/Treatment-Plan.pdf',
+          lastUpdated: '2024-01-23'
         },
         {
-          id: 'crisis-contact',
-          title: 'Crisis Contact Sheet',
-          description: 'Emergency contact information and resources',
-          category: 'crisis-intervention',
+          id: 'progress-notes',
+          title: 'Session Progress Notes',
+          description: 'Template for documenting therapy and case sessions',
+          category: 'client-management',
           required: false,
-          formType: 'pdf',
-          lastUpdated: '2024-01-01'
+          formType: 'template',
+          downloadUrl: '/forms/Progress-Notes.pdf',
+          lastUpdated: '2024-01-22'
+        },
+        {
+          id: 'case-review',
+          title: 'Case Review Summary',
+          description: 'Comprehensive case review and planning template',
+          category: 'client-management',
+          required: false,
+          formType: 'template',
+          downloadUrl: '/forms/Case-Review.pdf',
+          lastUpdated: '2024-01-20'
         }
       ]
     },
     {
       id: 'professional-development',
       title: 'Professional Development',
-      description: 'Forms for supervision, training, and professional growth',
+      description: 'Supervision, CPD tracking and professional growth tools',
       icon: Shield,
       color: 'text-purple-600',
       forms: [
         {
           id: 'supervision-record',
-          title: 'Supervision Record',
-          description: 'Document supervision sessions and professional development',
+          title: 'Clinical Supervision Record',
+          description: 'Document supervision sessions and learning outcomes',
           category: 'professional-development',
           required: true,
           formType: 'template',
-          lastUpdated: '2024-01-16'
+          downloadUrl: '/forms/Supervision-Record.pdf',
+          lastUpdated: '2024-01-25'
         },
         {
-          id: 'cpd-tracker',
-          title: 'CPD Activity Tracker',
-          description: 'Track continuing professional development activities',
+          id: 'cpd-log',
+          title: 'CPD Activity Log',
+          description: 'Track continuing professional development hours',
           category: 'professional-development',
           required: false,
           formType: 'interactive',
-          lastUpdated: '2024-01-22'
+          downloadUrl: '/forms/CPD-Log.pdf',
+          lastUpdated: '2024-01-24'
         },
         {
-          id: 'reflection-template',
-          title: 'Professional Reflection Template',
-          description: 'Structured reflection on practice and learning',
+          id: 'reflective-practice',
+          title: 'Reflective Practice Journal',
+          description: 'Structured reflection on professional practice',
           category: 'professional-development',
           required: false,
           formType: 'template',
-          lastUpdated: '2024-01-11'
+          downloadUrl: '/forms/Reflective-Practice.pdf',
+          lastUpdated: '2024-01-22'
         }
       ]
     }
@@ -222,9 +293,32 @@ const ProfessionalForms = () => {
   };
 
   const handleFormAction = (form: ProfessionalForm, action: 'view' | 'download' | 'fill') => {
-    // In a real app, this would handle the actual form action
-    console.log(`${action} form:`, form.title);
-    // Placeholder - would open form in modal or new page
+    switch (action) {
+      case 'view':
+        if (form.downloadUrl) {
+          window.open(form.downloadUrl, '_blank');
+        }
+        break;
+      case 'download':
+        if (form.downloadUrl) {
+          const link = document.createElement('a');
+          link.href = form.downloadUrl;
+          link.download = `${form.title.replace(/\s+/g, '-')}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+        break;
+      case 'fill':
+        // Open interactive form or print view
+        if (form.formType === 'interactive') {
+          // Navigate to form filling interface
+          console.log('Opening interactive form:', form.title);
+        } else {
+          window.print();
+        }
+        break;
+    }
   };
 
   const getFormTypeIcon = (formType: string) => {
@@ -301,25 +395,25 @@ const ProfessionalForms = () => {
           </div>
 
           {/* Forms Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {getFilteredForms().map(form => {
               const FormTypeIcon = getFormTypeIcon(form.formType);
               const typeBadge = getFormTypeBadge(form.formType);
               
               return (
-                <Card key={form.id} className="group hover:shadow-lg transition-shadow duration-200">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
+                <Card key={form.id} className="group hover:shadow-lg transition-all duration-200 flex flex-col">
+                  <CardHeader className="pb-3 flex-1">
+                    <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <FormTypeIcon className="h-5 w-5 text-primary" />
                         {form.required && (
-                          <Star className="h-4 w-4 text-yellow-500" />
+                          <Star className="h-4 w-4 text-amber-500" />
                         )}
                       </div>
                       <Badge variant={typeBadge.variant}>{typeBadge.label}</Badge>
                     </div>
-                    <CardTitle className="text-lg">{form.title}</CardTitle>
-                    <CardDescription>{form.description}</CardDescription>
+                    <CardTitle className="text-lg leading-tight">{form.title}</CardTitle>
+                    <CardDescription className="text-sm leading-relaxed">{form.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="pt-0">
                     <div className="space-y-3">
@@ -327,11 +421,11 @@ const ProfessionalForms = () => {
                         Last updated: {new Date(form.lastUpdated).toLocaleDateString()}
                       </div>
                       
-                      <div className="flex gap-2">
+                      <div className="grid grid-cols-3 gap-2">
                         <Button 
                           size="sm" 
                           onClick={() => handleFormAction(form, 'view')}
-                          className="flex-1"
+                          className="col-span-2"
                         >
                           <Eye className="h-4 w-4 mr-2" />
                           View
@@ -340,17 +434,23 @@ const ProfessionalForms = () => {
                           size="sm" 
                           variant="outline"
                           onClick={() => handleFormAction(form, 'download')}
+                          className="px-2"
                         >
                           <Download className="h-4 w-4" />
                         </Button>
+                      </div>
+                      
+                      {form.formType === 'interactive' && (
                         <Button 
                           size="sm" 
-                          variant="outline"
+                          variant="secondary"
                           onClick={() => handleFormAction(form, 'fill')}
+                          className="w-full"
                         >
-                          <Printer className="h-4 w-4" />
+                          <ClipboardCheck className="h-4 w-4 mr-2" />
+                          Fill Interactive Form
                         </Button>
-                      </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -362,24 +462,22 @@ const ProfessionalForms = () => {
           {selectedCategory === 'all' && (
             <div className="mt-12">
               <h2 className="text-2xl font-bold mb-6">Form Categories</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 {formCategories.map(category => (
                   <Card 
                     key={category.id} 
-                    className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
+                    className="cursor-pointer hover:shadow-lg transition-all duration-200 group"
                     onClick={() => setSelectedCategory(category.id)}
                   >
-                    <CardHeader className="text-center">
-                      <category.icon className={`h-12 w-12 mx-auto mb-2 ${category.color}`} />
-                      <CardTitle className="text-lg">{category.title}</CardTitle>
-                      <CardDescription>{category.description}</CardDescription>
+                    <CardHeader className="text-center pb-3">
+                      <category.icon className={`h-10 w-10 mx-auto mb-2 ${category.color} group-hover:scale-110 transition-transform duration-200`} />
+                      <CardTitle className="text-base leading-tight">{category.title}</CardTitle>
+                      <CardDescription className="text-xs leading-relaxed">{category.description}</CardDescription>
                     </CardHeader>
-                    <CardContent className="pt-0">
-                      <div className="text-center">
-                        <Badge variant="secondary">
-                          {category.forms.length} forms
-                        </Badge>
-                      </div>
+                    <CardContent className="pt-0 text-center">
+                      <Badge variant="secondary" className="text-xs">
+                        {category.forms.length} forms
+                      </Badge>
                     </CardContent>
                   </Card>
                 ))}

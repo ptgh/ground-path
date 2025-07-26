@@ -1,0 +1,122 @@
+%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/MediaBox [0 0 612 792]
+/Contents 4 0 R
+/Resources <<
+/Font <<
+/F1 5 0 R
+>>
+>>
+>>
+endobj
+
+4 0 obj
+<<
+/Length 1800
+>>
+stream
+BT
+/F1 14 Tf
+50 750 Td
+(GAD-7 Generalized Anxiety Disorder Scale) Tj
+0 -30 Td
+(Anxiety Screening and Monitoring Tool) Tj
+0 -40 Td
+/F1 12 Tf
+(Patient Name: ________________________    Date: ______________) Tj
+0 -30 Td
+(Over the last 2 weeks, how often have you been bothered by the following problems?) Tj
+0 -40 Td
+/F1 10 Tf
+(                                    Not at all    Several days    More than     Nearly) Tj
+0 -15 Td
+(                                                                       half the days  every day) Tj
+0 -25 Td
+(1. Feeling nervous, anxious, or on edge [ ]         [ ]             [ ]           [ ]) Tj
+0 -25 Td
+(2. Not being able to stop or control) Tj
+0 -15 Td
+(   worrying                          [ ]           [ ]             [ ]           [ ]) Tj
+0 -25 Td
+(3. Worrying too much about different) Tj
+0 -15 Td
+(   things                            [ ]           [ ]             [ ]           [ ]) Tj
+0 -25 Td
+(4. Trouble relaxing                  [ ]           [ ]             [ ]           [ ]) Tj
+0 -25 Td
+(5. Being so restless that it is hard) Tj
+0 -15 Td
+(   to sit still                      [ ]           [ ]             [ ]           [ ]) Tj
+0 -25 Td
+(6. Becoming easily annoyed or) Tj
+0 -15 Td
+(   irritable                         [ ]           [ ]             [ ]           [ ]) Tj
+0 -25 Td
+(7. Feeling afraid, as if something) Tj
+0 -15 Td
+(   awful might happen                [ ]           [ ]             [ ]           [ ]) Tj
+0 -40 Td
+/F1 12 Tf
+(TOTAL SCORE: _______) Tj
+0 -30 Td
+/F1 10 Tf
+(Scoring: 0-4 Minimal anxiety, 5-9 Mild anxiety, 10-14 Moderate anxiety, 15-21 Severe anxiety) Tj
+0 -30 Td
+(If you checked off any problems, how difficult have these problems made it for you) Tj
+0 -15 Td
+(to do your work, take care of things at home, or get along with other people?) Tj
+0 -20 Td
+([ ] Not difficult at all   [ ] Somewhat difficult   [ ] Very difficult   [ ] Extremely difficult) Tj
+0 -40 Td
+/F1 8 Tf
+(Developed by Drs. Robert L. Spitzer, Janet B.W. Williams, Kurt Kroenke and colleagues,) Tj
+0 -12 Td
+(with an educational grant from Pfizer Inc. No permission required to reproduce,) Tj
+0 -12 Td
+(translate, display or distribute.) Tj
+ET
+endstream
+endobj
+
+5 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica
+>>
+endobj
+
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000268 00000 n 
+0000002120 00000 n 
+trailer
+<<
+/Size 6
+/Root 1 0 R
+>>
+startxref
+2198
+%%EOF
