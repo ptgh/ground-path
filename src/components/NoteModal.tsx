@@ -21,6 +21,8 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
   const [content, setContent] = useState('');
   const [saving, setSaving] = useState(false);
 
+  console.log('NoteModal render - isOpen:', isOpen);
+
   useEffect(() => {
     if (note) {
       setTitle(note.title);
@@ -132,6 +134,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
   };
 
   const handleClose = () => {
+    console.log('NoteModal handleClose called, saving:', saving);
     if (saving) return;
     
     // Kill any running GSAP animations to prevent conflicts

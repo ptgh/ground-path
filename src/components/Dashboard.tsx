@@ -43,6 +43,9 @@ const Dashboard = () => {
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
+  // Debug logging
+  console.log('Dashboard render - isNoteModalOpen:', isNoteModalOpen);
+
   // Redirect to auth if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
@@ -581,7 +584,10 @@ const Dashboard = () => {
       
       <NoteModal
         isOpen={isNoteModalOpen}
-        onClose={() => setIsNoteModalOpen(false)}
+        onClose={() => {
+          console.log('Dashboard onClose called');
+          setIsNoteModalOpen(false);
+        }}
         note={selectedNote}
         onSave={handleNoteSave}
       />
