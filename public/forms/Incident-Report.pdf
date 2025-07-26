@@ -1,0 +1,178 @@
+%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/MediaBox [0 0 612 792]
+/Contents 4 0 R
+/Resources <<
+/Font <<
+/F1 5 0 R
+>>
+>>
+>>
+endobj
+
+4 0 obj
+<<
+/Length 2300
+>>
+stream
+BT
+/F1 14 Tf
+50 750 Td
+(CRITICAL INCIDENT REPORT) Tj
+0 -30 Td
+(Adverse Event Documentation) Tj
+0 -40 Td
+/F1 12 Tf
+(Report Number: ______________________    Date of Report: ______________) Tj
+0 -15 Td
+(Reporter Name: ______________________    Position: ____________________) Tj
+0 -15 Td
+(Department: ________________________    Contact: ____________________) Tj
+0 -40 Td
+/F1 12 Tf
+(INCIDENT DETAILS) Tj
+0 -25 Td
+/F1 10 Tf
+(Date of incident: ___________________________) Tj
+0 -15 Td
+(Time of incident: ___________________________) Tj
+0 -15 Td
+(Location: __________________________________) Tj
+0 -15 Td
+(Client/Patient name: ________________________) Tj
+0 -15 Td
+(ID Number: _________________________________) Tj
+0 -25 Td
+(Type of incident:) Tj
+0 -15 Td
+([ ] Physical injury) Tj
+0 -12 Td
+([ ] Medication error) Tj
+0 -12 Td
+([ ] Fall/Accident) Tj
+0 -12 Td
+([ ] Aggressive behavior) Tj
+0 -12 Td
+([ ] Self-harm attempt) Tj
+0 -12 Td
+([ ] Breach of confidentiality) Tj
+0 -12 Td
+([ ] Equipment malfunction) Tj
+0 -12 Td
+([ ] Other: ______________________________) Tj
+0 -25 Td
+(Severity level:) Tj
+0 -15 Td
+([ ] Minor - No injury/minimal impact) Tj
+0 -12 Td
+([ ] Moderate - Minor injury/moderate impact) Tj
+0 -12 Td
+([ ] Major - Serious injury/significant impact) Tj
+0 -12 Td
+([ ] Critical - Life-threatening/severe impact) Tj
+0 -30 Td
+/F1 12 Tf
+(DESCRIPTION OF INCIDENT) Tj
+0 -25 Td
+/F1 10 Tf
+(What happened? \(Include sequence of events\):) Tj
+0 -15 Td
+(_________________________________________________) Tj
+0 -15 Td
+(_________________________________________________) Tj
+0 -15 Td
+(_________________________________________________) Tj
+0 -15 Td
+(_________________________________________________) Tj
+0 -25 Td
+(Contributing factors:) Tj
+0 -15 Td
+(_________________________________________________) Tj
+0 -15 Td
+(_________________________________________________) Tj
+0 -25 Td
+(Witnesses:) Tj
+0 -15 Td
+(Name: _________________________  Position: ________________) Tj
+0 -12 Td
+(Name: _________________________  Position: ________________) Tj
+0 -30 Td
+/F1 12 Tf
+(IMMEDIATE ACTIONS TAKEN) Tj
+0 -25 Td
+/F1 10 Tf
+([ ] First aid provided) Tj
+0 -12 Td
+([ ] Medical attention sought) Tj
+0 -12 Td
+([ ] Family/next of kin notified) Tj
+0 -12 Td
+([ ] Supervisor notified) Tj
+0 -12 Td
+([ ] Documentation secured) Tj
+0 -12 Td
+([ ] Area secured/isolated) Tj
+0 -12 Td
+([ ] Other: ______________________________) Tj
+0 -25 Td
+(Follow-up actions required:) Tj
+0 -15 Td
+(_________________________________________________) Tj
+0 -15 Td
+(_________________________________________________) Tj
+0 -25 Td
+(Prevention recommendations:) Tj
+0 -15 Td
+(_________________________________________________) Tj
+0 -15 Td
+(_________________________________________________) Tj
+0 -30 Td
+(Reporter Signature: _____________________  Date: ___________) Tj
+0 -15 Td
+(Supervisor Review: ______________________  Date: ___________) Tj
+ET
+endstream
+endobj
+
+5 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica
+>>
+endobj
+
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000268 00000 n 
+0000002620 00000 n 
+trailer
+<<
+/Size 6
+/Root 1 0 R
+>>
+startxref
+2698
+%%EOF

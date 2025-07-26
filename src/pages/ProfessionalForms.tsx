@@ -43,6 +43,8 @@ interface ProfessionalForm {
   downloadUrl?: string;
   formType: 'pdf' | 'interactive' | 'template';
   lastUpdated: string;
+  source?: string;
+  sourceUrl?: string;
 }
 
 const ProfessionalForms = () => {
@@ -70,7 +72,9 @@ const ProfessionalForms = () => {
           required: true,
           formType: 'interactive',
           downloadUrl: '/forms/PHQ-9.pdf',
-          lastUpdated: '2024-01-20'
+          lastUpdated: '2024-01-20',
+          source: 'Developed by Drs. Robert L. Spitzer, Janet B.W. Williams, Kurt Kroenke and colleagues',
+          sourceUrl: 'https://www.phqscreeners.com/select-screener'
         },
         {
           id: 'gad-7',
@@ -80,7 +84,9 @@ const ProfessionalForms = () => {
           required: true,
           formType: 'interactive',
           downloadUrl: '/forms/GAD-7.pdf',
-          lastUpdated: '2024-01-20'
+          lastUpdated: '2024-01-20',
+          source: 'Developed by Drs. Robert L. Spitzer, Janet B.W. Williams, Kurt Kroenke and colleagues',
+          sourceUrl: 'https://www.phqscreeners.com/select-screener'
         },
         {
           id: 'dass-21',
@@ -90,7 +96,9 @@ const ProfessionalForms = () => {
           required: false,
           formType: 'interactive',
           downloadUrl: '/forms/DASS-21.pdf',
-          lastUpdated: '2024-01-18'
+          lastUpdated: '2024-01-18',
+          source: 'Psychology Foundation of Australia',
+          sourceUrl: 'https://www2.psy.unsw.edu.au/dass/'
         },
         {
           id: 'beck-depression',
@@ -100,7 +108,9 @@ const ProfessionalForms = () => {
           required: false,
           formType: 'pdf',
           downloadUrl: '/forms/BDI-II.pdf',
-          lastUpdated: '2024-01-15'
+          lastUpdated: '2024-01-15',
+          source: 'Beck Depression Inventory-II (BDI-II) - Aaron T. Beck',
+          sourceUrl: 'https://www.pearsonassessments.com/store/usassessments/en/Store/Professional-Assessments/Personality-%26-Biopsychosocial/Beck-Depression-Inventory-II/p/100000159.html'
         }
       ]
     },
@@ -119,7 +129,9 @@ const ProfessionalForms = () => {
           required: true,
           formType: 'interactive',
           downloadUrl: '/forms/MSE.pdf',
-          lastUpdated: '2024-01-22'
+          lastUpdated: '2024-01-22',
+          source: 'Standard clinical assessment tool',
+          sourceUrl: 'https://www.psychiatry.org/psychiatrists/practice/dsm'
         },
         {
           id: 'suicide-risk-assessment',
@@ -129,7 +141,9 @@ const ProfessionalForms = () => {
           required: true,
           formType: 'interactive',
           downloadUrl: '/forms/Suicide-Risk-Assessment.pdf',
-          lastUpdated: '2024-01-20'
+          lastUpdated: '2024-01-20',
+          source: 'Evidence-based clinical assessment',
+          sourceUrl: 'https://www.sprc.org/settings/healthcare'
         },
         {
           id: 'gaf-scale',
@@ -139,7 +153,9 @@ const ProfessionalForms = () => {
           required: false,
           formType: 'interactive',
           downloadUrl: '/forms/GAF.pdf',
-          lastUpdated: '2024-01-18'
+          lastUpdated: '2024-01-18',
+          source: 'American Psychiatric Association DSM-IV-TR',
+          sourceUrl: 'https://www.psychiatry.org/psychiatrists/practice/dsm'
         }
       ]
     },
@@ -158,7 +174,9 @@ const ProfessionalForms = () => {
           required: true,
           formType: 'interactive',
           downloadUrl: '/forms/Safety-Plan.pdf',
-          lastUpdated: '2024-01-25'
+          lastUpdated: '2024-01-25',
+          source: 'Stanley & Brown Safety Planning Intervention',
+          sourceUrl: 'https://www.sprc.org/settings/healthcare'
         },
         {
           id: 'crisis-intervention',
@@ -310,12 +328,10 @@ const ProfessionalForms = () => {
         }
         break;
       case 'fill':
-        // Open interactive form or print view
         if (form.formType === 'interactive') {
-          // Navigate to form filling interface
-          console.log('Opening interactive form:', form.title);
+          navigate(`/practitioner/forms/${form.id}/fill`);
         } else {
-          window.print();
+          window.open(form.downloadUrl, '_blank');
         }
         break;
     }
@@ -421,6 +437,22 @@ const ProfessionalForms = () => {
                         Last updated: {new Date(form.lastUpdated).toLocaleDateString()}
                       </div>
                       
+                      {form.source && (
+                        <div className="text-xs text-muted-foreground border-l-2 border-muted pl-2">
+                          <span className="font-medium">Source:</span> {form.source}
+                          {form.sourceUrl && (
+                            <a 
+                              href={form.sourceUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-primary hover:underline ml-1"
+                            >
+                              (View Original)
+                            </a>
+                          )}
+                        </div>
+                      )}
+                      
                       <div className="grid grid-cols-3 gap-2">
                         <Button 
                           size="sm" 
@@ -440,17 +472,15 @@ const ProfessionalForms = () => {
                         </Button>
                       </div>
                       
-                      {form.formType === 'interactive' && (
-                        <Button 
-                          size="sm" 
-                          variant="secondary"
-                          onClick={() => handleFormAction(form, 'fill')}
-                          className="w-full"
-                        >
-                          <ClipboardCheck className="h-4 w-4 mr-2" />
-                          Fill Interactive Form
-                        </Button>
-                      )}
+                      <Button 
+                        size="sm" 
+                        variant={form.formType === 'interactive' ? 'secondary' : 'outline'}
+                        onClick={() => handleFormAction(form, 'fill')}
+                        className="w-full"
+                      >
+                        <ClipboardCheck className="h-4 w-4 mr-2" />
+                        {form.formType === 'interactive' ? 'Fill Interactive Form' : 'Open Form'}
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>

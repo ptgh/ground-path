@@ -11,6 +11,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Resources from "./pages/Resources";
 import ProfessionalForms from "./pages/ProfessionalForms";
+import PHQ9Form from "./components/forms/PHQ9Form";
+import GAD7Form from "./components/forms/GAD7Form";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +39,8 @@ const App = () => {
             <Route path="/" element={<Index />} />
             <Route path="/resources" element={<Resources />} />
             <Route path="/practitioner/forms" element={<ProfessionalForms />} />
+            <Route path="/practitioner/forms/phq-9/fill" element={<PHQ9Form />} />
+            <Route path="/practitioner/forms/gad-7/fill" element={<GAD7Form />} />
             {/* Redirect /auth to /practitioner/auth for backwards compatibility */}
             <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
             <Route path="/practitioner/auth" element={<AuthPage />} />
