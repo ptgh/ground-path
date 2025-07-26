@@ -61,28 +61,28 @@ const Hero = () => {
           </p>
 
           {/* CTA Buttons */}
-          <div ref={ctaButtonsRef} className="fade-in flex flex-wrap gap-4 justify-center">
+          <div ref={ctaButtonsRef} className="fade-in flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center items-center max-w-2xl mx-auto">
             <button 
               onClick={() => scrollToSection('contact')}
-              className="hero-cta bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="hero-cta bg-primary text-primary-foreground px-4 sm:px-6 py-3 rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-full sm:w-auto min-w-[140px]"
             >
               Book a Session
             </button>
             <button 
               onClick={() => scrollToSection('services')}
-              className="hero-cta bg-sage-600 text-white px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="hero-cta bg-sage-600 text-white px-4 sm:px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-full sm:w-auto min-w-[140px]"
             >
               View Services & Rates
             </button>
             <button 
               onClick={() => scrollToSection('about')}
-              className="hero-cta bg-sage-600 text-white px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="hero-cta bg-sage-600 text-white px-4 sm:px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-full sm:w-auto min-w-[140px]"
             >
               About
             </button>
             <button 
               onClick={() => setIsMailingListOpen(true)}
-              className="hero-cta bg-sage-600 text-white px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="hero-cta bg-sage-600 text-white px-4 sm:px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-full sm:w-auto min-w-[140px]"
             >
               Join Mailing List
             </button>
@@ -90,13 +90,13 @@ const Hero = () => {
         </div>
 
         {/* Professional Credentials */}
-        <div className="fade-in mt-16 text-center">
-          <div className="inline-flex flex-col md:flex-row items-center md:space-x-4 space-y-2 md:space-y-0 bg-gray-50 px-6 py-4 rounded-lg">
-            <span className="text-sm text-gray-600 font-medium text-center">Accredited Mental Health Social Worker</span>
-            <span className="text-gray-300 hidden md:inline">•</span>
-            <span className="text-sm text-gray-600 font-medium text-center">Australian Counselling Association Counsellors</span>
-            <span className="text-gray-300 hidden md:inline">•</span>
-            <span className="text-sm text-gray-600 font-medium text-center">NDIS Services</span>
+        <div className="fade-in mt-12 sm:mt-16 text-center">
+          <div className="inline-flex flex-col lg:flex-row items-center lg:space-x-4 space-y-2 lg:space-y-0 bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 rounded-lg max-w-4xl mx-auto">
+            <span className="text-xs sm:text-sm text-gray-600 font-medium text-center">Accredited Mental Health Social Worker</span>
+            <span className="text-gray-300 hidden lg:inline">•</span>
+            <span className="text-xs sm:text-sm text-gray-600 font-medium text-center">Australian Counselling Association Counsellors</span>
+            <span className="text-gray-300 hidden lg:inline">•</span>
+            <span className="text-xs sm:text-sm text-gray-600 font-medium text-center">NDIS Services</span>
           </div>
         </div>
       </div>

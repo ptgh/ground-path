@@ -240,7 +240,7 @@ ${JSON.stringify(submission.form_data, null, 2)}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 <div>
                   <label className="text-sm font-medium mb-2 block">Search</label>
                   <div className="relative">
@@ -307,10 +307,10 @@ ${JSON.stringify(submission.form_data, null, 2)}
             ) : (
               filteredSubmissions.map((submission) => (
                 <Card key={submission.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-3">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                      <div className="space-y-2 flex-1">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                           <Badge className={getFormTypeColor(submission.form_type)}>
                             {submission.form_type}
                           </Badge>
@@ -321,12 +321,12 @@ ${JSON.stringify(submission.form_data, null, 2)}
                           )}
                         </div>
                         
-                        <h3 className="font-semibold text-lg flex items-center gap-2">
+                        <h3 className="font-semibold text-base sm:text-lg flex items-center gap-2">
                           <User className="h-4 w-4" />
                           {getClientName(submission.client_id)}
                         </h3>
                         
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
                             {new Date(submission.completed_at).toLocaleDateString()}
@@ -338,38 +338,41 @@ ${JSON.stringify(submission.form_data, null, 2)}
                         </div>
                         
                         {submission.interpretation && (
-                          <p className="text-sm text-muted-foreground max-w-2xl">
+                          <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
                             {submission.interpretation}
                           </p>
                         )}
                       </div>
                       
-                      <div className="flex gap-2">
+                      <div className="flex flex-row sm:flex-col lg:flex-row gap-2">
                         {onViewForm && (
                           <Button 
                             variant="outline" 
                             size="sm"
                             onClick={() => onViewForm(submission)}
+                            className="flex-1 sm:flex-none"
                           >
-                            <Eye className="h-4 w-4 mr-2" />
-                            View
+                            <Eye className="h-4 w-4 sm:mr-2" />
+                            <span className="hidden sm:inline">View</span>
                           </Button>
                         )}
                         <Button 
                           variant="outline" 
                           size="sm"
                           onClick={() => handlePrint(submission)}
+                          className="flex-1 sm:flex-none"
                         >
-                          <Printer className="h-4 w-4 mr-2" />
-                          Print
+                          <Printer className="h-4 w-4 sm:mr-2" />
+                          <span className="hidden sm:inline">Print</span>
                         </Button>
                         <Button 
                           variant="outline" 
                           size="sm"
                           onClick={() => handleDownloadPDF(submission)}
+                          className="flex-1 sm:flex-none"
                         >
-                          <Download className="h-4 w-4 mr-2" />
-                          PDF
+                          <Download className="h-4 w-4 sm:mr-2" />
+                          <span className="hidden sm:inline">PDF</span>
                         </Button>
                       </div>
                     </div>
