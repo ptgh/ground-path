@@ -112,13 +112,13 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-1 sm:p-4"
       style={{ display: 'none' }}
       onClick={(e) => e.target === overlayRef.current && handleClose()}
     >
       <div
         ref={modalRef}
-        className="w-full max-w-lg bg-background rounded-lg shadow-lg border p-4 sm:p-6 space-y-3 sm:space-y-4 max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-sm sm:max-w-lg bg-background rounded-lg shadow-lg border p-3 sm:p-6 space-y-2 sm:space-y-4 max-h-[85vh] sm:max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
