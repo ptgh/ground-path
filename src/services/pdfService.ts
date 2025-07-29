@@ -21,7 +21,7 @@ export const pdfService = {
 
     // Add professional header
     this.addHeader(pdf, yPosition);
-    yPosition += 25;
+    yPosition += 45;
 
     // Add form title and patient info
     yPosition = this.addFormInfo(pdf, data, yPosition);
@@ -37,19 +37,34 @@ export const pdfService = {
   },
 
   addHeader(pdf: jsPDF, yPosition: number) {
-    // Ground Path Professional Services header
-    pdf.setFontSize(16);
+    // Add Ground Path logo placeholder and professional header
+    pdf.setFontSize(18);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('Ground Path Professional Services', 20, yPosition);
+    pdf.setTextColor(46, 79, 79); // Dark slate gray matching the logo
+    pdf.text('Ground Path', 20, yPosition);
     
-    pdf.setFontSize(10);
+    pdf.setFontSize(12);
     pdf.setFont('helvetica', 'normal');
-    pdf.text('Professional Mental Health & Social Work Practice', 20, yPosition + 5);
-    pdf.text('ABN: 123456789 | www.groundpath.com.au', 20, yPosition + 10);
+    pdf.setTextColor(80, 120, 120); // Muted teal
+    pdf.text('Social Work & Mental Health Support Australia', 20, yPosition + 8);
     
-    // Add line separator
-    pdf.setLineWidth(0.5);
-    pdf.line(20, yPosition + 15, 190, yPosition + 15);
+    pdf.setFontSize(9);
+    pdf.setTextColor(100, 100, 100); // Gray
+    pdf.text('Professional Services | ABN: 123456789', 20, yPosition + 16);
+    pdf.text('www.groundpath.com.au | info@groundpath.com.au', 20, yPosition + 22);
+    
+    // Add professional line separator
+    pdf.setLineWidth(0.8);
+    pdf.setDrawColor(46, 79, 79);
+    pdf.line(20, yPosition + 28, 190, yPosition + 28);
+    
+    // Add confidentiality notice
+    pdf.setFontSize(8);
+    pdf.setTextColor(150, 150, 150);
+    pdf.text('CONFIDENTIAL - This document contains privileged and confidential information', 20, yPosition + 34);
+    
+    // Reset text color for main content
+    pdf.setTextColor(0, 0, 0);
   },
 
   addFormInfo(pdf: jsPDF, data: PDFFormData, yPosition: number): number {
@@ -87,6 +102,10 @@ export const pdfService = {
         return this.addMSEContent(pdf, data, yPosition, pageWidth, pageHeight);
       case 'Suicide Risk Assessment':
         return this.addSuicideRiskContent(pdf, data, yPosition, pageWidth, pageHeight);
+      case 'Treatment Plan':
+        return this.addTreatmentPlanContent(pdf, data, yPosition, pageWidth, pageHeight);
+      case 'Client Intake':
+        return this.addClientIntakeContent(pdf, data, yPosition, pageWidth, pageHeight);
       default:
         return this.addGenericContent(pdf, data, yPosition, pageWidth, pageHeight);
     }
@@ -321,64 +340,116 @@ export const pdfService = {
     return yPosition;
   },
 
-  addGenericContent(pdf: jsPDF, data: PDFFormData, yPosition: number, pageWidth: number, pageHeight: number): number {
-    Object.entries(data.formData).forEach(([key, value]) => {
-      if (yPosition > pageHeight - 30) {
-        pdf.addPage();
-        yPosition = 20;
-      }
+  addTreatmentPlanContent(pdf: jsPDF, data: PDFFormData, yPosition: number, pageWidth: number, pageHeight: number): number {
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Treatment Planning Form', 20, yPosition);
+    yPosition += 15;
 
+    const sections = [
+      { key: 'sessionDate', label: 'Session Date' },
+      { key: 'primaryConcerns', label: 'Primary Concerns/Presenting Issues' },
+      { key: 'strengths', label: 'Client Strengths & Resources' },
+      { key: 'riskFactors', label: 'Risk Factors & Challenges' },
+      { key: 'goalShort', label: 'Short-term Goals (1-3 months)' },
+      { key: 'goalMedium', label: 'Medium-term Goals (3-6 months)' },
+      { key: 'goalLong', label: 'Long-term Goals (6+ months)' },
+      { key: 'interventions', label: 'Planned Interventions & Strategies' },
+      { key: 'frequency', label: 'Session Frequency' },
+      { key: 'duration', label: 'Expected Duration' },
+      { key: 'successMeasures', label: 'Success Measures & Evaluation Criteria' },
+      { key: 'referrals', label: 'External Referrals & Collaborations' },
+      { key: 'nextReview', label: 'Next Review Date' },
+      { key: 'practitionerSignature', label: 'Practitioner Signature' }
+    ];
+
+    sections.forEach(section => {
+      const value = data.formData[section.key];
       if (value && value !== '') {
+        if (yPosition > pageHeight - 30) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+
         pdf.setFont('helvetica', 'bold');
-        pdf.text(`${key}:`, 20, yPosition);
+        pdf.text(`${section.label}:`, 20, yPosition);
         yPosition += 5;
         
         pdf.setFont('helvetica', 'normal');
-        const text = Array.isArray(value) ? value.join(', ') : value.toString();
-        const lines = pdf.splitTextToSize(text, pageWidth - 40);
+        const lines = pdf.splitTextToSize(value.toString(), pageWidth - 40);
         pdf.text(lines, 25, yPosition);
-        yPosition += lines.length * 5 + 5;
+        yPosition += lines.length * 5 + 8;
       }
     });
 
     return yPosition;
   },
 
-  addScoreSection(pdf: jsPDF, score: number, interpretation: string | undefined, yPosition: number, pageHeight: number): number {
-    if (yPosition > pageHeight - 50) {
+  addClientIntakeContent(pdf: jsPDF, data: PDFFormData, yPosition: number, pageWidth: number, pageHeight: number): number {
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Client Intake Assessment', 20, yPosition);
+    yPosition += 15;
+
+    const sections = [
+      { key: 'dateOfBirth', label: 'Date of Birth' },
+      { key: 'gender', label: 'Gender' },
+      { key: 'maritalStatus', label: 'Marital Status' },
+      { key: 'phone', label: 'Phone Number' },
+      { key: 'email', label: 'Email Address' },
+      { key: 'address', label: 'Address' },
+      { key: 'emergencyName', label: 'Emergency Contact Name' },
+      { key: 'emergencyPhone', label: 'Emergency Contact Phone' },
+      { key: 'emergencyRelationship', label: 'Emergency Contact Relationship' },
+      { key: 'gp', label: 'General Practitioner' },
+      { key: 'medications', label: 'Current Medications' },
+      { key: 'medicalConditions', label: 'Medical Conditions' },
+      { key: 'allergies', label: 'Allergies' },
+      { key: 'presentingConcerns', label: 'Presenting Concerns' },
+      { key: 'previousCounselling', label: 'Previous Counselling History' },
+      { key: 'currentSupports', label: 'Current Support Systems' },
+      { key: 'goals', label: 'Counselling Goals' },
+      { key: 'employmentStatus', label: 'Employment Status' },
+      { key: 'livingArrangement', label: 'Living Arrangement' },
+      { key: 'culturalBackground', label: 'Cultural Background' },
+      { key: 'preferredLanguage', label: 'Preferred Language' },
+      { key: 'clientSignature', label: 'Client Signature' }
+    ];
+
+    sections.forEach(section => {
+      const value = data.formData[section.key];
+      if (value && value !== '') {
+        if (yPosition > pageHeight - 30) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(`${section.label}:`, 20, yPosition);
+        yPosition += 5;
+        
+        pdf.setFont('helvetica', 'normal');
+        const lines = pdf.splitTextToSize(value.toString(), pageWidth - 40);
+        pdf.text(lines, 25, yPosition);
+        yPosition += lines.length * 5 + 8;
+      }
+    });
+
+    // Add consent information
+    if (yPosition > pageHeight - 40) {
       pdf.addPage();
       yPosition = 20;
     }
-
-    // Add score box
-    pdf.setFillColor(240, 240, 240);
-    pdf.rect(20, yPosition, 150, 25, 'F');
     
-    pdf.setFontSize(12);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('Assessment Results', 25, yPosition + 8);
-    
-    pdf.setFontSize(14);
-    pdf.text(`Total Score: ${score}`, 25, yPosition + 18);
-    yPosition += 30;
-
-    if (interpretation) {
-      yPosition = this.addInterpretationSection(pdf, interpretation, yPosition, pageHeight);
-    }
-
-    return yPosition;
-  },
-
-  addInterpretationSection(pdf: jsPDF, interpretation: string, yPosition: number, pageHeight: number): number {
-    pdf.setFontSize(10);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Clinical Interpretation:', 20, yPosition);
+    pdf.text('Consent:', 20, yPosition);
     yPosition += 5;
-
+    
     pdf.setFont('helvetica', 'normal');
-    const lines = pdf.splitTextToSize(interpretation, 150);
-    pdf.text(lines, 20, yPosition);
-    yPosition += lines.length * 5 + 10;
+    pdf.text('✓ Treatment consent provided', 25, yPosition);
+    yPosition += 5;
+    pdf.text('✓ Privacy consent provided', 25, yPosition);
+    yPosition += 10;
 
     return yPosition;
   },
@@ -411,6 +482,10 @@ export const pdfService = {
         return 'Mental Status Examination (MSE)';
       case 'Suicide Risk Assessment':
         return 'Suicide Risk Assessment';
+      case 'Treatment Plan':
+        return 'Treatment Planning Form';
+      case 'Client Intake':
+        return 'Client Intake Assessment';
       default:
         return `${formType} Assessment`;
     }

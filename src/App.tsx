@@ -16,6 +16,8 @@ import GAD7Form from "./components/forms/GAD7Form";
 import { DASS21Form } from "./components/forms/DASS21Form";
 import { MSEForm } from "./components/forms/MSEForm";
 import { SuicideRiskForm } from "./components/forms/SuicideRiskForm";
+import { TreatmentPlanForm } from "./components/forms/TreatmentPlanForm";
+import { ClientIntakeForm } from "./components/forms/ClientIntakeForm";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +49,8 @@ const App = () => {
         <Route path="/practitioner/forms/dass-21/fill" element={<DASS21Form />} />
         <Route path="/practitioner/forms/mental-status-exam/fill" element={<MSEForm />} />
         <Route path="/practitioner/forms/suicide-risk-assessment/fill" element={<SuicideRiskForm />} />
+        <Route path="/practitioner/forms/treatment-plan/fill" element={<TreatmentPlanForm />} />
+        <Route path="/practitioner/forms/client-intake/fill" element={<ClientIntakeForm />} />
             {/* Redirect /auth to /practitioner/auth for backwards compatibility */}
             <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
             <Route path="/practitioner/auth" element={<AuthPage />} />
