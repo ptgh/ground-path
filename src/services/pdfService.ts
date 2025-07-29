@@ -21,7 +21,7 @@ export const pdfService = {
 
     // Add professional header
     this.addHeader(pdf, yPosition);
-    yPosition += 45;
+    yPosition += 55;
 
     // Add form title and patient info
     yPosition = this.addFormInfo(pdf, data, yPosition);
@@ -37,57 +37,81 @@ export const pdfService = {
   },
 
   addHeader(pdf: jsPDF, yPosition: number) {
-    // Add Ground Path logo placeholder and professional header
-    pdf.setFontSize(18);
+    // Add Ground Path professional header with enhanced branding
+    pdf.setFontSize(20);
     pdf.setFont('helvetica', 'bold');
     pdf.setTextColor(46, 79, 79); // Dark slate gray matching the logo
     pdf.text('Ground Path', 20, yPosition);
     
-    pdf.setFontSize(12);
+    pdf.setFontSize(10);
     pdf.setFont('helvetica', 'normal');
     pdf.setTextColor(80, 120, 120); // Muted teal
     pdf.text('Social Work & Mental Health Support Australia', 20, yPosition + 8);
     
     pdf.setFontSize(9);
     pdf.setTextColor(100, 100, 100); // Gray
-    pdf.text('Professional Services | ABN: 123456789', 20, yPosition + 16);
-    pdf.text('www.groundpath.com.au | info@groundpath.com.au', 20, yPosition + 22);
+    pdf.text('Professional Clinical Services | ABN: 12 345 678 901', 20, yPosition + 16);
+    pdf.text('📧 info@groundpath.com.au | 🌐 www.groundpath.com.au | 📞 1300 GROUND', 20, yPosition + 22);
     
-    // Add professional line separator
-    pdf.setLineWidth(0.8);
+    // Add professional gradient line separator
+    pdf.setLineWidth(1.2);
     pdf.setDrawColor(46, 79, 79);
-    pdf.line(20, yPosition + 28, 190, yPosition + 28);
+    pdf.line(20, yPosition + 30, 190, yPosition + 30);
+    pdf.setLineWidth(0.5);
+    pdf.setDrawColor(120, 180, 180);
+    pdf.line(20, yPosition + 31, 190, yPosition + 31);
     
-    // Add confidentiality notice
+    // Add confidentiality notice with border
     pdf.setFontSize(8);
-    pdf.setTextColor(150, 150, 150);
-    pdf.text('CONFIDENTIAL - This document contains privileged and confidential information', 20, yPosition + 34);
+    pdf.setTextColor(180, 50, 50); // Red for confidentiality
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('⚠️ CONFIDENTIAL DOCUMENT', 20, yPosition + 40);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(100, 100, 100);
+    pdf.text('This document contains privileged and confidential patient information protected by law', 20, yPosition + 46);
     
     // Reset text color for main content
     pdf.setTextColor(0, 0, 0);
   },
 
   addFormInfo(pdf: jsPDF, data: PDFFormData, yPosition: number): number {
-    pdf.setFontSize(14);
+    // Add professional form title with background
+    pdf.setFillColor(245, 248, 250); // Light background
+    pdf.rect(15, yPosition - 5, 180, 15, 'F');
+    pdf.setFontSize(16);
     pdf.setFont('helvetica', 'bold');
-    pdf.text(this.getFormTitle(data.formType), 20, yPosition);
+    pdf.setTextColor(46, 79, 79);
+    pdf.text(this.getFormTitle(data.formType), 20, yPosition + 5);
     
-    yPosition += 10;
+    yPosition += 20;
+    
+    // Add patient and session information in a structured format
+    pdf.setFillColor(250, 252, 255); // Very light blue background
+    pdf.rect(15, yPosition - 3, 180, 20, 'F');
+    
+    pdf.setFontSize(11);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(0, 0, 0);
+    pdf.text('PATIENT INFORMATION', 20, yPosition + 3);
+    
     pdf.setFontSize(10);
     pdf.setFont('helvetica', 'normal');
-    
-    pdf.text(`Patient Name: ${data.patientName}`, 20, yPosition);
-    pdf.text(`Date: ${data.date}`, 120, yPosition);
+    pdf.text(`Client/Patient Name: ${data.patientName}`, 20, yPosition + 10);
+    pdf.text(`Assessment Date: ${data.date}`, 120, yPosition + 10);
     
     if (data.practitionerName) {
-      yPosition += 5;
-      pdf.text(`Practitioner: ${data.practitionerName}`, 20, yPosition);
+      pdf.text(`Practitioner: ${data.practitionerName}`, 20, yPosition + 15);
       if (data.practitionerLicense) {
-        pdf.text(`License: ${data.practitionerLicense}`, 120, yPosition);
+        pdf.text(`Registration: ${data.practitionerLicense}`, 120, yPosition + 15);
       }
     }
 
-    return yPosition;
+    // Add generation timestamp
+    pdf.setFontSize(8);
+    pdf.setTextColor(100, 100, 100);
+    pdf.text(`Document generated: ${new Date().toLocaleString('en-AU')}`, 140, yPosition + 20);
+
+    return yPosition + 25;
   },
 
   addFormContent(pdf: jsPDF, data: PDFFormData, yPosition: number, pageWidth: number, pageHeight: number): number {
@@ -106,6 +130,11 @@ export const pdfService = {
         return this.addTreatmentPlanContent(pdf, data, yPosition, pageWidth, pageHeight);
       case 'Client Intake':
         return this.addClientIntakeContent(pdf, data, yPosition, pageWidth, pageHeight);
+      case 'GAF':
+      case 'Safety Plan':
+      case 'Crisis Intervention':
+      case 'CPD Log':
+        return this.addGenericContent(pdf, data, yPosition, pageWidth, pageHeight);
       default:
         return this.addGenericContent(pdf, data, yPosition, pageWidth, pageHeight);
     }
@@ -454,41 +483,71 @@ export const pdfService = {
     return yPosition;
   },
 
-  addFooter(pdf: jsPDF, pageHeight: number) {
-    const footerY = pageHeight - 20;
-    
-    pdf.setFontSize(8);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text('This document is confidential and intended for professional use only.', 20, footerY);
-    pdf.text('Ground Path Professional Services | Generated on ' + new Date().toLocaleDateString(), 20, footerY + 5);
-    
-    // Add page number
-    const pageCount = pdf.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      pdf.setPage(i);
-      pdf.text(`Page ${i} of ${pageCount}`, 170, footerY + 5);
-    }
+  addGenericContent(pdf: jsPDF, data: PDFFormData, yPosition: number, pageWidth: number, pageHeight: number): number {
+    Object.entries(data.formData).forEach(([key, value]) => {
+      if (yPosition > pageHeight - 30) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+
+      if (value && value !== '') {
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(`${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:`, 20, yPosition);
+        yPosition += 5;
+        
+        pdf.setFont('helvetica', 'normal');
+        const text = Array.isArray(value) ? value.join(', ') : value.toString();
+        const lines = pdf.splitTextToSize(text, pageWidth - 40);
+        pdf.text(lines, 25, yPosition);
+        yPosition += lines.length * 5 + 8;
+      }
+    });
+
+    return yPosition;
   },
 
-  getFormTitle(formType: string): string {
-    switch (formType) {
-      case 'PHQ-9':
-        return 'Patient Health Questionnaire-9 (PHQ-9)';
-      case 'GAD-7':
-        return 'Generalized Anxiety Disorder 7-item (GAD-7)';
-      case 'DASS-21':
-        return 'Depression, Anxiety and Stress Scale-21 Items (DASS-21)';
-      case 'MSE':
-        return 'Mental Status Examination (MSE)';
-      case 'Suicide Risk Assessment':
-        return 'Suicide Risk Assessment';
-      case 'Treatment Plan':
-        return 'Treatment Planning Form';
-      case 'Client Intake':
-        return 'Client Intake Assessment';
-      default:
-        return `${formType} Assessment`;
+  addScoreSection(pdf: jsPDF, score: number, interpretation: string | undefined, yPosition: number, pageHeight: number): number {
+    if (yPosition > pageHeight - 40) {
+      pdf.addPage();
+      yPosition = 20;
     }
+
+    pdf.setFillColor(240, 248, 255);
+    pdf.rect(15, yPosition - 5, 180, 25, 'F');
+    
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('ASSESSMENT RESULTS', 20, yPosition + 5);
+    
+    pdf.setFontSize(11);
+    pdf.text(`Total Score: ${score}`, 20, yPosition + 15);
+    
+    if (interpretation) {
+      yPosition += 25;
+      pdf.setFont('helvetica', 'normal');
+      const lines = pdf.splitTextToSize(`Interpretation: ${interpretation}`, 170);
+      pdf.text(lines, 25, yPosition);
+      yPosition += lines.length * 5;
+    }
+
+    return yPosition + 10;
+  },
+
+  addInterpretationSection(pdf: jsPDF, interpretation: string, yPosition: number, pageHeight: number): number {
+    if (yPosition > pageHeight - 30) {
+      pdf.addPage();
+      yPosition = 20;
+    }
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Clinical Interpretation:', 20, yPosition);
+    yPosition += 5;
+    
+    pdf.setFont('helvetica', 'normal');
+    const lines = pdf.splitTextToSize(interpretation, 170);
+    pdf.text(lines, 25, yPosition);
+    
+    return yPosition + lines.length * 5 + 10;
   },
 
   async downloadPDF(data: PDFFormData, filename?: string) {

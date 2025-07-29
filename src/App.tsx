@@ -18,6 +18,10 @@ import { MSEForm } from "./components/forms/MSEForm";
 import { SuicideRiskForm } from "./components/forms/SuicideRiskForm";
 import { TreatmentPlanForm } from "./components/forms/TreatmentPlanForm";
 import { ClientIntakeForm } from "./components/forms/ClientIntakeForm";
+import { GAFForm } from "./components/forms/GAFForm";
+import { SafetyPlanForm } from "./components/forms/SafetyPlanForm";
+import { CrisisInterventionForm } from "./components/forms/CrisisInterventionForm";
+import { CPDLogForm } from "./components/forms/CPDLogForm";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +55,10 @@ const App = () => {
         <Route path="/practitioner/forms/suicide-risk-assessment/fill" element={<SuicideRiskForm />} />
         <Route path="/practitioner/forms/treatment-plan/fill" element={<TreatmentPlanForm />} />
         <Route path="/practitioner/forms/client-intake/fill" element={<ClientIntakeForm />} />
+        <Route path="/practitioner/forms/gaf-scale/fill" element={<GAFForm />} />
+        <Route path="/practitioner/forms/safety-planning/fill" element={<SafetyPlanForm />} />
+        <Route path="/practitioner/forms/crisis-intervention/fill" element={<CrisisInterventionForm />} />
+        <Route path="/practitioner/forms/cpd-log/fill" element={<CPDLogForm />} />
             {/* Redirect /auth to /practitioner/auth for backwards compatibility */}
             <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
             <Route path="/practitioner/auth" element={<AuthPage />} />
