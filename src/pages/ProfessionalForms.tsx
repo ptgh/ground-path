@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { pdfService } from '@/services/pdfService';
 
 interface FormCategory {
   id: string;
@@ -310,16 +311,47 @@ const ProfessionalForms = () => {
     return allForms.filter(form => form.category === selectedCategory);
   };
 
-  const handleFormAction = (form: ProfessionalForm, action: 'view' | 'download' | 'fill') => {
+  const getFormTypeFromId = (formId: string): string => {
+    const formTypeMap: Record<string, string> = {
+      'phq-9': 'PHQ-9',
+      'gad-7': 'GAD-7',
+      'dass-21': 'DASS-21',
+      'mental-status-exam': 'MSE',
+      'suicide-risk-assessment': 'Suicide Risk Assessment',
+      'gaf-scale': 'GAF',
+      'safety-planning': 'Safety Plan',
+      'crisis-intervention': 'Crisis Intervention',
+      'client-intake': 'Client Intake',
+      'treatment-plan': 'Treatment Plan',
+      'cpd-log': 'CPD Log',
+      'beck-depression': 'BDI-II',
+      'incident-report': 'Incident Report'
+    };
+    return formTypeMap[formId] || formId;
+  };
+
+  const handleFormAction = async (form: ProfessionalForm, action: 'view' | 'download' | 'fill') => {
+    const formType = getFormTypeFromId(form.id);
+    
     switch (action) {
       case 'view':
-        if (form.downloadUrl) {
-          window.open(form.downloadUrl, '_blank');
+        try {
+          await pdfService.viewBlankForm(formType);
+        } catch (error) {
+          console.error('Failed to view form:', error);
+          // Fallback to original URL if available
+          if (form.downloadUrl) {
+            window.open(form.downloadUrl, '_blank');
+          }
         }
         break;
       case 'download':
-        if (form.downloadUrl) {
-          try {
+        try {
+          await pdfService.downloadBlankForm(formType, `${form.title.replace(/\s+/g, '-')}.pdf`);
+        } catch (error) {
+          console.error('Failed to download form:', error);
+          // Fallback to original URL if available
+          if (form.downloadUrl) {
             const link = document.createElement('a');
             link.href = form.downloadUrl;
             link.download = `${form.title.replace(/\s+/g, '-')}.pdf`;
@@ -329,10 +361,6 @@ const ProfessionalForms = () => {
             setTimeout(() => {
               document.body.removeChild(link);
             }, 100);
-          } catch (error) {
-            console.error('Download failed:', error);
-            // Fallback: open in new tab
-            window.open(form.downloadUrl, '_blank');
           }
         }
         break;
@@ -340,7 +368,15 @@ const ProfessionalForms = () => {
         if (form.formType === 'interactive') {
           navigate(`/practitioner/forms/${form.id}/fill`);
         } else {
-          window.open(form.downloadUrl, '_blank');
+          // For non-interactive forms, show the blank professional form
+          try {
+            await pdfService.viewBlankForm(formType);
+          } catch (error) {
+            console.error('Failed to view form:', error);
+            if (form.downloadUrl) {
+              window.open(form.downloadUrl, '_blank');
+            }
+          }
         }
         break;
     }

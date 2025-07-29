@@ -607,5 +607,238 @@ export const pdfService = {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+  },
+
+  async generateBlankFormPDF(formType: string): Promise<Blob> {
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    let yPosition = 20;
+
+    // Add professional header
+    this.addHeader(pdf, yPosition);
+    yPosition += 55;
+
+    // Add form title and blank patient info
+    const blankData: PDFFormData = {
+      formType,
+      patientName: '_________________________________',
+      date: '_________________',
+      formData: {},
+      practitionerName: '_________________________________',
+      practitionerLicense: '_________________________'
+    };
+    
+    yPosition = this.addFormInfo(pdf, blankData, yPosition);
+    yPosition += 10;
+
+    // Add blank form content based on type
+    yPosition = this.addBlankFormContent(pdf, formType, yPosition, pageWidth, pageHeight);
+
+    // Add footer
+    this.addFooter(pdf, pageHeight);
+
+    return pdf.output('blob');
+  },
+
+  addBlankFormContent(pdf: jsPDF, formType: string, yPosition: number, pageWidth: number, pageHeight: number): number {
+    switch (formType) {
+      case 'PHQ-9':
+        return this.addBlankPHQ9Content(pdf, yPosition, pageWidth, pageHeight);
+      case 'GAD-7':
+        return this.addBlankGAD7Content(pdf, yPosition, pageWidth, pageHeight);
+      default:
+        return this.addBlankGenericContent(pdf, formType, yPosition, pageWidth, pageHeight);
+    }
+  },
+
+  addBlankPHQ9Content(pdf: jsPDF, yPosition: number, pageWidth: number, pageHeight: number): number {
+    const questions = [
+      "Little interest or pleasure in doing things",
+      "Feeling down, depressed, or hopeless", 
+      "Trouble falling or staying asleep, or sleeping too much",
+      "Feeling tired or having little energy",
+      "Poor appetite or overeating",
+      "Feeling bad about yourself or that you are a failure or have let yourself or your family down",
+      "Trouble concentrating on things, such as reading the newspaper or watching television",
+      "Moving or speaking so slowly that other people could have noticed, or the opposite being so fidgety or restless that you have been moving around a lot more than usual",
+      "Thoughts that you would be better off dead, or of hurting yourself"
+    ];
+
+    const options = ["Not at all (0)", "Several days (1)", "More than half the days (2)", "Nearly every day (3)"];
+
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('PHQ-9 Depression Screening Questions', 20, yPosition);
+    yPosition += 10;
+
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('Over the last 2 weeks, how often have you been bothered by any of the following problems?', 20, yPosition);
+    yPosition += 8;
+
+    questions.forEach((question, index) => {
+      if (yPosition > pageHeight - 50) {
+        pdf.addPage();
+        this.addHeader(pdf, 20);
+        yPosition = 75;
+      }
+
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(`${index + 1}. ${question}`, 20, yPosition);
+      yPosition += 5;
+      
+      // Add response options with checkboxes
+      options.forEach((option, optionIndex) => {
+        pdf.rect(25 + (optionIndex * 45), yPosition - 3, 3, 3);
+        pdf.setFontSize(8);
+        pdf.text(option, 30 + (optionIndex * 45), yPosition);
+      });
+      pdf.setFontSize(9);
+      yPosition += 10;
+    });
+
+    // Add difficulty question
+    if (yPosition > pageHeight - 30) {
+      pdf.addPage();
+      this.addHeader(pdf, 20);
+      yPosition = 75;
+    }
+
+    yPosition += 5;
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('If you checked off any problems, how difficult have these problems made it for you to do your', 20, yPosition);
+    yPosition += 5;
+    pdf.text('work, take care of things at home, or get along with other people?', 20, yPosition);
+    yPosition += 8;
+    
+    const difficultyOptions = ["Not difficult at all", "Somewhat difficult", "Very difficult", "Extremely difficult"];
+    difficultyOptions.forEach((option, index) => {
+      pdf.rect(25 + (index * 40), yPosition - 3, 3, 3);
+      pdf.setFontSize(8);
+      pdf.text(option, 30 + (index * 40), yPosition);
+    });
+    pdf.setFontSize(9);
+    yPosition += 15;
+
+    // Add scoring section
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Total Score: _______ / 27', 20, yPosition);
+    yPosition += 8;
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('Interpretation: 0-4 Minimal, 5-9 Mild, 10-14 Moderate, 15-19 Moderately Severe, 20-27 Severe', 20, yPosition);
+
+    return yPosition + 10;
+  },
+
+  addBlankGAD7Content(pdf: jsPDF, yPosition: number, pageWidth: number, pageHeight: number): number {
+    const questions = [
+      "Feeling nervous, anxious, or on edge",
+      "Not being able to stop or control worrying",
+      "Worrying too much about different things",
+      "Trouble relaxing",
+      "Being so restless that it is hard to sit still",
+      "Becoming easily annoyed or irritable",
+      "Feeling afraid, as if something awful might happen"
+    ];
+
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('GAD-7 Anxiety Screening Questions', 20, yPosition);
+    yPosition += 10;
+
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('Over the last 2 weeks, how often have you been bothered by the following problems?', 20, yPosition);
+    yPosition += 8;
+
+    const options = ["Not at all (0)", "Several days (1)", "More than half the days (2)", "Nearly every day (3)"];
+
+    questions.forEach((question, index) => {
+      if (yPosition > pageHeight - 50) {
+        pdf.addPage();
+        this.addHeader(pdf, 20);
+        yPosition = 75;
+      }
+
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(`${index + 1}. ${question}`, 20, yPosition);
+      yPosition += 5;
+      
+      options.forEach((option, optionIndex) => {
+        pdf.rect(25 + (optionIndex * 45), yPosition - 3, 3, 3);
+        pdf.setFontSize(8);
+        pdf.text(option, 30 + (optionIndex * 45), yPosition);
+      });
+      pdf.setFontSize(9);
+      yPosition += 10;
+    });
+
+    // Add scoring and interpretation
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Total Score: _______ / 21', 20, yPosition);
+    yPosition += 8;
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('Interpretation: 0-4 Minimal, 5-9 Mild, 10-14 Moderate, 15-21 Severe', 20, yPosition);
+
+    return yPosition + 10;
+  },
+
+  addBlankGenericContent(pdf: jsPDF, formType: string, yPosition: number, pageWidth: number, pageHeight: number): number {
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(`${this.getFormTitle(formType)} - Blank Form`, 20, yPosition);
+    yPosition += 15;
+
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('This is a professional blank form template. Complete the interactive version online for full functionality.', 20, yPosition);
+    yPosition += 10;
+
+    // Add basic form structure
+    const sections = [
+      'Assessment Date: _________________',
+      'Client Information: ________________________________',
+      'Assessment Details: ________________________________',
+      'Clinical Observations: ________________________________',
+      'Recommendations: ________________________________',
+      'Practitioner Signature: ______________________________ Date: __________'
+    ];
+
+    sections.forEach(section => {
+      if (yPosition > pageHeight - 40) {
+        pdf.addPage();
+        this.addHeader(pdf, 20);
+        yPosition = 75;
+      }
+      pdf.text(section, 20, yPosition);
+      yPosition += 15;
+    });
+
+    return yPosition;
+  },
+
+  async downloadBlankForm(formType: string, filename?: string) {
+    const blob = await this.generateBlankFormPDF(formType);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename || `${formType}-blank-form.pdf`;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(() => {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 100);
+  },
+
+  async viewBlankForm(formType: string) {
+    const blob = await this.generateBlankFormPDF(formType);
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 10000);
   }
 };
