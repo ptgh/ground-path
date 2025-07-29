@@ -550,6 +550,53 @@ export const pdfService = {
     return yPosition + lines.length * 5 + 10;
   },
 
+  getFormTitle(formType: string): string {
+    const titleMap: Record<string, string> = {
+      'PHQ-9': 'PHQ-9 Depression Questionnaire',
+      'GAD-7': 'GAD-7 Anxiety Scale',
+      'DASS-21': 'DASS-21 Depression, Anxiety and Stress Scale',
+      'Mental Status Examination': 'Mental Status Examination (MSE)',
+      'Suicide Risk Assessment': 'Comprehensive Suicide Risk Assessment',
+      'Safety Plan': 'Stanley-Brown Safety Planning Intervention',
+      'Crisis Intervention': 'Crisis Intervention Documentation',
+      'Treatment Plan': 'Treatment Planning Form',
+      'Client Intake': 'Client Intake Assessment',
+      'GAF Scale': 'Global Assessment of Functioning (GAF)',
+      'CPD Log': 'Continuing Professional Development Log',
+      'BDI-II': 'Beck Depression Inventory-II',
+      'Incident Report': 'Critical Incident Report'
+    };
+    return titleMap[formType] || formType;
+  },
+
+  addFooter(pdf: jsPDF, pageHeight: number) {
+    // Add professional footer with page numbers and generation info
+    const currentDate = new Date().toLocaleDateString('en-AU', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    
+    pdf.setFontSize(8);
+    pdf.setTextColor(100, 100, 100);
+    pdf.text(`Generated: ${currentDate}`, 20, pageHeight - 20);
+    pdf.text('Ground Path Clinical Services', 120, pageHeight - 20);
+    pdf.text('Page 1 of 1', 170, pageHeight - 20);
+    
+    // Add footer separator line
+    pdf.setLineWidth(0.3);
+    pdf.setDrawColor(200, 200, 200);
+    pdf.line(20, pageHeight - 25, 190, pageHeight - 25);
+    
+    // Add compliance footer
+    pdf.setFontSize(7);
+    pdf.setTextColor(120, 120, 120);
+    pdf.text('This document complies with Australian Privacy Principles and healthcare documentation standards', 20, pageHeight - 10);
+    pdf.text('© Ground Path 2024 | Document security classification: CONFIDENTIAL', 20, pageHeight - 5);
+  },
+
   async downloadPDF(data: PDFFormData, filename?: string) {
     const blob = await this.generateFormPDF(data);
     const url = URL.createObjectURL(blob);
