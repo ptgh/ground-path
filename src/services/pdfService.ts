@@ -51,7 +51,7 @@ export const pdfService = {
     pdf.setFontSize(9);
     pdf.setTextColor(100, 100, 100); // Gray
     pdf.text('Professional Clinical Services | ABN: 12 345 678 901', 20, yPosition + 16);
-    pdf.text('📧 info@groundpath.com.au | 🌐 www.groundpath.com.au | 📞 1300 GROUND', 20, yPosition + 22);
+    pdf.text('Email: info@groundpath.com.au | Web: www.groundpath.com.au | Ph: 1300 GROUND', 20, yPosition + 22);
     
     // Add professional gradient line separator
     pdf.setLineWidth(1.2);
@@ -65,7 +65,7 @@ export const pdfService = {
     pdf.setFontSize(8);
     pdf.setTextColor(180, 50, 50); // Red for confidentiality
     pdf.setFont('helvetica', 'bold');
-    pdf.text('⚠️ CONFIDENTIAL DOCUMENT', 20, yPosition + 40);
+    pdf.text('** CONFIDENTIAL DOCUMENT **', 20, yPosition + 40);
     pdf.setFont('helvetica', 'normal');
     pdf.setTextColor(100, 100, 100);
     pdf.text('This document contains privileged and confidential patient information protected by law', 20, yPosition + 46);
@@ -171,7 +171,7 @@ export const pdfService = {
         yPosition = 20;
       }
 
-      const answer = data.formData[`question_${index + 1}`] || 0;
+      const answer = data.formData[`q${index + 1}`] || 0;
       const answerText = options[answer] || 'Not answered';
 
       pdf.setFont('helvetica', 'normal');
@@ -234,7 +234,7 @@ export const pdfService = {
         yPosition = 20;
       }
 
-      const answer = data.formData[`question_${index + 1}`] || 0;
+      const answer = data.formData[`q${index + 1}`] || 0;
       const answerText = options[answer] || 'Not answered';
 
       pdf.setFont('helvetica', 'normal');

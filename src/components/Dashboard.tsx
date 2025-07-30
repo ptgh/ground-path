@@ -137,11 +137,11 @@ const Dashboard = () => {
 
   const getProfessionBadgeColor = (role: string) => {
     switch (role) {
-      case 'admin': return 'bg-red-100 text-red-800';
-      case 'social_worker': return 'bg-blue-100 text-blue-800';
-      case 'mental_health_professional': return 'bg-green-100 text-green-800';
-      case 'moderator': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'admin': return 'bg-destructive/10 text-destructive';
+      case 'social_worker': return 'bg-sage-100 text-sage-800';
+      case 'mental_health_professional': return 'bg-sage-100 text-sage-700';
+      case 'moderator': return 'bg-muted text-muted-foreground';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -214,7 +214,7 @@ const Dashboard = () => {
                         </Badge>
                       ))
                     ) : (
-                      <Badge variant="secondary" className="bg-gray-100 text-gray-800">
+                      <Badge variant="secondary" className="bg-muted text-muted-foreground">
                         PRACTITIONER
                       </Badge>
                     )}
@@ -401,7 +401,7 @@ const Dashboard = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {professionalTools.social_worker.map((tool, index) => (
                         <Button key={index} variant="outline" className="h-auto p-4 flex flex-col space-y-2">
-                          <tool.icon className="h-8 w-8 text-blue-600" />
+                          <tool.icon className="h-8 w-8 text-sage-600" />
                           <div className="text-center">
                             <div className="font-medium">{tool.name}</div>
                             <div className="text-xs text-muted-foreground">{tool.description}</div>
@@ -428,7 +428,7 @@ const Dashboard = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {professionalTools.mental_health_professional.map((tool, index) => (
                         <Button key={index} variant="outline" className="h-auto p-4 flex flex-col space-y-2">
-                          <tool.icon className="h-8 w-8 text-green-600" />
+                          <tool.icon className="h-8 w-8 text-sage-600" />
                           <div className="text-center">
                             <div className="font-medium">{tool.name}</div>
                             <div className="text-xs text-muted-foreground">{tool.description}</div>

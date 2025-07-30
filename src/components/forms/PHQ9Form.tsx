@@ -78,11 +78,11 @@ const PHQ9Form = () => {
   };
 
   const getScoreInterpretation = (score: number) => {
-    if (score <= 4) return { level: 'Minimal', color: 'bg-green-100 text-green-800', description: 'Minimal depression' };
-    if (score <= 9) return { level: 'Mild', color: 'bg-yellow-100 text-yellow-800', description: 'Mild depression' };
-    if (score <= 14) return { level: 'Moderate', color: 'bg-orange-100 text-orange-800', description: 'Moderate depression' };
-    if (score <= 19) return { level: 'Moderately Severe', color: 'bg-red-100 text-red-800', description: 'Moderately severe depression' };
-    return { level: 'Severe', color: 'bg-red-200 text-red-900', description: 'Severe depression' };
+    if (score <= 4) return { level: 'Minimal', color: 'bg-sage-100 text-sage-800', description: 'Minimal depression' };
+    if (score <= 9) return { level: 'Mild', color: 'bg-sage-200 text-sage-800', description: 'Mild depression' };
+    if (score <= 14) return { level: 'Moderate', color: 'bg-sage-300 text-sage-900', description: 'Moderate depression' };
+    if (score <= 19) return { level: 'Moderately Severe', color: 'bg-destructive/20 text-destructive', description: 'Moderately severe depression' };
+    return { level: 'Severe', color: 'bg-destructive/30 text-destructive', description: 'Severe depression' };
   };
 
   const onSubmit = async (data: PHQ9FormData) => {
