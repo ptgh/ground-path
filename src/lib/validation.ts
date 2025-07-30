@@ -62,19 +62,23 @@ export const contactFormSchema = z.object({
 
 export const mailingListSchema = z.object({
   email: z.string()
+    .min(1, 'Email is required')
     .email('Please enter a valid email address')
     .max(254, 'Email address is too long')
     .toLowerCase()
     .transform(sanitizeHtml),
   name: z.string()
     .optional()
-    .transform(val => val ? sanitizeHtml(val) : val)
-    .refine(val => !val || (val.length >= 2 && val.length <= 100), {
-      message: 'Name must be between 2 and 100 characters'
+    .nullable()
+    .transform(val => val ? sanitizeHtml(val.trim()) : undefined)
+    .refine(val => !val || (val.length >= 1 && val.length <= 100), {
+      message: 'Name must be between 1 and 100 characters'
     })
-    .refine(val => !val || /^[a-zA-Z\s\-'\.]*$/.test(val), {
+    .refine(val => !val || /^[a-zA-Z\s\-'\.]+$/.test(val), {
       message: 'Name contains invalid characters'
-    })
+    }),
+  source: z.string().default('website'),
+  status: z.enum(['pending', 'confirmed', 'unsubscribed']).default('pending')
 });
 
 export const aiChatSchema = z.object({
