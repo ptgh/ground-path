@@ -6,12 +6,12 @@ import { z } from 'zod';
 export const sanitizeHtml = (input: string): string => {
   if (!input) return '';
   
-  // Remove potential XSS vectors
+  // Remove potential XSS vectors - more specific patterns to avoid breaking valid content
   return input
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
     .replace(/javascript:/gi, '')
-    .replace(/on\w+\s*=/gi, '')
+    .replace(/\bon\w+\s*=/gi, '') // More specific - only match HTML event handlers
     .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
     .replace(/<embed\b[^<]*>/gi, '')
     .trim();
@@ -48,8 +48,7 @@ export const contactFormSchema = z.object({
   email: z.string()
     .email('Please enter a valid email address')
     .max(254, 'Email address is too long')
-    .toLowerCase()
-    .transform(sanitizeHtml),
+    .toLowerCase(), // Remove sanitizeHtml transform from email
   subject: z.string()
     .min(1, 'Subject is required')
     .max(200, 'Subject must not exceed 200 characters')
@@ -65,8 +64,7 @@ export const mailingListSchema = z.object({
     .min(1, 'Email is required')
     .email('Please enter a valid email address')
     .max(254, 'Email address is too long')
-    .toLowerCase()
-    .transform(sanitizeHtml),
+    .toLowerCase(), // Remove sanitizeHtml transform from email
   name: z.string()
     .optional()
     .nullable()

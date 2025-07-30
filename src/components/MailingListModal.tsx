@@ -38,12 +38,19 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
     }
 
     try {
+      console.log('Validating subscription data:', { 
+        email: email.trim(), 
+        name: name.trim() || undefined 
+      });
+      
       const validatedData = mailingListSchema.parse({
-        email,
+        email: email.trim(),
         name: name.trim() || undefined,
         source: 'hero_section',
         status: 'pending'
       });
+
+      console.log('Validation successful:', validatedData);
 
       await subscriptionMutation.mutateAsync({
         email: validatedData.email,
@@ -63,17 +70,21 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
       }, 2000);
       
     } catch (error: any) {
+      console.error('Subscription validation error:', error);
+      
       if (error.errors) {
         const newErrors: Record<string, string> = {};
         error.errors.forEach((err: any) => {
+          console.error('Field validation error:', err);
           const field = err.path[0];
           newErrors[field] = err.message;
         });
         setErrors(newErrors);
       }
+      
       toast({
-        title: "Validation Error",
-        description: "Please check your input and try again.",
+        title: "Subscription failed",
+        description: error.message || "Please check your input and try again.",
         variant: "destructive"
       });
     }
