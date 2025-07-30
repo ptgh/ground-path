@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -32,6 +32,7 @@ import ProfessionalProfileModal from './ProfessionalProfileModal';
 import FormHistory from './FormHistory';
 import NoteModal from './NoteModal';
 import { notesService, Note } from '@/services/notesService';
+import { gsap } from 'gsap';
 
 const Dashboard = () => {
   const { user, profile, roles, loading: authLoading } = useAuth();
@@ -42,6 +43,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const buttonsRef = useRef<HTMLDivElement>(null);
 
   // Debug logging
   console.log('Dashboard render - isNoteModalOpen:', isNoteModalOpen);
@@ -78,6 +80,41 @@ const Dashboard = () => {
       setIsNoteModalOpen(false);
       setSelectedNote(null);
     };
+  }, []);
+
+  // GSAP button animations
+  useEffect(() => {
+    if (buttonsRef.current) {
+      const buttons = buttonsRef.current.querySelectorAll('.dashboard-cta');
+      
+      buttons.forEach((button) => {
+        const handleMouseEnter = () => {
+          gsap.to(button, {
+            scale: 1.05,
+            y: -2,
+            duration: 0.3,
+            ease: "power2.out"
+          });
+        };
+        
+        const handleMouseLeave = () => {
+          gsap.to(button, {
+            scale: 1,
+            y: 0,
+            duration: 0.3,
+            ease: "power2.out"
+          });
+        };
+        
+        button.addEventListener('mouseenter', handleMouseEnter);
+        button.addEventListener('mouseleave', handleMouseLeave);
+        
+        return () => {
+          button.removeEventListener('mouseenter', handleMouseEnter);
+          button.removeEventListener('mouseleave', handleMouseLeave);
+        };
+      });
+    }
   }, []);
 
   const loadNotes = async () => {
@@ -242,11 +279,11 @@ const Dashboard = () => {
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-auto p-1 gap-1">
-              <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:text-foreground">Overview</TabsTrigger>
-              <TabsTrigger value="tools" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:text-foreground">Professional</TabsTrigger>
-              <TabsTrigger value="history" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:text-foreground">History</TabsTrigger>
-              <TabsTrigger value="notes" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:text-foreground">Notes</TabsTrigger>
-              <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:text-foreground">Settings</TabsTrigger>
+              <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Overview</TabsTrigger>
+              <TabsTrigger value="tools" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Professional</TabsTrigger>
+              <TabsTrigger value="history" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">History</TabsTrigger>
+              <TabsTrigger value="notes" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Notes</TabsTrigger>
+              <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Settings</TabsTrigger>
             </TabsList>
 
             {/* Overview Tab */}
@@ -262,24 +299,24 @@ const Dashboard = () => {
                     Access your most used professional tools
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                    {quickActions.map((action, index) => (
-                      <Button 
-                        key={index}
-                        variant="outline" 
-                        className="h-auto p-3 sm:p-4 flex flex-col items-center space-y-2 text-center"
-                        onClick={action.action}
-                      >
-                        <action.icon className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-                        <div className="text-center">
-                          <div className="font-medium text-sm sm:text-base">{action.title}</div>
-                          <div className="text-xs text-muted-foreground">{action.description}</div>
-                        </div>
-                      </Button>
-                    ))}
-                  </div>
-                </CardContent>
+                 <CardContent ref={buttonsRef}>
+                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                     {quickActions.map((action, index) => (
+                       <Button 
+                         key={index}
+                         variant="outline" 
+                         className="dashboard-cta h-auto p-3 sm:p-4 flex flex-col items-center space-y-2 text-center border-sage-200 hover:bg-sage-50"
+                         onClick={action.action}
+                       >
+                         <action.icon className="h-6 w-6 sm:h-8 sm:w-8 text-sage-600" />
+                         <div className="text-center">
+                           <div className="font-medium text-sm sm:text-base">{action.title}</div>
+                           <div className="text-xs text-muted-foreground">{action.description}</div>
+                         </div>
+                       </Button>
+                     ))}
+                   </div>
+                 </CardContent>
               </Card>
 
               {/* Recent Activity */}
@@ -298,14 +335,14 @@ const Dashboard = () => {
                       </div>
                     ) : notes.length > 0 ? (
                       <div className="space-y-3">
-                        {notes.slice(0, 3).map((note) => (
-                          <div key={note.id} className="border-l-2 border-primary pl-4">
-                            <h4 className="font-medium">{note.title}</h4>
-                            <p className="text-sm text-muted-foreground">
-                              {new Date(note.created_at).toLocaleDateString()}
-                            </p>
-                          </div>
-                        ))}
+                         {notes.slice(0, 3).map((note) => (
+                           <div key={note.id} className="border-l-2 border-sage-600 pl-4">
+                             <h4 className="font-medium">{note.title}</h4>
+                             <p className="text-sm text-muted-foreground">
+                               {new Date(note.created_at).toLocaleDateString()}
+                             </p>
+                           </div>
+                         ))}
                         <Button 
                           variant="ghost" 
                           className="w-full mt-4" 
@@ -349,20 +386,20 @@ const Dashboard = () => {
                     </div>
                     <Separator />
                     <div className="space-y-2">
-                      <ProfessionalProfileModal>
-                        <Button variant="outline" className="w-full" size="sm">
-                          Update Professional Info
-                        </Button>
-                      </ProfessionalProfileModal>
+                       <ProfessionalProfileModal>
+                         <Button variant="outline" className="dashboard-cta w-full border-sage-200 text-sage-700 hover:bg-sage-50" size="sm">
+                           Update Professional Info
+                         </Button>
+                       </ProfessionalProfileModal>
                       <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          onClick={() => window.open('https://www.halaxy.com/book/paul-habermann/location/1321025', '_blank')}
-                          className="flex-1"
-                          size="sm"
-                        >
-                          Halaxy Profile
-                        </Button>
+                         <Button
+                           variant="outline"
+                           onClick={() => window.open('https://www.halaxy.com/book/paul-habermann/location/1321025', '_blank')}
+                           className="dashboard-cta flex-1 border-sage-200 text-sage-700 hover:bg-sage-50"
+                           size="sm"
+                         >
+                           Halaxy Profile
+                         </Button>
                         <a 
                           href="https://www.halaxy.com/book/paul-habermann/location/1321025"
                           target="_blank"
@@ -398,17 +435,17 @@ const Dashboard = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {professionalTools.social_worker.map((tool, index) => (
-                        <Button key={index} variant="outline" className="h-auto p-4 flex flex-col space-y-2">
-                          <tool.icon className="h-8 w-8 text-sage-600" />
-                          <div className="text-center">
-                            <div className="font-medium">{tool.name}</div>
-                            <div className="text-xs text-muted-foreground">{tool.description}</div>
-                          </div>
-                        </Button>
-                      ))}
-                    </div>
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                       {professionalTools.social_worker.map((tool, index) => (
+                         <Button key={index} variant="outline" className="dashboard-cta h-auto p-4 flex flex-col space-y-2 border-sage-200 hover:bg-sage-50">
+                           <tool.icon className="h-8 w-8 text-sage-600" />
+                           <div className="text-center">
+                             <div className="font-medium">{tool.name}</div>
+                             <div className="text-xs text-muted-foreground">{tool.description}</div>
+                           </div>
+                         </Button>
+                       ))}
+                     </div>
                   </CardContent>
                 </Card>
               )}
@@ -425,17 +462,17 @@ const Dashboard = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {professionalTools.mental_health_professional.map((tool, index) => (
-                        <Button key={index} variant="outline" className="h-auto p-4 flex flex-col space-y-2">
-                          <tool.icon className="h-8 w-8 text-sage-600" />
-                          <div className="text-center">
-                            <div className="font-medium">{tool.name}</div>
-                            <div className="text-xs text-muted-foreground">{tool.description}</div>
-                          </div>
-                        </Button>
-                      ))}
-                    </div>
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                       {professionalTools.mental_health_professional.map((tool, index) => (
+                         <Button key={index} variant="outline" className="dashboard-cta h-auto p-4 flex flex-col space-y-2 border-sage-200 hover:bg-sage-50">
+                           <tool.icon className="h-8 w-8 text-sage-600" />
+                           <div className="text-center">
+                             <div className="font-medium">{tool.name}</div>
+                             <div className="text-xs text-muted-foreground">{tool.description}</div>
+                           </div>
+                         </Button>
+                       ))}
+                     </div>
                   </CardContent>
                 </Card>
               )}
@@ -445,16 +482,16 @@ const Dashboard = () => {
                   <CardTitle>General Professional Resources</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Button variant="outline" onClick={() => navigate('/resources')}>
-                      <BookOpen className="h-4 w-4 mr-2" />
-                      Resource Library
-                    </Button>
-                    <Button variant="outline" onClick={() => navigate('/practitioner/forms')}>
-                      <FileText className="h-4 w-4 mr-2" />
-                      Professional Forms
-                    </Button>
-                  </div>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <Button variant="outline" className="dashboard-cta border-sage-200 text-sage-700 hover:bg-sage-50" onClick={() => navigate('/resources')}>
+                       <BookOpen className="h-4 w-4 mr-2" />
+                       Resource Library
+                     </Button>
+                     <Button variant="outline" className="dashboard-cta border-sage-200 text-sage-700 hover:bg-sage-50" onClick={() => navigate('/practitioner/forms')}>
+                       <FileText className="h-4 w-4 mr-2" />
+                       Professional Forms
+                     </Button>
+                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -483,13 +520,13 @@ const Dashboard = () => {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      <Button 
-                        className="w-full md:w-auto"
-                        onClick={() => handleNoteModal()}
-                      >
-                        <PlusCircle className="h-4 w-4 mr-2" />
-                        Create New Note
-                      </Button>
+                       <Button 
+                         className="dashboard-cta w-full md:w-auto bg-sage-600 hover:bg-sage-700 text-white"
+                         onClick={() => handleNoteModal()}
+                       >
+                         <PlusCircle className="h-4 w-4 mr-2" />
+                         Create New Note
+                       </Button>
                       {notes.length > 0 ? (
                         <div className="space-y-3">
                           {notes.map((note: Note) => (
@@ -565,16 +602,16 @@ const Dashboard = () => {
                     </p>
                   </div>
                    <div className="space-y-2">
-                     <ProfessionalProfileModal>
-                       <Button>Update Professional Profile</Button>
-                     </ProfessionalProfileModal>
-                      <Button
-                        variant="outline"
-                        onClick={() => window.open('https://www.halaxy.com/book/paul-habermann/location/1321025', '_blank')}
-                        className="w-full"
-                      >
-                        Halaxy Profile
-                      </Button>
+                      <ProfessionalProfileModal>
+                        <Button className="dashboard-cta bg-sage-600 hover:bg-sage-700 text-white">Update Professional Profile</Button>
+                      </ProfessionalProfileModal>
+                       <Button
+                         variant="outline"
+                         onClick={() => window.open('https://www.halaxy.com/book/paul-habermann/location/1321025', '_blank')}
+                         className="dashboard-cta w-full border-sage-200 text-sage-700 hover:bg-sage-50"
+                       >
+                         Halaxy Profile
+                       </Button>
                    </div>
                 </CardContent>
               </Card>

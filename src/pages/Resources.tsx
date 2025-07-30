@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -21,13 +21,50 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { AIAssistant } from "@/components/AIAssistant";
+import { gsap } from 'gsap';
 
 const Resources = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const buttonsRef = useRef<HTMLDivElement>(null);
 
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // GSAP button animations
+  useEffect(() => {
+    if (buttonsRef.current) {
+      const buttons = buttonsRef.current.querySelectorAll('.resource-cta');
+      
+      buttons.forEach((button) => {
+        const handleMouseEnter = () => {
+          gsap.to(button, {
+            scale: 1.05,
+            y: -2,
+            duration: 0.3,
+            ease: "power2.out"
+          });
+        };
+        
+        const handleMouseLeave = () => {
+          gsap.to(button, {
+            scale: 1,
+            y: 0,
+            duration: 0.3,
+            ease: "power2.out"
+          });
+        };
+        
+        button.addEventListener('mouseenter', handleMouseEnter);
+        button.addEventListener('mouseleave', handleMouseLeave);
+        
+        return () => {
+          button.removeEventListener('mouseenter', handleMouseEnter);
+          button.removeEventListener('mouseleave', handleMouseLeave);
+        };
+      });
+    }
   }, []);
 
   const professionalStandards = [
@@ -244,7 +281,7 @@ const Resources = () => {
         </CardDescription>
         <Button 
           variant="outline" 
-          className="w-full border-sage-200 text-sage-700 hover:bg-sage-50 mt-auto"
+          className="resource-cta w-full border-sage-200 text-sage-700 hover:bg-sage-50 mt-auto"
           onClick={() => {
             if (resource.type === 'phone') {
               window.open(`tel:${resource.url}`, '_self');
@@ -333,7 +370,7 @@ const Resources = () => {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="all">
+            <TabsContent value="all" ref={buttonsRef}>
               {filteredResources.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredResources.map((resource, index) => (
