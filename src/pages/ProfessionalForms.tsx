@@ -498,11 +498,11 @@ const ProfessionalForms = () => {
                         </div>
                       )}
                       
-                      <div className="grid grid-cols-3 gap-2">
+                       <div className="grid grid-cols-3 gap-2">
                         <Button 
                           size="sm" 
                           onClick={() => handleFormAction(form, 'view')}
-                          className="col-span-2"
+                          className="col-span-2 bg-primary hover:bg-primary/90 text-primary-foreground"
                         >
                           <Eye className="h-4 w-4 mr-2" />
                           View
@@ -511,7 +511,7 @@ const ProfessionalForms = () => {
                           size="sm" 
                           variant="outline"
                           onClick={() => handleFormAction(form, 'download')}
-                          className="px-2"
+                          className="px-2 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground"
                         >
                           <Download className="h-4 w-4" />
                         </Button>
@@ -521,7 +521,7 @@ const ProfessionalForms = () => {
                         size="sm" 
                         variant={form.formType === 'interactive' ? 'secondary' : 'outline'}
                         onClick={() => handleFormAction(form, 'fill')}
-                        className="w-full"
+                        className={`w-full ${form.formType === 'interactive' ? 'bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground' : 'border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground'}`}
                       >
                         <ClipboardCheck className="h-4 w-4 mr-2" />
                         {form.formType === 'interactive' ? 'Fill Interactive Form' : 'Open Form'}
@@ -539,18 +539,18 @@ const ProfessionalForms = () => {
               <h2 className="text-2xl font-bold mb-6">Form Categories</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 {formCategories.map(category => (
-                  <Card 
+                   <Card 
                     key={category.id} 
-                    className="cursor-pointer hover:shadow-lg transition-all duration-200 group"
+                    className="cursor-pointer hover:shadow-lg transition-all duration-200 group border-primary/20 hover:border-primary/40"
                     onClick={() => setSelectedCategory(category.id)}
                   >
                     <CardHeader className="text-center pb-3">
-                      <category.icon className={`h-10 w-10 mx-auto mb-2 ${category.color} group-hover:scale-110 transition-transform duration-200`} />
+                      <category.icon className="h-10 w-10 mx-auto mb-2 text-primary group-hover:scale-110 transition-transform duration-200" />
                       <CardTitle className="text-base leading-tight">{category.title}</CardTitle>
                       <CardDescription className="text-xs leading-relaxed">{category.description}</CardDescription>
                     </CardHeader>
                     <CardContent className="pt-0 text-center">
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
                         {category.forms.length} forms
                       </Badge>
                     </CardContent>
@@ -561,7 +561,7 @@ const ProfessionalForms = () => {
           )}
 
           {/* Help Section */}
-          <Card className="mt-8 bg-muted/50">
+          <Card className="mt-8 bg-primary/5 border-primary/20">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div className="rounded-full bg-primary/10 p-3">
