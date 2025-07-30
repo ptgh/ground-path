@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Download, AlertTriangle } from 'lucide-react';
 import InteractiveFormLayout from './InteractiveFormLayout';
 import { pdfService, PDFFormData } from '@/services/pdfService';
@@ -117,23 +118,22 @@ export const CrisisInterventionForm = () => {
         <CardContent className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2">Type of Crisis *</label>
-            <select
-              required
-              value={formData.crisisType}
-              onChange={(e) => setFormData({...formData, crisisType: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            >
-              <option value="">Select crisis type...</option>
-              <option value="Suicide Risk">Suicide Risk</option>
-              <option value="Self-Harm">Self-Harm</option>
-              <option value="Domestic Violence">Domestic Violence</option>
-              <option value="Mental Health Crisis">Mental Health Crisis</option>
-              <option value="Substance Abuse">Substance Abuse</option>
-              <option value="Family Crisis">Family Crisis</option>
-              <option value="Grief/Loss">Grief/Loss</option>
-              <option value="Trauma Response">Trauma Response</option>
-              <option value="Other">Other</option>
-            </select>
+            <Select value={formData.crisisType} onValueChange={(value) => setFormData({...formData, crisisType: value})}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select crisis type..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Suicide Risk">Suicide Risk</SelectItem>
+                <SelectItem value="Self-Harm">Self-Harm</SelectItem>
+                <SelectItem value="Domestic Violence">Domestic Violence</SelectItem>
+                <SelectItem value="Mental Health Crisis">Mental Health Crisis</SelectItem>
+                <SelectItem value="Substance Abuse">Substance Abuse</SelectItem>
+                <SelectItem value="Family Crisis">Family Crisis</SelectItem>
+                <SelectItem value="Grief/Loss">Grief/Loss</SelectItem>
+                <SelectItem value="Trauma Response">Trauma Response</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div>

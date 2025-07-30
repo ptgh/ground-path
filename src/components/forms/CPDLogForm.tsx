@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Download, Calendar } from 'lucide-react';
 import InteractiveFormLayout from './InteractiveFormLayout';
 import { pdfService, PDFFormData } from '@/services/pdfService';
@@ -104,23 +105,23 @@ export const CPDLogForm = () => {
         <CardContent className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2">Activity Type</label>
-            <select
-              value={formData.activityType}
-              onChange={(e) => setFormData({...formData, activityType: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            >
-              <option value="">Select activity type...</option>
-              <option value="Workshop/Seminar">Workshop/Seminar</option>
-              <option value="Conference">Conference</option>
-              <option value="Online Course">Online Course</option>
-              <option value="Formal Training">Formal Training</option>
-              <option value="Supervision">Supervision</option>
-              <option value="Reading/Research">Reading/Research</option>
-              <option value="Peer Learning">Peer Learning</option>
-              <option value="Mentoring">Mentoring</option>
-              <option value="Reflective Practice">Reflective Practice</option>
-              <option value="Other">Other</option>
-            </select>
+            <Select value={formData.activityType} onValueChange={(value) => setFormData({...formData, activityType: value})}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select activity type..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Workshop/Seminar">Workshop/Seminar</SelectItem>
+                <SelectItem value="Conference">Conference</SelectItem>
+                <SelectItem value="Online Course">Online Course</SelectItem>
+                <SelectItem value="Formal Training">Formal Training</SelectItem>
+                <SelectItem value="Supervision">Supervision</SelectItem>
+                <SelectItem value="Reading/Research">Reading/Research</SelectItem>
+                <SelectItem value="Peer Learning">Peer Learning</SelectItem>
+                <SelectItem value="Mentoring">Mentoring</SelectItem>
+                <SelectItem value="Reflective Practice">Reflective Practice</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
