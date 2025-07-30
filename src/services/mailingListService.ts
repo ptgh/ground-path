@@ -173,7 +173,8 @@ class MailingListService {
           to: email,
           data: {
             token,
-            confirmationUrl: `${window.location.origin}/confirm?token=${token}`
+            confirmationUrl: `${window.location.origin}/confirm?token=${token}`,
+            name: undefined // Will be populated by the service
           }
         }
       });

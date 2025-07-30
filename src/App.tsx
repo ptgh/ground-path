@@ -22,6 +22,7 @@ import { GAFForm } from "./components/forms/GAFForm";
 import { SafetyPlanForm } from "./components/forms/SafetyPlanForm";
 import { CrisisInterventionForm } from "./components/forms/CrisisInterventionForm";
 import { CPDLogForm } from "./components/forms/CPDLogForm";
+import UnsubscribePage from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/unsubscribe" element={<UnsubscribePage />} />
             <Route path="/practitioner/forms" element={<ProfessionalForms />} />
         <Route path="/practitioner/forms/phq-9/fill" element={<PHQ9Form />} />
         <Route path="/practitioner/forms/gad-7/fill" element={<GAD7Form />} />

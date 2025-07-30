@@ -28,3 +28,6 @@ verify_jwt = true
 
 [functions.send-email]
 verify_jwt = true
+
+[functions.weekly-newsletter]
+verify_jwt = false

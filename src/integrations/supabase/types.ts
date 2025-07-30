@@ -150,36 +150,42 @@ export type Database = {
           confirmation_token: string | null
           created_at: string | null
           email: string
+          email_preferences: Json | null
           id: string
           name: string | null
           preferences: Json | null
           source: string
           status: string | null
           subscription_date: string | null
+          unsubscribe_token: string | null
           updated_at: string | null
         }
         Insert: {
           confirmation_token?: string | null
           created_at?: string | null
           email: string
+          email_preferences?: Json | null
           id?: string
           name?: string | null
           preferences?: Json | null
           source: string
           status?: string | null
           subscription_date?: string | null
+          unsubscribe_token?: string | null
           updated_at?: string | null
         }
         Update: {
           confirmation_token?: string | null
           created_at?: string | null
           email?: string
+          email_preferences?: Json | null
           id?: string
           name?: string | null
           preferences?: Json | null
           source?: string
           status?: string | null
           subscription_date?: string | null
+          unsubscribe_token?: string | null
           updated_at?: string | null
         }
         Relationships: []

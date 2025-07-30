@@ -40,14 +40,16 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
     try {
       const validatedData = mailingListSchema.parse({
         email,
-        name: name || undefined
+        name: name.trim() || undefined,
+        source: 'hero_section',
+        status: 'pending'
       });
 
       await subscriptionMutation.mutateAsync({
         email: validatedData.email,
         name: validatedData.name,
-        status: 'pending',
-        source: 'hero_section'
+        status: validatedData.status,
+        source: validatedData.source
       });
 
       setIsSuccess(true);
