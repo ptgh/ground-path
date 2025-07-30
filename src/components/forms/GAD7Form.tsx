@@ -74,10 +74,10 @@ const GAD7Form = () => {
   };
 
   const getScoreInterpretation = (score: number) => {
-    if (score <= 4) return { level: 'Minimal', color: 'bg-green-100 text-green-800', description: 'Minimal anxiety' };
-    if (score <= 9) return { level: 'Mild', color: 'bg-yellow-100 text-yellow-800', description: 'Mild anxiety' };
-    if (score <= 14) return { level: 'Moderate', color: 'bg-orange-100 text-orange-800', description: 'Moderate anxiety' };
-    return { level: 'Severe', color: 'bg-red-100 text-red-800', description: 'Severe anxiety' };
+    if (score <= 4) return { level: 'Minimal', color: 'bg-sage-100 text-sage-800', description: 'Minimal anxiety' };
+    if (score <= 9) return { level: 'Mild', color: 'bg-sage-200 text-sage-800', description: 'Mild anxiety' };
+    if (score <= 14) return { level: 'Moderate', color: 'bg-sage-300 text-sage-900', description: 'Moderate anxiety' };
+    return { level: 'Severe', color: 'bg-destructive/20 text-destructive', description: 'Severe anxiety' };
   };
 
   const onSubmit = async (data: GAD7FormData) => {

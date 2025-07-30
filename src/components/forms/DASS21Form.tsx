@@ -111,23 +111,23 @@ export const DASS21Form = () => {
 
   const getInterpretation = (score: number, scale: string) => {
     if (scale === 'depression') {
-      if (score <= 9) return { level: 'Normal', color: 'bg-green-100 text-green-800' };
-      if (score <= 13) return { level: 'Mild', color: 'bg-yellow-100 text-yellow-800' };
-      if (score <= 20) return { level: 'Moderate', color: 'bg-orange-100 text-orange-800' };
-      if (score <= 27) return { level: 'Severe', color: 'bg-red-100 text-red-800' };
-      return { level: 'Extremely Severe', color: 'bg-red-200 text-red-900' };
+      if (score <= 9) return { level: 'Normal', color: 'bg-sage-100 text-sage-800' };
+      if (score <= 13) return { level: 'Mild', color: 'bg-sage-200 text-sage-800' };
+      if (score <= 20) return { level: 'Moderate', color: 'bg-sage-300 text-sage-900' };
+      if (score <= 27) return { level: 'Severe', color: 'bg-destructive/20 text-destructive' };
+      return { level: 'Extremely Severe', color: 'bg-destructive/30 text-destructive' };
     } else if (scale === 'anxiety') {
-      if (score <= 7) return { level: 'Normal', color: 'bg-green-100 text-green-800' };
-      if (score <= 9) return { level: 'Mild', color: 'bg-yellow-100 text-yellow-800' };
-      if (score <= 14) return { level: 'Moderate', color: 'bg-orange-100 text-orange-800' };
-      if (score <= 19) return { level: 'Severe', color: 'bg-red-100 text-red-800' };
-      return { level: 'Extremely Severe', color: 'bg-red-200 text-red-900' };
+      if (score <= 7) return { level: 'Normal', color: 'bg-sage-100 text-sage-800' };
+      if (score <= 9) return { level: 'Mild', color: 'bg-sage-200 text-sage-800' };
+      if (score <= 14) return { level: 'Moderate', color: 'bg-sage-300 text-sage-900' };
+      if (score <= 19) return { level: 'Severe', color: 'bg-destructive/20 text-destructive' };
+      return { level: 'Extremely Severe', color: 'bg-destructive/30 text-destructive' };
     } else { // stress
-      if (score <= 14) return { level: 'Normal', color: 'bg-green-100 text-green-800' };
-      if (score <= 18) return { level: 'Mild', color: 'bg-yellow-100 text-yellow-800' };
-      if (score <= 25) return { level: 'Moderate', color: 'bg-orange-100 text-orange-800' };
-      if (score <= 33) return { level: 'Severe', color: 'bg-red-100 text-red-800' };
-      return { level: 'Extremely Severe', color: 'bg-red-200 text-red-900' };
+      if (score <= 14) return { level: 'Normal', color: 'bg-sage-100 text-sage-800' };
+      if (score <= 18) return { level: 'Mild', color: 'bg-sage-200 text-sage-800' };
+      if (score <= 25) return { level: 'Moderate', color: 'bg-sage-300 text-sage-900' };
+      if (score <= 33) return { level: 'Severe', color: 'bg-destructive/20 text-destructive' };
+      return { level: 'Extremely Severe', color: 'bg-destructive/30 text-destructive' };
     }
   };
 

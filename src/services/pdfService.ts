@@ -647,6 +647,28 @@ export const pdfService = {
         return this.addBlankPHQ9Content(pdf, yPosition, pageWidth, pageHeight);
       case 'GAD-7':
         return this.addBlankGAD7Content(pdf, yPosition, pageWidth, pageHeight);
+      case 'DASS-21':
+        return this.addBlankDASS21Content(pdf, yPosition, pageWidth, pageHeight);
+      case 'MSE':
+        return this.addBlankMSEContent(pdf, yPosition, pageWidth, pageHeight);
+      case 'GAF':
+        return this.addBlankGAFContent(pdf, yPosition, pageWidth, pageHeight);
+      case 'Safety Plan':
+        return this.addBlankSafetyPlanContent(pdf, yPosition, pageWidth, pageHeight);
+      case 'Crisis Intervention':
+        return this.addBlankCrisisContent(pdf, yPosition, pageWidth, pageHeight);
+      case 'Client Intake':
+        return this.addBlankClientIntakeContent(pdf, yPosition, pageWidth, pageHeight);
+      case 'Treatment Plan':
+        return this.addBlankTreatmentPlanContent(pdf, yPosition, pageWidth, pageHeight);
+      case 'CPD Log':
+        return this.addBlankCPDContent(pdf, yPosition, pageWidth, pageHeight);
+      case 'BDI-II':
+        return this.addBlankBDIContent(pdf, yPosition, pageWidth, pageHeight);
+      case 'Incident Report':
+        return this.addBlankIncidentReportContent(pdf, yPosition, pageWidth, pageHeight);
+      case 'Suicide Risk Assessment':
+        return this.addBlankSuicideRiskContent(pdf, yPosition, pageWidth, pageHeight);
       default:
         return this.addBlankGenericContent(pdf, formType, yPosition, pageWidth, pageHeight);
     }
@@ -840,5 +862,372 @@ export const pdfService = {
     setTimeout(() => {
       URL.revokeObjectURL(url);
     }, 10000);
+  },
+
+  addBlankDASS21Content(pdf: jsPDF, yPosition: number, pageWidth: number, pageHeight: number): number {
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('DASS-21 Depression, Anxiety and Stress Scale', 20, yPosition);
+    yPosition += 10;
+
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('Please read each statement and indicate how much it applied to you over the past week.', 20, yPosition);
+    yPosition += 8;
+
+    const options = ["Did not apply to me at all (0)", "Applied to me to some degree (1)", "Applied to me a considerable degree (2)", "Applied to me very much (3)"];
+    
+    // Add sample questions (abbreviated for blank form)
+    const sampleQuestions = [
+      "I found it hard to wind down",
+      "I was aware of dryness of my mouth", 
+      "I couldn't seem to experience any positive feeling at all",
+      "... (21 questions total)"
+    ];
+
+    sampleQuestions.forEach((question, index) => {
+      if (yPosition > pageHeight - 50) {
+        pdf.addPage();
+        this.addHeader(pdf, 20);
+        yPosition = 75;
+      }
+
+      pdf.text(`${index + 1}. ${question}`, 20, yPosition);
+      yPosition += 5;
+      
+      options.forEach((option, optionIndex) => {
+        pdf.rect(25 + (optionIndex * 45), yPosition - 3, 3, 3);
+        pdf.setFontSize(8);
+        pdf.text(`(${optionIndex})`, 30 + (optionIndex * 45), yPosition);
+      });
+      pdf.setFontSize(9);
+      yPosition += 10;
+    });
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Scoring: Depression ___/21  Anxiety ___/21  Stress ___/21', 20, yPosition);
+    return yPosition + 10;
+  },
+
+  addBlankMSEContent(pdf: jsPDF, yPosition: number, pageWidth: number, pageHeight: number): number {
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Mental Status Examination', 20, yPosition);
+    yPosition += 15;
+
+    const sections = [
+      'Appearance & Behavior: ________________________________',
+      'Speech & Language: ________________________________', 
+      'Mood & Affect: ________________________________',
+      'Thought Process: ________________________________',
+      'Thought Content: ________________________________',
+      'Perceptual Disturbances: ________________________________',
+      'Cognitive Function: ________________________________',
+      'Insight & Judgment: ________________________________'
+    ];
+
+    sections.forEach(section => {
+      if (yPosition > pageHeight - 40) {
+        pdf.addPage();
+        this.addHeader(pdf, 20);
+        yPosition = 75;
+      }
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(section, 20, yPosition);
+      yPosition += 15;
+    });
+
+    return yPosition;
+  },
+
+  addBlankGAFContent(pdf: jsPDF, yPosition: number, pageWidth: number, pageHeight: number): number {
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Global Assessment of Functioning (GAF) Scale', 20, yPosition);
+    yPosition += 15;
+
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('GAF Score (1-100): _______', 20, yPosition);
+    yPosition += 10;
+    
+    pdf.text('Current Functioning: ________________________________', 20, yPosition);
+    yPosition += 10;
+    
+    pdf.text('Rationale for Score: ________________________________', 20, yPosition);
+    yPosition += 15;
+
+    // Add scoring guide
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Scoring Guide:', 20, yPosition);
+    yPosition += 8;
+    
+    const scoreRanges = [
+      '91-100: Superior functioning',
+      '81-90: Absent or minimal symptoms',
+      '71-80: Transient symptoms',
+      '61-70: Mild symptoms',
+      '51-60: Moderate symptoms',
+      '41-50: Serious symptoms',
+      '31-40: Major impairment',
+      '21-30: Unable to function',
+      '11-20: Danger of harm',
+      '1-10: Persistent danger'
+    ];
+
+    pdf.setFont('helvetica', 'normal');
+    scoreRanges.forEach(range => {
+      if (yPosition > pageHeight - 20) {
+        pdf.addPage();
+        this.addHeader(pdf, 20);
+        yPosition = 75;
+      }
+      pdf.text(range, 25, yPosition);
+      yPosition += 6;
+    });
+
+    return yPosition + 10;
+  },
+
+  addBlankSafetyPlanContent(pdf: jsPDF, yPosition: number, pageWidth: number, pageHeight: number): number {
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Stanley-Brown Safety Plan', 20, yPosition);
+    yPosition += 15;
+
+    const steps = [
+      'Step 1: Warning signs (thoughts, images, mood, situation, behavior)',
+      'Step 2: Internal coping strategies',
+      'Step 3: People and social settings that provide distraction',
+      'Step 4: People I can ask for help',
+      'Step 5: Professionals or agencies I can contact during a crisis',
+      'Step 6: Making the environment safe'
+    ];
+
+    steps.forEach((step, index) => {
+      if (yPosition > pageHeight - 60) {
+        pdf.addPage();
+        this.addHeader(pdf, 20);
+        yPosition = 75;
+      }
+      
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(step, 20, yPosition);
+      yPosition += 8;
+      
+      pdf.setFont('helvetica', 'normal');
+      for (let i = 0; i < 3; i++) {
+        pdf.text('_________________________________________________', 20, yPosition);
+        yPosition += 8;
+      }
+      yPosition += 5;
+    });
+
+    return yPosition;
+  },
+
+  addBlankCrisisContent(pdf: jsPDF, yPosition: number, pageWidth: number, pageHeight: number): number {
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Crisis Intervention Documentation', 20, yPosition);
+    yPosition += 15;
+
+    const fields = [
+      'Crisis Type: ________________________________',
+      'Immediate Risk Level: ________________________________',
+      'Presenting Issues: ________________________________',
+      'Interventions Provided: ________________________________',
+      'Resources Activated: ________________________________',
+      'Follow-up Plan: ________________________________',
+      'Safety Assessment: ________________________________'
+    ];
+
+    fields.forEach(field => {
+      if (yPosition > pageHeight - 40) {
+        pdf.addPage();
+        this.addHeader(pdf, 20);
+        yPosition = 75;
+      }
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(field, 20, yPosition);
+      yPosition += 15;
+    });
+
+    return yPosition;
+  },
+
+  addBlankClientIntakeContent(pdf: jsPDF, yPosition: number, pageWidth: number, pageHeight: number): number {
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Client Intake Assessment', 20, yPosition);
+    yPosition += 15;
+
+    const sections = [
+      'Personal Information: ________________________________',
+      'Contact Details: ________________________________',
+      'Emergency Contact: ________________________________',
+      'Presenting Concerns: ________________________________',
+      'Mental Health History: ________________________________',
+      'Medical History: ________________________________',
+      'Social History: ________________________________',
+      'Goals for Treatment: ________________________________'
+    ];
+
+    sections.forEach(section => {
+      if (yPosition > pageHeight - 40) {
+        pdf.addPage();
+        this.addHeader(pdf, 20);
+        yPosition = 75;
+      }
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(section, 20, yPosition);
+      yPosition += 15;
+    });
+
+    return yPosition;
+  },
+
+  addBlankTreatmentPlanContent(pdf: jsPDF, yPosition: number, pageWidth: number, pageHeight: number): number {
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Treatment Planning Form', 20, yPosition);
+    yPosition += 15;
+
+    const components = [
+      'Treatment Goals: ________________________________',
+      'Interventions: ________________________________',
+      'Timeline: ________________________________',
+      'Progress Measures: ________________________________',
+      'Risk Factors: ________________________________',
+      'Strengths & Resources: ________________________________',
+      'Review Date: ________________________________'
+    ];
+
+    components.forEach(component => {
+      if (yPosition > pageHeight - 40) {
+        pdf.addPage();
+        this.addHeader(pdf, 20);
+        yPosition = 75;
+      }
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(component, 20, yPosition);
+      yPosition += 15;
+    });
+
+    return yPosition;
+  },
+
+  addBlankCPDContent(pdf: jsPDF, yPosition: number, pageWidth: number, pageHeight: number): number {
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Continuing Professional Development Log', 20, yPosition);
+    yPosition += 15;
+
+    const fields = [
+      'Activity Title: ________________________________',
+      'Activity Type: ________________________________',
+      'Provider: ________________________________',
+      'Date Completed: _________________ Hours: _______',
+      'Learning Outcomes: ________________________________',
+      'Application to Practice: ________________________________',
+      'Reflection: ________________________________'
+    ];
+
+    fields.forEach(field => {
+      if (yPosition > pageHeight - 40) {
+        pdf.addPage();
+        this.addHeader(pdf, 20);
+        yPosition = 75;
+      }
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(field, 20, yPosition);
+      yPosition += 15;
+    });
+
+    return yPosition;
+  },
+
+  addBlankBDIContent(pdf: jsPDF, yPosition: number, pageWidth: number, pageHeight: number): number {
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Beck Depression Inventory-II (BDI-II)', 20, yPosition);
+    yPosition += 15;
+
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('Instructions: Choose the statement that best describes how you have been feeling during the past two weeks.', 20, yPosition);
+    yPosition += 15;
+
+    pdf.text('21 question groups with 4 response options each (0-3 points)', 20, yPosition);
+    yPosition += 10;
+    
+    pdf.text('Total Score: _______ / 63', 20, yPosition);
+    yPosition += 10;
+    
+    pdf.text('Interpretation: 0-13 Minimal, 14-19 Mild, 20-28 Moderate, 29-63 Severe', 20, yPosition);
+
+    return yPosition + 20;
+  },
+
+  addBlankIncidentReportContent(pdf: jsPDF, yPosition: number, pageWidth: number, pageHeight: number): number {
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Critical Incident Report', 20, yPosition);
+    yPosition += 15;
+
+    const fields = [
+      'Incident Date/Time: ________________________________',
+      'Location: ________________________________',
+      'Persons Involved: ________________________________',
+      'Incident Description: ________________________________',
+      'Immediate Actions Taken: ________________________________',
+      'Injuries/Damage: ________________________________',
+      'Witnesses: ________________________________',
+      'Follow-up Required: ________________________________'
+    ];
+
+    fields.forEach(field => {
+      if (yPosition > pageHeight - 40) {
+        pdf.addPage();
+        this.addHeader(pdf, 20);
+        yPosition = 75;
+      }
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(field, 20, yPosition);
+      yPosition += 15;
+    });
+
+    return yPosition;
+  },
+
+  addBlankSuicideRiskContent(pdf: jsPDF, yPosition: number, pageWidth: number, pageHeight: number): number {
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Suicide Risk Assessment', 20, yPosition);
+    yPosition += 15;
+
+    const riskFactors = [
+      'Risk Factors: ________________________________',
+      'Protective Factors: ________________________________',
+      'Suicidal Ideation: ________________________________',
+      'Suicide Plan: ________________________________',
+      'Previous Attempts: ________________________________',
+      'Current Mental State: ________________________________',
+      'Risk Level: LOW / MODERATE / HIGH',
+      'Immediate Safety Plan: ________________________________'
+    ];
+
+    riskFactors.forEach(factor => {
+      if (yPosition > pageHeight - 40) {
+        pdf.addPage();
+        this.addHeader(pdf, 20);
+        yPosition = 75;
+      }
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(factor, 20, yPosition);
+      yPosition += 15;
+    });
+
+    return yPosition;
   }
 };
