@@ -182,6 +182,14 @@ const Dashboard = () => {
     }
   };
 
+  const formatProfession = (profession: string) => {
+    if (!profession) return 'Not specified';
+    return profession
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   const quickActions = [
     { 
       title: 'Create Note', 
@@ -369,10 +377,10 @@ const Dashboard = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span>Profession:</span>
-                        <span className="font-medium">{profile?.profession || 'Not specified'}</span>
-                      </div>
+                       <div className="flex justify-between text-sm">
+                         <span>Profession:</span>
+                         <span className="font-medium">{formatProfession(profile?.profession)}</span>
+                       </div>
                       <div className="flex justify-between text-sm">
                         <span>License Number:</span>
                         <span className="font-medium">{profile?.license_number || 'Not provided'}</span>
@@ -582,12 +590,12 @@ const Dashboard = () => {
                       <label className="text-sm font-medium">Email</label>
                       <p className="text-sm text-muted-foreground">{user.email}</p>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Profession</label>
-                      <p className="text-sm text-muted-foreground">
-                        {profile?.profession || 'Not specified'}
-                      </p>
-                    </div>
+                     <div className="space-y-2">
+                       <label className="text-sm font-medium">Profession</label>
+                       <p className="text-sm text-muted-foreground">
+                         {formatProfession(profile?.profession)}
+                       </p>
+                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium">License Number</label>
                       <p className="text-sm text-muted-foreground">
