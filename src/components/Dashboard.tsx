@@ -310,12 +310,12 @@ const Dashboard = () => {
                  <CardContent ref={buttonsRef}>
                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                      {quickActions.map((action, index) => (
-                       <Button 
-                         key={index}
-                         variant="outline" 
-                         className="dashboard-cta h-auto p-3 sm:p-4 flex flex-col items-center space-y-2 text-center border-sage-200 hover:bg-sage-50"
-                         onClick={action.action}
-                       >
+                        <Button 
+                          key={index}
+                          variant="outline" 
+                          className="dashboard-cta h-auto p-3 sm:p-4 flex flex-col items-center space-y-2 text-center"
+                          onClick={action.action}
+                        >
                          <action.icon className="h-6 w-6 sm:h-8 sm:w-8 text-sage-600" />
                          <div className="text-center">
                            <div className="font-medium text-sm sm:text-base">{action.title}</div>

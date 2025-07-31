@@ -281,7 +281,7 @@ const Resources = () => {
         </CardDescription>
         <Button 
           variant="outline" 
-          className="resource-cta w-full border-sage-200 text-sage-700 hover:bg-sage-50 mt-auto"
+          className="resource-cta w-full mt-auto"
           onClick={() => {
             if (resource.type === 'phone') {
               window.open(`tel:${resource.url}`, '_self');
