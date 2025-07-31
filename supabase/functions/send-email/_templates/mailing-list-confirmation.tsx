@@ -31,13 +31,19 @@ export const MailingListConfirmationEmail = ({
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
-          <Img
-            src="https://vzwhccciarvirzqmvldl.supabase.co/storage/v1/object/public/resources/ground-path-logo.png"
-            width="200"
-            height="60"
-            alt="Ground Path"
-            style={logo}
-          />
+          <Link href="https://groundpath.com.au" style={logoLink}>
+            <div style={logoContainer}>
+              <svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg" style={logoSvg}>
+                <path d="M20 10 L20 50 L40 50 Q45 50 45 45 L45 25 Q45 20 40 20 L30 20" stroke="#7B9B85" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M55 30 Q55 20 65 20 L75 20 Q85 20 85 30 L85 35 Q85 45 75 45 L65 45 Q55 45 55 35 Z" stroke="#7B9B85" strokeWidth="3" fill="none"/>
+                <path d="M55 32.5 L85 32.5" stroke="#7B9B85" strokeWidth="3" strokeLinecap="round"/>
+                <path d="M100 20 L100 45 M100 20 Q100 15 105 15 L115 15 Q120 15 120 20 L120 30" stroke="#7B9B85" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M135 20 L135 45 M135 20 L150 45 M150 20 L150 45" stroke="#7B9B85" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M165 20 L165 50 L180 50" stroke="#7B9B85" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                <text x="20" y="58" fontFamily="Inter, sans-serif" fontSize="8" fill="#7B9B85" fontWeight="600">GROUND PATH</text>
+              </svg>
+            </div>
+          </Link>
         </Section>
 
         <Section style={content}>
@@ -94,19 +100,29 @@ export const MailingListConfirmationEmail = ({
           </Text>
         </Section>
 
+        <Section style={stayConnectedSection}>
+          <Text style={stayConnectedTitle}>Stay Connected</Text>
+          <Text style={stayConnectedText}>
+            Follow us for the latest updates, insights, and professional resources for social workers and mental health professionals across Australia.
+          </Text>
+          
+          <Section style={socialLinksContainer}>
+            <Link href="https://groundpath.com.au" style={socialButton}>
+              🌐 Visit Website
+            </Link>
+            <Link href="https://groundpath.com.au/contact" style={socialButton}>
+              📧 Contact Us
+            </Link>
+            <Link href="https://groundpath.com.au/resources" style={socialButton}>
+              📚 Resources
+            </Link>
+          </Section>
+        </Section>
+
         <Section style={footerSection}>
           <Text style={footerText}>
             © 2024 Ground Path. All rights reserved.<br />
             Supporting social workers and mental health professionals across Australia.
-          </Text>
-          <Text style={footerText}>
-            <Link href="https://groundpath.com.au" style={footerLink}>
-              Visit our website
-            </Link>
-            {' | '}
-            <Link href="https://groundpath.com.au/contact" style={footerLink}>
-              Contact us
-            </Link>
           </Text>
         </Section>
       </Container>
@@ -266,4 +282,61 @@ const footerText = {
 const footerLink = {
   color: '#6b7280',
   textDecoration: 'underline',
+}
+
+const logoLink = {
+  display: 'block',
+  textDecoration: 'none',
+}
+
+const logoContainer = {
+  display: 'inline-block',
+  margin: '0 auto',
+}
+
+const logoSvg = {
+  display: 'block',
+}
+
+const stayConnectedSection = {
+  textAlign: 'center' as const,
+  padding: '32px 40px 20px',
+  backgroundColor: '#f8faf9',
+  borderTop: '1px solid #e5e7eb',
+}
+
+const stayConnectedTitle = {
+  color: '#7B9B85',
+  fontSize: '20px',
+  fontWeight: 'bold',
+  margin: '0 0 12px 0',
+}
+
+const stayConnectedText = {
+  color: '#6b7280',
+  fontSize: '14px',
+  lineHeight: '20px',
+  margin: '0 0 24px 0',
+}
+
+const socialLinksContainer = {
+  display: 'flex',
+  justifyContent: 'center',
+  gap: '12px',
+  flexWrap: 'wrap' as const,
+}
+
+const socialButton = {
+  display: 'inline-block',
+  padding: '10px 16px',
+  backgroundColor: '#ffffff',
+  border: '1px solid #7B9B85',
+  borderRadius: '8px',
+  color: '#7B9B85',
+  fontSize: '14px',
+  fontWeight: '500',
+  textDecoration: 'none',
+  margin: '4px',
+  transition: 'all 0.3s ease',
+  boxShadow: '0 1px 3px 0 rgba(123, 155, 133, 0.1)',
 }
