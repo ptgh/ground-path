@@ -133,16 +133,16 @@ const Resources = () => {
     {
       title: "Outcome Measurement Tools",
       description: "Standardised assessment tools for measuring therapeutic outcomes",
-      type: "pdf",
-      url: "#",
+      type: "external",
+      url: "https://www.corc.uk.net/outcome-experience-measures/",
       category: "Assessment",
       icon: <FileText className="h-5 w-5" />
     },
     {
       title: "Risk Assessment Frameworks",
       description: "Comprehensive risk assessment tools for various client populations",
-      type: "pdf",
-      url: "#",
+      type: "external",
+      url: "https://www.ranzcp.org/clinical-guidelines-publications/clinical-guidelines-publications-library/suicide-risk-assessment",
       category: "Risk Management",
       icon: <Shield className="h-5 w-5" />
     }
@@ -160,8 +160,8 @@ const Resources = () => {
     {
       title: "Supervision Guidelines",
       description: "Best practice guidelines for professional supervision in social work",
-      type: "pdf",
-      url: "#",
+      type: "external",
+      url: "https://www.aasw.asn.au/document/item/7131",
       category: "Supervision",
       icon: <Users className="h-5 w-5" />
     },
@@ -169,7 +169,7 @@ const Resources = () => {
       title: "Cultural Competency Resources",
       description: "Resources for culturally responsive practice with diverse communities",
       type: "external",
-      url: "#",
+      url: "https://www.aihw.gov.au/reports/indigenous-australians/cultural-competency-in-health-a-guide-for-policy",
       category: "Cultural Practice",
       icon: <Heart className="h-5 w-5" />
     }

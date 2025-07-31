@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Hero from '../components/Hero';
 import About from '../components/About';
 import Services from '../components/Services';
+import Newsletter from '../components/Newsletter';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import { AIAssistant } from '../components/AIAssistant';
@@ -75,6 +76,7 @@ const Index = () => {
         <Hero />
         <About />
         <Services />
+        <Newsletter />
         <Contact />
       </main>
       <Footer />
