@@ -45,19 +45,141 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "HealthAndBeautyBusiness",
+      "@type": "MedicalBusiness",
       "name": "Ground Path",
-      "description": "Professional social work and mental health support services in Australia",
+      "description": "Professional social work and mental health support services in Australia. Accredited Mental Health Social Worker providing telehealth counselling, NDIS psychosocial recovery coaching, and clinical assessments.",
       "url": "https://groundpath.com.au",
       "logo": "https://groundpath.com.au/logo-512.png",
+      "image": "https://groundpath.com.au/logo-512.png",
       "address": {
         "@type": "PostalAddress",
-        "addressCountry": "AU"
+        "addressCountry": "AU",
+        "addressRegion": "Australia"
       },
-      "serviceType": "Mental Health Services",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": "English",
+        "areaServed": "AU"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Australia"
+      },
+      "serviceType": [
+        "Mental Health Counselling",
+        "NDIS Psychosocial Recovery Coaching", 
+        "Clinical Assessment",
+        "Telehealth Services",
+        "Social Work Practice"
+      ],
+      "medicalSpecialty": [
+        "Mental Health",
+        "Social Work",
+        "Psychosocial Recovery"
+      ],
+      "hasCredential": [
+        {
+          "@type": "EducationalOccupationalCredential",
+          "credentialCategory": "Professional Qualification",
+          "recognizedBy": {
+            "@type": "Organization",
+            "name": "Australian Association of Social Workers",
+            "alternateName": "AASW"
+          }
+        },
+        {
+          "@type": "EducationalOccupationalCredential", 
+          "credentialCategory": "Accredited Mental Health Social Worker",
+          "recognizedBy": {
+            "@type": "Organization",
+            "name": "Australian Association of Social Workers",
+            "alternateName": "AASW"
+          }
+        }
+      ],
+      "provider": {
+        "@type": "Person",
+        "jobTitle": "Accredited Mental Health Social Worker",
+        "hasCredential": [
+          "Bachelor of Social Work",
+          "Accredited Mental Health Social Worker (AASW)",
+          "NDIS Registered Provider"
+        ]
+      },
+      "availableService": [
+        {
+          "@type": "MedicalTherapy",
+          "name": "Mental Health Counselling",
+          "description": "Individual counselling and therapy for mental health conditions"
+        },
+        {
+          "@type": "MedicalService",
+          "name": "NDIS Psychosocial Recovery Coaching",
+          "description": "NDIS-funded psychosocial recovery coaching and support"
+        },
+        {
+          "@type": "MedicalService", 
+          "name": "Clinical Assessment",
+          "description": "Professional mental health assessments and evaluations"
+        },
+        {
+          "@type": "MedicalService",
+          "name": "Telehealth Services",
+          "description": "Remote mental health support via secure video conferencing"
+        }
+      ],
+      "paymentAccepted": [
+        "Private Pay",
+        "NDIS Funding",
+        "Medicare (where applicable)"
+      ],
       "priceRange": "$$",
-      "telephone": "+61",
-      "areaServed": "Australia"
+      "currenciesAccepted": "AUD",
+      "isAcceptingNewPatients": true,
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Mental Health Services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Individual Counselling",
+              "serviceType": "Mental Health Counselling"
+            }
+          },
+          {
+            "@type": "Offer", 
+            "itemOffered": {
+              "@type": "Service",
+              "name": "NDIS Support",
+              "serviceType": "Psychosocial Recovery Coaching"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service", 
+              "name": "Telehealth Consultations",
+              "serviceType": "Remote Mental Health Support"
+            }
+          }
+        ]
+      },
+      "memberOf": [
+        {
+          "@type": "Organization",
+          "name": "Australian Association of Social Workers",
+          "alternateName": "AASW"
+        }
+      ],
+      "owns": {
+        "@type": "WebSite",
+        "url": "https://groundpath.com.au",
+        "name": "Ground Path Professional Portal",
+        "description": "Professional mental health and social work services platform"
+      }
     }
     </script>
   </head>

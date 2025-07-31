@@ -1,14 +1,51 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
+# Professional Healthcare and Social Work Services
+# Ground Path - Mental Health and Social Work Support
+# This site provides professional healthcare services including:
+# - Mental health counselling and support
+# - NDIS psychosocial recovery coaching
+# - Social work assessments and interventions
+# - Professional development and training resources
+# - Telehealth mental health services
 
 User-agent: *
 Allow: /
+
+# Professional Healthcare Content Areas
+Allow: /practitioner/
+Allow: /resources/
+Allow: /forms/
+Allow: /services/
+Allow: /about/
+Allow: /contact/
+
+# Healthcare Assessment Forms and Tools
+Allow: /forms/client-intake
+Allow: /forms/mental-state-examination
+Allow: /forms/phq-9
+Allow: /forms/gad-7
+Allow: /forms/dass-21
+Allow: /forms/suicide-risk-assessment
+Allow: /forms/safety-plan
+Allow: /forms/crisis-intervention
+Allow: /forms/treatment-plan
+Allow: /forms/cpd-log
+Allow: /forms/gaf
+
+# Professional Resources
+Allow: /resources/professional-forms
+Allow: /resources/assessment-tools
+Allow: /resources/cpd-resources
+
+# Crawl-delay for respectful indexing of professional content
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://groundpath.com.au/sitemap.xml
+
+# Professional Service Categories:
+# - Healthcare Provider
+# - Mental Health Services
+# - NDIS Service Provider
+# - Social Work Practice
+# - Telehealth Services
+# - Professional Development
