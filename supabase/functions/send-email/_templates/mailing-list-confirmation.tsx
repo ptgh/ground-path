@@ -108,13 +108,13 @@ export const MailingListConfirmationEmail = ({
           
           <Section style={socialLinksContainer}>
             <Link href="https://groundpath.com.au" style={socialButton}>
-              🌐 Visit Website
+              Visit Website
             </Link>
             <Link href="https://groundpath.com.au/contact" style={socialButton}>
-              📧 Contact Us
+              Contact Us
             </Link>
             <Link href="https://groundpath.com.au/resources" style={socialButton}>
-              📚 Resources
+              Resources
             </Link>
           </Section>
         </Section>

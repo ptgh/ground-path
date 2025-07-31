@@ -73,11 +73,13 @@ export const NewsletterEmail = ({
           {articles.map((article, index) => (
             <Section key={index} style={articleCard}>
               <Text style={categoryBadge}>{article.category}</Text>
-              <Heading style={articleTitle}>{article.title}</Heading>
+              <div style={articleHeader}>
+                <Heading style={articleTitle}>{article.title}</Heading>
+                <Button href={`https://groundpath.com.au/article/${article.link.split('/').pop()}`} style={compactButton}>
+                  Read More
+                </Button>
+              </div>
               <Text style={articleSummary}>{article.summary}</Text>
-              <Button href={article.link} style={readMoreButton}>
-                Read More →
-              </Button>
             </Section>
           ))}
 
@@ -87,33 +89,33 @@ export const NewsletterEmail = ({
           <Heading style={h2}>Professional Resources</Heading>
           
           <Section style={resourceSection}>
-            <Text style={resourceTitle}>📋 Assessment Tools</Text>
+            <Text style={resourceTitle}>Assessment Tools</Text>
             <Text style={resourceDescription}>
               Access standardized assessment forms including PHQ-9, GAD-7, DASS-21, and more.
             </Text>
-            <Link href="https://groundpath.com.au/professional-forms" style={resourceLink}>
-              Access Tools →
-            </Link>
+            <Button href="https://groundpath.com.au/professional-forms" style={resourceButton}>
+              Access Tools
+            </Button>
           </Section>
 
           <Section style={resourceSection}>
-            <Text style={resourceTitle}>📈 CPD Tracking</Text>
+            <Text style={resourceTitle}>CPD Tracking</Text>
             <Text style={resourceDescription}>
               Track your continuing professional development hours and requirements.
             </Text>
-            <Link href="https://groundpath.com.au/professional-forms" style={resourceLink}>
-              Track CPD →
-            </Link>
+            <Button href="https://groundpath.com.au/professional-forms" style={resourceButton}>
+              Track CPD
+            </Button>
           </Section>
 
           <Section style={resourceSection}>
-            <Text style={resourceTitle}>🔍 Professional Support</Text>
+            <Text style={resourceTitle}>Professional Support</Text>
             <Text style={resourceDescription}>
               Connect with our team for professional guidance and support.
             </Text>
-            <Link href="https://groundpath.com.au/contact" style={resourceLink}>
-              Get Support →
-            </Link>
+            <Button href="https://groundpath.com.au/contact" style={resourceButton}>
+              Get Support
+            </Button>
           </Section>
         </Section>
 
@@ -124,15 +126,15 @@ export const NewsletterEmail = ({
           <Heading style={footerTitle}>Stay Connected</Heading>
           
           <Section style={socialSection}>
-            <Link href="https://linkedin.com/company/groundpath" style={socialButton}>
-              LinkedIn
-            </Link>
-            <Link href="https://groundpath.com.au/contact" style={socialButton}>
-              Contact Us
-            </Link>
-            <Link href="https://groundpath.com.au" style={socialButton}>
+            <Button href="https://groundpath.com.au" style={cleanButton}>
               Visit Website
-            </Link>
+            </Button>
+            <Button href="https://groundpath.com.au/contact" style={cleanButton}>
+              Contact Us
+            </Button>
+            <Button href="https://groundpath.com.au/resources" style={cleanButton}>
+              Resources
+            </Button>
           </Section>
           
           <Text style={footerText}>
@@ -284,6 +286,51 @@ const readMoreButton = {
   display: 'inline-block',
 };
 
+const articleHeader = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  gap: '15px',
+  marginBottom: '10px',
+};
+
+const compactButton = {
+  backgroundColor: '#7B9B85',
+  color: '#ffffff',
+  padding: '6px 12px',
+  borderRadius: '4px',
+  textDecoration: 'none',
+  fontSize: '12px',
+  fontWeight: '500',
+  display: 'inline-block',
+  whiteSpace: 'nowrap',
+  minWidth: 'auto',
+};
+
+const resourceButton = {
+  backgroundColor: '#7B9B85',
+  color: '#ffffff',
+  padding: '8px 16px',
+  borderRadius: '4px',
+  textDecoration: 'none',
+  fontSize: '12px',
+  fontWeight: '500',
+  display: 'inline-block',
+};
+
+const cleanButton = {
+  backgroundColor: '#ffffff',
+  border: '1px solid #7B9B85',
+  color: '#7B9B85',
+  padding: '8px 16px',
+  margin: '0 4px',
+  borderRadius: '4px',
+  textDecoration: 'none',
+  fontSize: '13px',
+  fontWeight: '500',
+  display: 'inline-block',
+};
+
 const resourceSection = {
   margin: '0 0 20px 0',
   padding: '15px',
@@ -334,17 +381,6 @@ const socialSection = {
   textAlign: 'center' as const,
 };
 
-const socialButton = {
-  display: 'inline-block',
-  backgroundColor: '#7B9B85',
-  color: '#ffffff',
-  padding: '8px 16px',
-  margin: '0 5px',
-  borderRadius: '5px',
-  textDecoration: 'none',
-  fontSize: '14px',
-  fontWeight: '500',
-};
 
 const footerText = {
   fontSize: '14px',

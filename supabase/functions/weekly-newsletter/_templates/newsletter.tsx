@@ -38,13 +38,19 @@ export const NewsletterEmail = ({
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
-          <Img
-            src="https://vzwhccciarvirzqmvldl.supabase.co/storage/v1/object/public/resources/ground-path-logo.png"
-            width="200"
-            height="60"
-            alt="Ground Path"
-            style={logo}
-          />
+          <Link href="https://groundpath.com.au" style={logoLink}>
+            <svg width="40" height="40" viewBox="0 0 40 40" style={logoSvg}>
+              <path
+                d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
+                fill="none"
+                stroke="#7B9B85"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <Text style={logoText}>ground path</Text>
+          </Link>
           <Text style={headerText}>Professional Social Work Resources</Text>
         </Section>
 
@@ -60,7 +66,7 @@ export const NewsletterEmail = ({
           </Text>
 
           <Section style={tipSection}>
-            <Text style={tipTitle}>💡 Weekly Professional Tip</Text>
+            <Text style={tipTitle}>Weekly Professional Tip</Text>
             <Text style={tipContent}>{weeklyTip}</Text>
           </Section>
 
@@ -70,11 +76,13 @@ export const NewsletterEmail = ({
             {articles.map((article, index) => (
               <Section key={index} style={articleItem}>
                 <Text style={articleCategory}>{article.category}</Text>
-                <Heading style={articleTitle}>{article.title}</Heading>
+                <div style={articleHeader}>
+                  <Heading style={articleTitle}>{article.title}</Heading>
+                  <Button href={`https://groundpath.com.au/article/${article.url.split('/').pop()}`} style={compactButton}>
+                    Read More
+                  </Button>
+                </div>
                 <Text style={articleSummary}>{article.summary}</Text>
-                <Link href={article.url} style={readMoreLink}>
-                  Read full article →
-                </Link>
               </Section>
             ))}
           </Section>
@@ -154,6 +162,27 @@ const logo = {
   margin: '0 auto',
 }
 
+const logoLink = {
+  display: 'flex',
+  alignItems: 'center',
+  textDecoration: 'none',
+  gap: '12px',
+  justifyContent: 'center',
+  marginBottom: '8px',
+}
+
+const logoSvg = {
+  display: 'block',
+}
+
+const logoText = {
+  fontSize: '24px',
+  fontWeight: '300',
+  color: '#7B9B85',
+  letterSpacing: '2px',
+  margin: '0',
+}
+
 const headerText = {
   color: '#6b7280',
   fontSize: '14px',
@@ -194,11 +223,11 @@ const introText = {
 }
 
 const tipSection = {
-  backgroundColor: '#f0fdf4',
+  backgroundColor: '#f8faf9',
   padding: '20px',
   borderRadius: '8px',
   margin: '24px 0',
-  borderLeft: '4px solid #6b7280',
+  borderLeft: '4px solid #7B9B85',
 }
 
 const tipTitle = {
@@ -251,7 +280,7 @@ const articleSummary = {
 }
 
 const readMoreLink = {
-  color: '#6b7280',
+  color: '#7B9B85',
   fontSize: '14px',
   fontWeight: 'bold',
   textDecoration: 'none',
@@ -302,7 +331,7 @@ const servicesText = {
 }
 
 const button = {
-  backgroundColor: '#6b7280',
+  backgroundColor: '#7B9B85',
   borderRadius: '8px',
   color: '#ffffff',
   fontSize: '16px',
@@ -314,14 +343,35 @@ const button = {
 
 const secondaryButton = {
   backgroundColor: 'transparent',
-  border: '2px solid #6b7280',
+  border: '2px solid #7B9B85',
   borderRadius: '8px',
-  color: '#6b7280',
+  color: '#7B9B85',
   fontSize: '14px',
   fontWeight: 'bold',
   textDecoration: 'none',
   textAlign: 'center' as const,
   display: 'inline-block',
+}
+
+const articleHeader = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  gap: '15px',
+  marginBottom: '10px',
+}
+
+const compactButton = {
+  backgroundColor: '#7B9B85',
+  color: '#ffffff',
+  padding: '6px 12px',
+  borderRadius: '4px',
+  textDecoration: 'none',
+  fontSize: '12px',
+  fontWeight: '500',
+  display: 'inline-block',
+  whiteSpace: 'nowrap',
+  minWidth: 'auto',
 }
 
 const hr = {
