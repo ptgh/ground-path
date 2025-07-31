@@ -173,7 +173,8 @@ class MailingListService {
           to: email,
           data: {
             token,
-            confirmationUrl: `${window.location.origin}/confirm?token=${token}`,
+            confirmationUrl: `https://groundpath.com.au/confirm?token=${token}`,
+            unsubscribeUrl: `https://groundpath.com.au/unsubscribe?email=${encodeURIComponent(email)}`,
             name: undefined // Will be populated by the service
           }
         }

@@ -178,6 +178,9 @@ const button = {
   textDecoration: 'none',
   textAlign: 'center' as const,
   display: 'inline-block',
+  backgroundImage: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
+  boxShadow: '0 4px 14px 0 rgba(107, 114, 128, 0.25)',
+  transition: 'all 0.3s ease',
 }
 
 const secondaryButton = {
@@ -190,6 +193,8 @@ const secondaryButton = {
   textDecoration: 'none',
   textAlign: 'center' as const,
   display: 'inline-block',
+  transition: 'all 0.3s ease',
+  boxShadow: '0 2px 8px 0 rgba(107, 114, 128, 0.15)',
 }
 
 const benefitsTitle = {

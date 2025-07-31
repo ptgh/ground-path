@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import About from '../components/About';
@@ -7,12 +7,16 @@ import Services from '../components/Services';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import { AIAssistant } from '../components/AIAssistant';
+import NewsletterTest from '../components/NewsletterTest';
+import { Button } from '@/components/ui/button';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Index = () => {
+  const [showNewsletterTest, setShowNewsletterTest] = useState(false);
+
   useEffect(() => {
     // Initialize GSAP animations with better targeting
     const fadeElements = document.querySelectorAll('.fade-in');
@@ -75,6 +79,24 @@ const Index = () => {
       </main>
       <Footer />
       <AIAssistant />
+      
+      {/* Admin/Test Newsletter Button - Show in development or with special query param */}
+      {(process.env.NODE_ENV === 'development' || window.location.search.includes('admin=true')) && (
+        <div className="fixed bottom-20 right-4">
+          <Button
+            onClick={() => setShowNewsletterTest(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+            size="sm"
+          >
+            Test Newsletter
+          </Button>
+        </div>
+      )}
+      
+      <NewsletterTest 
+        isOpen={showNewsletterTest} 
+        onClose={() => setShowNewsletterTest(false)} 
+      />
     </div>
   );
 };
