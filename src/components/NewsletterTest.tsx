@@ -20,19 +20,19 @@ const NewsletterTest = ({ isOpen, onClose }: NewsletterTestProps) => {
   const [testEmail, setTestEmail] = useState('');
 
   const sampleNewsletter = {
-    subject: "Weekly Professional Update - Social Work Best Practices & NDIS Updates",
+    subject: "Weekly Social Work Professional Update",
     previewText: "This week: New NDIS compliance guidelines, mental health assessment updates, and professional development opportunities",
     articles: [
       {
         title: "New NDIS Practice Standards: What Social Workers Need to Know",
         summary: "The NDIS Quality and Safeguards Commission has released updated practice standards affecting support coordination and psychosocial disability services. Learn about the key changes and compliance requirements.",
-        link: "https://groundpath.com.au/resources/ndis-practice-standards-2024",
+        link: "https://groundpath.com.au/article/ndis-practice-standards-2024",
         category: "NDIS COMPLIANCE"
       },
       {
         title: "Evidence-Based Approaches to Trauma-Informed Care",
         summary: "Recent research highlights effective trauma-informed care strategies for working with vulnerable populations. Discover practical techniques and assessment tools for your practice.",
-        link: "https://groundpath.com.au/resources/trauma-informed-care-approaches",
+        link: "https://groundpath.com.au/article/trauma-informed-care-approaches",
         category: "BEST PRACTICES"
       },
       {
@@ -44,7 +44,7 @@ const NewsletterTest = ({ isOpen, onClose }: NewsletterTestProps) => {
       {
         title: "Professional Development: Upcoming CPD Opportunities",
         summary: "Explore upcoming workshops, webinars, and certification programs designed specifically for social workers and mental health professionals.",
-        link: "https://groundpath.com.au/resources/professional-development",
+        link: "https://groundpath.com.au/article/professional-development-opportunities",
         category: "PROFESSIONAL DEVELOPMENT"
       }
     ]

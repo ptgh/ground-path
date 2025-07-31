@@ -24,6 +24,7 @@ import { CrisisInterventionForm } from "./components/forms/CrisisInterventionFor
 import { CPDLogForm } from "./components/forms/CPDLogForm";
 import UnsubscribePage from "./pages/Unsubscribe";
 import ConfirmPage from "./pages/Confirm";
+import Article from "./pages/Article";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/article/:slug" element={<Article />} />
             <Route path="/confirm" element={<ConfirmPage />} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
             <Route path="/professional-forms" element={<ProfessionalForms />} />

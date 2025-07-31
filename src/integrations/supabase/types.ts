@@ -190,6 +190,51 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_articles: {
+        Row: {
+          author_name: string | null
+          category: string
+          content: string
+          created_at: string
+          featured: boolean | null
+          id: string
+          published_at: string
+          slug: string
+          status: string | null
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_name?: string | null
+          category: string
+          content: string
+          created_at?: string
+          featured?: boolean | null
+          id?: string
+          published_at?: string
+          slug: string
+          status?: string | null
+          summary: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_name?: string | null
+          category?: string
+          content?: string
+          created_at?: string
+          featured?: boolean | null
+          id?: string
+          published_at?: string
+          slug?: string
+          status?: string | null
+          summary?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           content: string | null
