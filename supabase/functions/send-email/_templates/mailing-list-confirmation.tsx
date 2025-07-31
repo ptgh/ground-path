@@ -170,31 +170,33 @@ const buttonContainer = {
 }
 
 const button = {
-  backgroundColor: '#6b7280',
-  borderRadius: '8px',
+  backgroundColor: '#7B9B85',
+  borderRadius: '12px',
   color: '#ffffff',
   fontSize: '16px',
-  fontWeight: 'bold',
+  fontWeight: '600',
   textDecoration: 'none',
   textAlign: 'center' as const,
   display: 'inline-block',
-  backgroundImage: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
-  boxShadow: '0 4px 14px 0 rgba(107, 114, 128, 0.25)',
+  backgroundImage: 'linear-gradient(135deg, #7B9B85 0%, #6B8A74 100%)',
+  boxShadow: '0 4px 16px 0 rgba(123, 155, 133, 0.3)',
   transition: 'all 0.3s ease',
+  padding: '16px 32px',
 }
 
 const secondaryButton = {
-  backgroundColor: 'transparent',
-  border: '2px solid #6b7280',
-  borderRadius: '8px',
-  color: '#6b7280',
-  fontSize: '14px',
-  fontWeight: 'bold',
+  backgroundColor: '#ffffff',
+  border: '2px solid #7B9B85',
+  borderRadius: '12px',
+  color: '#7B9B85',
+  fontSize: '16px',
+  fontWeight: '600',
   textDecoration: 'none',
   textAlign: 'center' as const,
   display: 'inline-block',
   transition: 'all 0.3s ease',
-  boxShadow: '0 2px 8px 0 rgba(107, 114, 128, 0.15)',
+  boxShadow: '0 2px 12px 0 rgba(123, 155, 133, 0.15)',
+  padding: '14px 28px',
 }
 
 const benefitsTitle = {

@@ -12,7 +12,7 @@ export const useMailingListSubscription = () => {
       mailingListService.subscribeToMailingList(data),
     onSuccess: () => {
       toast({
-        title: "Welcome aboard! 🎉",
+        title: "Welcome aboard! 🌿",
         description: "Thanks for joining our mailing list. Check your email to confirm your subscription.",
       });
     },
