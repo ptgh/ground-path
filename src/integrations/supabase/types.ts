@@ -145,6 +145,48 @@ export type Database = {
           },
         ]
       }
+      link_health: {
+        Row: {
+          category: string
+          country: string
+          created_at: string
+          error_message: string | null
+          id: string
+          is_broken: boolean | null
+          last_checked: string | null
+          resource_name: string
+          status_code: number | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          category: string
+          country?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          is_broken?: boolean | null
+          last_checked?: string | null
+          resource_name: string
+          status_code?: number | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          category?: string
+          country?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          is_broken?: boolean | null
+          last_checked?: string | null
+          resource_name?: string
+          status_code?: number | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       mailing_list: {
         Row: {
           confirmation_token: string | null
