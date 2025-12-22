@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Loader2, Calendar, User, ArrowLeft } from 'lucide-react';
+import { Loader2, Calendar, User, ArrowLeft, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
@@ -18,6 +18,8 @@ interface Article {
   published_at: string;
   author_name: string;
   featured: boolean;
+  source_url: string | null;
+  source_name: string | null;
 }
 
 const Article = () => {
@@ -162,6 +164,24 @@ const Article = () => {
             className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-li:text-foreground prose-strong:text-foreground prose-a:text-sage-600 hover:prose-a:text-sage-700"
             dangerouslySetInnerHTML={{ __html: article.content }}
           />
+
+          {/* Source Citation */}
+          {article.source_url && (
+            <div className="mt-8 p-4 bg-sage-50 rounded-lg border border-sage-200">
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-muted-foreground font-medium">Source:</span>
+                <a 
+                  href={article.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sage-600 hover:text-sage-700 hover:underline inline-flex items-center gap-1"
+                >
+                  {article.source_name || 'Read more at source'}
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </div>
+          )}
 
           {/* Continue Reading Section */}
           {relatedArticles.length > 0 && (
