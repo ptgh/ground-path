@@ -84,7 +84,7 @@ const Newsletter = () => {
   };
 
   return (
-    <section id="newsletter" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <section id="newsletter" className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
@@ -159,13 +159,16 @@ const Newsletter = () => {
                 {articles.map((article) => (
                   <article key={article.id} className="group">
                     <div className="flex items-start justify-between gap-4 mb-2">
-                      <h4 className="text-lg font-medium text-gray-900 group-hover:text-sage-600 transition-colors leading-tight">
+                      <Link 
+                        to={`/article/${article.slug}`}
+                        className="text-lg font-medium text-gray-900 hover:text-sage-600 transition-colors leading-tight"
+                      >
                         {article.title}
-                      </h4>
+                      </Link>
                       <Button 
                         size="sm" 
                         variant="outline"
-                        className="text-sage-600 border-sage-600 hover:bg-sage-50"
+                        className="text-sage-600 border-sage-600 hover:bg-sage-50 shrink-0"
                         asChild
                       >
                         <Link to={`/article/${article.slug}`}>
