@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -161,20 +162,16 @@ const Newsletter = () => {
                       <h4 className="text-lg font-medium text-gray-900 group-hover:text-sage-600 transition-colors leading-tight">
                         {article.title}
                       </h4>
-                      <a
-                        href={`https://groundpath.com.au/article/${article.slug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-shrink-0"
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="text-sage-600 border-sage-600 hover:bg-sage-50"
+                        asChild
                       >
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          className="text-sage-600 border-sage-600 hover:bg-sage-50"
-                        >
+                        <Link to={`/article/${article.slug}`}>
                           Read More
-                        </Button>
-                      </a>
+                        </Link>
+                      </Button>
                     </div>
                     <p className="text-gray-600 text-sm mb-3 leading-relaxed">
                       {article.summary}

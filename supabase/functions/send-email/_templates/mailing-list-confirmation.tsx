@@ -110,7 +110,7 @@ export const MailingListConfirmationEmail = ({
             <Link href="https://groundpath.com.au" style={socialButton}>
               Visit Website
             </Link>
-            <Link href="https://groundpath.com.au/contact" style={socialButton}>
+            <Link href="mailto:connect@groundpath.com.au" style={socialButton}>
               Contact Us
             </Link>
             <Link href="https://groundpath.com.au/resources" style={socialButton}>

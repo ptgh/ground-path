@@ -113,7 +113,7 @@ export const NewsletterEmail = ({
             <Text style={resourceDescription}>
               Connect with our team for professional guidance and support.
             </Text>
-            <Button href="https://groundpath.com.au/contact" style={resourceButton}>
+            <Button href="mailto:connect@groundpath.com.au" style={resourceButton}>
               Get Support
             </Button>
           </Section>
@@ -129,7 +129,7 @@ export const NewsletterEmail = ({
             <Button href="https://groundpath.com.au" style={cleanButton}>
               Visit Website
             </Button>
-            <Button href="https://groundpath.com.au/contact" style={cleanButton}>
+            <Button href="mailto:connect@groundpath.com.au" style={cleanButton}>
               Contact Us
             </Button>
             <Button href="https://groundpath.com.au/resources" style={cleanButton}>
