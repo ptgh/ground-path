@@ -487,18 +487,18 @@ const Resources = () => {
 
           {/* Content Tabs */}
           <Tabs defaultValue="emergency" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-8 bg-muted p-1 gap-1">
-              <TabsTrigger value="emergency" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 mb-8 bg-muted p-1 gap-1 h-auto">
+              <TabsTrigger value="emergency" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white text-xs sm:text-sm py-2">
                 Emergency
               </TabsTrigger>
-              <TabsTrigger value="support" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white">
-                Support Services
+              <TabsTrigger value="support" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white text-xs sm:text-sm py-2">
+                Support
               </TabsTrigger>
-              <TabsTrigger value="information" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+              <TabsTrigger value="information" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white text-xs sm:text-sm py-2">
                 Information
               </TabsTrigger>
-              <TabsTrigger value="all" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white">
-                All Resources
+              <TabsTrigger value="all" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white text-xs sm:text-sm py-2">
+                All
               </TabsTrigger>
             </TabsList>
 
