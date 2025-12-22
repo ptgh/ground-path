@@ -145,8 +145,8 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0">
+        <DialogHeader className="px-6 pt-6 pb-4 flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
             Professional Profile Settings
@@ -156,16 +156,17 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <Tabs defaultValue="basic" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1 h-auto p-1">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 px-6">
+          <Tabs defaultValue="basic" className="flex flex-col flex-1 min-h-0">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1 h-auto p-1 flex-shrink-0">
               <TabsTrigger value="basic" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Basic Info</TabsTrigger>
               <TabsTrigger value="registration" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Registration</TabsTrigger>
               <TabsTrigger value="insurance" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Insurance & CPD</TabsTrigger>
               <TabsTrigger value="qualifications" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Qualifications</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="basic" className="space-y-4">
+            <div className="flex-1 overflow-y-auto min-h-0 mt-4 space-y-4">
+            <TabsContent value="basic" className="space-y-4 mt-0">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -512,9 +513,10 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                 </Card>
               </div>
             </TabsContent>
+            </div>
           </Tabs>
 
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          <div className="flex justify-end gap-3 py-4 border-t flex-shrink-0">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
