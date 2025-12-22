@@ -145,7 +145,7 @@ const ConfirmPage = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => window.location.href = '/contact'}
+                  onClick={() => window.location.href = 'mailto:connect@groundpath.com.au'}
                 >
                   Contact Us
                 </Button>

@@ -94,7 +94,7 @@ export const NewsletterEmail = ({
             <Text style={servicesText}>
               Need professional consultation or support? Our experienced team is here to help.
             </Text>
-            <Button pY={10} pX={20} style={secondaryButton} href="https://groundpath.com.au/contact">
+            <Button pY={10} pX={20} style={secondaryButton} href="https://www.halaxy.com/book/groundpath/location/125730">
               Book a Consultation
             </Button>
           </Section>
@@ -116,7 +116,7 @@ export const NewsletterEmail = ({
               Visit our website
             </Link>
             {' | '}
-            <Link href="https://groundpath.com.au/contact" style={footerLink}>
+            <Link href="mailto:connect@groundpath.com.au" style={footerLink}>
               Contact us
             </Link>
             {' | '}
@@ -302,26 +302,31 @@ const servicesText = {
 }
 
 const button = {
-  backgroundColor: '#6b7280',
-  borderRadius: '8px',
+  backgroundColor: '#7B9B85',
+  borderRadius: '12px',
   color: '#ffffff',
   fontSize: '16px',
-  fontWeight: 'bold',
+  fontWeight: '600',
   textDecoration: 'none',
   textAlign: 'center' as const,
   display: 'inline-block',
+  backgroundImage: 'linear-gradient(135deg, #7B9B85 0%, #6B8A74 100%)',
+  boxShadow: '0 4px 16px 0 rgba(123, 155, 133, 0.3)',
+  padding: '16px 32px',
 }
 
 const secondaryButton = {
-  backgroundColor: 'transparent',
-  border: '2px solid #6b7280',
-  borderRadius: '8px',
-  color: '#6b7280',
+  backgroundColor: '#ffffff',
+  border: '2px solid #7B9B85',
+  borderRadius: '12px',
+  color: '#7B9B85',
   fontSize: '14px',
-  fontWeight: 'bold',
+  fontWeight: '600',
   textDecoration: 'none',
   textAlign: 'center' as const,
   display: 'inline-block',
+  boxShadow: '0 2px 12px 0 rgba(123, 155, 133, 0.15)',
+  padding: '14px 28px',
 }
 
 const hr = {

@@ -102,7 +102,7 @@ export const NewsletterEmail = ({
             <Text style={servicesText}>
               Need professional consultation or support? Our experienced team is here to help.
             </Text>
-            <Button pY={10} pX={20} style={secondaryButton} href="https://groundpath.com.au/contact">
+            <Button pY={10} pX={20} style={secondaryButton} href="https://www.halaxy.com/book/groundpath/location/125730">
               Book a Consultation
             </Button>
           </Section>
@@ -124,7 +124,7 @@ export const NewsletterEmail = ({
               Visit our website
             </Link>
             {' | '}
-            <Link href="https://groundpath.com.au/contact" style={footerLink}>
+            <Link href="mailto:connect@groundpath.com.au" style={footerLink}>
               Contact us
             </Link>
             {' | '}
