@@ -13,6 +13,9 @@ interface Profile {
   registration_number?: string;
   registration_body?: string;
   registration_expiry?: string;
+  registration_country?: string;
+  aasw_membership_number?: string;
+  swe_registration_number?: string;
   ahpra_number?: string;
   ahpra_profession?: string;
   years_experience?: number;
