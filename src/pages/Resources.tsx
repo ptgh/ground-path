@@ -71,16 +71,16 @@ const Resources = () => {
     {
       title: "AASW Code of Ethics",
       description: "Australian Association of Social Workers ethical guidelines and professional standards",
-      type: "pdf",
-      url: "https://www.aasw.asn.au/document/item/1201",
+      type: "external",
+      url: "https://www.aasw.asn.au/about-aasw/ethics-standards/code-of-ethics",
       category: "Ethics",
       icon: <Scale className="h-5 w-5" />
     },
     {
       title: "AASW Practice Standards",
       description: "Comprehensive practice standards for social work professionals in Australia",
-      type: "pdf", 
-      url: "https://www.aasw.asn.au/document/item/9545",
+      type: "external", 
+      url: "https://www.aasw.asn.au/about-aasw/ethics-standards/aasw-practice-standards",
       category: "Standards",
       icon: <BookOpen className="h-5 w-5" />
     },
@@ -106,7 +106,7 @@ const Resources = () => {
     {
       title: "NDIS Practice Standards",
       description: "Quality and safeguarding requirements for NDIS providers",
-      type: "pdf",
+      type: "external",
       url: "https://www.ndiscommission.gov.au/providers/registered-ndis-providers/provider-obligations-and-requirements/ndis-practice-standards",
       category: "NDIS",
       icon: <Shield className="h-5 w-5" />
@@ -161,7 +161,7 @@ const Resources = () => {
       title: "Supervision Guidelines",
       description: "Best practice guidelines for professional supervision in social work",
       type: "external",
-      url: "https://www.aasw.asn.au/document/item/7131",
+      url: "https://www.aasw.asn.au/about-aasw/ethics-standards/supervision-standards",
       category: "Supervision",
       icon: <Users className="h-5 w-5" />
     },
@@ -270,7 +270,6 @@ const Resources = () => {
               </Badge>
             </div>
           </div>
-          {resource.type === 'pdf' && <Download className="h-4 w-4 text-gray-400" />}
           {resource.type === 'external' && <ExternalLink className="h-4 w-4 text-gray-400" />}
           {resource.type === 'phone' && <Phone className="h-4 w-4 text-gray-400" />}
         </div>
