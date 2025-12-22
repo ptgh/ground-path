@@ -96,18 +96,25 @@ const ProfessionalResources = () => {
     ],
     clinical: [
       {
-        title: "DSM-5-TR Quick Reference",
-        description: "Diagnostic criteria and assessment tools",
-        url: "https://www.psychiatry.org/psychiatrists/practice/dsm",
+        title: "Black Dog Institute Clinical Resources",
+        description: "Evidence-based tools for depression and mental health assessment",
+        url: "https://www.blackdoginstitute.org.au/resources-support/clinician-resources/",
         category: "Assessment",
         icon: <BookOpen className="h-5 w-5" />
       },
       {
-        title: "Outcome Measurement Tools (CORC)",
-        description: "Standardised assessment tools for therapeutic outcomes",
-        url: "https://www.corc.uk.net/outcome-experience-measures/",
+        title: "Phoenix Australia Trauma Guidelines",
+        description: "Australian guidelines for PTSD and trauma treatment",
+        url: "https://www.phoenixaustralia.org/australian-guidelines-for-ptsd/",
         category: "Assessment",
         icon: <BookOpen className="h-5 w-5" />
+      },
+      {
+        title: "Orygen Clinical Practice Resources",
+        description: "Youth mental health clinical guidelines and tools",
+        url: "https://www.orygen.org.au/Training/Resources/Clinical-practice",
+        category: "Youth Mental Health",
+        icon: <Users className="h-5 w-5" />
       },
       {
         title: "Cultural Competency Resources",
@@ -199,15 +206,22 @@ const ProfessionalResources = () => {
     ],
     clinical: [
       {
-        title: "ICD-11 Classification",
-        description: "WHO International Classification of Diseases",
-        url: "https://icd.who.int/en",
+        title: "NICE Mental Health Guidelines",
+        description: "Evidence-based clinical guidelines for mental health conditions",
+        url: "https://www.nice.org.uk/guidance/conditions-and-diseases/mental-health-and-behavioural-conditions",
+        category: "Guidelines",
+        icon: <BookOpen className="h-5 w-5" />
+      },
+      {
+        title: "Outcome Measurement Tools (CORC)",
+        description: "Standardised assessment tools for therapeutic outcomes",
+        url: "https://www.corc.uk.net/outcome-experience-measures/",
         category: "Assessment",
         icon: <BookOpen className="h-5 w-5" />
       },
       {
         title: "CORE Outcome Measures",
-        description: "Clinical Outcomes in Routine Evaluation",
+        description: "Clinical Outcomes in Routine Evaluation system",
         url: "https://www.coresystemtrust.org.uk/",
         category: "Assessment",
         icon: <BookOpen className="h-5 w-5" />
