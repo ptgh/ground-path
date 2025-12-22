@@ -17,6 +17,8 @@ interface GeneratedArticle {
   content: string;
   category: string;
   slug: string;
+  source_url: string;
+  source_name: string;
 }
 
 async function generateArticles(): Promise<GeneratedArticle[]> {
@@ -43,6 +45,8 @@ For each article, provide:
 3. Full article content (500-800 words, formatted with proper paragraphs)
 4. Category (use: ${randomCategory})
 5. A URL-friendly slug (lowercase, hyphens, no special characters)
+6. A real, authoritative source URL for further reading (must be a real Australian website like aasw.asn.au, aihw.gov.au, ndis.gov.au, beyondblue.org.au, blackdoginstitute.org.au, headspace.org.au, blueknot.org.au, or similar reputable sources)
+7. The source name (organization/website name)
 
 Topics should be relevant to Australian social work practice, mental health support, NDIS, aged care, child protection, or professional development.
 
@@ -53,7 +57,9 @@ Return the response as a JSON array with exactly 2 articles in this format:
     "summary": "Brief summary of the article",
     "content": "Full article content with multiple paragraphs...",
     "category": "${randomCategory}",
-    "slug": "url-friendly-slug"
+    "slug": "url-friendly-slug",
+    "source_url": "https://www.example.org.au/relevant-page",
+    "source_name": "Organization Name"
   }
 ]
 
@@ -124,7 +130,9 @@ async function saveArticlesToDatabase(articles: GeneratedArticle[]): Promise<num
         status: 'published',
         featured: false,
         published_at: now,
-        author_name: 'Social Work Hub Team'
+        author_name: 'Social Work Hub Team',
+        source_url: article.source_url,
+        source_name: article.source_name
       });
     
     if (error) {
