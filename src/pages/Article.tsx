@@ -27,6 +27,10 @@ const Article = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     const fetchArticle = async () => {
       if (!slug) {
         setError('Article not found');
