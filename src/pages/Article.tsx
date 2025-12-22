@@ -23,6 +23,7 @@ interface Article {
 const Article = () => {
   const { slug } = useParams<{ slug: string }>();
   const [article, setArticle] = useState<Article | null>(null);
+  const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,6 +49,20 @@ const Article = () => {
 
         if (error) throw error;
         setArticle(data);
+
+        // Fetch related articles (same category, excluding current)
+        if (data) {
+          const { data: related } = await supabase
+            .from('newsletter_articles')
+            .select('*')
+            .eq('status', 'published')
+            .eq('category', data.category)
+            .neq('slug', slug)
+            .order('published_at', { ascending: false })
+            .limit(2);
+          
+          setRelatedArticles(related || []);
+        }
       } catch (err: any) {
         console.error('Error fetching article:', err);
         setError('Article not found');
@@ -147,6 +162,37 @@ const Article = () => {
             className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-li:text-foreground prose-strong:text-foreground prose-a:text-sage-600 hover:prose-a:text-sage-700"
             dangerouslySetInnerHTML={{ __html: article.content }}
           />
+
+          {/* Continue Reading Section */}
+          {relatedArticles.length > 0 && (
+            <div className="mt-12 border-t border-sage-200 pt-8">
+              <h3 className="text-xl font-semibold text-foreground mb-6">Continue Reading</h3>
+              <div className="grid gap-4">
+                {relatedArticles.map((related) => (
+                  <Link 
+                    key={related.id}
+                    to={`/article/${related.slug}`}
+                    className="group block p-4 bg-sage-50 rounded-lg border border-sage-200 hover:border-sage-400 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <Badge variant="secondary" className="bg-sage-100 text-sage-700 mb-2">
+                          {related.category}
+                        </Badge>
+                        <h4 className="font-medium text-foreground group-hover:text-sage-600 transition-colors">
+                          {related.title}
+                        </h4>
+                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                          {related.summary}
+                        </p>
+                      </div>
+                      <ArrowLeft className="h-5 w-5 text-sage-600 rotate-180 shrink-0 mt-1" />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Footer CTA */}
           <div className="mt-12 p-6 bg-sage-50 rounded-lg border border-sage-200">
