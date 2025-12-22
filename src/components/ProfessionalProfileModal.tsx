@@ -29,6 +29,9 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     registration_number: '',
     registration_body: '',
     registration_expiry: '',
+    registration_country: 'AU',
+    aasw_membership_number: '',
+    swe_registration_number: '',
     ahpra_number: '',
     ahpra_profession: '',
     years_experience: '',
@@ -58,6 +61,9 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         registration_number: profile.registration_number || '',
         registration_body: profile.registration_body || '',
         registration_expiry: profile.registration_expiry || '',
+        registration_country: profile.registration_country || 'AU',
+        aasw_membership_number: profile.aasw_membership_number || '',
+        swe_registration_number: profile.swe_registration_number || '',
         ahpra_number: profile.ahpra_number || '',
         ahpra_profession: profile.ahpra_profession || '',
         years_experience: profile.years_experience?.toString() || '',
@@ -265,6 +271,19 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
+                      <Label htmlFor="registration_country">Practice Country</Label>
+                      <Select value={formData.registration_country} onValueChange={(value) => setFormData({...formData, registration_country: value})}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select country" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="AU">Australia</SelectItem>
+                          <SelectItem value="UK">United Kingdom</SelectItem>
+                          <SelectItem value="BOTH">Both</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
                       <Label htmlFor="license_number">License Number</Label>
                       <Input
                         id="license_number"
@@ -273,17 +292,42 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                         placeholder="Professional license number"
                       />
                     </div>
+                  </div>
+                  
+                  {(formData.registration_country === 'AU' || formData.registration_country === 'BOTH') && (
+                    <div className="space-y-2 p-3 rounded-lg bg-sage-50 border border-sage-200">
+                      <Label htmlFor="aasw_membership_number">AASW Membership Number (Australia)</Label>
+                      <Input
+                        id="aasw_membership_number"
+                        value={formData.aasw_membership_number}
+                        onChange={(e) => setFormData({...formData, aasw_membership_number: e.target.value})}
+                        placeholder="e.g., 123456"
+                      />
+                    </div>
+                  )}
+                  
+                  {(formData.registration_country === 'UK' || formData.registration_country === 'BOTH') && (
+                    <div className="space-y-2 p-3 rounded-lg bg-blue-50 border border-blue-200">
+                      <Label htmlFor="swe_registration_number">SWE Registration Number (UK)</Label>
+                      <Input
+                        id="swe_registration_number"
+                        value={formData.swe_registration_number}
+                        onChange={(e) => setFormData({...formData, swe_registration_number: e.target.value})}
+                        placeholder="e.g., SW12345"
+                      />
+                    </div>
+                  )}
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="registration_number">Registration Number</Label>
                       <Input
                         id="registration_number"
                         value={formData.registration_number}
                         onChange={(e) => setFormData({...formData, registration_number: e.target.value})}
-                        placeholder="e.g., AASW membership number"
+                        placeholder="General registration number"
                       />
                     </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="registration_body">Registration Body</Label>
                       <Select value={formData.registration_body} onValueChange={(value) => setFormData({...formData, registration_body: value})}>
@@ -293,6 +337,8 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                         <SelectContent>
                           <SelectItem value="AASW">AASW (Australian Association of Social Workers)</SelectItem>
                           <SelectItem value="AHPRA">AHPRA (Australian Health Practitioner Regulation Agency)</SelectItem>
+                          <SelectItem value="SWE">SWE (Social Work England)</SelectItem>
+                          <SelectItem value="BASW">BASW (British Association of Social Workers)</SelectItem>
                           <SelectItem value="ACA">ACA (Australian Counselling Association)</SelectItem>
                           <SelectItem value="ACMHN">ACMHN (Australian College of Mental Health Nurses)</SelectItem>
                           <SelectItem value="other">Other</SelectItem>

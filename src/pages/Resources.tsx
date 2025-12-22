@@ -6,17 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { 
   ExternalLink, 
-  Download, 
   Search, 
-  BookOpen, 
-  Users, 
-  Shield, 
-  GraduationCap,
-  Heart,
-  Scale,
-  FileText,
   Phone,
-  X
+  X,
+  Heart,
+  Users,
+  Info,
+  Globe
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -25,6 +21,7 @@ import { gsap } from 'gsap';
 
 const Resources = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [country, setCountry] = useState<'AU' | 'UK'>('AU');
   const buttonsRef = useRef<HTMLDivElement>(null);
 
   // Scroll to top when component mounts
@@ -65,117 +62,10 @@ const Resources = () => {
         };
       });
     }
-  }, []);
+  }, [country]);
 
-  const professionalStandards = [
-    {
-      title: "AASW Code of Ethics",
-      description: "Australian Association of Social Workers ethical guidelines and professional standards",
-      type: "external",
-      url: "https://www.aasw.asn.au/about-aasw/ethics-standards/code-of-ethics",
-      category: "Ethics",
-      icon: <Scale className="h-5 w-5" />
-    },
-    {
-      title: "AASW Practice Standards",
-      description: "Comprehensive practice standards for social work professionals in Australia",
-      type: "external", 
-      url: "https://www.aasw.asn.au/about-aasw/ethics-standards/aasw-practice-standards",
-      category: "Standards",
-      icon: <BookOpen className="h-5 w-5" />
-    },
-    {
-      title: "Mental Health Professional Standards",
-      description: "Guidelines for mental health practitioners and counsellors",
-      type: "external",
-      url: "https://www.pacfa.org.au/ethics-standards/",
-      category: "Mental Health",
-      icon: <Heart className="h-5 w-5" />
-    }
-  ];
-
-  const ndisResources = [
-    {
-      title: "NDIS Provider Portal",
-      description: "Access the NDIS provider portal for service delivery and billing",
-      type: "external",
-      url: "https://www.ndis.gov.au/providers",
-      category: "NDIS",
-      icon: <Users className="h-5 w-5" />
-    },
-    {
-      title: "NDIS Practice Standards",
-      description: "Quality and safeguarding requirements for NDIS providers",
-      type: "external",
-      url: "https://www.ndiscommission.gov.au/providers/registered-ndis-providers/provider-obligations-and-requirements/ndis-practice-standards",
-      category: "NDIS",
-      icon: <Shield className="h-5 w-5" />
-    },
-    {
-      title: "NDIS Pricing Arrangements",
-      description: "Current pricing guide and support catalogue for NDIS services",
-      type: "external",
-      url: "https://www.ndis.gov.au/providers/pricing-arrangements",
-      category: "NDIS",
-      icon: <FileText className="h-5 w-5" />
-    }
-  ];
-
-  const clinicalTools = [
-    {
-      title: "DSM-5-TR Quick Reference",
-      description: "Diagnostic criteria and assessment tools for mental health conditions",
-      type: "external",
-      url: "https://www.psychiatry.org/psychiatrists/practice/dsm",
-      category: "Assessment",
-      icon: <BookOpen className="h-5 w-5" />
-    },
-    {
-      title: "Outcome Measurement Tools",
-      description: "Standardised assessment tools for measuring therapeutic outcomes",
-      type: "external",
-      url: "https://www.corc.uk.net/outcome-experience-measures/",
-      category: "Assessment",
-      icon: <FileText className="h-5 w-5" />
-    },
-    {
-      title: "Risk Assessment Frameworks",
-      description: "Comprehensive risk assessment tools for various client populations",
-      type: "external",
-      url: "https://www.ranzcp.org/clinical-guidelines-publications/clinical-guidelines-publications-library/suicide-risk-assessment",
-      category: "Risk Management",
-      icon: <Shield className="h-5 w-5" />
-    }
-  ];
-
-  const professionalDevelopment = [
-    {
-      title: "AASW CPD Requirements",
-      description: "Continuing Professional Development guidelines and tracking resources",
-      type: "external",
-      url: "https://www.aasw.asn.au/careers-study/continuing-professional-development",
-      category: "CPD",
-      icon: <GraduationCap className="h-5 w-5" />
-    },
-    {
-      title: "Supervision Guidelines",
-      description: "Best practice guidelines for professional supervision in social work",
-      type: "external",
-      url: "https://www.aasw.asn.au/about-aasw/ethics-standards/supervision-standards",
-      category: "Supervision",
-      icon: <Users className="h-5 w-5" />
-    },
-    {
-      title: "Cultural Competency Resources",
-      description: "Resources for culturally responsive practice with diverse communities",
-      type: "external",
-      url: "https://www.aihw.gov.au/reports/indigenous-australians/cultural-competency-in-health-a-guide-for-policy",
-      category: "Cultural Practice",
-      icon: <Heart className="h-5 w-5" />
-    }
-  ];
-
-  const emergencyContacts = [
+  // Australian Emergency Contacts
+  const emergencyContactsAU = [
     {
       title: "Lifeline Australia",
       description: "24/7 crisis support and suicide prevention",
@@ -199,43 +89,257 @@ const Resources = () => {
       url: "1800 737 732",
       category: "Family Violence",
       icon: <Phone className="h-5 w-5" />
+    },
+    {
+      title: "Beyond Blue",
+      description: "Depression, anxiety and suicide prevention support",
+      type: "phone",
+      url: "1300 22 4636",
+      category: "Mental Health",
+      icon: <Phone className="h-5 w-5" />
+    },
+    {
+      title: "Suicide Call Back Service",
+      description: "24/7 professional telephone and online counselling",
+      type: "phone",
+      url: "1300 659 467",
+      category: "Crisis Support",
+      icon: <Phone className="h-5 w-5" />
+    },
+    {
+      title: "MensLine Australia",
+      description: "24/7 support for men with family and relationship concerns",
+      type: "phone",
+      url: "1300 78 99 78",
+      category: "Men's Support",
+      icon: <Phone className="h-5 w-5" />
     }
   ];
 
+  // UK Emergency Contacts
+  const emergencyContactsUK = [
+    {
+      title: "Samaritans",
+      description: "24/7 emotional support for anyone in distress",
+      type: "phone",
+      url: "116 123",
+      category: "Crisis Support",
+      icon: <Phone className="h-5 w-5" />
+    },
+    {
+      title: "Mind Infoline",
+      description: "Mental health information and support",
+      type: "phone",
+      url: "0300 123 3393",
+      category: "Mental Health",
+      icon: <Phone className="h-5 w-5" />
+    },
+    {
+      title: "Childline",
+      description: "Free counselling for children and young people",
+      type: "phone",
+      url: "0800 1111",
+      category: "Youth Support",
+      icon: <Phone className="h-5 w-5" />
+    },
+    {
+      title: "National Domestic Abuse Helpline",
+      description: "24-hour freephone for domestic abuse support",
+      type: "phone",
+      url: "0808 2000 247",
+      category: "Family Violence",
+      icon: <Phone className="h-5 w-5" />
+    },
+    {
+      title: "Shout Crisis Text Line",
+      description: "Free 24/7 text support for anyone in crisis",
+      type: "phone",
+      url: "Text SHOUT to 85258",
+      category: "Crisis Support",
+      icon: <Phone className="h-5 w-5" />
+    },
+    {
+      title: "CALM (Campaign Against Living Miserably)",
+      description: "Support for men in crisis, 5pm-midnight daily",
+      type: "phone",
+      url: "0800 58 58 58",
+      category: "Men's Support",
+      icon: <Phone className="h-5 w-5" />
+    }
+  ];
+
+  // Australian Support Services
+  const supportServicesAU = [
+    {
+      title: "NDIS (National Disability Insurance Scheme)",
+      description: "Government support for people with disability",
+      type: "external",
+      url: "https://www.ndis.gov.au/participants",
+      category: "Disability",
+      icon: <Users className="h-5 w-5" />
+    },
+    {
+      title: "Medicare Mental Health",
+      description: "Medicare-subsidised mental health services",
+      type: "external",
+      url: "https://www.servicesaustralia.gov.au/mental-health-and-medicare",
+      category: "Health Services",
+      icon: <Heart className="h-5 w-5" />
+    },
+    {
+      title: "Headspace",
+      description: "Mental health support for young people 12-25",
+      type: "external",
+      url: "https://headspace.org.au/",
+      category: "Youth Services",
+      icon: <Heart className="h-5 w-5" />
+    },
+    {
+      title: "Carers Australia",
+      description: "Support and resources for carers",
+      type: "external",
+      url: "https://www.carersaustralia.com.au/",
+      category: "Carer Support",
+      icon: <Users className="h-5 w-5" />
+    },
+    {
+      title: "Open Arms Veterans & Families Counselling",
+      description: "Free counselling for veterans and families",
+      type: "phone",
+      url: "1800 011 046",
+      category: "Veterans",
+      icon: <Phone className="h-5 w-5" />
+    }
+  ];
+
+  // UK Support Services
+  const supportServicesUK = [
+    {
+      title: "NHS Talking Therapies",
+      description: "Free NHS therapy for anxiety and depression",
+      type: "external",
+      url: "https://www.nhs.uk/mental-health/talking-therapies-medicine-treatments/talking-therapies-and-counselling/nhs-talking-therapies/",
+      category: "Health Services",
+      icon: <Heart className="h-5 w-5" />
+    },
+    {
+      title: "CAMHS (Child & Adolescent Mental Health Services)",
+      description: "NHS mental health services for under 18s",
+      type: "external",
+      url: "https://www.nhs.uk/mental-health/nhs-voluntary-charity-services/nhs-services/children-young-people-mental-health-services-cypmhs/",
+      category: "Youth Services",
+      icon: <Heart className="h-5 w-5" />
+    },
+    {
+      title: "Citizens Advice",
+      description: "Free, independent advice on legal, financial and other matters",
+      type: "external",
+      url: "https://www.citizensadvice.org.uk/",
+      category: "General Advice",
+      icon: <Info className="h-5 w-5" />
+    },
+    {
+      title: "Carers UK",
+      description: "Support and resources for carers",
+      type: "external",
+      url: "https://www.carersuk.org/",
+      category: "Carer Support",
+      icon: <Users className="h-5 w-5" />
+    },
+    {
+      title: "Combat Stress",
+      description: "Mental health support for veterans",
+      type: "external",
+      url: "https://combatstress.org.uk/",
+      category: "Veterans",
+      icon: <Users className="h-5 w-5" />
+    }
+  ];
+
+  // Australian Information Resources
+  const informationAU = [
+    {
+      title: "Black Dog Institute",
+      description: "Information and resources on mental health conditions",
+      type: "external",
+      url: "https://www.blackdoginstitute.org.au/",
+      category: "Mental Health",
+      icon: <Info className="h-5 w-5" />
+    },
+    {
+      title: "SANE Australia",
+      description: "Mental health information and support programs",
+      type: "external",
+      url: "https://www.sane.org/",
+      category: "Mental Health",
+      icon: <Info className="h-5 w-5" />
+    },
+    {
+      title: "ReachOut",
+      description: "Online mental health resources for young people",
+      type: "external",
+      url: "https://au.reachout.com/",
+      category: "Youth",
+      icon: <Info className="h-5 w-5" />
+    },
+    {
+      title: "Blue Knot Foundation",
+      description: "Resources for complex trauma survivors",
+      type: "external",
+      url: "https://blueknot.org.au/",
+      category: "Trauma",
+      icon: <Heart className="h-5 w-5" />
+    }
+  ];
+
+  // UK Information Resources
+  const informationUK = [
+    {
+      title: "Mind",
+      description: "Mental health information and support",
+      type: "external",
+      url: "https://www.mind.org.uk/",
+      category: "Mental Health",
+      icon: <Info className="h-5 w-5" />
+    },
+    {
+      title: "Rethink Mental Illness",
+      description: "Advice and information on mental illness",
+      type: "external",
+      url: "https://www.rethink.org/",
+      category: "Mental Health",
+      icon: <Info className="h-5 w-5" />
+    },
+    {
+      title: "Young Minds",
+      description: "Mental health resources for young people and parents",
+      type: "external",
+      url: "https://www.youngminds.org.uk/",
+      category: "Youth",
+      icon: <Info className="h-5 w-5" />
+    },
+    {
+      title: "The Survivors Trust",
+      description: "Resources for survivors of rape and sexual abuse",
+      type: "external",
+      url: "https://www.thesurvivorstrust.org/",
+      category: "Trauma",
+      icon: <Heart className="h-5 w-5" />
+    }
+  ];
+
+  // Get current resources based on country
+  const emergencyContacts = country === 'AU' ? emergencyContactsAU : emergencyContactsUK;
+  const supportServices = country === 'AU' ? supportServicesAU : supportServicesUK;
+  const informationResources = country === 'AU' ? informationAU : informationUK;
+
   const allResources = [
-    ...professionalStandards,
-    ...ndisResources,
-    ...clinicalTools,
-    ...professionalDevelopment,
-    ...emergencyContacts
+    ...emergencyContacts,
+    ...supportServices,
+    ...informationResources
   ];
 
   const filteredResources = allResources.filter(resource =>
-    resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    resource.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Filter each category based on search term
-  const filteredProfessionalStandards = professionalStandards.filter(resource =>
-    resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    resource.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const filteredNdisResources = ndisResources.filter(resource =>
-    resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    resource.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const filteredClinicalTools = clinicalTools.filter(resource =>
-    resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    resource.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const filteredProfessionalDevelopment = professionalDevelopment.filter(resource =>
     resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     resource.category.toLowerCase().includes(searchTerm.toLowerCase())
@@ -247,16 +351,28 @@ const Resources = () => {
     resource.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const filteredSupportServices = supportServices.filter(resource =>
+    resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    resource.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredInformation = informationResources.filter(resource =>
+    resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    resource.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const NoResults = () => (
     <div className="text-center py-12">
-      <Search className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-      <h3 className="text-lg font-medium text-gray-900 mb-2">No resources found</h3>
-      <p className="text-gray-600">Try adjusting your search terms or browse all resources.</p>
+      <Search className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+      <h3 className="text-lg font-medium text-foreground mb-2">No resources found</h3>
+      <p className="text-muted-foreground">Try adjusting your search terms or browse all resources.</p>
     </div>
   );
 
   const ResourceCard = ({ resource }: { resource: any }) => (
-    <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02] border-gray-200 flex flex-col h-full">
+    <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02] border-border flex flex-col h-full">
       <CardHeader className="flex-shrink-0">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -264,18 +380,18 @@ const Resources = () => {
               {resource.icon}
             </div>
             <div>
-              <CardTitle className="text-lg text-gray-900">{resource.title}</CardTitle>
+              <CardTitle className="text-lg text-foreground">{resource.title}</CardTitle>
               <Badge variant="secondary" className="mt-1 bg-sage-50 text-sage-700">
                 {resource.category}
               </Badge>
             </div>
           </div>
-          {resource.type === 'external' && <ExternalLink className="h-4 w-4 text-gray-400" />}
-          {resource.type === 'phone' && <Phone className="h-4 w-4 text-gray-400" />}
+          {resource.type === 'external' && <ExternalLink className="h-4 w-4 text-muted-foreground" />}
+          {resource.type === 'phone' && <Phone className="h-4 w-4 text-muted-foreground" />}
         </div>
       </CardHeader>
       <CardContent className="flex flex-col flex-grow">
-        <CardDescription className="text-gray-600 mb-4 flex-grow">
+        <CardDescription className="text-muted-foreground mb-4 flex-grow">
           {resource.description}
         </CardDescription>
         <Button 
@@ -283,7 +399,13 @@ const Resources = () => {
           className="resource-cta w-full mt-auto"
           onClick={() => {
             if (resource.type === 'phone') {
-              window.open(`tel:${resource.url}`, '_self');
+              const phoneNumber = resource.url.replace(/\s/g, '');
+              if (phoneNumber.startsWith('Text')) {
+                // For text-based services, just copy to clipboard or show info
+                window.alert(resource.url);
+              } else {
+                window.open(`tel:${phoneNumber}`, '_self');
+              }
             } else {
               window.open(resource.url, '_blank');
             }
@@ -296,36 +418,60 @@ const Resources = () => {
   );
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Header />
       
       <div className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header Section */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Professional Resources
+            <h1 className="text-4xl font-bold text-foreground mb-4">
+              Client Resources
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Essential tools, guidelines, and resources for social work and mental health professionals practicing in Australia
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Support resources, helplines, and information for clients and people seeking help
             </p>
+          </div>
+
+          {/* Country Selector */}
+          <div className="flex justify-center mb-8">
+            <div className="inline-flex rounded-lg border border-border p-1 bg-muted">
+              <Button
+                variant={country === 'AU' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setCountry('AU')}
+                className={country === 'AU' ? 'bg-sage-600 text-white hover:bg-sage-700' : ''}
+              >
+                <Globe className="h-4 w-4 mr-2" />
+                Australia
+              </Button>
+              <Button
+                variant={country === 'UK' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setCountry('UK')}
+                className={country === 'UK' ? 'bg-sage-600 text-white hover:bg-sage-700' : ''}
+              >
+                <Globe className="h-4 w-4 mr-2" />
+                United Kingdom
+              </Button>
+            </div>
           </div>
 
           {/* Search Bar */}
           <div className="mb-8 max-w-md mx-auto">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 type="text"
                 placeholder="Search resources..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-10 border-gray-300 focus:border-sage-500"
+                className="pl-10 pr-10"
               />
               {searchTerm && (
                 <button
                   onClick={() => setSearchTerm("")}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="Clear search"
                 >
                   <X className="h-4 w-4" />
@@ -333,106 +479,69 @@ const Resources = () => {
               )}
             </div>
             {searchTerm && (
-              <p className="text-sm text-gray-500 mt-2 text-center">
+              <p className="text-sm text-muted-foreground mt-2 text-center">
                 Searching for "{searchTerm}" - {filteredResources.length} result{filteredResources.length !== 1 ? 's' : ''} found
               </p>
             )}
           </div>
 
           {/* Content Tabs */}
-          <Tabs defaultValue="all" className="w-full">
-            <TabsList className="grid w-full grid-cols-6 mb-8 bg-gray-100 p-1 gap-1 overflow-x-auto">
-              <style>{`
-                @media (max-width: 768px) {
-                  .grid-cols-6 {
-                    grid-template-columns: repeat(6, minmax(100px, 1fr));
-                  }
-                }
-              `}</style>
-              <TabsTrigger value="all" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white">
-                All Resources
-              </TabsTrigger>
-              <TabsTrigger value="standards" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white">
-                Standards
-              </TabsTrigger>
-              <TabsTrigger value="ndis" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white">
-                NDIS
-              </TabsTrigger>
-              <TabsTrigger value="clinical" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white">
-                Clinical Tools
-              </TabsTrigger>
-              <TabsTrigger value="development" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white">
-                CPD
-              </TabsTrigger>
+          <Tabs defaultValue="emergency" className="w-full">
+            <TabsList className="grid w-full grid-cols-4 mb-8 bg-muted p-1 gap-1">
               <TabsTrigger value="emergency" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white">
                 Emergency
               </TabsTrigger>
+              <TabsTrigger value="support" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+                Support Services
+              </TabsTrigger>
+              <TabsTrigger value="information" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+                Information
+              </TabsTrigger>
+              <TabsTrigger value="all" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+                All Resources
+              </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="all" ref={buttonsRef}>
-              {filteredResources.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredResources.map((resource, index) => (
-                    <ResourceCard key={index} resource={resource} />
-                  ))}
-                </div>
-              ) : (
-                <NoResults />
-              )}
-            </TabsContent>
-
-            <TabsContent value="standards">
-              {filteredProfessionalStandards.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProfessionalStandards.map((resource, index) => (
-                    <ResourceCard key={index} resource={resource} />
-                  ))}
-                </div>
-              ) : (
-                <NoResults />
-              )}
-            </TabsContent>
-
-            <TabsContent value="ndis">
-              {filteredNdisResources.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredNdisResources.map((resource, index) => (
-                    <ResourceCard key={index} resource={resource} />
-                  ))}
-                </div>
-              ) : (
-                <NoResults />
-              )}
-            </TabsContent>
-
-            <TabsContent value="clinical">
-              {filteredClinicalTools.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredClinicalTools.map((resource, index) => (
-                    <ResourceCard key={index} resource={resource} />
-                  ))}
-                </div>
-              ) : (
-                <NoResults />
-              )}
-            </TabsContent>
-
-            <TabsContent value="development">
-              {filteredProfessionalDevelopment.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProfessionalDevelopment.map((resource, index) => (
-                    <ResourceCard key={index} resource={resource} />
-                  ))}
-                </div>
-              ) : (
-                <NoResults />
-              )}
-            </TabsContent>
-
-            <TabsContent value="emergency">
+            <TabsContent value="emergency" ref={buttonsRef}>
               {filteredEmergencyContacts.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredEmergencyContacts.map((resource, index) => (
+                    <ResourceCard key={index} resource={resource} />
+                  ))}
+                </div>
+              ) : (
+                <NoResults />
+              )}
+            </TabsContent>
+
+            <TabsContent value="support">
+              {filteredSupportServices.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredSupportServices.map((resource, index) => (
+                    <ResourceCard key={index} resource={resource} />
+                  ))}
+                </div>
+              ) : (
+                <NoResults />
+              )}
+            </TabsContent>
+
+            <TabsContent value="information">
+              {filteredInformation.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredInformation.map((resource, index) => (
+                    <ResourceCard key={index} resource={resource} />
+                  ))}
+                </div>
+              ) : (
+                <NoResults />
+              )}
+            </TabsContent>
+
+            <TabsContent value="all">
+              {filteredResources.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredResources.map((resource, index) => (
                     <ResourceCard key={index} resource={resource} />
                   ))}
                 </div>

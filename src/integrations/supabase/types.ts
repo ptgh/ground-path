@@ -267,6 +267,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          aasw_membership_number: string | null
           ahpra_number: string | null
           ahpra_profession: string | null
           avatar_url: string | null
@@ -288,16 +289,19 @@ export type Database = {
           profession: string | null
           qualifications: string[] | null
           registration_body: string | null
+          registration_country: string | null
           registration_expiry: string | null
           registration_number: string | null
           specializations: string[] | null
           supervisor_details: Json | null
+          swe_registration_number: string | null
           updated_at: string | null
           user_id: string
           website_url: string | null
           years_experience: number | null
         }
         Insert: {
+          aasw_membership_number?: string | null
           ahpra_number?: string | null
           ahpra_profession?: string | null
           avatar_url?: string | null
@@ -319,16 +323,19 @@ export type Database = {
           profession?: string | null
           qualifications?: string[] | null
           registration_body?: string | null
+          registration_country?: string | null
           registration_expiry?: string | null
           registration_number?: string | null
           specializations?: string[] | null
           supervisor_details?: Json | null
+          swe_registration_number?: string | null
           updated_at?: string | null
           user_id: string
           website_url?: string | null
           years_experience?: number | null
         }
         Update: {
+          aasw_membership_number?: string | null
           ahpra_number?: string | null
           ahpra_profession?: string | null
           avatar_url?: string | null
@@ -350,10 +357,12 @@ export type Database = {
           profession?: string | null
           qualifications?: string[] | null
           registration_body?: string | null
+          registration_country?: string | null
           registration_expiry?: string | null
           registration_number?: string | null
           specializations?: string[] | null
           supervisor_details?: Json | null
+          swe_registration_number?: string | null
           updated_at?: string | null
           user_id?: string
           website_url?: string | null
