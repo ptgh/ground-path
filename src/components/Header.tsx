@@ -142,7 +142,7 @@ const Header = () => {
               onClick={() => navigate('/resources')}
               className="text-gray-300 hover:text-white transition-colors font-medium"
             >
-              Resources
+              Client Resources
             </button>
             <button 
               onClick={() => scrollToSection('newsletter')}
@@ -215,7 +215,7 @@ const Header = () => {
                 onClick={() => navigate('/resources')}
                 className="text-left text-gray-300 hover:text-white transition-colors font-medium"
               >
-                Resources
+                Client Resources
               </button>
               <button 
                 onClick={() => scrollToSection('newsletter')}

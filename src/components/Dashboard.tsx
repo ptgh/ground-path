@@ -24,13 +24,15 @@ import {
   BarChart3,
   PlusCircle,
   ArrowRight,
-  Loader2
+  Loader2,
+  Globe
 } from 'lucide-react';
 import Header from './Header';
 import Footer from './Footer';
 import ProfessionalProfileModal from './ProfessionalProfileModal';
 import FormHistory from './FormHistory';
 import NoteModal from './NoteModal';
+import ProfessionalResources from './dashboard/ProfessionalResources';
 import { notesService, Note } from '@/services/notesService';
 import { gsap } from 'gsap';
 
@@ -286,9 +288,10 @@ const Dashboard = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-auto p-1 gap-1">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 h-auto p-1 gap-1">
               <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Overview</TabsTrigger>
               <TabsTrigger value="tools" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Professional</TabsTrigger>
+              <TabsTrigger value="resources" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Resources</TabsTrigger>
               <TabsTrigger value="history" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">History</TabsTrigger>
               <TabsTrigger value="notes" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Notes</TabsTrigger>
               <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Settings</TabsTrigger>
@@ -502,6 +505,11 @@ const Dashboard = () => {
                    </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* Resources Tab */}
+            <TabsContent value="resources" className="space-y-6">
+              <ProfessionalResources />
             </TabsContent>
 
             {/* Form History Tab */}
