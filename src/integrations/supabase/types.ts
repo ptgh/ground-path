@@ -242,6 +242,8 @@ export type Database = {
           id: string
           published_at: string
           slug: string
+          source_name: string | null
+          source_url: string | null
           status: string | null
           summary: string
           title: string
@@ -256,6 +258,8 @@ export type Database = {
           id?: string
           published_at?: string
           slug: string
+          source_name?: string | null
+          source_url?: string | null
           status?: string | null
           summary: string
           title: string
@@ -270,6 +274,8 @@ export type Database = {
           id?: string
           published_at?: string
           slug?: string
+          source_name?: string | null
+          source_url?: string | null
           status?: string | null
           summary?: string
           title?: string
