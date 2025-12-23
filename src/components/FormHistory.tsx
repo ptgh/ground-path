@@ -8,6 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { clientService, Client, FormSubmission } from '@/services/clientService';
 import { pdfService } from '@/services/pdfService';
 import { notesService, Note } from '@/services/notesService';
+import { aiConversationService, AIConversation } from '@/services/aiConversationService';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import FormViewModal from '@/components/FormViewModal';
 import { 
@@ -21,7 +23,11 @@ import {
   User,
   BarChart3,
   MessageSquare,
-  Loader2
+  Loader2,
+  Bot,
+  Trash2,
+  FileCheck,
+  FilePenLine
 } from 'lucide-react';
 
 interface FormHistoryProps {
@@ -32,10 +38,12 @@ const FormHistory = ({ onViewForm }: FormHistoryProps) => {
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
+  const [aiConversations, setAiConversations] = useState<AIConversation[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFormType, setSelectedFormType] = useState<string>('all');
   const [selectedClient, setSelectedClient] = useState<string>('all');
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState<FormSubmission | Note | null>(null);
   const [modalType, setModalType] = useState<'form' | 'note'>('form');
@@ -47,22 +55,32 @@ const FormHistory = ({ onViewForm }: FormHistoryProps) => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [allClients, allNotes] = await Promise.all([
+      const [allClients, allNotes, allConversations] = await Promise.all([
         clientService.getClients(),
-        notesService.getNotes()
+        notesService.getNotes(),
+        aiConversationService.getConversations()
       ]);
       
       setClients(allClients);
-      setNotes(allNotes);
+      // Filter out AI conversations from notes
+      const regularNotes = allNotes.filter(note => !note.title.startsWith('AI Conversation'));
+      setNotes(regularNotes);
+      setAiConversations(allConversations);
 
-      // Load form submissions for all clients
+      // Load form submissions - both from clients and practitioner-only forms
       const allSubmissions: FormSubmission[] = [];
-      for (const client of allClients) {
-        try {
-          const clientSubmissions = await clientService.getClientFormSubmissions(client.id);
-          allSubmissions.push(...clientSubmissions);
-        } catch (error) {
-          console.error(`Error loading submissions for client ${client.id}:`, error);
+      
+      // Get practitioner-only form submissions (no client_id)
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: practitionerSubmissions } = await supabase
+          .from('form_submissions')
+          .select('*')
+          .eq('practitioner_id', user.id)
+          .order('completed_at', { ascending: false });
+        
+        if (practitionerSubmissions) {
+          allSubmissions.push(...practitionerSubmissions as FormSubmission[]);
         }
       }
       
@@ -75,7 +93,8 @@ const FormHistory = ({ onViewForm }: FormHistoryProps) => {
     }
   };
 
-  const getClientName = (clientId: string) => {
+  const getClientName = (clientId: string | null) => {
+    if (!clientId) return 'No Client (Practitioner Form)';
     const client = clients.find(c => c.id === clientId);
     return client ? `${client.first_name} ${client.last_name}` : 'Unknown Client';
   };
@@ -87,8 +106,21 @@ const FormHistory = ({ onViewForm }: FormHistoryProps) => {
       case 'DASS-21': return 'bg-purple-100 text-purple-800';
       case 'MSE': return 'bg-orange-100 text-orange-800';
       case 'Suicide Risk Assessment': return 'bg-red-100 text-red-800';
+      case 'Reflective Practice': return 'bg-teal-100 text-teal-800';
+      case 'Supervision Record': return 'bg-indigo-100 text-indigo-800';
+      case 'Incident Report': return 'bg-rose-100 text-rose-800';
+      case 'CPD Log': return 'bg-amber-100 text-amber-800';
+      case 'Case Review': return 'bg-cyan-100 text-cyan-800';
+      case 'Progress Notes': return 'bg-lime-100 text-lime-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const getStatusBadge = (status: string | null) => {
+    if (status === 'draft') {
+      return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300"><FilePenLine className="h-3 w-3 mr-1" />Draft</Badge>;
+    }
+    return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300"><FileCheck className="h-3 w-3 mr-1" />Completed</Badge>;
   };
 
   const filterSubmissions = () => {
@@ -98,15 +130,16 @@ const FormHistory = ({ onViewForm }: FormHistoryProps) => {
                            submission.form_type.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesFormType = selectedFormType === 'all' || submission.form_type === selectedFormType;
       const matchesClient = selectedClient === 'all' || submission.client_id === selectedClient;
+      const matchesStatus = selectedStatus === 'all' || submission.status === selectedStatus;
       
-      return matchesSearch && matchesFormType && matchesClient;
+      return matchesSearch && matchesFormType && matchesClient && matchesStatus;
     });
   };
 
   const handleDownloadPDF = async (submission: FormSubmission) => {
     try {
-      const client = clients.find(c => c.id === submission.client_id);
-      const clientName = client ? `${client.first_name} ${client.last_name}` : 'Unknown Client';
+      const client = submission.client_id ? clients.find(c => c.id === submission.client_id) : null;
+      const clientName = client ? `${client.first_name} ${client.last_name}` : 'Practitioner Form';
       
       await pdfService.downloadPDF({
         formType: submission.form_type,
@@ -125,8 +158,8 @@ const FormHistory = ({ onViewForm }: FormHistoryProps) => {
   };
 
   const handlePrint = (submission: FormSubmission) => {
-    const client = clients.find(c => c.id === submission.client_id);
-    const clientName = client ? `${client.first_name} ${client.last_name}` : 'Unknown Client';
+    const client = submission.client_id ? clients.find(c => c.id === submission.client_id) : null;
+    const clientName = client ? `${client.first_name} ${client.last_name}` : 'Practitioner Form';
     
     // Create a temporary div for printing
     const printContent = document.createElement('div');
@@ -138,6 +171,7 @@ const FormHistory = ({ onViewForm }: FormHistoryProps) => {
           <p style="margin: 5px 0;"><strong>Patient:</strong> ${clientName}</p>
           <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(submission.completed_at).toLocaleDateString()}</p>
           <p style="margin: 5px 0;"><strong>Time:</strong> ${new Date(submission.completed_at).toLocaleTimeString()}</p>
+          <p style="margin: 5px 0;"><strong>Status:</strong> ${submission.status || 'completed'}</p>
         </div>
         <div>
           ${submission.score !== null ? `
@@ -218,6 +252,17 @@ ${JSON.stringify(submission.form_data, null, 2)}
     setIsViewModalOpen(true);
   };
 
+  const handleDeleteConversation = async (conversationId: string) => {
+    try {
+      await aiConversationService.deleteConversation(conversationId);
+      setAiConversations(prev => prev.filter(c => c.id !== conversationId));
+      toast.success('Conversation deleted');
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+      toast.error('Failed to delete conversation');
+    }
+  };
+
   const handleCloseModal = () => {
     setIsViewModalOpen(false);
     // Clear selected data after a delay to allow animation to complete
@@ -228,6 +273,10 @@ ${JSON.stringify(submission.form_data, null, 2)}
 
   const formTypes = [...new Set(submissions.map(s => s.form_type))];
   const filteredSubmissions = filterSubmissions();
+
+  // Separate drafts and completed
+  const draftSubmissions = filteredSubmissions.filter(s => s.status === 'draft');
+  const completedSubmissions = filteredSubmissions.filter(s => s.status !== 'draft');
 
   if (loading) {
     return (
@@ -243,7 +292,7 @@ ${JSON.stringify(submission.form_data, null, 2)}
         <div>
           <h2 className="text-2xl font-bold">Form History & Records</h2>
           <p className="text-muted-foreground">
-            View and manage all completed assessments and clinical notes
+            View and manage all completed assessments, clinical notes, and AI conversations
           </p>
         </div>
         <Button onClick={loadData} variant="outline" size="sm">
@@ -254,8 +303,14 @@ ${JSON.stringify(submission.form_data, null, 2)}
 
       <Tabs defaultValue="submissions" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="submissions">Form Submissions ({submissions.length})</TabsTrigger>
+          <TabsTrigger value="submissions">
+            Form Submissions ({submissions.length})
+            {draftSubmissions.length > 0 && (
+              <Badge variant="secondary" className="ml-2 bg-yellow-100 text-yellow-800">{draftSubmissions.length} drafts</Badge>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="notes">Clinical Notes ({notes.length})</TabsTrigger>
+          <TabsTrigger value="ai">AI Conversations ({aiConversations.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="submissions" className="space-y-4">
@@ -268,7 +323,7 @@ ${JSON.stringify(submission.form_data, null, 2)}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <div>
                   <label className="text-sm font-medium mb-2 block">Search</label>
                   <div className="relative">
@@ -305,6 +360,7 @@ ${JSON.stringify(submission.form_data, null, 2)}
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Clients</SelectItem>
+                      <SelectItem value="none">No Client (Practitioner Forms)</SelectItem>
                       {clients.map(client => (
                         <SelectItem key={client.id} value={client.id}>
                           {client.first_name} {client.last_name}
@@ -313,110 +369,188 @@ ${JSON.stringify(submission.form_data, null, 2)}
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Status</label>
+                  <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="draft">Drafts</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Submissions List */}
-          <div className="grid gap-4">
-            {filteredSubmissions.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No Form Submissions Found</h3>
-                  <p className="text-muted-foreground">
-                    {submissions.length === 0 
-                      ? "Complete some forms to see them here." 
-                      : "Try adjusting your filters to see more results."
-                    }
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              filteredSubmissions.map((submission) => (
-                <Card key={submission.id} className="hover:shadow-lg transition-all duration-200 cursor-pointer hover:scale-[1.01]">
-                  <CardContent className="p-4 sm:p-6" onClick={() => handleViewSubmission(submission)}>
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                      <div className="space-y-2 flex-1">
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                          <Badge className={getFormTypeColor(submission.form_type)}>
-                            {submission.form_type}
-                          </Badge>
-                          {submission.score !== null && (
-                            <Badge variant="outline">
-                              Score: {submission.score}
+          {/* Drafts Section */}
+          {draftSubmissions.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <FilePenLine className="h-5 w-5 text-yellow-600" />
+                Drafts ({draftSubmissions.length})
+              </h3>
+              <div className="grid gap-3">
+                {draftSubmissions.map((submission) => (
+                  <Card key={submission.id} className="hover:shadow-lg transition-all duration-200 cursor-pointer hover:scale-[1.01] border-yellow-200 bg-yellow-50/50">
+                    <CardContent className="p-4 sm:p-6" onClick={() => handleViewSubmission(submission)}>
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                        <div className="space-y-2 flex-1">
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                            <Badge className={getFormTypeColor(submission.form_type)}>
+                              {submission.form_type}
                             </Badge>
+                            {getStatusBadge(submission.status)}
+                          </div>
+                          
+                          <h3 className="font-semibold text-base sm:text-lg flex items-center gap-2">
+                            <User className="h-4 w-4" />
+                            {getClientName(submission.client_id)}
+                          </h3>
+                          
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="h-4 w-4" />
+                              {new Date(submission.completed_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-row sm:flex-col lg:flex-row gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDownloadPDF(submission);
+                            }}
+                            className="flex-1 sm:flex-none"
+                          >
+                            <Download className="h-4 w-4 sm:mr-2" />
+                            <span className="hidden sm:inline">PDF</span>
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Completed Submissions List */}
+          <div className="space-y-3">
+            {completedSubmissions.length > 0 && draftSubmissions.length > 0 && (
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <FileCheck className="h-5 w-5 text-green-600" />
+                Completed ({completedSubmissions.length})
+              </h3>
+            )}
+            <div className="grid gap-4">
+              {filteredSubmissions.length === 0 ? (
+                <Card>
+                  <CardContent className="py-12 text-center">
+                    <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium mb-2">No Form Submissions Found</h3>
+                    <p className="text-muted-foreground">
+                      {submissions.length === 0 
+                        ? "Complete some forms to see them here." 
+                        : "Try adjusting your filters to see more results."
+                      }
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                (draftSubmissions.length > 0 ? completedSubmissions : filteredSubmissions).map((submission) => (
+                  <Card key={submission.id} className="hover:shadow-lg transition-all duration-200 cursor-pointer hover:scale-[1.01]">
+                    <CardContent className="p-4 sm:p-6" onClick={() => handleViewSubmission(submission)}>
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                        <div className="space-y-2 flex-1">
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                            <Badge className={getFormTypeColor(submission.form_type)}>
+                              {submission.form_type}
+                            </Badge>
+                            {submission.score !== null && (
+                              <Badge variant="outline">
+                                Score: {submission.score}
+                              </Badge>
+                            )}
+                            {getStatusBadge(submission.status)}
+                          </div>
+                          
+                          <h3 className="font-semibold text-base sm:text-lg flex items-center gap-2">
+                            <User className="h-4 w-4" />
+                            {getClientName(submission.client_id)}
+                          </h3>
+                          
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="h-4 w-4" />
+                              {new Date(submission.completed_at).toLocaleDateString()}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <BarChart3 className="h-4 w-4" />
+                              {new Date(submission.completed_at).toLocaleTimeString()}
+                            </span>
+                          </div>
+                          
+                          {submission.interpretation && (
+                            <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
+                              {submission.interpretation}
+                            </p>
                           )}
                         </div>
                         
-                        <h3 className="font-semibold text-base sm:text-lg flex items-center gap-2">
-                          <User className="h-4 w-4" />
-                          {getClientName(submission.client_id)}
-                        </h3>
-                        
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            {new Date(submission.completed_at).toLocaleDateString()}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <BarChart3 className="h-4 w-4" />
-                            {new Date(submission.completed_at).toLocaleTimeString()}
-                          </span>
-                        </div>
-                        
-                        {submission.interpretation && (
-                          <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
-                            {submission.interpretation}
-                          </p>
-                        )}
-                      </div>
-                      
-                      <div className="flex flex-row sm:flex-col lg:flex-row gap-2">
-                        {onViewForm && (
+                        <div className="flex flex-row sm:flex-col lg:flex-row gap-2">
+                          {onViewForm && (
+                             <Button 
+                               variant="outline" 
+                               size="sm"
+                               onClick={(e) => {
+                                 e.stopPropagation();
+                                 onViewForm(submission);
+                               }}
+                               className="flex-1 sm:flex-none"
+                             >
+                               <Eye className="h-4 w-4 sm:mr-2" />
+                               <span className="hidden sm:inline">View</span>
+                             </Button>
+                           )}
                            <Button 
                              variant="outline" 
                              size="sm"
                              onClick={(e) => {
                                e.stopPropagation();
-                               onViewForm(submission);
+                               handlePrint(submission);
                              }}
                              className="flex-1 sm:flex-none"
                            >
-                             <Eye className="h-4 w-4 sm:mr-2" />
-                             <span className="hidden sm:inline">View</span>
+                             <Printer className="h-4 w-4 sm:mr-2" />
+                             <span className="hidden sm:inline">Print</span>
                            </Button>
-                         )}
-                         <Button 
-                           variant="outline" 
-                           size="sm"
-                           onClick={(e) => {
-                             e.stopPropagation();
-                             handlePrint(submission);
-                           }}
-                           className="flex-1 sm:flex-none"
-                         >
-                           <Printer className="h-4 w-4 sm:mr-2" />
-                           <span className="hidden sm:inline">Print</span>
-                         </Button>
-                         <Button 
-                           variant="outline" 
-                           size="sm"
-                           onClick={(e) => {
-                             e.stopPropagation();
-                             handleDownloadPDF(submission);
-                           }}
-                           className="flex-1 sm:flex-none"
-                         >
-                          <Download className="h-4 w-4 sm:mr-2" />
-                          <span className="hidden sm:inline">PDF</span>
-                        </Button>
+                           <Button 
+                             variant="outline" 
+                             size="sm"
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               handleDownloadPDF(submission);
+                             }}
+                             className="flex-1 sm:flex-none"
+                           >
+                            <Download className="h-4 w-4 sm:mr-2" />
+                            <span className="hidden sm:inline">PDF</span>
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
           </div>
         </TabsContent>
 
@@ -463,6 +597,62 @@ ${JSON.stringify(submission.form_data, null, 2)}
                           </p>
                         )}
                       </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="ai" className="space-y-4">
+          <div className="grid gap-4">
+            {aiConversations.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Bot className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No AI Conversations Found</h3>
+                  <p className="text-muted-foreground">
+                    Start a conversation with the AI assistant to see it here.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              aiConversations.map((conversation) => (
+                <Card key={conversation.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.01]">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-2 flex-1">
+                        <h3 className="font-semibold text-lg flex items-center gap-2">
+                          <Bot className="h-4 w-4 text-sage-600" />
+                          {conversation.title}
+                        </h3>
+                        
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            {new Date(conversation.createdAt).toLocaleDateString()}
+                          </span>
+                          <Badge variant="outline">
+                            {conversation.messages.length} messages
+                          </Badge>
+                        </div>
+                        
+                        {conversation.messages.length > 0 && (
+                          <p className="text-sm text-muted-foreground max-w-2xl">
+                            {conversation.messages[conversation.messages.length - 1]?.content.substring(0, 100)}...
+                          </p>
+                        )}
+                      </div>
+                      
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteConversation(conversation.id)}
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
