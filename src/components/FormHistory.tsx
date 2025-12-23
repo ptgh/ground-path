@@ -203,15 +203,27 @@ ${JSON.stringify(submission.form_data, null, 2)}
   };
 
   const handleViewSubmission = (submission: FormSubmission) => {
+    // Prevent opening if modal is already open (prevents re-trigger issues)
+    if (isViewModalOpen) return;
     setSelectedData(submission);
     setModalType('form');
     setIsViewModalOpen(true);
   };
 
   const handleViewNote = (note: Note) => {
+    // Prevent opening if modal is already open (prevents re-trigger issues)
+    if (isViewModalOpen) return;
     setSelectedData(note);
     setModalType('note');
     setIsViewModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsViewModalOpen(false);
+    // Clear selected data after a delay to allow animation to complete
+    setTimeout(() => {
+      setSelectedData(null);
+    }, 300);
   };
 
   const formTypes = [...new Set(submissions.map(s => s.form_type))];
@@ -462,7 +474,7 @@ ${JSON.stringify(submission.form_data, null, 2)}
 
       <FormViewModal
         isOpen={isViewModalOpen}
-        onClose={() => setIsViewModalOpen(false)}
+        onClose={handleCloseModal}
         data={selectedData}
         type={modalType}
         onDownloadPDF={handleDownloadPDF}
