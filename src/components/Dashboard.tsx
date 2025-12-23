@@ -203,7 +203,7 @@ const Dashboard = () => {
       title: 'View Resources', 
       description: 'Access professional resources', 
       icon: BookOpen, 
-      action: () => navigate('/resources')
+      action: () => setActiveTab('resources')
     },
     { 
       title: 'Professional Forms', 
@@ -494,9 +494,9 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <Button variant="outline" className="dashboard-cta border-sage-200 text-sage-700 hover:bg-sage-50" onClick={() => navigate('/resources')}>
+                     <Button variant="outline" className="dashboard-cta border-sage-200 text-sage-700 hover:bg-sage-50" onClick={() => setActiveTab('resources')}>
                        <BookOpen className="h-4 w-4 mr-2" />
-                       Resource Library
+                       Professional Resources
                      </Button>
                      <Button variant="outline" className="dashboard-cta border-sage-200 text-sage-700 hover:bg-sage-50" onClick={() => navigate('/practitioner/forms')}>
                        <FileText className="h-4 w-4 mr-2" />
