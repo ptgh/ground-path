@@ -22,6 +22,12 @@ import { GAFForm } from "./components/forms/GAFForm";
 import { SafetyPlanForm } from "./components/forms/SafetyPlanForm";
 import { CrisisInterventionForm } from "./components/forms/CrisisInterventionForm";
 import { CPDLogForm } from "./components/forms/CPDLogForm";
+import { IncidentReportForm } from "./components/forms/IncidentReportForm";
+import { ProgressNotesForm } from "./components/forms/ProgressNotesForm";
+import { CaseReviewForm } from "./components/forms/CaseReviewForm";
+import { SupervisionRecordForm } from "./components/forms/SupervisionRecordForm";
+import { ReflectivePracticeForm } from "./components/forms/ReflectivePracticeForm";
+import { BDIForm } from "./components/forms/BDIForm";
 import UnsubscribePage from "./pages/Unsubscribe";
 import ConfirmPage from "./pages/Confirm";
 import Article from "./pages/Article";
@@ -66,6 +72,12 @@ const App = () => {
         <Route path="/practitioner/forms/safety-planning/fill" element={<SafetyPlanForm />} />
         <Route path="/practitioner/forms/crisis-intervention/fill" element={<CrisisInterventionForm />} />
         <Route path="/practitioner/forms/cpd-log/fill" element={<CPDLogForm />} />
+        <Route path="/practitioner/forms/incident-report/fill" element={<IncidentReportForm />} />
+        <Route path="/practitioner/forms/progress-notes/fill" element={<ProgressNotesForm />} />
+        <Route path="/practitioner/forms/case-review/fill" element={<CaseReviewForm />} />
+        <Route path="/practitioner/forms/supervision-record/fill" element={<SupervisionRecordForm />} />
+        <Route path="/practitioner/forms/reflective-practice/fill" element={<ReflectivePracticeForm />} />
+        <Route path="/practitioner/forms/beck-depression/fill" element={<BDIForm />} />
             {/* Redirect /auth to /practitioner/auth for backwards compatibility */}
             <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
             <Route path="/practitioner/auth" element={<AuthPage />} />

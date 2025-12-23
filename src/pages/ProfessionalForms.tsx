@@ -109,7 +109,7 @@ const ProfessionalForms = () => {
           description: 'BDI-II for assessing depression severity',
           category: 'standardized-assessments',
           required: false,
-          formType: 'pdf',
+          formType: 'interactive',
           downloadUrl: '/forms/BDI-II.pdf',
           lastUpdated: '2024-01-15',
           source: 'Beck Depression Inventory-II (BDI-II) - Aaron T. Beck',
@@ -197,7 +197,7 @@ const ProfessionalForms = () => {
           description: 'Report critical incidents and adverse events',
           category: 'crisis-safety',
           required: true,
-          formType: 'template',
+          formType: 'interactive',
           downloadUrl: '/forms/Incident-Report.pdf',
           lastUpdated: '2024-01-20'
         }
@@ -236,7 +236,7 @@ const ProfessionalForms = () => {
           description: 'Template for documenting therapy and case sessions',
           category: 'client-management',
           required: false,
-          formType: 'template',
+          formType: 'interactive',
           downloadUrl: '/forms/Progress-Notes.pdf',
           lastUpdated: '2024-01-22'
         },
@@ -246,7 +246,7 @@ const ProfessionalForms = () => {
           description: 'Comprehensive case review and planning template',
           category: 'client-management',
           required: false,
-          formType: 'template',
+          formType: 'interactive',
           downloadUrl: '/forms/Case-Review.pdf',
           lastUpdated: '2024-01-20'
         }
@@ -265,7 +265,7 @@ const ProfessionalForms = () => {
           description: 'Document supervision sessions and learning outcomes',
           category: 'professional-development',
           required: true,
-          formType: 'template',
+          formType: 'interactive',
           downloadUrl: '/forms/Supervision-Record.pdf',
           lastUpdated: '2024-01-25'
         },
@@ -285,7 +285,7 @@ const ProfessionalForms = () => {
           description: 'Structured reflection on professional practice',
           category: 'professional-development',
           required: false,
-          formType: 'template',
+          formType: 'interactive',
           downloadUrl: '/forms/Reflective-Practice.pdf',
           lastUpdated: '2024-01-22'
         }
