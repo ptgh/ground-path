@@ -5,14 +5,27 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+const REGISTRATION_BODIES = [
+  { value: 'AASW', label: 'AASW - Australian Association of Social Workers' },
+  { value: 'AHPRA', label: 'AHPRA - Australian Health Practitioner Regulation Agency' },
+  { value: 'ACWA', label: 'ACWA - Australian Community Workers Association' },
+  { value: 'APS', label: 'APS - Australian Psychological Society' },
+  { value: 'PACFA', label: 'PACFA - Psychotherapy and Counselling Federation of Australia' },
+  { value: 'ACA', label: 'ACA - Australian Counselling Association' },
+  { value: 'OTHER', label: 'Other Registration Body' },
+];
 
 const AuthPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [registrationBody, setRegistrationBody] = useState('');
+  const [registrationNumber, setRegistrationNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
   
@@ -153,6 +166,8 @@ const AuthPage = () => {
           emailRedirectTo: redirectUrl,
           data: {
             display_name: displayName,
+            registration_body: registrationBody || null,
+            registration_number: registrationNumber || null,
           }
         }
       });
@@ -316,6 +331,31 @@ const AuthPage = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       minLength={6}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="registrationBody">Registration Body</Label>
+                    <Select value={registrationBody} onValueChange={setRegistrationBody}>
+                      <SelectTrigger id="registrationBody">
+                        <SelectValue placeholder="Select your registration body" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {REGISTRATION_BODIES.map((body) => (
+                          <SelectItem key={body.value} value={body.value}>
+                            {body.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="registrationNumber">Registration Number (Optional)</Label>
+                    <Input
+                      id="registrationNumber"
+                      type="text"
+                      placeholder="e.g., AASW123456"
+                      value={registrationNumber}
+                      onChange={(e) => setRegistrationNumber(e.target.value)}
                     />
                   </div>
                   <Button type="submit" className="w-full" disabled={loading}>

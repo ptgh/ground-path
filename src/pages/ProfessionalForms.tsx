@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -58,6 +58,11 @@ const ProfessionalForms = () => {
   const userRoles = roles.map(r => r.role);
   const isSocialWorker = userRoles.includes('social_worker');
   const isMentalHealthProfessional = userRoles.includes('mental_health_professional');
+
+  // Scroll to top when category changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [selectedCategory]);
 
   const formCategories: FormCategory[] = [
     {
