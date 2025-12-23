@@ -474,7 +474,7 @@ export const BDIForm = () => {
       <ClientSelectionModal
         isOpen={showClientModal}
         onClose={() => setShowClientModal(false)}
-        onSelectClient={handleClientSelected}
+        onClientSelected={handleClientSelected}
       />
     </div>
   );

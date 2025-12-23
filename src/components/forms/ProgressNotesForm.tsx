@@ -372,7 +372,7 @@ export const ProgressNotesForm = () => {
       <ClientSelectionModal
         isOpen={showClientModal}
         onClose={() => setShowClientModal(false)}
-        onSelectClient={handleClientSelected}
+        onClientSelected={handleClientSelected}
       />
     </form>
   );

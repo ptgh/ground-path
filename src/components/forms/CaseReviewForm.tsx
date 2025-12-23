@@ -447,7 +447,7 @@ export const CaseReviewForm = () => {
       <ClientSelectionModal
         isOpen={showClientModal}
         onClose={() => setShowClientModal(false)}
-        onSelectClient={handleClientSelected}
+        onClientSelected={handleClientSelected}
       />
     </form>
   );
