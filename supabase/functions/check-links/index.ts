@@ -37,7 +37,7 @@ const resourceLinks = [
   
   // Professional Resources - Australia
   { url: "https://www.aasw.asn.au/about-aasw/ethics-standards/code-of-ethics", name: "AASW Code of Ethics", category: "Standards", country: "AU" },
-  { url: "https://www.aasw.asn.au/about-aasw/ethics-standards/aasw-practice-standards", name: "AASW Practice Standards", category: "Standards", country: "AU" },
+  { url: "https://www.aasw.asn.au/about-aasw/ethics-standards/practice-standards/", name: "AASW Practice Standards", category: "Standards", country: "AU" },
   { url: "https://www.ahpra.gov.au/Registration/Registration-Standards.aspx", name: "AHPRA Registration Standards", category: "Standards", country: "AU" },
   { url: "https://www.pacfa.org.au/ethics-standards/", name: "PACFA Ethics", category: "Standards", country: "AU" },
   { url: "https://www.aasw.asn.au/careers-study/continuing-professional-development", name: "AASW CPD", category: "CPD", country: "AU" },
