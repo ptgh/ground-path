@@ -25,6 +25,7 @@ import {
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { pdfService } from '@/services/pdfService';
+import FormInfoModal from '@/components/forms/FormInfoModal';
 
 interface FormCategory {
   id: string;
@@ -52,6 +53,7 @@ const ProfessionalForms = () => {
   const { user, profile, roles } = useAuth();
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [viewingForm, setViewingForm] = useState<ProfessionalForm | null>(null);
 
   const userRoles = roles.map(r => r.role);
   const isSocialWorker = userRoles.includes('social_worker');
@@ -335,15 +337,8 @@ const ProfessionalForms = () => {
     
     switch (action) {
       case 'view':
-        try {
-          await pdfService.viewBlankForm(formType);
-        } catch (error) {
-          console.error('Failed to view form:', error);
-          // Fallback to original URL if available
-          if (form.downloadUrl) {
-            window.open(form.downloadUrl, '_blank');
-          }
-        }
+        // Open the form info modal
+        setViewingForm(form);
         break;
       case 'download':
         try {
@@ -590,6 +585,25 @@ const ProfessionalForms = () => {
       </main>
 
       <Footer />
+
+      {/* Form Info Modal */}
+      <FormInfoModal
+        isOpen={!!viewingForm}
+        onClose={() => setViewingForm(null)}
+        form={viewingForm}
+        onDownload={() => {
+          if (viewingForm) {
+            handleFormAction(viewingForm, 'download');
+            setViewingForm(null);
+          }
+        }}
+        onFill={() => {
+          if (viewingForm) {
+            handleFormAction(viewingForm, 'fill');
+            setViewingForm(null);
+          }
+        }}
+      />
     </div>
   );
 };
