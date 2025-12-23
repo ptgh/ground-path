@@ -1,15 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Download } from 'lucide-react';
+import { ArrowLeft, Download, Save } from 'lucide-react';
 import InteractiveFormLayout from './InteractiveFormLayout';
 import { pdfService, PDFFormData } from '@/services/pdfService';
+import { formDraftService } from '@/services/formDraftService';
 import { toast } from 'sonner';
+
+const FORM_TYPE = 'Supervision Record';
 
 export const SupervisionRecordForm = () => {
   const navigate = useNavigate();
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [hasDraft, setHasDraft] = useState(false);
+  const [draftId, setDraftId] = useState<string | null>(null);
+  
   const [formData, setFormData] = useState({
     superviseeName: '',
     supervisorName: '',
@@ -36,6 +44,77 @@ export const SupervisionRecordForm = () => {
     supervisorSignature: ''
   });
 
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Check for existing draft on mount
+  useEffect(() => {
+    const existingDraft = formDraftService.loadDraftFromCache(FORM_TYPE);
+    if (existingDraft) {
+      setHasDraft(true);
+    }
+  }, []);
+
+  // Auto-save to cache when form data changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      formDraftService.saveDraftToCache(FORM_TYPE, formData);
+      setLastSaved(formDraftService.getTimeSinceLastSave(FORM_TYPE));
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [formData]);
+
+  // Update last saved display periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const timeSince = formDraftService.getTimeSinceLastSave(FORM_TYPE);
+      if (timeSince) {
+        setLastSaved(timeSince);
+      }
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleRestoreDraft = () => {
+    const draft = formDraftService.loadDraftFromCache(FORM_TYPE);
+    if (draft) {
+      setFormData(draft.formData as typeof formData);
+      setHasDraft(false);
+      toast.success('Draft restored');
+    }
+  };
+
+  const handleDiscardDraft = () => {
+    formDraftService.clearDraftFromCache(FORM_TYPE);
+    setHasDraft(false);
+    toast.info('Draft discarded');
+  };
+
+  const handleSaveDraft = async () => {
+    try {
+      setIsSaving(true);
+      if (draftId) {
+        await formDraftService.updateDraftInDatabase(draftId, formData);
+      } else {
+        const newDraftId = await formDraftService.saveDraftToDatabase(FORM_TYPE, formData);
+        if (newDraftId) {
+          setDraftId(newDraftId);
+        }
+      }
+      setLastSaved('Just now');
+      toast.success('Draft saved to your account');
+    } catch (error) {
+      console.error('Error saving draft:', error);
+      toast.error('Failed to save draft. Please ensure you are logged in.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -44,21 +123,35 @@ export const SupervisionRecordForm = () => {
       return;
     }
 
-    const pdfData: PDFFormData = {
-      formType: 'Supervision Record',
-      patientName: formData.superviseeName,
-      date: formData.sessionDate || new Date().toLocaleDateString(),
-      formData: formData,
-      practitionerName: formData.supervisorName
-    };
-
     try {
+      setIsSaving(true);
+      
+      // Save as completed to database
+      if (draftId) {
+        await formDraftService.completeDraft(draftId, formData);
+      } else {
+        await formDraftService.saveAsCompleted(FORM_TYPE, formData);
+      }
+
+      const pdfData: PDFFormData = {
+        formType: FORM_TYPE,
+        patientName: formData.superviseeName,
+        date: formData.sessionDate || new Date().toLocaleDateString(),
+        formData: formData,
+        practitionerName: formData.supervisorName
+      };
+
       await pdfService.downloadPDF(pdfData, `SupervisionRecord_${formData.superviseeName.replace(/\s+/g, '-')}_${formData.sessionDate}.pdf`);
-      toast.success('Supervision record completed and downloaded');
+      
+      formDraftService.clearDraftFromCache(FORM_TYPE);
+      
+      toast.success('Supervision record completed and saved');
       navigate('/practitioner/forms');
     } catch (error) {
-      console.error('Error generating PDF:', error);
-      toast.error('Failed to generate PDF');
+      console.error('Error completing form:', error);
+      toast.error('Failed to complete form');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -379,10 +472,21 @@ export const SupervisionRecordForm = () => {
           Back to Forms
         </Button>
 
-        <Button type="submit" className="bg-primary text-primary-foreground">
-          <Download className="h-4 w-4 mr-2" />
-          Complete Record & Download PDF
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            type="button" 
+            variant="outline"
+            onClick={handleSaveDraft}
+            disabled={isSaving}
+          >
+            <Save className="h-4 w-4 mr-2" />
+            Save Draft
+          </Button>
+          <Button type="submit" className="bg-primary text-primary-foreground" disabled={isSaving}>
+            <Download className="h-4 w-4 mr-2" />
+            Complete & Download PDF
+          </Button>
+        </div>
       </div>
     </form>
   );
@@ -391,6 +495,12 @@ export const SupervisionRecordForm = () => {
     <InteractiveFormLayout
       title="Clinical Supervision Record"
       description="Document supervision sessions and learning outcomes"
+      lastSaved={lastSaved}
+      isSaving={isSaving}
+      hasDraft={hasDraft}
+      onRestoreDraft={handleRestoreDraft}
+      onDiscardDraft={handleDiscardDraft}
+      onSaveDraft={handleSaveDraft}
     >
       {formContent}
     </InteractiveFormLayout>
