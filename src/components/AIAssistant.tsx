@@ -3,11 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageCircle, Send, Bot, User, Loader2 } from 'lucide-react';
+import { MessageCircle, Send, Bot, User, Loader2, History, Trash2, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { gsap } from 'gsap';
+import { aiConversationService, ConversationMessage, AIConversation } from '@/services/aiConversationService';
 
 interface Message {
   id: string;
@@ -29,9 +30,105 @@ export const AIAssistant = () => {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [conversations, setConversations] = useState<AIConversation[]>([]);
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const { toast } = useToast();
   const chatButtonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Load conversation history when dialog opens
+  useEffect(() => {
+    if (isOpen && user) {
+      loadConversationHistory();
+    }
+  }, [isOpen, user]);
+
+  const loadConversationHistory = async () => {
+    if (!user) return;
+    try {
+      setLoadingHistory(true);
+      const history = await aiConversationService.getConversations();
+      setConversations(history);
+    } catch (error) {
+      console.error('Error loading conversation history:', error);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const saveConversation = async (newMessages: Message[]) => {
+    if (!user || newMessages.length <= 1) return;
+
+    try {
+      const conversationMessages: ConversationMessage[] = newMessages.map(m => ({
+        id: m.id,
+        role: m.role,
+        content: m.content,
+        timestamp: m.timestamp.toISOString()
+      }));
+
+      if (currentConversationId) {
+        await aiConversationService.updateConversation(currentConversationId, conversationMessages);
+      } else {
+        const firstUserMessage = newMessages.find(m => m.role === 'user');
+        const title = firstUserMessage 
+          ? aiConversationService.generateTitle(firstUserMessage.content)
+          : 'AI Conversation';
+        const id = await aiConversationService.createConversation(title, conversationMessages);
+        setCurrentConversationId(id);
+      }
+    } catch (error) {
+      console.error('Error saving conversation:', error);
+    }
+  };
+
+  const loadConversation = async (conversation: AIConversation) => {
+    const loadedMessages: Message[] = conversation.messages.map(m => ({
+      id: m.id,
+      role: m.role,
+      content: m.content,
+      timestamp: new Date(m.timestamp)
+    }));
+    setMessages(loadedMessages);
+    setCurrentConversationId(conversation.id);
+    setShowHistory(false);
+  };
+
+  const startNewConversation = () => {
+    setMessages([
+      {
+        id: '1',
+        role: 'assistant',
+        content: 'Hi! I\'m your professional assistant for social work and mental health guidance. How can I help you today?',
+        timestamp: new Date()
+      }
+    ]);
+    setCurrentConversationId(null);
+    setShowHistory(false);
+  };
+
+  const deleteConversation = async (conversationId: string) => {
+    try {
+      await aiConversationService.deleteConversation(conversationId);
+      setConversations(prev => prev.filter(c => c.id !== conversationId));
+      if (currentConversationId === conversationId) {
+        startNewConversation();
+      }
+      toast({
+        title: "Conversation deleted",
+        description: "The conversation has been removed from your history."
+      });
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete conversation.",
+        variant: "destructive"
+      });
+    }
+  };
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
@@ -43,7 +140,8 @@ export const AIAssistant = () => {
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     const messageContent = input.trim();
     setInput('');
     setIsLoading(true);
@@ -118,6 +216,10 @@ export const AIAssistant = () => {
 
           const delay = getTypingDelay(currentChar, nextChar);
           setTimeout(streamCharacter, delay);
+        } else {
+          // Streaming complete - save conversation
+          const finalMessages = [...newMessages, assistantMessage];
+          saveConversation(finalMessages);
         }
       };
 
@@ -274,145 +376,228 @@ export const AIAssistant = () => {
           className="sm:max-w-md h-[700px] flex flex-col p-0 border-0 shadow-2xl bg-white backdrop-blur-md"
         >
           <DialogHeader className="dialog-header p-6 border-b border-gray-200 bg-gradient-to-r from-sage-50 to-white">
-            <DialogTitle className="flex items-center gap-3 text-xl text-gray-900">
-              <div className="h-8 w-8 rounded-full bg-sage-600 flex items-center justify-center shadow-md">
-                <svg width="24" height="24" viewBox="0 0 40 40" className="text-white">
-                  <path
-                    d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+            <DialogTitle className="flex items-center justify-between text-xl text-gray-900">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-8 rounded-full bg-sage-600 flex items-center justify-center shadow-md">
+                  <svg width="24" height="24" viewBox="0 0 40 40" className="text-white">
+                    <path
+                      d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+                Professional Assistant
               </div>
-              Professional Assistant
+              {user && (
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={startNewConversation}
+                    className="h-8 w-8 p-0"
+                    title="New conversation"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowHistory(!showHistory)}
+                    className="h-8 w-8 p-0"
+                    title="View history"
+                  >
+                    <History className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </DialogTitle>
             <p className="text-sm text-gray-600 mt-2">
               Expert guidance for professionals and the community - AASW standards, NDIS processes, and evidence-based practices
             </p>
           </DialogHeader>
 
-          {/* Chat Messages */}
-          <ScrollArea className="flex-1 p-4 chat-messages">
-            <div className="space-y-4">
-              {(messages || []).map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex items-start gap-3 ${
-                    message.role === 'user' ? 'flex-row-reverse' : ''
-                  }`}
-                >
-                  <div className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center ${
-                    message.role === 'user' 
-                      ? 'bg-sage-600 text-white' 
-                      : 'bg-gray-100'
-                  }`}>
-                    {message.role === 'user' ? (
-                      <User className="h-4 w-4" />
-                    ) : (
-                       <svg width="20" height="20" viewBox="0 0 40 40" className="text-sage-600">
-                        <path
-                          d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    )}
-                  </div>
-                  <div className={`flex-1 space-y-1 ${
-                    message.role === 'user' ? 'text-right' : ''
-                  }`}>
-                    <div className={`inline-block px-3 py-2 rounded-lg max-w-[80%] ${
-                      message.role === 'user'
-                        ? 'bg-sage-600 text-white ml-auto'
-                        : 'bg-gray-50 text-gray-900'
-                    }`}>
-                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                    </div>
-                     <p className="text-xs text-gray-500">
-                       {message.timestamp.toLocaleTimeString([], { 
-                         hour: '2-digit', 
-                         minute: '2-digit' 
-                       })}
-                     </p>
-                  </div>
+          {/* History Panel */}
+          {showHistory && user ? (
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-sm">Conversation History</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowHistory(false)}
+                  >
+                    Back to chat
+                  </Button>
                 </div>
-              ))}
-              
-              {isLoading && (
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
-                    <svg width="20" height="20" viewBox="0 0 40 40" className="text-sage-600">
-                      <path
-                        d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+                {loadingHistory ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin" />
                   </div>
-                  <div className="flex-1 space-y-1">
-                    <div className="inline-block px-3 py-2 rounded-lg bg-gray-50">
-                      <Loader2 className="h-4 w-4 animate-spin text-sage-600" />
+                ) : conversations.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    No previous conversations found.
+                  </p>
+                ) : (
+                  conversations.map((conv) => (
+                    <div
+                      key={conv.id}
+                      className="p-3 rounded-lg border bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div 
+                          className="flex-1 min-w-0"
+                          onClick={() => loadConversation(conv)}
+                        >
+                          <p className="font-medium text-sm truncate">{conv.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(conv.updatedAt).toLocaleDateString()} - {conv.messages.length} messages
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteConversation(conv.id);
+                          }}
+                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
+                  ))
+                )}
+              </div>
+            </ScrollArea>
+          ) : (
+            <>
+              {/* Chat Messages */}
+              <ScrollArea className="flex-1 p-4 chat-messages">
+                <div className="space-y-4">
+                  {(messages || []).map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex items-start gap-3 ${
+                        message.role === 'user' ? 'flex-row-reverse' : ''
+                      }`}
+                    >
+                      <div className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center ${
+                        message.role === 'user' 
+                          ? 'bg-sage-600 text-white' 
+                          : 'bg-gray-100'
+                      }`}>
+                        {message.role === 'user' ? (
+                          <User className="h-4 w-4" />
+                        ) : (
+                           <svg width="20" height="20" viewBox="0 0 40 40" className="text-sage-600">
+                            <path
+                              d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                      <div className={`flex-1 space-y-1 ${
+                        message.role === 'user' ? 'text-right' : ''
+                      }`}>
+                        <div className={`inline-block px-3 py-2 rounded-lg max-w-[80%] ${
+                          message.role === 'user'
+                            ? 'bg-sage-600 text-white ml-auto'
+                            : 'bg-gray-50 text-gray-900'
+                        }`}>
+                          <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                        </div>
+                         <p className="text-xs text-gray-500">
+                           {message.timestamp.toLocaleTimeString([], { 
+                             hour: '2-digit', 
+                             minute: '2-digit' 
+                           })}
+                         </p>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {isLoading && (
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                        <svg width="20" height="20" viewBox="0 0 40 40" className="text-sage-600">
+                          <path
+                            d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
+                      <div className="flex-1 space-y-1">
+                        <div className="inline-block px-3 py-2 rounded-lg bg-gray-50">
+                          <Loader2 className="h-4 w-4 animate-spin text-sage-600" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+
+              {/* Quick Questions */}
+              {messages && messages.length === 1 && (
+                <div className="px-6 py-4 border-t border-gray-200 bg-sage-50/50">
+                  <p className="text-sm font-semibold mb-3 text-gray-900">Quick questions:</p>
+                  <div className="grid grid-cols-1 gap-2">
+                    {(quickQuestions || []).map((question, index) => (
+                      <Button
+                        key={index}
+                        variant="ghost"
+                        size="sm"
+                        className="justify-start h-auto p-3 text-xs hover:bg-sage-100 border border-transparent hover:border-sage-200 rounded-lg transition-all duration-200 text-gray-700"
+                        onClick={() => handleQuickQuestion(question)}
+                      >
+                        {question}
+                      </Button>
+                    ))}
                   </div>
                 </div>
               )}
-            </div>
-          </ScrollArea>
 
-          {/* Quick Questions */}
-          {messages && messages.length === 1 && (
-            <div className="px-6 py-4 border-t border-gray-200 bg-sage-50/50">
-              <p className="text-sm font-semibold mb-3 text-gray-900">Quick questions:</p>
-              <div className="grid grid-cols-1 gap-2">
-                {(quickQuestions || []).map((question, index) => (
-                  <Button
-                    key={index}
-                    variant="ghost"
+              {/* Input Area */}
+              <div className="p-6 border-t border-gray-200 bg-white">
+                <div className="flex gap-3">
+                  <Input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Ask about..."
+                    disabled={isLoading}
+                    className="flex-1 border-gray-300 focus:border-sage-500 bg-white"
+                  />
+                  <Button 
+                    onClick={sendMessage} 
+                    disabled={!input.trim() || isLoading}
                     size="sm"
-                    className="justify-start h-auto p-3 text-xs hover:bg-sage-100 border border-transparent hover:border-sage-200 rounded-lg transition-all duration-200 text-gray-700"
-                    onClick={() => handleQuickQuestion(question)}
+                    className="bg-sage-600 hover:bg-sage-700 shadow-md hover:shadow-lg transition-all duration-200"
                   >
-                    {question}
+                    <Send className="h-4 w-4" />
+                    <span className="sr-only">Send message</span>
                   </Button>
-                ))}
+                </div>
+                <p className="text-xs text-gray-500 mt-3 text-center">
+                  This assistant provides general information only. For emergencies, call 000 or Lifeline 13 11 14.
+                </p>
               </div>
-            </div>
+            </>
           )}
-
-          {/* Input Area */}
-          <div className="p-6 border-t border-gray-200 bg-white">
-            <div className="flex gap-3">
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Ask about..."
-                disabled={isLoading}
-                className="flex-1 border-gray-300 focus:border-sage-500 bg-white"
-              />
-              <Button 
-                onClick={sendMessage} 
-                disabled={!input.trim() || isLoading}
-                size="sm"
-                className="bg-sage-600 hover:bg-sage-700 shadow-md hover:shadow-lg transition-all duration-200"
-              >
-                <Send className="h-4 w-4" />
-                <span className="sr-only">Send message</span>
-              </Button>
-            </div>
-            <p className="text-xs text-gray-500 mt-3 text-center">
-              This assistant provides general information only. For emergencies, call 000 or Lifeline 13 11 14.
-            </p>
-          </div>
         </DialogContent>
       </Dialog>
     </>

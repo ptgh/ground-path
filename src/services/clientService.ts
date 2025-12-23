@@ -19,12 +19,13 @@ export interface Client {
 
 export interface FormSubmission {
   id: string;
-  client_id: string;
+  client_id: string | null;
   practitioner_id: string;
   form_type: string;
   form_data: Record<string, any>;
-  score?: number;
-  interpretation?: string;
+  score?: number | null;
+  interpretation?: string | null;
+  status?: 'draft' | 'completed' | null;
   completed_at: string;
   created_at: string;
   updated_at: string;
