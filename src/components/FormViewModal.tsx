@@ -187,7 +187,13 @@ const FormViewModal: React.FC<FormViewModalProps> = ({
       ref={overlayRef}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4"
       style={{ display: 'none' }}
-      onClick={(e) => e.target === overlayRef.current && onClose()}
+      onClick={(e) => {
+        if (e.target === overlayRef.current) {
+          e.preventDefault();
+          e.stopPropagation();
+          onClose();
+        }
+      }}
     >
       <div
         ref={modalRef}
@@ -208,7 +214,11 @@ const FormViewModal: React.FC<FormViewModalProps> = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={onClose}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClose();
+            }}
             className="h-8 w-8 rounded-full hover:bg-muted"
           >
             <X className="h-4 w-4" />
