@@ -29,7 +29,7 @@ const ProfessionalResources = () => {
       {
         title: "AASW Practice Standards",
         description: "Comprehensive practice standards for social work professionals",
-        url: "https://www.aasw.asn.au/about-aasw/ethics-standards/aasw-practice-standards",
+        url: "https://www.aasw.asn.au/about-aasw/ethics-standards/practice-standards/",
         category: "Standards",
         icon: <BookOpen className="h-5 w-5" />
       },
