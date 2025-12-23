@@ -191,10 +191,11 @@ const FormViewModal: React.FC<FormViewModalProps> = ({
     >
       <div
         ref={modalRef}
-        className="w-full max-w-2xl bg-background rounded-lg shadow-lg border p-4 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-2xl bg-background rounded-lg shadow-lg border flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between">
+        {/* Fixed Header */}
+        <div className="flex items-center justify-between p-4 sm:p-6 pb-3 sm:pb-4 border-b bg-background rounded-t-lg flex-shrink-0">
           <div className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold">
@@ -206,23 +207,25 @@ const FormViewModal: React.FC<FormViewModalProps> = ({
           </div>
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={onClose}
+            className="h-8 w-8 rounded-full hover:bg-muted"
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
 
-        <div className="flex-1">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 pt-3 sm:pt-4">
           {type === 'form' ? 
             renderFormContent(data as FormSubmission) : 
             renderNoteContent(data as Note)
           }
         </div>
 
+        {/* Fixed Footer for actions */}
         {type === 'form' && onDownloadPDF && onPrint && (
-          <>
-            <Separator />
+          <div className="border-t p-4 sm:p-6 pt-3 sm:pt-4 bg-background rounded-b-lg flex-shrink-0">
             <div className="flex justify-end gap-2">
               <Button
                 variant="outline"
@@ -241,7 +244,7 @@ const FormViewModal: React.FC<FormViewModalProps> = ({
                 PDF
               </Button>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>
