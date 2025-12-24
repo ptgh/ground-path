@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Send, User, Loader2, Trash2, Globe, Calendar, AlertTriangle } from 'lucide-react';
+import { MessageCircle, Send, User, Loader2, Trash2, Globe, Calendar, AlertTriangle, Phone, Mail, X, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { gsap } from 'gsap';
@@ -22,6 +22,20 @@ type Country = 'AU' | 'UK';
 const STORAGE_KEY = 'groundpath_client_conversation';
 const COUNTRY_KEY = 'groundpath_client_country';
 const SESSION_MODE_KEY = 'groundpath_session_mode';
+const SESSION_START_KEY = 'groundpath_session_start';
+const SESSION_TIMEOUT_MINUTES = 20;
+
+// Crisis keywords detection
+const CRISIS_KEYWORDS = [
+  'suicide', 'suicidal', 'kill myself', 'end my life', 'want to die', 'self-harm',
+  'self harm', 'cutting', 'hurt myself', 'no reason to live', 'better off dead',
+  'end it all', 'take my life', 'overdose', 'jump off', 'hang myself'
+];
+
+const detectCrisisKeywords = (text: string): boolean => {
+  const lowerText = text.toLowerCase();
+  return CRISIS_KEYWORDS.some(keyword => lowerText.includes(keyword));
+};
 
 export const ClientAIAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,17 +67,100 @@ export const ClientAIAssistant = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showCounsellingPrompt, setShowCounsellingPrompt] = useState(false);
+  const [showCrisisBanner, setShowCrisisBanner] = useState(false);
+  const [showSessionTimeout, setShowSessionTimeout] = useState(false);
+  const [emailAddress, setEmailAddress] = useState('');
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  
   const { toast } = useToast();
   const chatButtonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const sessionTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const getInitialMessage = (selectedCountry: Country): Message => ({
     id: '1',
     role: 'assistant',
-    content: `Hello! I'm Ground Path's Support Assistant. I'm here to help you find the right mental health and social work support${selectedCountry === 'AU' ? ' in Australia' : ' in the UK'}.\n\nI can answer questions about:\n• Our counselling and therapy services\n• Mental health resources and information\n• ${selectedCountry === 'AU' ? 'NDIS support and navigation' : 'NHS mental health services'}\n• Finding the right professional support\n\n**Please note:** I provide information and guidance, not clinical advice. For personalised treatment, please consult a qualified professional.\n\nHow can I help you today?`,
+    content: `Hello! I'm Ground Path's Support Assistant. I'm here to help you find the right mental health and social work support${selectedCountry === 'AU' ? ' in Australia' : ' in the UK'}.\n\nI can answer questions about:\n• Our counselling and therapy services\n• Mental health resources and information\n• ${selectedCountry === 'AU' ? 'NDIS support and navigation' : 'NHS mental health services'}\n• Finding the right professional support\n\nPlease note: I provide information and guidance, not clinical advice. For personalised treatment, please consult a qualified professional.\n\nHow can I help you today?`,
     timestamp: new Date()
   });
+
+  // Crisis resources by country
+  const getCrisisResources = useCallback(() => {
+    if (country === 'AU') {
+      return {
+        primary: { name: 'Lifeline Australia', number: '13 11 14' },
+        secondary: { name: 'Beyond Blue', number: '1300 22 4636' },
+        emergency: '000',
+        text: 'Crisis Text Line: Text 0477 131 114'
+      };
+    }
+    return {
+      primary: { name: 'Samaritans', number: '116 123' },
+      secondary: { name: 'Mind', number: '0300 123 3393' },
+      emergency: '999',
+      text: 'Crisis Text Line: Text SHOUT to 85258'
+    };
+  }, [country]);
+
+  // Session timeout logic
+  const startSessionTimer = useCallback(() => {
+    if (sessionTimerRef.current) {
+      clearTimeout(sessionTimerRef.current);
+    }
+    
+    const startTime = Date.now();
+    localStorage.setItem(SESSION_START_KEY, startTime.toString());
+    
+    sessionTimerRef.current = setTimeout(() => {
+      setShowSessionTimeout(true);
+    }, SESSION_TIMEOUT_MINUTES * 60 * 1000);
+  }, []);
+
+  const resetSessionTimer = useCallback(() => {
+    if (sessionTimerRef.current) {
+      clearTimeout(sessionTimerRef.current);
+    }
+    setShowSessionTimeout(false);
+    if (isSessionMode) {
+      startSessionTimer();
+    }
+  }, [isSessionMode, startSessionTimer]);
+
+  // Check for existing session on mount
+  useEffect(() => {
+    if (isSessionMode) {
+      const savedStart = localStorage.getItem(SESSION_START_KEY);
+      if (savedStart) {
+        const elapsed = Date.now() - parseInt(savedStart);
+        const remaining = (SESSION_TIMEOUT_MINUTES * 60 * 1000) - elapsed;
+        if (remaining > 0) {
+          sessionTimerRef.current = setTimeout(() => {
+            setShowSessionTimeout(true);
+          }, remaining);
+        } else {
+          setShowSessionTimeout(true);
+        }
+      } else {
+        startSessionTimer();
+      }
+    }
+    
+    return () => {
+      if (sessionTimerRef.current) {
+        clearTimeout(sessionTimerRef.current);
+      }
+    };
+  }, [isSessionMode, startSessionTimer]);
+
+  // Check messages for crisis keywords
+  useEffect(() => {
+    const hasCrisis = messages.some(msg => 
+      msg.role === 'user' && detectCrisisKeywords(msg.content)
+    );
+    setShowCrisisBanner(hasCrisis);
+  }, [messages]);
 
   // Save to localStorage
   useEffect(() => {
@@ -97,8 +194,14 @@ export const ClientAIAssistant = () => {
     setMessages([getInitialMessage(country)]);
     setIsSessionMode(false);
     setShowCounsellingPrompt(false);
+    setShowCrisisBanner(false);
+    setShowSessionTimeout(false);
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(SESSION_MODE_KEY);
+    localStorage.removeItem(SESSION_START_KEY);
+    if (sessionTimerRef.current) {
+      clearTimeout(sessionTimerRef.current);
+    }
     toast({
       title: "Conversation cleared",
       description: "Your conversation has been reset."
@@ -108,10 +211,12 @@ export const ClientAIAssistant = () => {
   const startSessionMode = () => {
     setIsSessionMode(true);
     setShowCounsellingPrompt(false);
+    startSessionTimer();
+    
     const sessionMessage: Message = {
       id: Date.now().toString(),
       role: 'assistant',
-      content: `I'm now in **support session mode**. While I'm not a replacement for professional therapy, I'm here to listen and provide a supportive space.\n\n🟡 **Session Active**\n\nTake your time to share what's on your mind. I'll listen without judgment and offer what support I can.\n\n*Remember: If you'd prefer to speak with a qualified counsellor, Ground Path offers professional online sessions.*`,
+      content: `I'm now in support session mode. While I'm not a replacement for professional therapy, I'm here to listen and provide a supportive space.\n\n🟡 Session Active\n\nTake your time to share what's on your mind. I'll listen without judgment and offer what support I can.\n\nRemember: If you'd prefer to speak with a qualified counsellor, Ground Path offers professional online sessions.`,
       timestamp: new Date()
     };
     setMessages(prev => [...prev, sessionMessage]);
@@ -121,8 +226,66 @@ export const ClientAIAssistant = () => {
     });
   };
 
+  const handleEmailTranscript = async () => {
+    if (!emailAddress.trim() || !emailAddress.includes('@')) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSendingEmail(true);
+    
+    try {
+      // Format transcript
+      const transcript = messages.map(msg => {
+        const time = new Date(msg.timestamp).toLocaleString();
+        const role = msg.role === 'user' ? 'You' : 'Ground Path Support';
+        return `[${time}] ${role}:\n${msg.content.replace(/\*\*/g, '').replace(/\*/g, '')}`;
+      }).join('\n\n---\n\n');
+
+      const { error } = await supabase.functions.invoke('send-email', {
+        body: {
+          to: emailAddress,
+          subject: 'Your Ground Path Conversation Transcript',
+          template: 'transcript',
+          data: {
+            transcript,
+            country,
+            date: new Date().toLocaleDateString()
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Transcript sent",
+        description: `Your conversation has been emailed to ${emailAddress}`
+      });
+      setShowEmailModal(false);
+      setEmailAddress('');
+    } catch (error) {
+      console.error('Email error:', error);
+      toast({
+        title: "Failed to send",
+        description: "Please try again or copy the conversation manually.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
+
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
+
+    // Reset session timer on activity
+    if (isSessionMode) {
+      resetSessionTimer();
+    }
 
     // Handle session mode choice
     if (showCounsellingPrompt) {
@@ -226,12 +389,11 @@ export const ClientAIAssistant = () => {
         variant: "destructive"
       });
       
+      const crisisInfo = getCrisisResources();
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `I'm having trouble responding right now. If you need immediate support:\n\n${country === 'AU' 
-          ? '**Lifeline Australia:** 13 11 14\n**Beyond Blue:** 1300 22 4636\n**Emergency:** 000' 
-          : '**Samaritans:** 116 123\n**Mind:** 0300 123 3393\n**Emergency:** 999'}\n\nOr visit our [Contact Page](/contact) to reach us directly.`,
+        content: `I'm having trouble responding right now. If you need immediate support:\n\n${crisisInfo.primary.name}: ${crisisInfo.primary.number}\n${crisisInfo.secondary.name}: ${crisisInfo.secondary.number}\nEmergency: ${crisisInfo.emergency}\n\nOr visit our Contact Page to reach us directly.`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -320,6 +482,8 @@ export const ClientAIAssistant = () => {
   const sessionAccent = isSessionMode ? 'text-amber-600' : 'text-blue-600';
   const sessionBg = isSessionMode ? 'bg-amber-600' : 'bg-blue-600';
 
+  const crisisResources = getCrisisResources();
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -338,6 +502,74 @@ export const ClientAIAssistant = () => {
           ref={dialogRef}
           className="sm:max-w-md h-[650px] flex flex-col p-0 border-0 shadow-2xl bg-white backdrop-blur-md"
         >
+          {/* Crisis Banner - Shows when crisis keywords detected */}
+          {showCrisisBanner && (
+            <div className="bg-red-600 text-white px-4 py-3 animate-fade-in">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 animate-pulse" />
+                  <span className="font-semibold text-sm">Immediate Support Available</span>
+                </div>
+                <button 
+                  onClick={() => setShowCrisisBanner(false)}
+                  className="text-white/80 hover:text-white"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <p className="text-xs mb-3 text-red-100">
+                If you're in crisis, please reach out to a helpline now. You don't have to face this alone.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <a 
+                  href={`tel:${crisisResources.primary.number.replace(/\s/g, '')}`}
+                  className="flex items-center gap-1.5 bg-white text-red-600 px-3 py-1.5 rounded-full text-xs font-medium hover:bg-red-50 transition-colors"
+                >
+                  <Phone className="h-3 w-3" />
+                  {crisisResources.primary.name}: {crisisResources.primary.number}
+                </a>
+                <a 
+                  href={`tel:${crisisResources.emergency}`}
+                  className="flex items-center gap-1.5 bg-red-700 text-white px-3 py-1.5 rounded-full text-xs font-medium hover:bg-red-800 transition-colors"
+                >
+                  <Phone className="h-3 w-3" />
+                  Emergency: {crisisResources.emergency}
+                </a>
+              </div>
+            </div>
+          )}
+
+          {/* Session Timeout Reminder */}
+          {showSessionTimeout && isSessionMode && (
+            <div className="bg-amber-100 border-b border-amber-200 px-4 py-3 animate-fade-in">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="h-4 w-4 text-amber-600" />
+                <span className="text-sm font-medium text-amber-800">You've been chatting for a while</span>
+              </div>
+              <p className="text-xs text-amber-700 mb-3">
+                Taking a break can be helpful. Would you like to speak with a professional counsellor?
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => window.open('/contact', '_blank')}
+                  className="text-xs bg-amber-600 hover:bg-amber-700"
+                >
+                  <Calendar className="h-3 w-3 mr-1" />
+                  Book a session
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={resetSessionTimer}
+                  className="text-xs border-amber-300 text-amber-700 hover:bg-amber-50"
+                >
+                  Continue chatting
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* Country Selection Overlay */}
           {showCountryPrompt && (
             <div className="absolute inset-0 z-50 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 rounded-lg">
@@ -361,6 +593,44 @@ export const ClientAIAssistant = () => {
             </div>
           )}
 
+          {/* Email Modal */}
+          {showEmailModal && (
+            <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 rounded-lg">
+              <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-gray-900">Email Transcript</h3>
+                  <button onClick={() => setShowEmailModal(false)} className="text-gray-400 hover:text-gray-600">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <p className="text-sm text-gray-600 mb-4">
+                  We'll send a copy of this conversation to your email for your records.
+                </p>
+                <Input
+                  type="email"
+                  value={emailAddress}
+                  onChange={(e) => setEmailAddress(e.target.value)}
+                  placeholder="your@email.com"
+                  className="mb-4"
+                />
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleEmailTranscript}
+                    disabled={isSendingEmail}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  >
+                    {isSendingEmail ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <Mail className="h-4 w-4 mr-2" />
+                    )}
+                    Send Transcript
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <DialogHeader className={`p-4 border-b border-gray-200 bg-gradient-to-r ${sessionHeaderBg}`}>
             <DialogTitle className="flex items-center justify-between text-lg text-gray-900">
               <div className="flex items-center gap-3">
@@ -377,7 +647,16 @@ export const ClientAIAssistant = () => {
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowEmailModal(true)}
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-blue-600"
+                  title="Email transcript"
+                >
+                  <Mail className="h-4 w-4" />
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
