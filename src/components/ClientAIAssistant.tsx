@@ -377,16 +377,7 @@ export const ClientAIAssistant = () => {
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Select value={country} onValueChange={(v) => setCountry(v as Country)}>
-                  <SelectTrigger className="w-20 h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="AU">🇦🇺 AU</SelectItem>
-                    <SelectItem value="UK">🇬🇧 UK</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex items-center gap-3">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -396,6 +387,15 @@ export const ClientAIAssistant = () => {
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
+                <Select value={country} onValueChange={(v) => setCountry(v as Country)}>
+                  <SelectTrigger className="w-20 h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="AU">🇦🇺 AU</SelectItem>
+                    <SelectItem value="UK">🇬🇧 UK</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </DialogTitle>
             <p className="text-xs text-gray-500 mt-1">
@@ -438,7 +438,9 @@ export const ClientAIAssistant = () => {
                         ? 'bg-red-50 text-gray-800 border border-red-200'
                         : 'bg-gray-100 text-gray-800'
                   }`}>
-                    <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                      {message.content.replace(/\*\*/g, '').replace(/\*/g, '')}
+                    </p>
                   </div>
                 </div>
               ))}
