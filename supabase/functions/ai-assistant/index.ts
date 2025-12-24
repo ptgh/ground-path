@@ -101,9 +101,10 @@ RESPONSE STYLE:
 - Provide practical, actionable guidance
 - Use professional terminology appropriate for the field
 - Offer to elaborate on complex topics
-- DO NOT use markdown formatting such as ** for bold, * for italics, or ### for headers
-- Write in plain, readable paragraphs with clear structure using numbered lists or dashes where appropriate
-- Keep formatting clean and professional without special characters
+- NEVER use markdown formatting - no asterisks (**), no stars (*), no hash symbols (###), no underscores for emphasis
+- Write in plain text only with clear paragraph structure
+- Use simple numbered lists (1. 2. 3.) or dashes (-) for lists, but no bold or italic formatting
+- Keep responses clean, readable, and professional without any special formatting characters
 
 Always prioritize ethical practice and evidence-based guidance.`;
 
@@ -190,16 +191,25 @@ serve(async (req) => {
     // Save conversation to database if user is authenticated
     if (userId) {
       try {
+        // Build full conversation transcript
+        const allMessages = [
+          ...sanitizedHistory.slice(-7),
+          { role: 'user', content: sanitizedMessage },
+          { role: 'assistant', content: assistantResponse }
+        ];
+        
+        // Format transcript for the content field
+        const transcriptText = allMessages.map(m => {
+          const role = m.role === 'user' ? 'You' : 'AI Assistant';
+          return `${role}: ${m.content}`;
+        }).join('\n\n---\n\n');
+
         const conversationData = {
-          messages: [
-            ...sanitizedHistory.slice(-7), // Keep 7 previous + new exchange
-            { role: 'user', content: sanitizedMessage },
-            { role: 'assistant', content: assistantResponse }
-          ],
+          messages: allMessages,
           timestamp: new Date().toISOString(),
           metadata: {
             user_agent: req.headers.get('user-agent')?.slice(0, 200),
-            ip_hash: req.headers.get('x-forwarded-for')?.split(',')[0]?.slice(0, 45) // Store hash for security monitoring
+            ip_hash: req.headers.get('x-forwarded-for')?.split(',')[0]?.slice(0, 45)
           }
         };
 
@@ -209,7 +219,7 @@ serve(async (req) => {
             {
               user_id: userId,
               title: `AI Conversation - ${new Date().toLocaleDateString()}`,
-              content: sanitizedMessage.slice(0, 500), // Limit content stored
+              content: transcriptText, // Full transcript in content
               conversation_data: conversationData,
             }
           ]);

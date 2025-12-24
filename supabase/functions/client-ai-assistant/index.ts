@@ -163,9 +163,10 @@ RESPONSE GUIDELINES:
 - Reference trusted sources (NHS, Beyond Blue, MIND, BACP, AASW, etc.)
 - When unsure, say so and direct to professional help
 - If someone seems to want counselling, ask if they'd like to book a session with a Ground Path practitioner
-- DO NOT use markdown formatting such as ** for bold, * for italics, or ### for headers
-- Write in plain, readable paragraphs with clear structure using numbered lists or dashes where appropriate
-- Keep formatting clean and professional without special characters
+- NEVER use markdown formatting - no asterisks (**), no stars (*), no hash symbols (###), no underscores for emphasis
+- Write in plain text only with clear paragraph structure
+- Use simple numbered lists (1. 2. 3.) or dashes (-) for lists, but no bold or italic formatting
+- Keep responses clean, readable, and professional without any special formatting characters
 
 DETECTING COUNSELLING INTENT:
 If the user seems to want deeper emotional support, counselling, or therapy, you should:
@@ -321,10 +322,10 @@ serve(async (req) => {
 
     // Append counselling prompt if detected
     if (showCounsellingPrompt && !isCrisis) {
-      assistantResponse += `\n\n---\n\n💬 **Would you like more support?** I'm here to help with information, but if you'd like to speak with a professional counsellor, Ground Path offers online sessions with qualified practitioners. Would you like to:\n\n• **Continue chatting** with me for information and support\n• **Book a session** with a professional counsellor`;
+      assistantResponse += `\n\nWould you like more support? I'm here to help with information, but if you'd like to speak with a professional counsellor, Ground Path offers online sessions with qualified practitioners. Would you like to:\n\n- Continue chatting with me for information and support\n- Book a session with a professional counsellor`;
     }
 
-    console.log('Client AI response generated:', { 
+    console.log('Client AI response generated:', {
       responseLength: assistantResponse.length, 
       isCrisis,
       showCounsellingPrompt 

@@ -29,12 +29,18 @@ export const aiConversationService = {
       timestamp: m.timestamp
     }));
 
+    // Build full transcript for the content field
+    const transcriptText = messages.map(m => {
+      const role = m.role === 'user' ? 'You' : 'AI Assistant';
+      return `${role}: ${m.content}`;
+    }).join('\n\n---\n\n');
+
     const { data, error } = await supabase
       .from('notes')
       .insert([{
         user_id: userData.user.id,
         title: title,
-        content: `AI Conversation started on ${new Date().toLocaleDateString()}`,
+        content: transcriptText, // Full transcript in content
         conversation_data: { messages: messagesJson }
       }])
       .select('id')
@@ -54,9 +60,16 @@ export const aiConversationService = {
       timestamp: m.timestamp
     }));
 
+    // Build full transcript for the content field
+    const transcriptText = messages.map(m => {
+      const role = m.role === 'user' ? 'You' : 'AI Assistant';
+      return `${role}: ${m.content}`;
+    }).join('\n\n---\n\n');
+
     const { error } = await supabase
       .from('notes')
       .update({
+        content: transcriptText, // Full transcript in content
         conversation_data: { messages: messagesJson },
         updated_at: new Date().toISOString()
       })
