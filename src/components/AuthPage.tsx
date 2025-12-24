@@ -17,6 +17,7 @@ const REGISTRATION_BODIES = [
   { value: 'APS', label: 'APS - Australian Psychological Society' },
   { value: 'PACFA', label: 'PACFA - Psychotherapy and Counselling Federation of Australia' },
   { value: 'ACA', label: 'ACA - Australian Counselling Association' },
+  { value: 'STUDENT', label: 'Student - Currently Studying' },
   { value: 'OTHER', label: 'Other Registration Body' },
 ];
 
