@@ -24,7 +24,7 @@ export const AIAssistant = () => {
     {
       id: '1',
       role: 'assistant',
-      content: 'Hi! I\'m your professional assistant for social work and mental health guidance. How can I help you today?',
+      content: 'Welcome! I\'m your professional development assistant for social work and mental health practitioners. I can help with AASW standards, clinical documentation, supervision frameworks, evidence-based practices, and NDIS processes. What would you like to explore?',
       timestamp: new Date()
     }
   ]);
@@ -101,7 +101,7 @@ export const AIAssistant = () => {
       {
         id: '1',
         role: 'assistant',
-        content: 'Hi! I\'m your professional assistant for social work and mental health guidance. How can I help you today?',
+        content: 'Welcome! I\'m your professional development assistant for social work and mental health practitioners. I can help with AASW standards, clinical documentation, supervision frameworks, evidence-based practices, and NDIS processes. What would you like to explore?',
         timestamp: new Date()
       }
     ]);
@@ -253,10 +253,10 @@ export const AIAssistant = () => {
   };
 
   const quickQuestions = [
-    "What services do you offer?",
-    "How can I access NDIS support?",
-    "What is the difference between counselling and social work?",
-    "How do I book an appointment?"
+    "What are the AASW CPD requirements?",
+    "How do I write effective progress notes?",
+    "Explain trauma-informed practice principles",
+    "NDIS plan review best practices"
   ];
 
   const handleQuickQuestion = (question: string) => {
@@ -416,7 +416,7 @@ export const AIAssistant = () => {
               )}
             </DialogTitle>
             <p className="text-sm text-gray-600 mt-2">
-              Expert guidance for professionals and the community - AASW standards, NDIS processes, and evidence-based practices
+              Professional development support for practitioners, students, and educators
             </p>
           </DialogHeader>
 
