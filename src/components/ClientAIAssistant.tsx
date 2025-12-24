@@ -37,6 +37,54 @@ const detectCrisisKeywords = (text: string): boolean => {
   return CRISIS_KEYWORDS.some(keyword => lowerText.includes(keyword));
 };
 
+// URL regex to detect links in text
+const URL_REGEX = /(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+)(?:\/[^\s)]*)?/g;
+
+// Helper to render text with clickable links
+const renderMessageWithLinks = (text: string): React.ReactNode => {
+  const cleanText = text.replace(/\*\*/g, '').replace(/\*/g, '');
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+  
+  // Reset regex
+  URL_REGEX.lastIndex = 0;
+  
+  while ((match = URL_REGEX.exec(cleanText)) !== null) {
+    // Add text before the match
+    if (match.index > lastIndex) {
+      parts.push(cleanText.slice(lastIndex, match.index));
+    }
+    
+    // Determine the full URL
+    const matchedText = match[0];
+    const href = matchedText.startsWith('http') ? matchedText : `https://${matchedText}`;
+    
+    // Add the link
+    parts.push(
+      <a
+        key={match.index}
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:text-blue-800 underline"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {matchedText}
+      </a>
+    );
+    
+    lastIndex = match.index + matchedText.length;
+  }
+  
+  // Add remaining text
+  if (lastIndex < cleanText.length) {
+    parts.push(cleanText.slice(lastIndex));
+  }
+  
+  return parts.length > 0 ? parts : cleanText;
+};
+
 export const ClientAIAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [country, setCountry] = useState<Country>(() => {
@@ -723,7 +771,7 @@ export const ClientAIAssistant = () => {
                         : 'bg-gray-100 text-gray-800'
                   }`}>
                     <p className="text-sm whitespace-pre-wrap leading-relaxed">
-                      {message.content.replace(/\*\*/g, '').replace(/\*/g, '')}
+                      {renderMessageWithLinks(message.content)}
                     </p>
                   </div>
                 </div>
