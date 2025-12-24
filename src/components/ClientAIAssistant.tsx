@@ -666,7 +666,12 @@ export const ClientAIAssistant = () => {
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
-                <Select value={country} onValueChange={(v) => setCountry(v as Country)}>
+                <Select value={country} onValueChange={(v) => {
+                  const newCountry = v as Country;
+                  setCountry(newCountry);
+                  localStorage.setItem(COUNTRY_KEY, newCountry);
+                  setMessages([getInitialMessage(newCountry)]);
+                }}>
                   <SelectTrigger className="w-20 h-8 text-xs">
                     <SelectValue />
                   </SelectTrigger>
