@@ -214,6 +214,7 @@ export const AIAssistant = () => {
           };
           const partialMessages = [...newMessages, partialMessage];
           saveConversation(partialMessages);
+          setIsLoading(false);
           return;
         }
 
@@ -238,9 +239,10 @@ export const AIAssistant = () => {
           const delay = getTypingDelay(currentChar, nextChar);
           setTimeout(streamCharacter, delay);
         } else {
-          // Streaming complete - save conversation
+          // Streaming complete - save conversation and set loading false
           const finalMessages = [...newMessages, assistantMessage];
           saveConversation(finalMessages);
+          setIsLoading(false);
         }
       };
 
@@ -261,7 +263,6 @@ export const AIAssistant = () => {
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
-    } finally {
       setIsLoading(false);
     }
   };

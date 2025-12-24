@@ -415,6 +415,7 @@ export const ClientAIAssistant = () => {
       const streamCharacter = () => {
         if (stopStreamingRef.current) {
           // Streaming was stopped
+          setIsLoading(false);
           return;
         }
 
@@ -438,6 +439,9 @@ export const ClientAIAssistant = () => {
 
           const delay = getTypingDelay(currentChar);
           setTimeout(streamCharacter, delay);
+        } else {
+          // Streaming complete
+          setIsLoading(false);
         }
       };
 
@@ -458,7 +462,6 @@ export const ClientAIAssistant = () => {
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
-    } finally {
       setIsLoading(false);
     }
   };
