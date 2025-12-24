@@ -837,7 +837,17 @@ export const ClientAIAssistant = () => {
           {/* Quick Questions */}
           {messages.length <= 1 && !showCountryPrompt && (
             <div className="px-4 pb-2">
-              <p className="text-xs text-gray-500 mb-2">Quick questions:</p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-gray-500">Quick questions:</p>
+                <Button
+                  size="sm"
+                  onClick={() => window.open('https://www.halaxy.com/book/lachlan-mcdonald/location/138057', '_blank')}
+                  className="text-xs bg-green-600 hover:bg-green-700 h-7 px-3"
+                >
+                  <Calendar className="h-3 w-3 mr-1" />
+                  Book a Session
+                </Button>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {quickQuestions.map((question, index) => (
                   <button
