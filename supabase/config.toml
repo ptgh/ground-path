@@ -37,3 +37,6 @@ verify_jwt = false
 
 [functions.check-links]
 verify_jwt = false
+
+[functions.client-ai-assistant]
+verify_jwt = false
