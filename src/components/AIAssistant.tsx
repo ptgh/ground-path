@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageCircle, Send, Bot, User, Loader2, History, Trash2, Plus } from 'lucide-react';
+import { MessageCircle, Send, Bot, User, Loader2, History, Trash2, Plus, Square } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -34,6 +34,7 @@ export const AIAssistant = () => {
   const [conversations, setConversations] = useState<AIConversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const stopStreamingRef = useRef(false);
   const { toast } = useToast();
   const chatButtonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -130,8 +131,15 @@ export const AIAssistant = () => {
     }
   };
 
+  const stopStreaming = () => {
+    stopStreamingRef.current = true;
+    setIsLoading(false);
+  };
+
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
+
+    stopStreamingRef.current = false;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -196,6 +204,19 @@ export const AIAssistant = () => {
       };
 
       const streamCharacter = () => {
+        if (stopStreamingRef.current) {
+          // Streaming was stopped - save what we have
+          const partialMessage: Message = {
+            id: messageId,
+            role: 'assistant',
+            content: displayedContent || '(Response stopped)',
+            timestamp: new Date()
+          };
+          const partialMessages = [...newMessages, partialMessage];
+          saveConversation(partialMessages);
+          return;
+        }
+
         if (charIndex < fullResponse.length) {
           displayedContent += fullResponse[charIndex];
           const currentChar = fullResponse[charIndex];
@@ -583,13 +604,17 @@ export const AIAssistant = () => {
                     className="flex-1 border-gray-300 focus:border-sage-500 bg-white"
                   />
                   <Button 
-                    onClick={sendMessage} 
-                    disabled={!input.trim() || isLoading}
+                    onClick={isLoading ? stopStreaming : sendMessage} 
+                    disabled={!input.trim() && !isLoading}
                     size="sm"
-                    className="bg-sage-600 hover:bg-sage-700 shadow-md hover:shadow-lg transition-all duration-200"
+                    className={isLoading ? "bg-red-500 hover:bg-red-600 shadow-md hover:shadow-lg transition-all duration-200" : "bg-sage-600 hover:bg-sage-700 shadow-md hover:shadow-lg transition-all duration-200"}
                   >
-                    <Send className="h-4 w-4" />
-                    <span className="sr-only">Send message</span>
+                    {isLoading ? (
+                      <Square className="h-4 w-4" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                    <span className="sr-only">{isLoading ? 'Stop response' : 'Send message'}</span>
                   </Button>
                 </div>
                 <p className="text-xs text-gray-500 mt-3 text-center">
