@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Send, User, Loader2, Trash2, Globe, Calendar, AlertTriangle, Phone, Mail, X, Clock } from 'lucide-react';
+import { MessageCircle, Send, User, Loader2, Trash2, Globe, Calendar, AlertTriangle, Phone, Mail, X, Clock, Square } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { gsap } from 'gsap';
@@ -126,6 +126,7 @@ export const ClientAIAssistant = () => {
   const dialogRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const sessionTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const stopStreamingRef = useRef(false);
 
   const getInitialMessage = (selectedCountry: Country): Message => ({
     id: '1',
@@ -327,8 +328,15 @@ export const ClientAIAssistant = () => {
     }
   };
 
+  const stopStreaming = () => {
+    stopStreamingRef.current = true;
+    setIsLoading(false);
+  };
+
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
+
+    stopStreamingRef.current = false;
 
     // Reset session timer on activity
     if (isSessionMode) {
@@ -405,6 +413,11 @@ export const ClientAIAssistant = () => {
       };
 
       const streamCharacter = () => {
+        if (stopStreamingRef.current) {
+          // Streaming was stopped
+          return;
+        }
+
         if (charIndex < fullResponse.length) {
           displayedContent += fullResponse[charIndex];
           const currentChar = fullResponse[charIndex];
@@ -860,13 +873,13 @@ export const ClientAIAssistant = () => {
                 disabled={isLoading}
               />
               <Button
-                onClick={sendMessage}
-                disabled={isLoading || !input.trim()}
+                onClick={isLoading ? stopStreaming : sendMessage}
+                disabled={!isLoading && !input.trim()}
                 size="icon"
-                className={`${sessionColor} h-10 w-10`}
+                className={isLoading ? `bg-red-500 hover:bg-red-600 h-10 w-10` : `${sessionColor} h-10 w-10`}
               >
                 {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Square className="h-4 w-4" />
                 ) : (
                   <Send className="h-4 w-4" />
                 )}
