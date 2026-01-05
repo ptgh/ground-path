@@ -78,7 +78,7 @@ export const NewsletterEmail = ({
                 <Text style={articleCategory}>{article.category}</Text>
                 <div style={articleHeader}>
                   <Heading style={articleTitle}>{article.title}</Heading>
-                  <Button href={`https://groundpath.com.au/article/${article.url.split('/').pop()}`} style={compactButton}>
+                  <Button href={article.url} style={compactButton}>
                     Read More
                   </Button>
                 </div>
@@ -92,7 +92,7 @@ export const NewsletterEmail = ({
             <Text style={ctaText}>
               Access our comprehensive suite of professional assessment tools and forms designed specifically for social workers.
             </Text>
-            <Button pY={12} pX={24} style={button} href="https://groundpath.com.au/professional-forms">
+            <Button style={primaryButton} href="https://groundpath.com.au/professional-forms">
               Explore Professional Tools
             </Button>
           </Section>
@@ -102,7 +102,7 @@ export const NewsletterEmail = ({
             <Text style={servicesText}>
               Need professional consultation or support? Our experienced team is here to help.
             </Text>
-            <Button pY={10} pX={20} style={secondaryButton} href="https://www.halaxy.com/book/groundpath/location/125730">
+            <Button style={outlineButton} href="https://www.halaxy.com/book/groundpath/location/125730">
               Book a Consultation
             </Button>
           </Section>
@@ -351,6 +351,31 @@ const secondaryButton = {
   textDecoration: 'none',
   textAlign: 'center' as const,
   display: 'inline-block',
+}
+
+const primaryButton = {
+  backgroundColor: '#7B9B85',
+  borderRadius: '12px',
+  color: '#ffffff',
+  fontSize: '16px',
+  fontWeight: '600',
+  textDecoration: 'none',
+  textAlign: 'center' as const,
+  display: 'inline-block',
+  padding: '16px 32px',
+}
+
+const outlineButton = {
+  backgroundColor: '#ffffff',
+  border: '2px solid #7B9B85',
+  borderRadius: '12px',
+  color: '#7B9B85',
+  fontSize: '14px',
+  fontWeight: '600',
+  textDecoration: 'none',
+  textAlign: 'center' as const,
+  display: 'inline-block',
+  padding: '14px 28px',
 }
 
 const articleHeader = {
