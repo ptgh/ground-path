@@ -243,11 +243,22 @@ const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
         }
       }, CONNECTION_TIMEOUT_MS);
 
-      await (conversation.startSession as any)({
-        agentId: selectedCounsellor.agentId,
-        connectionType: "webrtc",
-      });
+      console.log("[VoiceSession] Starting session with agent:", selectedCounsellor.agentId);
+      
+      // Try WebRTC first, fall back to WebSocket if it fails
+      try {
+        await (conversation.startSession as any)({
+          agentId: selectedCounsellor.agentId,
+        });
+      } catch (webrtcErr: any) {
+        console.warn("[VoiceSession] Default connection failed, trying websocket:", webrtcErr?.message);
+        await (conversation.startSession as any)({
+          agentId: selectedCounsellor.agentId,
+          connectionType: "websocket",
+        });
+      }
     } catch (err: any) {
+      console.error("[VoiceSession] Connection error:", err);
       if (mountedRef.current) {
         clearConnectionTimeout();
         clearKeepalive();
