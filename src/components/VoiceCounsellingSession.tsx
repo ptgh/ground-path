@@ -53,9 +53,9 @@ const KEEPALIVE_INTERVAL_MS = 5_000;
 
 const getCountryResources = (country: Country) => {
   if (country === "AU") {
-    return "Australian resources: Lifeline 13 11 14, Beyond Blue 1300 22 4636, Emergency 000. Guide users to beyondblue.org.au, headspace.org.au, NDIS ndis.gov.au.";
+    return "Australian resources: Lifeline 13 11 14, Beyond Blue 1300 22 4636, Emergency 000. Guide users to beyondblue.org.au, headspace.org.au, NDIS ndis.gov.au. IMPORTANT: Always say phone numbers as individual digits, for example say 'one three, one one, one four' not 'thirteen eleven fourteen'.";
   } else if (country === "UK") {
-    return "UK resources: Samaritans 116 123, Mind 0300 123 3393, Emergency 999, NHS Mental Health 111 Option 2. Guide users to mind.org.uk, nhs.uk/mental-health.";
+    return "UK resources: Samaritans 116 123, Mind 0300 123 3393, Emergency 999, NHS Mental Health 111 Option 2. Guide users to mind.org.uk, nhs.uk/mental-health. IMPORTANT: Always say phone numbers as individual digits, for example say 'one one six, one two three' not 'one hundred and sixteen, one twenty three'.";
   }
   return "If in crisis, contact your local emergency services. Encourage seeking local mental health support.";
 };
