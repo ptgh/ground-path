@@ -42,10 +42,10 @@ const COUNSELLORS: CounsellorPersona[] = [
   },
 ];
 
-const COUNTRIES: { value: Country; label: string; flag: string }[] = [
-  { value: "AU", label: "Australia", flag: "🇦🇺" },
-  { value: "UK", label: "United Kingdom", flag: "🇬🇧" },
-  { value: "OTHER", label: "Other", flag: "🌍" },
+const COUNTRIES: { value: Country; label: string }[] = [
+  { value: "AU", label: "Australia" },
+  { value: "UK", label: "UK" },
+  { value: "OTHER", label: "Global" },
 ];
 
 const CONNECTION_TIMEOUT_MS = 15_000;
