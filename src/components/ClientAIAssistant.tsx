@@ -41,39 +41,57 @@ const detectCrisisKeywords = (text: string): boolean => {
 // URL regex to detect links in text
 const URL_REGEX = /(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+)(?:\/[^\s)]*)?/g;
 
-// Helper to render text with clickable links
+// Phone number regex - matches Australian and UK formats
+const PHONE_REGEX = /\b(13\s?\d{2}\s?\d{2}|1[38]00\s?\d{2,3}\s?\d{2,3}|0[23478]\d{2}\s?\d{3}\s?\d{3,4}|116\s?123|000|999|111)\b/g;
+
+// Helper to render text with clickable links and phone numbers
 const renderMessageWithLinks = (text: string): React.ReactNode => {
   const cleanText = text.replace(/\*\*/g, '').replace(/\*/g, '');
+  
+  // Combined regex to match URLs and phone numbers
+  const COMBINED_REGEX = /(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+)(?:\/[^\s)]*)?|\b(13\s?\d{2}\s?\d{2}|1[38]00\s?\d{2,3}\s?\d{2,3}|0[23478]\d{2}\s?\d{3}\s?\d{3,4}|116\s?123|000|999|111)\b/g;
+  
   const parts: React.ReactNode[] = [];
   let lastIndex = 0;
   let match;
   
-  // Reset regex
-  URL_REGEX.lastIndex = 0;
-  
-  while ((match = URL_REGEX.exec(cleanText)) !== null) {
+  while ((match = COMBINED_REGEX.exec(cleanText)) !== null) {
     // Add text before the match
     if (match.index > lastIndex) {
       parts.push(cleanText.slice(lastIndex, match.index));
     }
     
-    // Determine the full URL
     const matchedText = match[0];
-    const href = matchedText.startsWith('http') ? matchedText : `https://${matchedText}`;
     
-    // Add the link
-    parts.push(
-      <a
-        key={match.index}
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 hover:text-blue-800 underline"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {matchedText}
-      </a>
-    );
+    // Check if it's a phone number (group 2 matched)
+    if (match[2]) {
+      const phoneDigits = matchedText.replace(/\s/g, '');
+      parts.push(
+        <a
+          key={`phone-${match.index}`}
+          href={`tel:${phoneDigits}`}
+          className="text-blue-600 hover:text-blue-800 underline"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {matchedText}
+        </a>
+      );
+    } else {
+      // It's a URL
+      const href = matchedText.startsWith('http') ? matchedText : `https://${matchedText}`;
+      parts.push(
+        <a
+          key={`url-${match.index}`}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:text-blue-800 underline"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {matchedText}
+        </a>
+      );
+    }
     
     lastIndex = match.index + matchedText.length;
   }

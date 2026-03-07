@@ -487,20 +487,22 @@ const Resources = () => {
 
           {/* Content Tabs */}
           <Tabs defaultValue="emergency" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 mb-8 bg-muted p-1 gap-1 h-auto">
-              <TabsTrigger value="emergency" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white text-xs sm:text-sm py-2">
-                Emergency
-              </TabsTrigger>
-              <TabsTrigger value="support" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white text-xs sm:text-sm py-2">
-                Support
-              </TabsTrigger>
-              <TabsTrigger value="information" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white text-xs sm:text-sm py-2">
-                Information
-              </TabsTrigger>
-              <TabsTrigger value="all" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white text-xs sm:text-sm py-2">
-                All
-              </TabsTrigger>
-            </TabsList>
+            <div className="flex justify-center mb-8">
+              <TabsList className="inline-flex rounded-lg border border-border p-1 bg-muted h-auto">
+                <TabsTrigger value="emergency" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white text-xs sm:text-sm px-4 py-2 rounded-md">
+                  Emergency
+                </TabsTrigger>
+                <TabsTrigger value="support" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white text-xs sm:text-sm px-4 py-2 rounded-md">
+                  Support
+                </TabsTrigger>
+                <TabsTrigger value="information" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white text-xs sm:text-sm px-4 py-2 rounded-md">
+                  Information
+                </TabsTrigger>
+                <TabsTrigger value="all" className="data-[state=active]:bg-sage-600 data-[state=active]:text-white text-xs sm:text-sm px-4 py-2 rounded-md">
+                  All
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             <TabsContent value="emergency" ref={buttonsRef}>
               {filteredEmergencyContacts.length > 0 ? (

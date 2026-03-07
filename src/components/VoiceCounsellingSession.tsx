@@ -42,10 +42,10 @@ const COUNSELLORS: CounsellorPersona[] = [
   },
 ];
 
-const COUNTRIES: { value: Country; label: string; flag: string }[] = [
-  { value: "AU", label: "Australia", flag: "🇦🇺" },
-  { value: "UK", label: "United Kingdom", flag: "🇬🇧" },
-  { value: "OTHER", label: "Other", flag: "🌍" },
+const COUNTRIES: { value: Country; label: string }[] = [
+  { value: "AU", label: "Australia" },
+  { value: "UK", label: "UK" },
+  { value: "OTHER", label: "Global" },
 ];
 
 const CONNECTION_TIMEOUT_MS = 15_000;
@@ -53,9 +53,9 @@ const KEEPALIVE_INTERVAL_MS = 5_000;
 
 const getCountryResources = (country: Country) => {
   if (country === "AU") {
-    return "Australian resources: Lifeline 13 11 14, Beyond Blue 1300 22 4636, Emergency 000. Guide users to beyondblue.org.au, headspace.org.au, NDIS ndis.gov.au.";
+    return "Australian resources: Lifeline 13 11 14, Beyond Blue 1300 22 4636, Emergency 000. Guide users to beyondblue.org.au, headspace.org.au, NDIS ndis.gov.au. IMPORTANT: Always say phone numbers as individual digits, for example say 'one three, one one, one four' not 'thirteen eleven fourteen'.";
   } else if (country === "UK") {
-    return "UK resources: Samaritans 116 123, Mind 0300 123 3393, Emergency 999, NHS Mental Health 111 Option 2. Guide users to mind.org.uk, nhs.uk/mental-health.";
+    return "UK resources: Samaritans 116 123, Mind 0300 123 3393, Emergency 999, NHS Mental Health 111 Option 2. Guide users to mind.org.uk, nhs.uk/mental-health. IMPORTANT: Always say phone numbers as individual digits, for example say 'one one six, one two three' not 'one hundred and sixteen, one twenty three'.";
   }
   return "If in crisis, contact your local emergency services. Encourage seeking local mental health support.";
 };
@@ -384,7 +384,6 @@ const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
               className="mx-auto flex items-center gap-2.5 bg-card border border-border rounded-xl px-4 py-2.5 text-sm text-foreground hover:bg-muted/50 transition-colors shadow-sm"
             >
               <Globe className="w-4 h-4 text-muted-foreground" />
-              <span className="text-lg leading-none">{selectedCountry.flag}</span>
               <span>{selectedCountry.label}</span>
               <svg className={`w-4 h-4 text-muted-foreground transition-transform ${countryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
             </button>
@@ -398,7 +397,6 @@ const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
                       country === c.value ? "bg-primary/5 text-primary font-medium" : "text-foreground"
                     }`}
                   >
-                    <span className="text-lg">{c.flag}</span>
                     <span>{c.label}</span>
                     {country === c.value && <CheckCircle2 className="w-4 h-4 text-primary ml-auto" />}
                   </button>
