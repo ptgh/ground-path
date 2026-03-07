@@ -1,10 +1,11 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Download, Printer, Save, Clock, Check } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import gsap from 'gsap';
 
 interface InteractiveFormLayoutProps {
   title: string;
@@ -41,10 +42,26 @@ const InteractiveFormLayout = ({
 }: InteractiveFormLayoutProps) => {
   const navigate = useNavigate();
   const [showDraftPrompt, setShowDraftPrompt] = useState(false);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // Subtle entrance animation
+  useEffect(() => {
+    const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+    
+    if (headerRef.current) {
+      tl.fromTo(headerRef.current, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4 });
+    }
+    if (formRef.current) {
+      tl.fromTo(formRef.current, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.2');
+    }
+
+    return () => { tl.kill(); };
   }, []);
 
   // Show draft prompt if there's a draft
@@ -100,7 +117,7 @@ const InteractiveFormLayout = ({
           )}
 
           {/* Header Section */}
-          <div className="mb-8">
+          <div ref={headerRef} className="mb-8 opacity-0">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
               <Button 
                 variant="ghost" 
@@ -167,7 +184,7 @@ const InteractiveFormLayout = ({
             <p className="text-muted-foreground text-base sm:text-lg mb-4">{description}</p>
             
             {source && (
-              <div className="text-sm text-muted-foreground border-l-2 border-muted pl-4">
+              <div className="text-sm text-muted-foreground border-l-2 border-primary/30 pl-4">
                 <span className="font-medium">Source:</span> {source}
                 {sourceUrl && (
                   <a 
@@ -184,11 +201,13 @@ const InteractiveFormLayout = ({
           </div>
 
           {/* Form Content */}
-          <Card className="shadow-lg">
-            <CardContent className="p-4 sm:p-6 lg:p-8">
-              {children}
-            </CardContent>
-          </Card>
+          <div ref={formRef} className="opacity-0">
+            <Card className="shadow-sm border-border/60">
+              <CardContent className="p-4 sm:p-6 lg:p-8">
+                {children}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </main>
       

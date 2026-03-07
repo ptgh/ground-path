@@ -575,10 +575,10 @@ const ProfessionalForms = () => {
                     please contact your supervisor or professional body.
                   </p>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => navigate('/#contact')}>
                       Contact Support
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => window.open('https://www.aasw.asn.au/practitioner-resources/practice-standards', '_blank')}>
                       View Guidelines
                     </Button>
                   </div>
