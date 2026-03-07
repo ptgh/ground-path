@@ -580,9 +580,18 @@ const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
       </div>
 
       {/* State label */}
-      <p className={`text-sm font-medium mb-4 ${voiceState === "error" ? "text-destructive" : "text-foreground"}`}>
+      <p className={`text-sm font-medium mb-2 ${voiceState === "error" ? "text-destructive" : "text-foreground"}`}>
         {stateLabel}
       </p>
+
+      {voiceState === "error" && (
+        <div className="bg-muted/50 border border-border rounded-lg px-4 py-3 max-w-sm text-center mb-4">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            <span className="font-medium text-foreground">Connection blocked?</span> Browser extensions (ad blockers, privacy tools, VPNs) can block voice connections.
+            Try <span className="font-medium">Incognito mode</span> or <span className="font-medium">Safari</span> if this persists.
+          </p>
+        </div>
+      )}
 
       {/* Transcripts */}
       <div className="max-w-md w-full px-6 space-y-2">
