@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Hero from '../components/Hero';
 import About from '../components/About';
 import Services from '../components/Services';
+import HowSessionsWork from '../components/HowSessionsWork';
 import Newsletter from '../components/Newsletter';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
@@ -76,6 +77,7 @@ const Index = () => {
         <Hero />
         <About />
         <Services />
+        <HowSessionsWork />
         <Newsletter />
         <Contact />
       </main>
