@@ -121,6 +121,7 @@ export const ClientAIAssistant = () => {
   const [emailAddress, setEmailAddress] = useState('');
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [showVoiceSession, setShowVoiceSession] = useState(false);
   
   const { toast } = useToast();
   const chatButtonRef = useRef<HTMLButtonElement>(null);
