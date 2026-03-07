@@ -180,7 +180,7 @@ const Header = () => {
                 <Button
                   variant="outline"
                   onClick={handleProfessionalLogin}
-                  className="border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 px-5 py-2 rounded-lg font-medium text-sm"
+                  className="border-gray-400 text-white hover:text-white hover:border-white hover:bg-white/10 px-5 py-2 rounded-lg font-medium text-sm"
                 >
                   Professional Login
                 </Button>
@@ -249,7 +249,7 @@ const Header = () => {
                   <Button
                     variant="outline"
                     onClick={() => { handleProfessionalLogin(); setIsMenuOpen(false); }}
-                    className="border-gray-600 text-gray-300 hover:text-white w-full"
+                    className="border-gray-400 text-white hover:text-white hover:bg-white/10 w-full"
                   >
                     Professional Login
                   </Button>

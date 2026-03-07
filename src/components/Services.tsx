@@ -53,7 +53,7 @@ const Services = () => {
                 </div>
                 <div className="flex gap-2">
                   {service.comingSoon && (
-                    <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">
+                    <span className="bg-sage-50 text-sage-600 border border-sage-200 px-3 py-1 rounded-full text-xs font-medium tracking-wide uppercase">
                       Coming Soon
                     </span>
                   )}
