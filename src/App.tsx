@@ -31,6 +31,7 @@ import { BDIForm } from "./components/forms/BDIForm";
 import UnsubscribePage from "./pages/Unsubscribe";
 import ConfirmPage from "./pages/Confirm";
 import Article from "./pages/Article";
+import VoiceSessionPage from "./pages/VoiceSession";
 import { AIAssistant } from "./components/AIAssistant";
 import { ClientAIAssistant } from "./components/ClientAIAssistant";
 import { useAuth } from "./hooks/useAuth";
@@ -81,6 +82,7 @@ const App = () => {
             <Route path="/" element={<Index />} />
             <Route path="/resources" element={<Resources />} />
             <Route path="/article/:slug" element={<Article />} />
+            <Route path="/voice-session" element={<VoiceSessionPage />} />
             <Route path="/confirm" element={<ConfirmPage />} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
             <Route path="/professional-forms" element={<ProfessionalForms />} />
