@@ -20,19 +20,18 @@ interface CounsellorPersona {
   description: string;
 }
 
-// TODO: Replace these with your actual ElevenLabs agent IDs
 const COUNSELLORS: CounsellorPersona[] = [
   {
     name: "Sarah",
     gender: "female",
-    agentId: "REPLACE_WITH_FEMALE_AGENT_ID",
+    agentId: "agent_4601kk4rj7shffj8tvr67jecwxvz",
     initial: "S",
     description: "Warm, empathetic counsellor with experience in anxiety and depression support",
   },
   {
     name: "James",
     gender: "male",
-    agentId: "REPLACE_WITH_MALE_AGENT_ID",
+    agentId: "agent_5001kk4t1016em09c3vxtt4yz0g3",
     initial: "J",
     description: "Calm, supportive counsellor specialising in stress management and wellbeing",
   },
