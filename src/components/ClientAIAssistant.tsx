@@ -912,6 +912,9 @@ export const ClientAIAssistant = () => {
           </div>
         </DialogContent>
       </Dialog>
+      {showVoiceSession && (
+        <VoiceCounsellingSession onClose={() => setShowVoiceSession(false)} />
+      )}
     </>
   );
 };
