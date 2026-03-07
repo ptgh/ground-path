@@ -384,7 +384,6 @@ const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
               className="mx-auto flex items-center gap-2.5 bg-card border border-border rounded-xl px-4 py-2.5 text-sm text-foreground hover:bg-muted/50 transition-colors shadow-sm"
             >
               <Globe className="w-4 h-4 text-muted-foreground" />
-              <span className="text-lg leading-none">{selectedCountry.flag}</span>
               <span>{selectedCountry.label}</span>
               <svg className={`w-4 h-4 text-muted-foreground transition-transform ${countryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
             </button>
@@ -398,7 +397,6 @@ const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
                       country === c.value ? "bg-primary/5 text-primary font-medium" : "text-foreground"
                     }`}
                   >
-                    <span className="text-lg">{c.flag}</span>
                     <span>{c.label}</span>
                     {country === c.value && <CheckCircle2 className="w-4 h-4 text-primary ml-auto" />}
                   </button>
