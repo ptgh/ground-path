@@ -5,7 +5,7 @@ const Services = () => {
       name: "Mental Health Support",
       format: "Telehealth (50 mins)",
       rate: "$120",
-      description: "Accredited Mental Health Social Worker providing professional support via secure video calls"
+      description: "Social Worker providing professional support via secure video calls"
     },
     {
       name: "Psychosocial Recovery Coaching",
@@ -15,10 +15,11 @@ const Services = () => {
       ndis: true
     },
     {
-      name: "Australian Counselling Association Counsellors",
+      name: "ACA Counselling Support",
       format: "Telehealth (50 mins)",
       rate: "$80",
-      description: "Qualified and trusted Registered Counsellors"
+      description: "Coming soon - ACA registration in progress",
+      comingSoon: true
     },
     {
       name: "In-Person Support",
@@ -43,18 +44,25 @@ const Services = () => {
         </div>
 
         {/* Services Grid */}
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
+         <div className="grid md:grid-cols-2 gap-6 mb-12">
           {services.map((service, index) => (
-            <div key={index} className="fade-in bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow duration-300">
+            <div key={index} className={`fade-in bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow duration-300 ${service.comingSoon ? 'opacity-75' : ''}`}>
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-xl font-medium text-gray-900">{service.name}</h3>
                 </div>
-                {service.ndis && (
-                  <span className="bg-sage-100 text-sage-700 px-3 py-1 rounded-full text-sm font-medium">
-                    NDIS
-                  </span>
-                )}
+                <div className="flex gap-2">
+                  {service.comingSoon && (
+                    <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">
+                      Coming Soon
+                    </span>
+                  )}
+                  {service.ndis && (
+                    <span className="bg-sage-100 text-sage-700 px-3 py-1 rounded-full text-sm font-medium">
+                      NDIS
+                    </span>
+                  )}
+                </div>
               </div>
               
               <div className="space-y-3">
