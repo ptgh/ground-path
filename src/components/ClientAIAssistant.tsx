@@ -4,7 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Send, User, Loader2, Trash2, Globe, Calendar, AlertTriangle, Phone, Mail, X, Clock, Square } from 'lucide-react';
+import { MessageCircle, Send, User, Loader2, Trash2, Globe, Calendar, AlertTriangle, Phone, Mail, X, Clock, Square, Mic } from 'lucide-react';
+import VoiceCounsellingSession from './VoiceCounsellingSession';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { gsap } from 'gsap';
@@ -712,6 +713,15 @@ export const ClientAIAssistant = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowVoiceSession(true)}
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
+                  title="Voice counselling session"
+                >
+                  <Mic className="h-4 w-4" />
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
