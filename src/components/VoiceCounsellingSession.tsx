@@ -1,8 +1,10 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { Loader2, X, Globe } from "lucide-react";
+import { Loader2, X, Globe, CheckCircle2 } from "lucide-react";
 import { useConversation } from "@elevenlabs/react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import sarahAvatar from "@/assets/counsellor-sarah.jpg";
+import jamesAvatar from "@/assets/counsellor-james.jpg";
 
 interface VoiceCounsellingSessionProps {
   onClose: () => void;
@@ -18,6 +20,7 @@ interface CounsellorPersona {
   agentId: string;
   initial: string;
   description: string;
+  avatar: string;
 }
 
 const COUNSELLORS: CounsellorPersona[] = [
@@ -27,6 +30,7 @@ const COUNSELLORS: CounsellorPersona[] = [
     agentId: "agent_4601kk4rj7shffj8tvr67jecwxvz",
     initial: "S",
     description: "Warm, empathetic counsellor with experience in anxiety and depression support",
+    avatar: sarahAvatar,
   },
   {
     name: "James",
@@ -34,7 +38,14 @@ const COUNSELLORS: CounsellorPersona[] = [
     agentId: "agent_5001kk4t1016em09c3vxtt4yz0g3",
     initial: "J",
     description: "Calm, supportive counsellor specialising in stress management and wellbeing",
+    avatar: jamesAvatar,
   },
+];
+
+const COUNTRIES: { value: Country; label: string; flag: string }[] = [
+  { value: "AU", label: "Australia", flag: "🇦🇺" },
+  { value: "UK", label: "United Kingdom", flag: "🇬🇧" },
+  { value: "OTHER", label: "Other", flag: "🌍" },
 ];
 
 const CONNECTION_TIMEOUT_MS = 15_000;
@@ -62,6 +73,7 @@ const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
   const [voiceState, setVoiceState] = useState<VoiceState>("setup");
   const [selectedCounsellor, setSelectedCounsellor] = useState<CounsellorPersona | null>(null);
   const [country, setCountry] = useState<Country>(detectCountryFromTimezone);
+  const [countryOpen, setCountryOpen] = useState(false);
   const [lastTranscript, setLastTranscript] = useState("");
   const [lastReply, setLastReply] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -77,6 +89,7 @@ const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
   const greetingReceivedRef = useRef(false);
   const convRef = useRef<any>(null);
   const contextSentRef = useRef(false);
+  const countryRef = useRef<HTMLDivElement>(null);
 
   const counsellorContext = selectedCounsellor
     ? `You are ${selectedCounsellor.name}, a compassionate and professional AI counsellor for Ground Path. You provide supportive, non-judgmental mental health guidance. You are NOT a replacement for professional therapy — always recommend professional help for serious concerns. ${getCountryResources(country)} Keep responses conversational and brief (2-4 sentences) for voice. Be warm, use active listening, and validate emotions. If you detect crisis indicators (suicidal ideation, self-harm), immediately provide crisis resources. Never diagnose or prescribe medication. Introduce yourself naturally as ${selectedCounsellor.name} from Ground Path.`
@@ -193,6 +206,18 @@ const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
     return () => cancelAnimationFrame(animFrameRef.current);
   }, [conversation.isSpeaking, voiceState]);
 
+  // Close country dropdown on outside click
+  useEffect(() => {
+    if (!countryOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (countryRef.current && !countryRef.current.contains(e.target as Node)) {
+        setCountryOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [countryOpen]);
+
   const startConversation = useCallback(async () => {
     if (sessionStartedRef.current || !selectedCounsellor) return;
     sessionStartedRef.current = true;
@@ -220,6 +245,7 @@ const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
 
       await (conversation.startSession as any)({
         agentId: selectedCounsellor.agentId,
+        connectionType: "webrtc",
       });
     } catch (err: any) {
       if (mountedRef.current) {
@@ -317,6 +343,8 @@ const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
     ? "hsla(125, 30%, 60%, 0.25)"
     : "none";
 
+  const selectedCountry = COUNTRIES.find((c) => c.value === country)!;
+
   // Setup screen - counsellor selection
   if (voiceState === "setup") {
     return createPortal(
@@ -338,39 +366,63 @@ const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
             </span>
           </p>
 
-          {/* Country Selection */}
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <Globe className="w-4 h-4 text-muted-foreground" />
-            <select
-              value={country}
-              onChange={(e) => setCountry(e.target.value as Country)}
-              className="bg-muted border border-border rounded-lg px-3 py-1.5 text-sm text-foreground"
+          {/* Polished Country Selector */}
+          <div className="relative mb-6" ref={countryRef}>
+            <button
+              onClick={() => setCountryOpen(!countryOpen)}
+              className="mx-auto flex items-center gap-2.5 bg-card border border-border rounded-xl px-4 py-2.5 text-sm text-foreground hover:bg-muted/50 transition-colors shadow-sm"
             >
-              <option value="AU">Australia</option>
-              <option value="UK">United Kingdom</option>
-              <option value="OTHER">Other</option>
-            </select>
+              <Globe className="w-4 h-4 text-muted-foreground" />
+              <span className="text-lg leading-none">{selectedCountry.flag}</span>
+              <span>{selectedCountry.label}</span>
+              <svg className={`w-4 h-4 text-muted-foreground transition-transform ${countryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            {countryOpen && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-10 min-w-[200px]">
+                {COUNTRIES.map((c) => (
+                  <button
+                    key={c.value}
+                    onClick={() => { setCountry(c.value); setCountryOpen(false); }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-muted/50 transition-colors ${
+                      country === c.value ? "bg-primary/5 text-primary font-medium" : "text-foreground"
+                    }`}
+                  >
+                    <span className="text-lg">{c.flag}</span>
+                    <span>{c.label}</span>
+                    {country === c.value && <CheckCircle2 className="w-4 h-4 text-primary ml-auto" />}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Counsellor Cards */}
+          {/* Counsellor Cards with Avatar Images */}
           <div className="grid grid-cols-2 gap-4 mb-8">
             {COUNSELLORS.map((c) => (
               <button
                 key={c.name}
                 onClick={() => handleSelectCounsellor(c)}
-                className={`p-5 rounded-xl border-2 transition-all duration-200 text-left ${
+                className={`p-5 rounded-xl border-2 transition-all duration-200 text-left group ${
                   selectedCounsellor?.name === c.name
-                    ? "border-primary bg-primary/5 shadow-lg"
+                    ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
                     : "border-border bg-card hover:border-primary/40 hover:bg-muted/50"
                 }`}
               >
-                <Avatar className="h-14 w-14 mx-auto mb-3 border-2 border-primary/20">
-                  <AvatarFallback className="bg-primary/10 text-primary text-xl font-semibold">
-                    {c.initial}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative mx-auto mb-3 w-20 h-20">
+                  <Avatar className="h-20 w-20 border-2 border-primary/20 group-hover:border-primary/40 transition-colors">
+                    <AvatarImage src={c.avatar} alt={c.name} className="object-cover" />
+                    <AvatarFallback className="bg-primary/10 text-primary text-2xl font-semibold">
+                      {c.initial}
+                    </AvatarFallback>
+                  </Avatar>
+                  {selectedCounsellor?.name === c.name && (
+                    <div className="absolute -bottom-1 -right-1 bg-primary rounded-full p-0.5">
+                      <CheckCircle2 className="w-4 h-4 text-primary-foreground" />
+                    </div>
+                  )}
+                </div>
                 <h3 className="text-foreground font-medium text-center">{c.name}</h3>
-                <p className="text-muted-foreground text-xs text-center mt-1">{c.description}</p>
+                <p className="text-muted-foreground text-xs text-center mt-1 leading-relaxed">{c.description}</p>
               </button>
             ))}
           </div>
@@ -378,7 +430,7 @@ const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
           <button
             onClick={handleStartSession}
             disabled={!selectedCounsellor}
-            className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-medium transition-all hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
+            className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-medium transition-all hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
           >
             Start Voice Session
           </button>
@@ -494,6 +546,7 @@ const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
             boxShadow: isActive ? `0 0 60px ${glowColor}, 0 0 120px ${glowColor}` : "none",
           }}
         >
+          <AvatarImage src={selectedCounsellor?.avatar} alt={selectedCounsellor?.name} className="object-cover" />
           <AvatarFallback className="bg-primary/10 text-primary text-5xl font-semibold">
             {selectedCounsellor?.initial}
           </AvatarFallback>
