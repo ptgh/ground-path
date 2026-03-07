@@ -51,7 +51,7 @@ const About = () => {
                     Qualified & Experienced Social Work
                   </h3>
                   <p className="text-gray-600 leading-relaxed text-sm">
-                    At Ground Path, we are a team of qualified professionals, providing person-centred, evidence-based support grounded in the AASW Code of Ethics and best-practice standards.
+                    At Ground Path, I provide person-centred, evidence-based support grounded in the AASW Code of Ethics and best-practice standards.
                   </p>
                 </div>
 
@@ -119,13 +119,13 @@ const About = () => {
                 </div>
               </button>
 
-              <button 
+               <button 
                 onClick={() => setIsSWEOpen(true)}
                 className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
               >
                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
                   <div className="text-lg font-light text-sage-600">SWE</div>
-                  <div className="text-gray-600 text-xs">Professional Registration</div>
+                  <div className="text-gray-600 text-xs">Eligible for Registration</div>
                   <div className="text-xs text-gray-500 text-center">Social Work England</div>
                 </div>
               </button>
@@ -152,7 +152,7 @@ const About = () => {
                 </div>
               </button>
 
-              <button 
+               <button 
                 onClick={() => setIsProfessionalIndemnityOpen(true)}
                 className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
               >
@@ -162,6 +162,14 @@ const About = () => {
                   <div className="text-xs text-gray-500 text-center">Client protection & professional liability</div>
                 </div>
               </button>
+
+              <div className="w-full bg-white h-24 rounded-xl shadow-lg border border-gray-100">
+                <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
+                  <div className="text-lg font-light text-sage-600">Qualifications</div>
+                  <div className="text-gray-600 text-xs">Academic & Professional</div>
+                  <div className="text-xs text-gray-500 text-center">BCom, MSW, GradCert Counselling (in progress)</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
