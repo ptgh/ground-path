@@ -97,11 +97,11 @@ const Contact = () => {
           </h2>
           <div className="fade-in w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
           <p className="fade-in text-lg text-gray-600 max-w-2xl mx-auto">
-            Ready to start your journey? Contact us to book a session or ask any questions
+            All sessions are currently conducted online via Microsoft Teams. Book below or contact us with any questions.
           </p>
           <div className="fade-in flex justify-center mt-6">
             <a 
-              href="https://www.halaxy.com/book/paul-habermann/location/1321025"
+              href="https://www.halaxy.com/book/lachlan-mcdonald/location/138057"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sage-600 hover:text-sage-700 transition-colors"
@@ -113,7 +113,7 @@ const Contact = () => {
                 loading="lazy"
                 decoding="async"
               />
-              <span className="text-sm font-medium">Book Online</span>
+              <span className="text-sm font-medium">Book Online via Microsoft Teams</span>
             </a>
           </div>
         </div>
@@ -137,32 +137,31 @@ const Contact = () => {
                 
                 <div className="flex items-start space-x-4">
                   <div className="h-5 w-5 text-sage-600 mt-0.5">📍</div>
-                  <div>
-                    <div className="font-medium text-gray-900">Locations</div>
-                    <div className="text-gray-600">
-                      Perth-based (in-person sessions)<br />
-                      London availability on request<br />
-                      Telehealth Worldwide
-                    </div>
-                  </div>
+                   <div>
+                     <div className="font-medium text-gray-900">Service Delivery</div>
+                     <div className="text-gray-600">
+                       All sessions online via Microsoft Teams<br />
+                       In-person sessions coming soon (Perth, WA)
+                     </div>
+                   </div>
                 </div>
               </div>
             </div>
 
             {/* Booking Information */}
             <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
-              <h4 className="font-medium text-gray-900 mb-4">Quick Booking</h4>
+              <h4 className="font-medium text-gray-900 mb-4">Book an Online Session</h4>
               <p className="text-gray-600 mb-6">
-                Ready to book? Use our integrated calendar system or contact us directly.
+                All sessions are via Microsoft Teams. Book a time that suits you and receive your meeting link automatically.
               </p>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => window.open('https://www.halaxy.com/book/paul-habermann/location/1321025', '_blank')}
+                    onClick={() => window.open('https://www.halaxy.com/book/lachlan-mcdonald/location/138057', '_blank')}
                     className="flex-1 bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium"
-                    aria-label="Book appointment via Halaxy Calendar"
+                    aria-label="Book online session via Halaxy"
                   >
-                    Book via Halaxy Calendar
+                    Book Online Session
                   </button>
                   <a 
                     href="https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983"

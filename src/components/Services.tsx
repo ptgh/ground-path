@@ -3,29 +3,30 @@ const Services = () => {
   const services = [
     {
       name: "Mental Health Support",
-      format: "Telehealth (50 mins)",
+      format: "Online via Microsoft Teams (50 mins)",
       rate: "$120",
-      description: "Social Worker providing professional support via secure video calls"
+      description: "Social Worker providing professional support via secure Microsoft Teams video calls"
     },
     {
       name: "Psychosocial Recovery Coaching",
-      format: "Telehealth or In-person",
+      format: "Online via Microsoft Teams",
       rate: "$100",
-      description: "NDIS-funded support for psychosocial recovery and daily living skills",
+      description: "NDIS-funded support for psychosocial recovery and daily living skills — delivered online",
       ndis: true
     },
     {
       name: "ACA Counselling Support",
-      format: "Telehealth (50 mins)",
+      format: "Online via Microsoft Teams (50 mins)",
       rate: "$80",
-      description: "Coming soon - ACA registration in progress",
+      description: "Coming soon — ACA registration in progress",
       comingSoon: true
     },
     {
       name: "In-Person Support",
-      format: "60 minutes",
+      format: "Perth, WA (60 mins)",
       rate: "$110-130",
-      description: "Face-to-face sessions in Perth, with London availability on request"
+      description: "Face-to-face sessions coming soon — currently all sessions are conducted online via Microsoft Teams",
+      comingSoon: true
     }
   ];
 
