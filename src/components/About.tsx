@@ -51,7 +51,7 @@ const About = () => {
                     Qualified & Experienced Social Work
                   </h3>
                   <p className="text-gray-600 leading-relaxed text-sm">
-                    At Ground Path, I provide person-centred, evidence-based support grounded in the AASW Code of Ethics and best-practice standards.
+                    At Ground Path, we provide person-centred, evidence-based support grounded in the AASW Code of Ethics and best-practice standards.
                   </p>
                 </div>
 
