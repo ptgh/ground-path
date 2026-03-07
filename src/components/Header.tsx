@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Menu, X, User, LogOut } from 'lucide-react';
+import { Menu, X, User, LogOut, FileText, BookOpen, LayoutDashboard, Newspaper } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -75,21 +75,13 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Debug logging for navigation tracking
-  console.log('Header rendering - Current route:', location.pathname);
 
-  // Determine if we should show auth based purely on current route
   const shouldShowAuth = location.pathname.includes('/practitioner/');
-  
-  console.log('Should show auth:', shouldShowAuth, 'for route:', location.pathname);
+  const isPractitionerRoute = shouldShowAuth;
 
   const scrollToSection = (sectionId: string) => {
-    // If we're not on the home page, navigate there first
     if (location.pathname !== '/') {
-      console.log('Navigating to home page to access section:', sectionId);
       navigate('/');
-      // Let the page load, then scroll
       setTimeout(() => {
         const element = document.getElementById(sectionId);
         element?.scrollIntoView({ behavior: 'smooth' });
@@ -102,77 +94,93 @@ const Header = () => {
   };
 
   const handleProfessionalLogin = () => {
-    console.log('Professional login clicked - navigating to /practitioner/auth');
     navigate('/practitioner/auth');
   };
+
+  const practitionerNavItems = [
+    { label: 'Dashboard', path: '/practitioner/dashboard', icon: LayoutDashboard },
+    { label: 'Forms', path: '/practitioner/forms', icon: FileText },
+    { label: 'Resources', path: '/resources', icon: BookOpen },
+  ];
+
+  const publicNavItems = [
+    { label: 'Home', action: () => scrollToSection('home') },
+    { label: 'About', action: () => scrollToSection('about') },
+    { label: 'Services', action: () => scrollToSection('services') },
+    { label: 'Client Resources', action: () => navigate('/resources') },
+    { label: 'Newsletter', action: () => scrollToSection('newsletter') },
+    { label: 'Contact', action: () => scrollToSection('contact') },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
-          <div className="logo-animate cursor-pointer" onClick={() => {
-            console.log('Logo clicked - navigating to home');
-            navigate('/');
-          }}>
+          <div className="logo-animate cursor-pointer" onClick={() => navigate(isPractitionerRoute ? '/practitioner/dashboard' : '/')}>
             <Logo />
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
-            <button 
-              onClick={() => scrollToSection('home')}
-              className="text-gray-300 hover:text-white transition-colors font-medium"
-            >
-              Home
-            </button>
-            <button 
-              onClick={() => scrollToSection('about')}
-              className="text-gray-300 hover:text-white transition-colors font-medium"
-            >
-              About
-            </button>
-            <button 
-              onClick={() => scrollToSection('services')}
-              className="text-gray-300 hover:text-white transition-colors font-medium"
-            >
-              Services
-            </button>
-            <button 
-              onClick={() => navigate('/resources')}
-              className="text-gray-300 hover:text-white transition-colors font-medium"
-            >
-              Client Resources
-            </button>
-            <button 
-              onClick={() => scrollToSection('newsletter')}
-              className="text-gray-300 hover:text-white transition-colors font-medium"
-            >
-              Newsletter
-            </button>
-            <button 
-              onClick={() => scrollToSection('contact')}
-              className="text-gray-300 hover:text-white transition-colors font-medium"
-            >
-              Contact
-            </button>
+          <nav className="hidden md:flex items-center space-x-1">
+            {isPractitionerRoute ? (
+              <>
+                {practitionerNavItems.map((item) => {
+                  const isActive = location.pathname === item.path;
+                  return (
+                    <button
+                      key={item.label}
+                      onClick={() => { navigate(item.path); setIsMenuOpen(false); }}
+                      className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'text-white bg-white/10'
+                          : 'text-gray-300 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      {item.label}
+                    </button>
+                  );
+                })}
+                {/* Separator + public links */}
+                <div className="w-px h-5 bg-gray-700 mx-2" />
+                <button
+                  onClick={() => navigate('/')}
+                  className="text-gray-400 hover:text-white transition-colors text-sm font-medium px-3 py-2"
+                >
+                  View Site
+                </button>
+              </>
+            ) : (
+              publicNavItems.map((item) => (
+                <button
+                  key={item.label}
+                  onClick={item.action}
+                  className="text-gray-300 hover:text-white transition-colors font-medium px-3 py-2 rounded-md hover:bg-white/5 text-sm"
+                >
+                  {item.label}
+                </button>
+              ))
+            )}
           </nav>
 
-          {/* Practitioner Menu */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Right side */}
+          <div className="hidden md:flex items-center gap-3">
             {shouldShowAuth ? (
               <AuthAwareSection />
             ) : (
               <>
-                <Button 
+                <Button
+                  variant="outline"
                   onClick={() => scrollToSection('contact')}
-                  className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                  className="border-primary/40 text-primary-foreground bg-primary hover:bg-primary/90 px-5 py-2 rounded-lg font-medium text-sm"
                 >
                   Book a Session
                 </Button>
-                <Button 
+                <Button
+                  variant="outline"
                   onClick={handleProfessionalLogin}
-                  className="bg-sage-600 text-white px-6 py-2 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium"
+                  className="border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 px-5 py-2 rounded-lg font-medium text-sm"
                 >
                   Professional Login
                 </Button>
@@ -192,54 +200,56 @@ const Header = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-800">
-            <nav className="flex flex-col space-y-3 px-2">
-              <button 
-                onClick={() => scrollToSection('home')}
-                className="text-left text-gray-300 hover:text-white transition-colors font-medium"
-              >
-                Home
-              </button>
-              <button 
-                onClick={() => scrollToSection('about')}
-                className="text-left text-gray-300 hover:text-white transition-colors font-medium"
-              >
-                About
-              </button>
-              <button 
-                onClick={() => scrollToSection('services')}
-                className="text-left text-gray-300 hover:text-white transition-colors font-medium"
-              >
-                Services
-              </button>
-              <button 
-                onClick={() => navigate('/resources')}
-                className="text-left text-gray-300 hover:text-white transition-colors font-medium"
-              >
-                Client Resources
-              </button>
-              <button 
-                onClick={() => scrollToSection('newsletter')}
-                className="text-left text-gray-300 hover:text-white transition-colors font-medium"
-              >
-                Newsletter
-              </button>
-              <button 
-                onClick={() => scrollToSection('contact')}
-                className="text-left text-gray-300 hover:text-white transition-colors font-medium"
-              >
-                Contact
-              </button>
-              {!shouldShowAuth && (
+            <nav className="flex flex-col space-y-1 px-2">
+              {isPractitionerRoute ? (
                 <>
-                  <Button 
-                    onClick={() => scrollToSection('contact')}
-                    className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors font-medium w-full mb-2"
+                  {practitionerNavItems.map((item) => {
+                    const isActive = location.pathname === item.path;
+                    return (
+                      <button
+                        key={item.label}
+                        onClick={() => { navigate(item.path); setIsMenuOpen(false); }}
+                        className={`flex items-center gap-2 text-left px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                          isActive
+                            ? 'text-white bg-white/10'
+                            : 'text-gray-300 hover:text-white hover:bg-white/5'
+                        }`}
+                      >
+                        <item.icon className="h-4 w-4" />
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                  <div className="border-t border-gray-700 my-2" />
+                  <button
+                    onClick={() => { navigate('/'); setIsMenuOpen(false); }}
+                    className="text-left text-gray-400 hover:text-white transition-colors text-sm font-medium px-3 py-2.5"
+                  >
+                    View Site
+                  </button>
+                </>
+              ) : (
+                <>
+                  {publicNavItems.map((item) => (
+                    <button
+                      key={item.label}
+                      onClick={() => { item.action(); setIsMenuOpen(false); }}
+                      className="text-left text-gray-300 hover:text-white transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-white/5 text-sm"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                  <div className="border-t border-gray-700 my-2" />
+                  <Button
+                    onClick={() => { scrollToSection('contact'); setIsMenuOpen(false); }}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 w-full mb-2"
                   >
                     Book a Session
                   </Button>
-                  <Button 
-                    onClick={handleProfessionalLogin}
-                    className="bg-sage-600 text-white px-6 py-2 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium w-full"
+                  <Button
+                    variant="outline"
+                    onClick={() => { handleProfessionalLogin(); setIsMenuOpen(false); }}
+                    className="border-gray-600 text-gray-300 hover:text-white w-full"
                   >
                     Professional Login
                   </Button>

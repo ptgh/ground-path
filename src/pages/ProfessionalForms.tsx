@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -54,6 +55,7 @@ const ProfessionalForms = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [viewingForm, setViewingForm] = useState<ProfessionalForm | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const userRoles = roles.map(r => r.role);
   const isSocialWorker = userRoles.includes('social_worker');
@@ -62,6 +64,17 @@ const ProfessionalForms = () => {
   // Scroll to top when category changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [selectedCategory]);
+
+  // Stagger-animate form cards on category change
+  useEffect(() => {
+    if (gridRef.current) {
+      const cards = gridRef.current.querySelectorAll('.form-card');
+      gsap.fromTo(cards, 
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.35, stagger: 0.05, ease: 'power2.out' }
+      );
+    }
   }, [selectedCategory]);
 
   const formCategories: FormCategory[] = [
@@ -456,13 +469,13 @@ const ProfessionalForms = () => {
           </div>
 
           {/* Forms Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {getFilteredForms().map(form => {
               const FormTypeIcon = getFormTypeIcon(form.formType);
               const typeBadge = getFormTypeBadge(form.formType);
               
               return (
-                <Card key={form.id} className="group hover:shadow-lg transition-all duration-200 flex flex-col">
+                <Card key={form.id} className="form-card group hover:shadow-lg transition-all duration-200 flex flex-col opacity-0">
                   <CardHeader className="pb-3 flex-1">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -575,10 +588,10 @@ const ProfessionalForms = () => {
                     please contact your supervisor or professional body.
                   </p>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => navigate('/#contact')}>
                       Contact Support
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => window.open('https://www.aasw.asn.au/practitioner-resources/practice-standards', '_blank')}>
                       View Guidelines
                     </Button>
                   </div>
