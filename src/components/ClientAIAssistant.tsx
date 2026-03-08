@@ -256,6 +256,18 @@ export const ClientAIAssistant = () => {
     localStorage.setItem(SESSION_MODE_KEY, String(isSessionMode));
   }, [isSessionMode]);
 
+  // Close country dropdown on outside click
+  useEffect(() => {
+    if (!countryOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (countryDropdownRef.current && !countryDropdownRef.current.contains(e.target as Node)) {
+        setCountryOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [countryOpen]);
+
   // Auto-scroll
   useEffect(() => {
     if (scrollRef.current) {
