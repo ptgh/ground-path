@@ -18,7 +18,7 @@ interface Message {
   isCrisis?: boolean;
 }
 
-type Country = 'AU' | 'UK';
+type Country = 'AU' | 'UK' | 'OTHER';
 
 const STORAGE_KEY = 'groundpath_client_conversation';
 const COUNTRY_KEY = 'groundpath_client_country';
