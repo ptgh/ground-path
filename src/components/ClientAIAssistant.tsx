@@ -151,7 +151,7 @@ export const ClientAIAssistant = () => {
   const getInitialMessage = (selectedCountry: Country): Message => ({
     id: '1',
     role: 'assistant',
-    content: `Hello! I'm Ground Path's Support Assistant. I'm here to help you find the right mental health and social work support${selectedCountry === 'AU' ? ' in Australia' : ' in the UK'}.\n\nI can answer questions about:\n• Our counselling and therapy services\n• Mental health resources and information\n• ${selectedCountry === 'AU' ? 'NDIS support and navigation' : 'NHS mental health services'}\n• Finding the right professional support\n\nPlease note: I provide information and guidance, not clinical advice. For personalised treatment, please consult a qualified professional.\n\nHow can I help you today?`,
+    content: `Hello! I'm Ground Path's Support Assistant. I'm here to help you find the right mental health and social work support${selectedCountry === 'AU' ? ' in Australia' : selectedCountry === 'UK' ? ' in the UK' : ''}.\n\nI can answer questions about:\n• Our counselling and therapy services\n• Mental health resources and information\n• ${selectedCountry === 'AU' ? 'NDIS support and navigation' : selectedCountry === 'UK' ? 'NHS mental health services' : 'Finding local mental health services'}\n• Finding the right professional support\n\nPlease note: I provide information and guidance, not clinical advice. For personalised treatment, please consult a qualified professional.\n\nHow can I help you today?`,
     timestamp: new Date()
   });
 
