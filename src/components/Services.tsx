@@ -3,7 +3,7 @@ const Services = () => {
   const services = [
     {
       name: "Mental Health Support",
-      format: "Online via Microsoft Teams (50 mins)",
+      format: "Online via Microsoft Teams",
       rate: "$120",
       description: "Social Worker providing professional support via secure Microsoft Teams video calls"
     },
@@ -15,15 +15,22 @@ const Services = () => {
       ndis: true
     },
     {
+      name: "Accredited Mental Health Social Worker (AMHSW)",
+      format: "Online via Microsoft Teams",
+      rate: "TBC",
+      description: "AMHSW registration currently in progress — service coming soon",
+      comingSoon: true
+    },
+    {
       name: "ACA Counselling Support",
-      format: "Online via Microsoft Teams (50 mins)",
+      format: "Online via Microsoft Teams",
       rate: "$80",
-      description: "Coming soon — ACA registration in progress",
+      description: "Australian Counselling Association (ACA) registration in progress — service coming soon",
       comingSoon: true
     },
     {
       name: "In-Person Support",
-      format: "Perth, WA (60 mins)",
+      format: "Perth, WA",
       rate: "$110-130",
       description: "Face-to-face sessions coming soon — currently all sessions are conducted online via Microsoft Teams",
       comingSoon: true
