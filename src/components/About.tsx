@@ -97,16 +97,16 @@ const About = () => {
                 </div>
               </button>
 
-              <button 
-                onClick={() => setIsAASWOpen(true)}
-                className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
-              >
-                <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
-                  <div className="text-lg font-light text-sage-600">AASW</div>
-                  <div className="text-gray-600 text-xs">Professional Registration</div>
-                  <div className="text-xs text-gray-500 text-center">Australian Association of Social Workers</div>
-                </div>
-              </button>
+               <button 
+                 onClick={() => setIsAASWOpen(true)}
+                 className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+               >
+                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
+                   <div className="text-lg font-light text-sage-600">AASW</div>
+                   <div className="text-gray-600 text-xs">Professional Registration</div>
+                   <div className="text-xs text-gray-500 text-center">Australian Association of Social Workers (AASW)</div>
+                 </div>
+               </button>
 
               <button 
                 onClick={() => setIsCPDOpen(true)}
@@ -120,15 +120,15 @@ const About = () => {
               </button>
 
                <button 
-                onClick={() => setIsSWEOpen(true)}
-                className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
-              >
-                <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
-                  <div className="text-lg font-light text-sage-600">SWE</div>
-                  <div className="text-gray-600 text-xs">Eligible for Registration</div>
-                  <div className="text-xs text-gray-500 text-center">Social Work England</div>
-                </div>
-              </button>
+                 onClick={() => setIsSWEOpen(true)}
+                 className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+               >
+                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
+                   <div className="text-lg font-light text-sage-600">SWE</div>
+                   <div className="text-gray-600 text-xs">Professional Registration</div>
+                   <div className="text-xs text-gray-500 text-center">Social Work England (SWE)</div>
+                 </div>
+               </button>
 
               <button 
                 onClick={() => setIsNDISOpen(true)}
