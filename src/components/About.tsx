@@ -165,6 +165,22 @@ const About = () => {
 
               <div className="w-full bg-white h-24 rounded-xl shadow-lg border border-gray-100">
                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
+                  <div className="text-lg font-light text-sage-600">AMHSW</div>
+                  <div className="text-gray-600 text-xs">Accredited Mental Health Social Worker</div>
+                  <div className="text-xs text-gray-500 text-center">Registration in progress</div>
+                </div>
+              </div>
+
+              <div className="w-full bg-white h-24 rounded-xl shadow-lg border border-gray-100">
+                <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
+                  <div className="text-lg font-light text-sage-600">ACA</div>
+                  <div className="text-gray-600 text-xs">Australian Counselling Association</div>
+                  <div className="text-xs text-gray-500 text-center">Registration in progress</div>
+                </div>
+              </div>
+
+              <div className="w-full bg-white h-24 rounded-xl shadow-lg border border-gray-100">
+                <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
                   <div className="text-lg font-light text-sage-600">Qualifications</div>
                   <div className="text-gray-600 text-xs">Academic & Professional</div>
                   <div className="text-xs text-gray-500 text-center">BCom, MSW, GradCert Counselling (in progress)</div>
