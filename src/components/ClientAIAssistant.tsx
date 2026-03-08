@@ -165,11 +165,19 @@ export const ClientAIAssistant = () => {
         text: 'Crisis Text Line: Text 0477 131 114'
       };
     }
+    if (country === 'UK') {
+      return {
+        primary: { name: 'Samaritans', number: '116 123' },
+        secondary: { name: 'Mind', number: '0300 123 3393' },
+        emergency: '999',
+        text: 'Crisis Text Line: Text SHOUT to 85258'
+      };
+    }
     return {
-      primary: { name: 'Samaritans', number: '116 123' },
-      secondary: { name: 'Mind', number: '0300 123 3393' },
-      emergency: '999',
-      text: 'Crisis Text Line: Text SHOUT to 85258'
+      primary: { name: 'Crisis Line', number: '112' },
+      secondary: { name: 'Local Services', number: '' },
+      emergency: '112',
+      text: 'Contact your local emergency services'
     };
   }, [country]);
 
