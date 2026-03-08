@@ -957,9 +957,9 @@ export const ClientAIAssistant = () => {
 
           {/* Disclaimer */}
           <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
-            <p className="text-[10px] text-gray-400 text-center">
+            <p className="text-[10px] text-muted-foreground text-center">
               AI assistant providing information only. Not a substitute for professional advice. 
-              {country === 'AU' ? ' Crisis: Lifeline 13 11 14' : ' Crisis: Samaritans 116 123'}
+              {country === 'AU' ? ' Crisis: Lifeline 13 11 14' : country === 'UK' ? ' Crisis: Samaritans 116 123' : ' In crisis? Contact your local emergency services.'}
             </p>
           </div>
 
