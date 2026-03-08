@@ -4,7 +4,7 @@ const Services = () => {
     {
       name: "Mental Health Support",
       format: "Online via Microsoft Teams",
-      rate: "$120",
+      rate: "$110",
       description: "Social Worker providing professional support via secure Microsoft Teams video calls"
     },
     {
@@ -17,7 +17,7 @@ const Services = () => {
     {
       name: "Accredited Mental Health Social Worker (AMHSW)",
       format: "Online via Microsoft Teams",
-      rate: "TBC",
+      rate: "$120",
       description: "AMHSW registration currently in progress — service coming soon",
       comingSoon: true
     },
@@ -31,7 +31,7 @@ const Services = () => {
     {
       name: "In-Person Support",
       format: "Perth, WA",
-      rate: "$110-130",
+      rate: "$120",
       description: "Face-to-face sessions coming soon — currently all sessions are conducted online via Microsoft Teams",
       comingSoon: true
     }
@@ -61,7 +61,7 @@ const Services = () => {
                 </div>
                 <div className="flex gap-2">
                   {service.comingSoon && (
-                    <span className="bg-sage-50 text-sage-600 border border-sage-200 px-3 py-1 rounded-full text-xs font-medium tracking-wide uppercase">
+                    <span className="bg-sage-50 text-sage-600 border border-sage-200 px-3 py-1 rounded-full text-xs font-medium tracking-wide uppercase whitespace-nowrap">
                       Coming Soon
                     </span>
                   )}
