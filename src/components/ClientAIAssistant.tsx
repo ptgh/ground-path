@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Send, User, Loader2, Trash2, Globe, Calendar, AlertTriangle, Phone, Mail, X, Clock, Square, Mic } from 'lucide-react';
+import { MessageCircle, Send, User, Loader2, Trash2, Globe, Calendar, AlertTriangle, Phone, Mail, X, Clock, Square, Mic, CheckCircle2 } from 'lucide-react';
 import VoiceCounsellingSession from './VoiceCounsellingSession';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,7 +18,7 @@ interface Message {
   isCrisis?: boolean;
 }
 
-type Country = 'AU' | 'UK';
+type Country = 'AU' | 'UK' | 'OTHER';
 
 const STORAGE_KEY = 'groundpath_client_conversation';
 const COUNTRY_KEY = 'groundpath_client_country';
@@ -140,6 +140,8 @@ export const ClientAIAssistant = () => {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [showVoiceSession, setShowVoiceSession] = useState(false);
+  const [countryOpen, setCountryOpen] = useState(false);
+  const countryDropdownRef = useRef<HTMLDivElement>(null);
   
   const { toast } = useToast();
   const chatButtonRef = useRef<HTMLButtonElement>(null);
@@ -151,7 +153,7 @@ export const ClientAIAssistant = () => {
   const getInitialMessage = (selectedCountry: Country): Message => ({
     id: '1',
     role: 'assistant',
-    content: `Hello! I'm Ground Path's Support Assistant. I'm here to help you find the right mental health and social work support${selectedCountry === 'AU' ? ' in Australia' : ' in the UK'}.\n\nI can answer questions about:\n• Our counselling and therapy services\n• Mental health resources and information\n• ${selectedCountry === 'AU' ? 'NDIS support and navigation' : 'NHS mental health services'}\n• Finding the right professional support\n\nPlease note: I provide information and guidance, not clinical advice. For personalised treatment, please consult a qualified professional.\n\nHow can I help you today?`,
+    content: `Hello! I'm Ground Path's Support Assistant. I'm here to help you find the right mental health and social work support${selectedCountry === 'AU' ? ' in Australia' : selectedCountry === 'UK' ? ' in the UK' : ''}.\n\nI can answer questions about:\n• Our counselling and therapy services\n• Mental health resources and information\n• ${selectedCountry === 'AU' ? 'NDIS support and navigation' : selectedCountry === 'UK' ? 'NHS mental health services' : 'Finding local mental health services'}\n• Finding the right professional support\n\nPlease note: I provide information and guidance, not clinical advice. For personalised treatment, please consult a qualified professional.\n\nHow can I help you today?`,
     timestamp: new Date()
   });
 
@@ -165,11 +167,19 @@ export const ClientAIAssistant = () => {
         text: 'Crisis Text Line: Text 0477 131 114'
       };
     }
+    if (country === 'UK') {
+      return {
+        primary: { name: 'Samaritans', number: '116 123' },
+        secondary: { name: 'Mind', number: '0300 123 3393' },
+        emergency: '999',
+        text: 'Crisis Text Line: Text SHOUT to 85258'
+      };
+    }
     return {
-      primary: { name: 'Samaritans', number: '116 123' },
-      secondary: { name: 'Mind', number: '0300 123 3393' },
-      emergency: '999',
-      text: 'Crisis Text Line: Text SHOUT to 85258'
+      primary: { name: 'Crisis Line', number: '112' },
+      secondary: { name: 'Local Services', number: '' },
+      emergency: '112',
+      text: 'Contact your local emergency services'
     };
   }, [country]);
 
@@ -245,6 +255,18 @@ export const ClientAIAssistant = () => {
   useEffect(() => {
     localStorage.setItem(SESSION_MODE_KEY, String(isSessionMode));
   }, [isSessionMode]);
+
+  // Close country dropdown on outside click
+  useEffect(() => {
+    if (!countryOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (countryDropdownRef.current && !countryDropdownRef.current.contains(e.target as Node)) {
+        setCountryOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [countryOpen]);
 
   // Auto-scroll
   useEffect(() => {
@@ -498,11 +520,16 @@ export const ClientAIAssistant = () => {
     "How can I access NDIS support?",
     "How do I book a counselling session?",
     "What mental health resources are available?"
-  ] : [
+  ] : country === 'UK' ? [
     "What services does Ground Path offer?",
     "How do I access NHS mental health support?",
     "How do I book a counselling session?",
     "What mental health resources are available?"
+  ] : [
+    "What services does Ground Path offer?",
+    "How do I book a counselling session?",
+    "What mental health resources are available?",
+    "How can I find local support?"
   ];
 
   // Animations
@@ -657,22 +684,25 @@ export const ClientAIAssistant = () => {
           {/* Country Selection Overlay */}
           {showCountryPrompt && (
             <div className="absolute inset-0 z-50 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 rounded-lg">
-              <Globe className="h-12 w-12 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Welcome to Ground Path</h3>
-              <p className="text-gray-600 text-center mb-6">Please select your location so I can provide relevant resources and information.</p>
-              <div className="flex gap-4">
-                <Button 
-                  onClick={() => selectCountry('AU')}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700"
-                >
-                  🇦🇺 Australia
-                </Button>
-                <Button 
-                  onClick={() => selectCountry('UK')}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700"
-                >
-                  🇬🇧 United Kingdom
-                </Button>
+              <Globe className="h-12 w-12 text-primary mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">Welcome to Ground Path</h3>
+              <p className="text-muted-foreground text-center mb-6">Please select your location so I can provide relevant resources and information.</p>
+              <div className="flex flex-col gap-2 w-full max-w-[240px]">
+                {[
+                  { value: 'AU' as Country, label: 'Australia' },
+                  { value: 'UK' as Country, label: 'UK' },
+                  { value: 'OTHER' as Country, label: 'Global' },
+                ].map((c) => (
+                  <Button
+                    key={c.value}
+                    onClick={() => selectCountry(c.value)}
+                    variant="outline"
+                    className="w-full justify-start gap-3 px-4 py-3 text-sm border-border hover:bg-muted/50"
+                  >
+                    <Globe className="h-4 w-4 text-muted-foreground" />
+                    {c.label}
+                  </Button>
+                ))}
               </div>
             </div>
           )}
@@ -715,14 +745,22 @@ export const ClientAIAssistant = () => {
             </div>
           )}
 
-          <DialogHeader className={`p-4 border-b border-gray-200 bg-gradient-to-r ${sessionHeaderBg}`}>
-            <DialogTitle className="flex items-center justify-between text-lg text-gray-900">
+          <DialogHeader className={`p-4 border-b border-border bg-gradient-to-r ${sessionHeaderBg}`}>
+            <DialogTitle className="flex items-center justify-between text-lg text-foreground">
               <div className="flex items-center gap-3">
-                <div className={`h-8 w-8 rounded-full ${sessionBg} flex items-center justify-center shadow-md`}>
-                  <MessageCircle className="h-4 w-4 text-white" />
-                </div>
+                {/* Logo */}
+                <svg width="32" height="32" viewBox="0 0 40 40" className="flex-shrink-0">
+                  <path
+                    d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
+                    fill="none"
+                    stroke="#7B9B85"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
                 <div>
-                  <span className="block">Ground Path Support</span>
+                  <span className="block font-medium">Ground Path Support</span>
                   {isSessionMode && (
                     <span className="text-xs font-normal text-amber-600 flex items-center gap-1">
                       <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
@@ -731,7 +769,7 @@ export const ClientAIAssistant = () => {
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -745,7 +783,7 @@ export const ClientAIAssistant = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowEmailModal(true)}
-                  className="h-8 w-8 p-0 text-muted-foreground hover:text-blue-600"
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
                   title="Email transcript"
                 >
                   <Mail className="h-4 w-4" />
@@ -759,23 +797,45 @@ export const ClientAIAssistant = () => {
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
-                <Select value={country} onValueChange={(v) => {
-                  const newCountry = v as Country;
-                  setCountry(newCountry);
-                  localStorage.setItem(COUNTRY_KEY, newCountry);
-                  setMessages([getInitialMessage(newCountry)]);
-                }}>
-                  <SelectTrigger className="w-20 h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="AU">🇦🇺 AU</SelectItem>
-                    <SelectItem value="UK">🇬🇧 UK</SelectItem>
-                  </SelectContent>
-                </Select>
+                {/* Country dropdown matching voice chat style */}
+                <div className="relative" ref={countryDropdownRef}>
+                  <button
+                    onClick={() => setCountryOpen(!countryOpen)}
+                    className="flex items-center gap-1.5 bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground hover:bg-muted/50 transition-colors"
+                  >
+                    <Globe className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span>{country === 'AU' ? 'Australia' : country === 'UK' ? 'UK' : 'Global'}</span>
+                    <svg className={`w-3 h-3 text-muted-foreground transition-transform ${countryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                  </button>
+                  {countryOpen && (
+                    <div className="absolute top-full right-0 mt-1 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50 min-w-[160px]">
+                      {([
+                        { value: 'AU' as Country, label: 'Australia' },
+                        { value: 'UK' as Country, label: 'UK' },
+                        { value: 'OTHER' as Country, label: 'Global' },
+                      ]).map((c) => (
+                        <button
+                          key={c.value}
+                          onClick={() => {
+                            setCountry(c.value);
+                            localStorage.setItem(COUNTRY_KEY, c.value);
+                            setMessages([getInitialMessage(c.value)]);
+                            setCountryOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted/50 transition-colors ${
+                            country === c.value ? "bg-primary/5 text-primary font-medium" : "text-foreground"
+                          }`}
+                        >
+                          <span>{c.label}</span>
+                          {country === c.value && <CheckCircle2 className="w-4 h-4 text-primary ml-auto" />}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </DialogTitle>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {isSessionMode 
                 ? "I'm here to listen. This is a supportive space, not professional therapy."
                 : "Get help finding mental health support and resources"
@@ -897,9 +957,9 @@ export const ClientAIAssistant = () => {
 
           {/* Disclaimer */}
           <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
-            <p className="text-[10px] text-gray-400 text-center">
+            <p className="text-[10px] text-muted-foreground text-center">
               AI assistant providing information only. Not a substitute for professional advice. 
-              {country === 'AU' ? ' Crisis: Lifeline 13 11 14' : ' Crisis: Samaritans 116 123'}
+              {country === 'AU' ? ' Crisis: Lifeline 13 11 14' : country === 'UK' ? ' Crisis: Samaritans 116 123' : ' In crisis? Contact your local emergency services.'}
             </p>
           </div>
 

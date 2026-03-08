@@ -105,6 +105,10 @@ const Hero = () => {
             <span className="text-xs sm:text-sm text-gray-600 font-medium text-center">Accredited Social Workers</span>
             <span className="text-gray-300 hidden lg:inline">•</span>
             <span className="text-xs sm:text-sm text-gray-600 font-medium text-center">NDIS Services</span>
+            <span className="text-gray-300 hidden lg:inline">•</span>
+            <span className="text-xs sm:text-sm text-gray-500 font-medium text-center">AMHSW <span className="text-gray-400 italic">(registration in progress)</span></span>
+            <span className="text-gray-300 hidden lg:inline">•</span>
+            <span className="text-xs sm:text-sm text-gray-500 font-medium text-center">ACA Counsellors <span className="text-gray-400 italic">(registration in progress)</span></span>
           </div>
         </div>
       </div>
