@@ -745,14 +745,22 @@ export const ClientAIAssistant = () => {
             </div>
           )}
 
-          <DialogHeader className={`p-4 border-b border-gray-200 bg-gradient-to-r ${sessionHeaderBg}`}>
-            <DialogTitle className="flex items-center justify-between text-lg text-gray-900">
+          <DialogHeader className={`p-4 border-b border-border bg-gradient-to-r ${sessionHeaderBg}`}>
+            <DialogTitle className="flex items-center justify-between text-lg text-foreground">
               <div className="flex items-center gap-3">
-                <div className={`h-8 w-8 rounded-full ${sessionBg} flex items-center justify-center shadow-md`}>
-                  <MessageCircle className="h-4 w-4 text-white" />
-                </div>
+                {/* Logo */}
+                <svg width="32" height="32" viewBox="0 0 40 40" className="flex-shrink-0">
+                  <path
+                    d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
+                    fill="none"
+                    stroke="#7B9B85"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
                 <div>
-                  <span className="block">Ground Path Support</span>
+                  <span className="block font-medium">Ground Path Support</span>
                   {isSessionMode && (
                     <span className="text-xs font-normal text-amber-600 flex items-center gap-1">
                       <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
@@ -761,7 +769,7 @@ export const ClientAIAssistant = () => {
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -775,7 +783,7 @@ export const ClientAIAssistant = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowEmailModal(true)}
-                  className="h-8 w-8 p-0 text-muted-foreground hover:text-blue-600"
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
                   title="Email transcript"
                 >
                   <Mail className="h-4 w-4" />
@@ -789,23 +797,45 @@ export const ClientAIAssistant = () => {
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
-                <Select value={country} onValueChange={(v) => {
-                  const newCountry = v as Country;
-                  setCountry(newCountry);
-                  localStorage.setItem(COUNTRY_KEY, newCountry);
-                  setMessages([getInitialMessage(newCountry)]);
-                }}>
-                  <SelectTrigger className="w-20 h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="AU">🇦🇺 AU</SelectItem>
-                    <SelectItem value="UK">🇬🇧 UK</SelectItem>
-                  </SelectContent>
-                </Select>
+                {/* Country dropdown matching voice chat style */}
+                <div className="relative" ref={countryDropdownRef}>
+                  <button
+                    onClick={() => setCountryOpen(!countryOpen)}
+                    className="flex items-center gap-1.5 bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground hover:bg-muted/50 transition-colors"
+                  >
+                    <Globe className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span>{country === 'AU' ? 'Australia' : country === 'UK' ? 'UK' : 'Global'}</span>
+                    <svg className={`w-3 h-3 text-muted-foreground transition-transform ${countryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                  </button>
+                  {countryOpen && (
+                    <div className="absolute top-full right-0 mt-1 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50 min-w-[160px]">
+                      {([
+                        { value: 'AU' as Country, label: 'Australia' },
+                        { value: 'UK' as Country, label: 'UK' },
+                        { value: 'OTHER' as Country, label: 'Global' },
+                      ]).map((c) => (
+                        <button
+                          key={c.value}
+                          onClick={() => {
+                            setCountry(c.value);
+                            localStorage.setItem(COUNTRY_KEY, c.value);
+                            setMessages([getInitialMessage(c.value)]);
+                            setCountryOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted/50 transition-colors ${
+                            country === c.value ? "bg-primary/5 text-primary font-medium" : "text-foreground"
+                          }`}
+                        >
+                          <span>{c.label}</span>
+                          {country === c.value && <CheckCircle2 className="w-4 h-4 text-primary ml-auto" />}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </DialogTitle>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {isSessionMode 
                 ? "I'm here to listen. This is a supportive space, not professional therapy."
                 : "Get help finding mental health support and resources"
