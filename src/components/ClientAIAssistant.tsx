@@ -684,22 +684,25 @@ export const ClientAIAssistant = () => {
           {/* Country Selection Overlay */}
           {showCountryPrompt && (
             <div className="absolute inset-0 z-50 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 rounded-lg">
-              <Globe className="h-12 w-12 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Welcome to Ground Path</h3>
-              <p className="text-gray-600 text-center mb-6">Please select your location so I can provide relevant resources and information.</p>
-              <div className="flex gap-4">
-                <Button 
-                  onClick={() => selectCountry('AU')}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700"
-                >
-                  🇦🇺 Australia
-                </Button>
-                <Button 
-                  onClick={() => selectCountry('UK')}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700"
-                >
-                  🇬🇧 United Kingdom
-                </Button>
+              <Globe className="h-12 w-12 text-primary mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">Welcome to Ground Path</h3>
+              <p className="text-muted-foreground text-center mb-6">Please select your location so I can provide relevant resources and information.</p>
+              <div className="flex flex-col gap-2 w-full max-w-[240px]">
+                {[
+                  { value: 'AU' as Country, label: 'Australia' },
+                  { value: 'UK' as Country, label: 'UK' },
+                  { value: 'OTHER' as Country, label: 'Global' },
+                ].map((c) => (
+                  <Button
+                    key={c.value}
+                    onClick={() => selectCountry(c.value)}
+                    variant="outline"
+                    className="w-full justify-start gap-3 px-4 py-3 text-sm border-border hover:bg-muted/50"
+                  >
+                    <Globe className="h-4 w-4 text-muted-foreground" />
+                    {c.label}
+                  </Button>
+                ))}
               </div>
             </div>
           )}
