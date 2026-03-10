@@ -70,10 +70,10 @@ const detectCountryFromTimezone = (): Country => {
   return "OTHER";
 };
 
-const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
+const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSessionProps) => {
   const [voiceState, setVoiceState] = useState<VoiceState>("setup");
   const [selectedCounsellor, setSelectedCounsellor] = useState<CounsellorPersona | null>(null);
-  const [country, setCountry] = useState<Country>(detectCountryFromTimezone);
+  const [country, setCountry] = useState<Country>(initialCountry || detectCountryFromTimezone);
   const [countryOpen, setCountryOpen] = useState(false);
   const [lastTranscript, setLastTranscript] = useState("");
   const [lastReply, setLastReply] = useState("");
