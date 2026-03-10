@@ -684,25 +684,31 @@ export const ClientAIAssistant = () => {
           {/* Country Selection Overlay */}
           {showCountryPrompt && (
             <div className="absolute inset-0 z-50 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 rounded-lg">
-              <Globe className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">Welcome to Ground Path</h3>
-              <p className="text-muted-foreground text-center mb-6">Please select your location so I can provide relevant resources and information.</p>
-              <div className="flex flex-col gap-2 w-full max-w-[240px]">
-                {[
-                  { value: 'AU' as Country, label: 'Australia' },
-                  { value: 'UK' as Country, label: 'UK' },
-                  { value: 'OTHER' as Country, label: 'Global' },
-                ].map((c) => (
-                  <Button
-                    key={c.value}
-                    onClick={() => selectCountry(c.value)}
-                    variant="outline"
-                    className="w-full justify-start gap-3 px-4 py-3 text-sm border-border hover:bg-muted/50"
-                  >
-                    <Globe className="h-4 w-4 text-muted-foreground" />
-                    {c.label}
-                  </Button>
-                ))}
+              <div className="bg-white rounded-2xl shadow-xl border border-border p-8 w-full max-w-[300px]">
+                <div className="flex justify-center mb-5">
+                  <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Globe className="h-7 w-7 text-primary" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-semibold text-foreground text-center mb-2">Welcome to Ground Path</h3>
+                <p className="text-muted-foreground text-center text-sm mb-6">Please select your location so I can provide relevant resources and information.</p>
+                <div className="flex flex-col gap-2">
+                  {[
+                    { value: 'AU' as Country, label: 'Australia' },
+                    { value: 'UK' as Country, label: 'UK' },
+                    { value: 'OTHER' as Country, label: 'Global' },
+                  ].map((c) => (
+                    <Button
+                      key={c.value}
+                      onClick={() => selectCountry(c.value)}
+                      variant="outline"
+                      className="w-full justify-start gap-3 px-4 py-3 text-sm border-border hover:bg-muted/50 rounded-xl"
+                    >
+                      <Globe className="h-4 w-4 text-muted-foreground" />
+                      {c.label}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
