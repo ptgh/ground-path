@@ -6,14 +6,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import sarahAvatar from "@/assets/counsellor-sarah.jpg";
 import jamesAvatar from "@/assets/counsellor-james.jpg";
 
+type VoiceState = "setup" | "connecting" | "connected" | "error" | "idle";
+type CounsellorGender = "female" | "male";
+type Country = "AU" | "UK" | "OTHER";
+
 interface VoiceCounsellingSessionProps {
   onClose: () => void;
   initialCountry?: Country;
 }
-
-type VoiceState = "setup" | "connecting" | "connected" | "error" | "idle";
-type CounsellorGender = "female" | "male";
-type Country = "AU" | "UK" | "OTHER";
 
 interface CounsellorPersona {
   name: string;
