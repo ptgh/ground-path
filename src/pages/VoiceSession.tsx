@@ -57,7 +57,10 @@ const VoiceSessionPage = () => {
       <Footer />
 
       {showSession && (
-        <VoiceCounsellingSession onClose={() => setShowSession(false)} />
+        <VoiceCounsellingSession 
+          onClose={() => setShowSession(false)} 
+          initialCountry={(localStorage.getItem(COUNTRY_KEY) as 'AU' | 'UK' | 'OTHER') || undefined}
+        />
       )}
     </div>
   );
