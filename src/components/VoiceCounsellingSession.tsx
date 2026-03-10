@@ -6,13 +6,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import sarahAvatar from "@/assets/counsellor-sarah.jpg";
 import jamesAvatar from "@/assets/counsellor-james.jpg";
 
-interface VoiceCounsellingSessionProps {
-  onClose: () => void;
-}
-
 type VoiceState = "setup" | "connecting" | "connected" | "error" | "idle";
 type CounsellorGender = "female" | "male";
 type Country = "AU" | "UK" | "OTHER";
+
+interface VoiceCounsellingSessionProps {
+  onClose: () => void;
+  initialCountry?: Country;
+}
 
 interface CounsellorPersona {
   name: string;
@@ -69,10 +70,10 @@ const detectCountryFromTimezone = (): Country => {
   return "OTHER";
 };
 
-const VoiceCounsellingSession = ({ onClose }: VoiceCounsellingSessionProps) => {
+const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSessionProps) => {
   const [voiceState, setVoiceState] = useState<VoiceState>("setup");
   const [selectedCounsellor, setSelectedCounsellor] = useState<CounsellorPersona | null>(null);
-  const [country, setCountry] = useState<Country>(detectCountryFromTimezone);
+  const [country, setCountry] = useState<Country>(initialCountry || detectCountryFromTimezone);
   const [countryOpen, setCountryOpen] = useState(false);
   const [lastTranscript, setLastTranscript] = useState("");
   const [lastReply, setLastReply] = useState("");

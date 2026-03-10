@@ -5,6 +5,8 @@ import Footer from "@/components/Footer";
 import VoiceCounsellingSession from "@/components/VoiceCounsellingSession";
 import { Mic } from "lucide-react";
 
+const COUNTRY_KEY = 'groundpath_client_country';
+
 const VoiceSessionPage = () => {
   const [showSession, setShowSession] = useState(false);
   const navigate = useNavigate();
@@ -55,7 +57,10 @@ const VoiceSessionPage = () => {
       <Footer />
 
       {showSession && (
-        <VoiceCounsellingSession onClose={() => setShowSession(false)} />
+        <VoiceCounsellingSession 
+          onClose={() => setShowSession(false)} 
+          initialCountry={(localStorage.getItem(COUNTRY_KEY) as 'AU' | 'UK' | 'OTHER') || undefined}
+        />
       )}
     </div>
   );

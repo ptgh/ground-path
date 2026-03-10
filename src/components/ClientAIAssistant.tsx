@@ -611,7 +611,7 @@ export const ClientAIAssistant = () => {
         
         <DialogContent 
           ref={dialogRef}
-          className="sm:max-w-md h-[650px] flex flex-col p-0 border-0 shadow-2xl bg-white backdrop-blur-md"
+          className="sm:max-w-md h-[650px] flex flex-col p-0 border border-border shadow-2xl bg-white backdrop-blur-md rounded-2xl overflow-hidden"
         >
           {/* Crisis Banner - Shows when crisis keywords detected */}
           {showCrisisBanner && (
@@ -997,7 +997,7 @@ export const ClientAIAssistant = () => {
         </DialogContent>
       </Dialog>
       {showVoiceSession && (
-        <VoiceCounsellingSession onClose={() => setShowVoiceSession(false)} />
+        <VoiceCounsellingSession onClose={() => setShowVoiceSession(false)} initialCountry={country} />
       )}
     </>
   );
