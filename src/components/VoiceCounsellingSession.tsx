@@ -8,6 +8,7 @@ import jamesAvatar from "@/assets/counsellor-james.jpg";
 
 interface VoiceCounsellingSessionProps {
   onClose: () => void;
+  initialCountry?: Country;
 }
 
 type VoiceState = "setup" | "connecting" | "connected" | "error" | "idle";
