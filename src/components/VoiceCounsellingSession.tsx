@@ -360,94 +360,96 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
   // Setup screen - counsellor selection
   if (voiceState === "setup") {
     return createPortal(
-      <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center p-6">
-        <button
-          onClick={onClose}
-          className="absolute top-6 right-6 p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
-        >
-          <X className="w-5 h-5 text-muted-foreground" />
-        </button>
-
-        <div className="max-w-md w-full text-center">
-          <h2 className="text-2xl font-semibold text-foreground mb-2">Voice Counselling Session</h2>
-          <p className="text-muted-foreground text-sm mb-8">
-            Choose your counsellor and start a free, confidential voice session.
-            <br />
-            <span className="text-xs italic mt-1 inline-block">
-              This is AI-powered support, not a replacement for professional therapy.
-            </span>
-          </p>
-
-          {/* Polished Country Selector */}
-          <div className="relative mb-6" ref={countryRef}>
-            <button
-              onClick={() => setCountryOpen(!countryOpen)}
-              className="mx-auto flex items-center gap-2.5 bg-card border border-border rounded-xl px-4 py-2.5 text-sm text-foreground hover:bg-muted/50 transition-colors shadow-sm"
-            >
-              <Globe className="w-4 h-4 text-muted-foreground" />
-              <span>{selectedCountry.label}</span>
-              <svg className={`w-4 h-4 text-muted-foreground transition-transform ${countryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-            </button>
-            {countryOpen && (
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-10 min-w-[200px]">
-                {COUNTRIES.map((c) => (
-                  <button
-                    key={c.value}
-                    onClick={() => { setCountry(c.value); setCountryOpen(false); }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-muted/50 transition-colors ${
-                      country === c.value ? "bg-primary/5 text-primary font-medium" : "text-foreground"
-                    }`}
-                  >
-                    <span>{c.label}</span>
-                    {country === c.value && <CheckCircle2 className="w-4 h-4 text-primary ml-auto" />}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Counsellor Cards with Avatar Images */}
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            {COUNSELLORS.map((c) => (
-              <button
-                key={c.name}
-                onClick={() => handleSelectCounsellor(c)}
-                className={`p-5 rounded-xl border-2 transition-all duration-200 text-left group ${
-                  selectedCounsellor?.name === c.name
-                    ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
-                    : "border-border bg-card hover:border-primary/40 hover:bg-muted/50"
-                }`}
-              >
-                <div className="relative mx-auto mb-3 w-20 h-20">
-                  <Avatar className="h-20 w-20 border-2 border-primary/20 group-hover:border-primary/40 transition-colors">
-                    <AvatarImage src={c.avatar} alt={c.name} className="object-cover" />
-                    <AvatarFallback className="bg-primary/10 text-primary text-2xl font-semibold">
-                      {c.initial}
-                    </AvatarFallback>
-                  </Avatar>
-                  {selectedCounsellor?.name === c.name && (
-                    <div className="absolute -bottom-1 -right-1 bg-primary rounded-full p-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-primary-foreground" />
-                    </div>
-                  )}
-                </div>
-                <h3 className="text-foreground font-medium text-center">{c.name}</h3>
-                <p className="text-muted-foreground text-xs text-center mt-1 leading-relaxed">{c.description}</p>
-              </button>
-            ))}
-          </div>
-
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+        <div className="relative max-w-md w-full bg-card border border-border rounded-2xl shadow-xl overflow-hidden">
+          {/* Close button */}
           <button
-            onClick={handleStartSession}
-            disabled={!selectedCounsellor}
-            className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-medium transition-all hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors z-10"
           >
-            Start Voice Session
+            <X className="w-5 h-5 text-muted-foreground" />
           </button>
 
-          <p className="text-muted-foreground text-[10px] mt-4">
-            By starting, you consent to microphone access. All conversations are private and not recorded.
-          </p>
+          <div className="p-6 pt-8 text-center">
+            <h2 className="text-2xl font-semibold text-foreground mb-2">Voice Counselling Session</h2>
+            <p className="text-muted-foreground text-sm mb-1">
+              Choose your counsellor and start a free, confidential voice session.
+            </p>
+            <p className="text-muted-foreground text-xs italic mb-6">
+              This is AI-powered support, not a replacement for professional therapy.
+            </p>
+
+            {/* Country Selector - larger touch targets */}
+            <div className="relative mb-6" ref={countryRef}>
+              <button
+                onClick={(e) => { e.stopPropagation(); setCountryOpen(!countryOpen); }}
+                className="mx-auto flex items-center gap-2.5 bg-background border border-border rounded-xl px-5 py-3 text-sm text-foreground hover:bg-muted/50 active:bg-muted transition-colors shadow-sm"
+              >
+                <Globe className="w-4 h-4 text-muted-foreground" />
+                <span>{selectedCountry.label}</span>
+                <svg className={`w-4 h-4 text-muted-foreground transition-transform ${countryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+              </button>
+              {countryOpen && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-20 min-w-[200px]">
+                  {COUNTRIES.map((c) => (
+                    <button
+                      key={c.value}
+                      onClick={(e) => { e.stopPropagation(); setCountry(c.value); setCountryOpen(false); }}
+                      className={`w-full flex items-center gap-3 px-5 py-3.5 text-sm hover:bg-muted/50 active:bg-muted transition-colors ${
+                        country === c.value ? "bg-primary/5 text-primary font-medium" : "text-foreground"
+                      }`}
+                    >
+                      <span>{c.label}</span>
+                      {country === c.value && <CheckCircle2 className="w-4 h-4 text-primary ml-auto" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Counsellor Cards */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {COUNSELLORS.map((c) => (
+                <button
+                  key={c.name}
+                  onClick={() => handleSelectCounsellor(c)}
+                  className={`p-5 rounded-2xl border-2 transition-all duration-200 text-center group ${
+                    selectedCounsellor?.name === c.name
+                      ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
+                      : "border-border bg-background hover:border-primary/40 hover:bg-muted/50 active:bg-muted"
+                  }`}
+                >
+                  <div className="relative mx-auto mb-3 w-20 h-20">
+                    <Avatar className="h-20 w-20 border-2 border-primary/20 group-hover:border-primary/40 transition-colors">
+                      <AvatarImage src={c.avatar} alt={c.name} className="object-cover" />
+                      <AvatarFallback className="bg-primary/10 text-primary text-2xl font-semibold">
+                        {c.initial}
+                      </AvatarFallback>
+                    </Avatar>
+                    {selectedCounsellor?.name === c.name && (
+                      <div className="absolute -bottom-1 -right-1 bg-primary rounded-full p-0.5">
+                        <CheckCircle2 className="w-4 h-4 text-primary-foreground" />
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="text-foreground font-medium">{c.name}</h3>
+                  <p className="text-muted-foreground text-xs mt-1 leading-relaxed">{c.description}</p>
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={handleStartSession}
+              disabled={!selectedCounsellor}
+              className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-medium transition-all hover:bg-primary/90 active:bg-primary/80 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
+            >
+              Start Voice Session
+            </button>
+
+            <p className="text-muted-foreground text-[10px] mt-4 pb-2">
+              By starting, you consent to microphone access. All conversations are private and not recorded.
+            </p>
+          </div>
         </div>
       </div>,
       document.body
