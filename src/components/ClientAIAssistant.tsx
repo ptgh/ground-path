@@ -970,7 +970,7 @@ export const ClientAIAssistant = () => {
           </div>
 
           {/* Input Area */}
-          <div className="p-4 border-t border-gray-200 bg-white">
+          <div className="p-4 border-t border-border bg-card rounded-b-2xl">
             <div className="flex items-center gap-2">
               <Input
                 value={input}
