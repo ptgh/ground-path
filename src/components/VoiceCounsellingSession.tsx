@@ -360,15 +360,8 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
   // Setup screen - counsellor selection
   if (voiceState === "setup") {
     return createPortal(
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-        <div className="relative max-w-md w-full bg-card border border-border rounded-2xl shadow-xl overflow-hidden">
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors z-10"
-          >
-            <X className="w-5 h-5 text-muted-foreground" />
-          </button>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" onClick={onClose}>
+        <div className="relative max-w-md w-full bg-card border-2 border-border rounded-2xl shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
 
           <div className="p-6 pt-8 text-center">
             <h2 className="text-2xl font-semibold text-foreground mb-2">Voice Counselling Session</h2>
