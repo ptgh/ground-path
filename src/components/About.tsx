@@ -1,5 +1,7 @@
 
-import { useState } from 'react';
+import { useState, useEffect, useRef, ReactNode } from 'react';
+import { X } from 'lucide-react';
+import { gsap } from 'gsap';
 import MSWModal from './MSWModal';
 import ProfessionalIndemnityModal from './ProfessionalIndemnityModal';
 import AASWRegistrationModal from './AASWRegistrationModal';
@@ -7,7 +9,49 @@ import CPDModal from './CPDModal';
 import SWEModal from './SWEModal';
 import NDISModal from './NDISModal';
 import CountriesModal from './CountriesModal';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
+interface CredentialModalProps {
+  title: string;
+  onClose: () => void;
+  children: ReactNode;
+}
+
+const CredentialModal = ({ title, onClose, children }: CredentialModalProps) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    gsap.set(modalRef.current, { display: 'flex' });
+    gsap.fromTo(backdropRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" });
+    gsap.fromTo(contentRef.current, { opacity: 0, scale: 0.9, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: "power2.out", delay: 0.1 });
+  }, []);
+
+  const handleClose = () => {
+    gsap.to(backdropRef.current, { opacity: 0, duration: 0.2, ease: "power2.in" });
+    gsap.to(contentRef.current, {
+      opacity: 0, scale: 0.9, y: -20, duration: 0.2, ease: "power2.in",
+      onComplete: onClose
+    });
+  };
+
+  return (
+    <div ref={modalRef} className="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+      <div ref={backdropRef} className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={handleClose} />
+      <div ref={contentRef} className="relative bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden border border-white/20">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-sm">
+          <h2 className="text-2xl font-light text-gray-900">{title}</h2>
+          <button onClick={handleClose} className="p-2 hover:bg-gray-100/50 rounded-lg transition-colors">
+            <X className="h-5 w-5 text-gray-500" />
+          </button>
+        </div>
+        <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
+          <div className="p-6">{children}</div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const About = () => {
   const [isMSWOpen, setIsMSWOpen] = useState(false);
@@ -234,15 +278,12 @@ const About = () => {
       />
 
       {/* AMHSW Modal */}
-      <Dialog open={isAMHSWOpen} onOpenChange={setIsAMHSWOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto scrollbar-hide">
-          <DialogHeader>
-            <DialogTitle>AMHSW — Accredited Mental Health Social Worker</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 text-sm text-muted-foreground">
-            <p>Accredited Mental Health Social Worker (AMHSW) status is a specialist endorsement through the Australian Association of Social Workers (AASW), recognising advanced competency in mental health practice.</p>
-            <p>AMHSW registration is currently in progress for Ground Path practitioners. Once accredited, this will enable Medicare-rebated mental health sessions under the Better Access initiative via GP Mental Health Treatment Plans.</p>
-            <h4 className="font-medium text-foreground">Requirements include:</h4>
+      {isAMHSWOpen && (
+        <CredentialModal title="AMHSW — Accredited Mental Health Social Worker" onClose={() => setIsAMHSWOpen(false)}>
+          <div className="space-y-4 text-sm text-gray-600">
+            <p className="leading-relaxed">Accredited Mental Health Social Worker (AMHSW) status is a specialist endorsement through the Australian Association of Social Workers (AASW), recognising advanced competency in mental health practice.</p>
+            <p className="leading-relaxed">AMHSW registration is currently in progress for Ground Path practitioners. Once accredited, this will enable Medicare-rebated mental health sessions under the Better Access initiative via GP Mental Health Treatment Plans.</p>
+            <h4 className="font-medium text-gray-900">Requirements include:</h4>
             <ul className="list-disc pl-5 space-y-1">
               <li>Master of Social Work qualification from an AASW-accredited program</li>
               <li>Minimum supervised practice hours in mental health settings</li>
@@ -250,19 +291,16 @@ const About = () => {
               <li>Ongoing CPD in mental health specific areas</li>
             </ul>
           </div>
-        </DialogContent>
-      </Dialog>
+        </CredentialModal>
+      )}
 
       {/* ACA Modal */}
-      <Dialog open={isACAOpen} onOpenChange={setIsACAOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto scrollbar-hide">
-          <DialogHeader>
-            <DialogTitle>ACA — Australian Counselling Association</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 text-sm text-muted-foreground">
-            <p>The Australian Counselling Association (ACA) is the largest national professional body for counsellors and psychotherapists in Australia.</p>
-            <p>ACA registration is currently in progress for Ground Path practitioners. This registration will provide additional professional recognition and enable clients to access private health insurance rebates where applicable.</p>
-            <h4 className="font-medium text-foreground">ACA Membership includes:</h4>
+      {isACAOpen && (
+        <CredentialModal title="ACA — Australian Counselling Association" onClose={() => setIsACAOpen(false)}>
+          <div className="space-y-4 text-sm text-gray-600">
+            <p className="leading-relaxed">The Australian Counselling Association (ACA) is the largest national professional body for counsellors and psychotherapists in Australia.</p>
+            <p className="leading-relaxed">ACA registration is currently in progress for Ground Path practitioners. This registration will provide additional professional recognition and enable clients to access private health insurance rebates where applicable.</p>
+            <h4 className="font-medium text-gray-900">ACA Membership includes:</h4>
             <ul className="list-disc pl-5 space-y-1">
               <li>Professional recognition as a qualified counsellor</li>
               <li>Adherence to the ACA Code of Ethics and Practice</li>
@@ -270,29 +308,26 @@ const About = () => {
               <li>Client eligibility for private health fund rebates</li>
             </ul>
           </div>
-        </DialogContent>
-      </Dialog>
+        </CredentialModal>
+      )}
 
       {/* Qualifications Modal */}
-      <Dialog open={isQualificationsOpen} onOpenChange={setIsQualificationsOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto scrollbar-hide">
-          <DialogHeader>
-            <DialogTitle>Academic & Professional Qualifications</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 text-sm text-muted-foreground">
-            <h4 className="font-medium text-foreground">Completed Qualifications</h4>
+      {isQualificationsOpen && (
+        <CredentialModal title="Academic & Professional Qualifications" onClose={() => setIsQualificationsOpen(false)}>
+          <div className="space-y-4 text-sm text-gray-600">
+            <h4 className="font-medium text-gray-900">Completed Qualifications</h4>
             <ul className="list-disc pl-5 space-y-1">
-              <li><span className="font-medium text-foreground">Master of Social Work (MSW)</span> — Advanced professional qualification in social work practice</li>
-              <li><span className="font-medium text-foreground">Bachelor of Commerce (BCom)</span> — Foundation in business and organisational understanding</li>
+              <li><span className="font-medium text-gray-900">Master of Social Work (MSW)</span> — Advanced professional qualification in social work practice</li>
+              <li><span className="font-medium text-gray-900">Bachelor of Commerce (BCom)</span> — Foundation in business and organisational understanding</li>
             </ul>
-            <h4 className="font-medium text-foreground">In Progress</h4>
+            <h4 className="font-medium text-gray-900">In Progress</h4>
             <ul className="list-disc pl-5 space-y-1">
-              <li><span className="font-medium text-foreground">Graduate Certificate in Counselling</span> — Expanding therapeutic skills and counselling competency</li>
+              <li><span className="font-medium text-gray-900">Graduate Certificate in Counselling</span> — Expanding therapeutic skills and counselling competency</li>
             </ul>
-            <p>This combination of qualifications ensures a well-rounded, evidence-based approach to mental health and social work practice.</p>
+            <p className="leading-relaxed">This combination of qualifications ensures a well-rounded, evidence-based approach to mental health and social work practice.</p>
           </div>
-        </DialogContent>
-      </Dialog>
+        </CredentialModal>
+      )}
     </section>
   );
 };
