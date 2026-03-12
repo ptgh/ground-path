@@ -57,9 +57,11 @@ const Services = () => {
             const isBookable = !service.comingSoon;
             const CardTag = isBookable ? 'a' : 'div';
             const cardProps = isBookable ? {
-              href: "https://www.halaxy.com/book/lachlan-mcdonald/location/138057",
-              target: "_blank",
-              rel: "noopener noreferrer",
+              href: "#contact",
+              onClick: (e: React.MouseEvent) => {
+                e.preventDefault();
+                document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+              },
             } : {};
             return (
             <CardTag key={index} {...cardProps} className={`fade-in bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow duration-300 block ${service.comingSoon ? 'opacity-75' : 'cursor-pointer'}`}>

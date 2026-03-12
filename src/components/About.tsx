@@ -1,5 +1,7 @@
 
-import { useState } from 'react';
+import { useState, useEffect, useRef, ReactNode } from 'react';
+import { X } from 'lucide-react';
+import { gsap } from 'gsap';
 import MSWModal from './MSWModal';
 import ProfessionalIndemnityModal from './ProfessionalIndemnityModal';
 import AASWRegistrationModal from './AASWRegistrationModal';
@@ -7,7 +9,49 @@ import CPDModal from './CPDModal';
 import SWEModal from './SWEModal';
 import NDISModal from './NDISModal';
 import CountriesModal from './CountriesModal';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
+interface CredentialModalProps {
+  title: string;
+  onClose: () => void;
+  children: ReactNode;
+}
+
+const CredentialModal = ({ title, onClose, children }: CredentialModalProps) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    gsap.set(modalRef.current, { display: 'flex' });
+    gsap.fromTo(backdropRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" });
+    gsap.fromTo(contentRef.current, { opacity: 0, scale: 0.9, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: "power2.out", delay: 0.1 });
+  }, []);
+
+  const handleClose = () => {
+    gsap.to(backdropRef.current, { opacity: 0, duration: 0.2, ease: "power2.in" });
+    gsap.to(contentRef.current, {
+      opacity: 0, scale: 0.9, y: -20, duration: 0.2, ease: "power2.in",
+      onComplete: onClose
+    });
+  };
+
+  return (
+    <div ref={modalRef} className="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+      <div ref={backdropRef} className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={handleClose} />
+      <div ref={contentRef} className="relative bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden border border-white/20">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-sm">
+          <h2 className="text-2xl font-light text-gray-900">{title}</h2>
+          <button onClick={handleClose} className="p-2 hover:bg-gray-100/50 rounded-lg transition-colors">
+            <X className="h-5 w-5 text-gray-500" />
+          </button>
+        </div>
+        <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
+          <div className="p-6">{children}</div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const About = () => {
   const [isMSWOpen, setIsMSWOpen] = useState(false);
