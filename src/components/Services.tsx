@@ -53,8 +53,16 @@ const Services = () => {
 
         {/* Services Grid */}
          <div className="grid md:grid-cols-2 gap-6 mb-12">
-          {services.map((service, index) => (
-            <div key={index} className={`fade-in bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow duration-300 ${service.comingSoon ? 'opacity-75' : ''}`}>
+          {services.map((service, index) => {
+            const isBookable = !service.comingSoon;
+            const CardTag = isBookable ? 'a' : 'div';
+            const cardProps = isBookable ? {
+              href: "https://www.halaxy.com/book/lachlan-mcdonald/location/138057",
+              target: "_blank",
+              rel: "noopener noreferrer",
+            } : {};
+            return (
+            <CardTag key={index} {...cardProps} className={`fade-in bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow duration-300 block ${service.comingSoon ? 'opacity-75' : 'cursor-pointer'}`}>
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-xl font-medium text-gray-900">{service.name}</h3>
@@ -88,8 +96,9 @@ const Services = () => {
                   {service.description}
                 </p>
               </div>
-            </div>
-          ))}
+            </CardTag>
+          );
+          })}
         </div>
 
         {/* Important Notes */}

@@ -217,12 +217,14 @@ const Article = () => {
           {/* Article content */}
           <article 
             className="prose prose-lg max-w-none 
-              prose-headings:text-foreground prose-headings:font-semibold prose-headings:mt-8 prose-headings:mb-4
-              prose-p:text-foreground prose-p:leading-relaxed prose-p:mb-5
-              prose-li:text-foreground 
+              prose-headings:text-foreground prose-headings:font-semibold prose-headings:mt-10 prose-headings:mb-5
+              prose-p:text-foreground prose-p:leading-[1.85] prose-p:mb-6 prose-p:text-base
+              prose-li:text-foreground prose-li:leading-relaxed
               prose-strong:text-foreground 
               prose-a:text-primary hover:prose-a:text-primary/80
-              prose-blockquote:border-primary/30 prose-blockquote:text-muted-foreground prose-blockquote:italic"
+              prose-blockquote:border-primary/30 prose-blockquote:text-muted-foreground prose-blockquote:italic
+              prose-ul:my-6 prose-ol:my-6
+              [&_p+p]:mt-6"
             dangerouslySetInnerHTML={{ __html: formattedContent }}
           />
 

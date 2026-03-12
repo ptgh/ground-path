@@ -124,20 +124,21 @@
   }
 }
 
-/* Custom scrollbar */
+/* Hide scrollbars globally */
 ::-webkit-scrollbar {
-  width: 8px;
+  display: none;
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #7B9B85;
-  border-radius: 4px;
+/* Utility class to hide scrollbar on specific elements */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
-
-::-webkit-scrollbar-thumb:hover {
-  background: #5a7061;
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

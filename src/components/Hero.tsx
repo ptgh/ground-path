@@ -90,7 +90,7 @@ const Hero = () => {
               Join Mailing List
             </button>
             <button 
-              onClick={() => navigate('/voice-session')}
+              onClick={() => scrollToSection('voice-counselling')}
               className="hero-cta bg-primary text-primary-foreground px-4 sm:px-6 py-3 rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-full sm:w-auto min-w-[140px] flex items-center justify-center gap-2"
             >
               <Mic className="w-4 h-4" />

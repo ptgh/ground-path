@@ -7,6 +7,7 @@ import CPDModal from './CPDModal';
 import SWEModal from './SWEModal';
 import NDISModal from './NDISModal';
 import CountriesModal from './CountriesModal';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const About = () => {
   const [isMSWOpen, setIsMSWOpen] = useState(false);
@@ -16,6 +17,9 @@ const About = () => {
   const [isSWEOpen, setIsSWEOpen] = useState(false);
   const [isNDISOpen, setIsNDISOpen] = useState(false);
   const [isCountriesOpen, setIsCountriesOpen] = useState(false);
+  const [isAMHSWOpen, setIsAMHSWOpen] = useState(false);
+  const [isACAOpen, setIsACAOpen] = useState(false);
+  const [isQualificationsOpen, setIsQualificationsOpen] = useState(false);
 
   return (
     <section id="about" className="py-20 bg-gray-50">
@@ -163,29 +167,38 @@ const About = () => {
                 </div>
               </button>
 
-              <div className="w-full bg-white h-24 rounded-xl shadow-lg border border-gray-100">
+              <button 
+                onClick={() => setIsAMHSWOpen(true)}
+                className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+              >
                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
                   <div className="text-lg font-light text-sage-600">AMHSW</div>
                   <div className="text-gray-600 text-xs">Accredited Mental Health Social Worker</div>
                   <div className="text-xs text-gray-500 text-center">Registration in progress</div>
                 </div>
-              </div>
+              </button>
 
-              <div className="w-full bg-white h-24 rounded-xl shadow-lg border border-gray-100">
+              <button 
+                onClick={() => setIsACAOpen(true)}
+                className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+              >
                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
                   <div className="text-lg font-light text-sage-600">ACA</div>
                   <div className="text-gray-600 text-xs">Australian Counselling Association</div>
                   <div className="text-xs text-gray-500 text-center">Registration in progress</div>
                 </div>
-              </div>
+              </button>
 
-              <div className="w-full bg-white h-24 rounded-xl shadow-lg border border-gray-100">
+              <button 
+                onClick={() => setIsQualificationsOpen(true)}
+                className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+              >
                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
                   <div className="text-lg font-light text-sage-600">Qualifications</div>
                   <div className="text-gray-600 text-xs">Academic & Professional</div>
                   <div className="text-xs text-gray-500 text-center">BCom, MSW, GradCert Counselling (in progress)</div>
                 </div>
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -219,6 +232,67 @@ const About = () => {
         isOpen={isCountriesOpen} 
         onClose={() => setIsCountriesOpen(false)} 
       />
+
+      {/* AMHSW Modal */}
+      <Dialog open={isAMHSWOpen} onOpenChange={setIsAMHSWOpen}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto scrollbar-hide">
+          <DialogHeader>
+            <DialogTitle>AMHSW — Accredited Mental Health Social Worker</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm text-muted-foreground">
+            <p>Accredited Mental Health Social Worker (AMHSW) status is a specialist endorsement through the Australian Association of Social Workers (AASW), recognising advanced competency in mental health practice.</p>
+            <p>AMHSW registration is currently in progress for Ground Path practitioners. Once accredited, this will enable Medicare-rebated mental health sessions under the Better Access initiative via GP Mental Health Treatment Plans.</p>
+            <h4 className="font-medium text-foreground">Requirements include:</h4>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Master of Social Work qualification from an AASW-accredited program</li>
+              <li>Minimum supervised practice hours in mental health settings</li>
+              <li>Demonstrated competency in mental health assessment and intervention</li>
+              <li>Ongoing CPD in mental health specific areas</li>
+            </ul>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ACA Modal */}
+      <Dialog open={isACAOpen} onOpenChange={setIsACAOpen}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto scrollbar-hide">
+          <DialogHeader>
+            <DialogTitle>ACA — Australian Counselling Association</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm text-muted-foreground">
+            <p>The Australian Counselling Association (ACA) is the largest national professional body for counsellors and psychotherapists in Australia.</p>
+            <p>ACA registration is currently in progress for Ground Path practitioners. This registration will provide additional professional recognition and enable clients to access private health insurance rebates where applicable.</p>
+            <h4 className="font-medium text-foreground">ACA Membership includes:</h4>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Professional recognition as a qualified counsellor</li>
+              <li>Adherence to the ACA Code of Ethics and Practice</li>
+              <li>Access to professional development and supervision networks</li>
+              <li>Client eligibility for private health fund rebates</li>
+            </ul>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Qualifications Modal */}
+      <Dialog open={isQualificationsOpen} onOpenChange={setIsQualificationsOpen}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto scrollbar-hide">
+          <DialogHeader>
+            <DialogTitle>Academic & Professional Qualifications</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm text-muted-foreground">
+            <h4 className="font-medium text-foreground">Completed Qualifications</h4>
+            <ul className="list-disc pl-5 space-y-1">
+              <li><span className="font-medium text-foreground">Master of Social Work (MSW)</span> — Advanced professional qualification in social work practice</li>
+              <li><span className="font-medium text-foreground">Bachelor of Commerce (BCom)</span> — Foundation in business and organisational understanding</li>
+            </ul>
+            <h4 className="font-medium text-foreground">In Progress</h4>
+            <ul className="list-disc pl-5 space-y-1">
+              <li><span className="font-medium text-foreground">Graduate Certificate in Counselling</span> — Expanding therapeutic skills and counselling competency</li>
+            </ul>
+            <p>This combination of qualifications ensures a well-rounded, evidence-based approach to mental health and social work practice.</p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
