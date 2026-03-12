@@ -96,7 +96,6 @@ const Services = () => {
                   {service.description}
                 </p>
               </div>
-            </div>
             </CardTag>
           );
           })}
