@@ -79,6 +79,7 @@ const Index = () => {
         <About />
         <Services />
         <HowSessionsWork />
+        <VoiceCounsellingSection />
         <Newsletter />
         <Contact />
       </main>
