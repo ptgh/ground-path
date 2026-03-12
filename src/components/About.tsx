@@ -16,6 +16,9 @@ const About = () => {
   const [isSWEOpen, setIsSWEOpen] = useState(false);
   const [isNDISOpen, setIsNDISOpen] = useState(false);
   const [isCountriesOpen, setIsCountriesOpen] = useState(false);
+  const [isAMHSWOpen, setIsAMHSWOpen] = useState(false);
+  const [isACAOpen, setIsACAOpen] = useState(false);
+  const [isQualificationsOpen, setIsQualificationsOpen] = useState(false);
 
   return (
     <section id="about" className="py-20 bg-gray-50">
