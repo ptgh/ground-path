@@ -97,7 +97,9 @@ const Services = () => {
                 </p>
               </div>
             </div>
-          ))}
+            </CardTag>
+          );
+          })}
         </div>
 
         {/* Important Notes */}

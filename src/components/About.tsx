@@ -7,6 +7,7 @@ import CPDModal from './CPDModal';
 import SWEModal from './SWEModal';
 import NDISModal from './NDISModal';
 import CountriesModal from './CountriesModal';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const About = () => {
   const [isMSWOpen, setIsMSWOpen] = useState(false);
