@@ -234,15 +234,12 @@ const About = () => {
       />
 
       {/* AMHSW Modal */}
-      <Dialog open={isAMHSWOpen} onOpenChange={setIsAMHSWOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto scrollbar-hide">
-          <DialogHeader>
-            <DialogTitle>AMHSW — Accredited Mental Health Social Worker</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 text-sm text-muted-foreground">
-            <p>Accredited Mental Health Social Worker (AMHSW) status is a specialist endorsement through the Australian Association of Social Workers (AASW), recognising advanced competency in mental health practice.</p>
-            <p>AMHSW registration is currently in progress for Ground Path practitioners. Once accredited, this will enable Medicare-rebated mental health sessions under the Better Access initiative via GP Mental Health Treatment Plans.</p>
-            <h4 className="font-medium text-foreground">Requirements include:</h4>
+      {isAMHSWOpen && (
+        <CredentialModal title="AMHSW — Accredited Mental Health Social Worker" onClose={() => setIsAMHSWOpen(false)}>
+          <div className="space-y-4 text-sm text-gray-600">
+            <p className="leading-relaxed">Accredited Mental Health Social Worker (AMHSW) status is a specialist endorsement through the Australian Association of Social Workers (AASW), recognising advanced competency in mental health practice.</p>
+            <p className="leading-relaxed">AMHSW registration is currently in progress for Ground Path practitioners. Once accredited, this will enable Medicare-rebated mental health sessions under the Better Access initiative via GP Mental Health Treatment Plans.</p>
+            <h4 className="font-medium text-gray-900">Requirements include:</h4>
             <ul className="list-disc pl-5 space-y-1">
               <li>Master of Social Work qualification from an AASW-accredited program</li>
               <li>Minimum supervised practice hours in mental health settings</li>
@@ -250,19 +247,16 @@ const About = () => {
               <li>Ongoing CPD in mental health specific areas</li>
             </ul>
           </div>
-        </DialogContent>
-      </Dialog>
+        </CredentialModal>
+      )}
 
       {/* ACA Modal */}
-      <Dialog open={isACAOpen} onOpenChange={setIsACAOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto scrollbar-hide">
-          <DialogHeader>
-            <DialogTitle>ACA — Australian Counselling Association</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 text-sm text-muted-foreground">
-            <p>The Australian Counselling Association (ACA) is the largest national professional body for counsellors and psychotherapists in Australia.</p>
-            <p>ACA registration is currently in progress for Ground Path practitioners. This registration will provide additional professional recognition and enable clients to access private health insurance rebates where applicable.</p>
-            <h4 className="font-medium text-foreground">ACA Membership includes:</h4>
+      {isACAOpen && (
+        <CredentialModal title="ACA — Australian Counselling Association" onClose={() => setIsACAOpen(false)}>
+          <div className="space-y-4 text-sm text-gray-600">
+            <p className="leading-relaxed">The Australian Counselling Association (ACA) is the largest national professional body for counsellors and psychotherapists in Australia.</p>
+            <p className="leading-relaxed">ACA registration is currently in progress for Ground Path practitioners. This registration will provide additional professional recognition and enable clients to access private health insurance rebates where applicable.</p>
+            <h4 className="font-medium text-gray-900">ACA Membership includes:</h4>
             <ul className="list-disc pl-5 space-y-1">
               <li>Professional recognition as a qualified counsellor</li>
               <li>Adherence to the ACA Code of Ethics and Practice</li>
@@ -270,29 +264,26 @@ const About = () => {
               <li>Client eligibility for private health fund rebates</li>
             </ul>
           </div>
-        </DialogContent>
-      </Dialog>
+        </CredentialModal>
+      )}
 
       {/* Qualifications Modal */}
-      <Dialog open={isQualificationsOpen} onOpenChange={setIsQualificationsOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto scrollbar-hide">
-          <DialogHeader>
-            <DialogTitle>Academic & Professional Qualifications</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 text-sm text-muted-foreground">
-            <h4 className="font-medium text-foreground">Completed Qualifications</h4>
+      {isQualificationsOpen && (
+        <CredentialModal title="Academic & Professional Qualifications" onClose={() => setIsQualificationsOpen(false)}>
+          <div className="space-y-4 text-sm text-gray-600">
+            <h4 className="font-medium text-gray-900">Completed Qualifications</h4>
             <ul className="list-disc pl-5 space-y-1">
-              <li><span className="font-medium text-foreground">Master of Social Work (MSW)</span> — Advanced professional qualification in social work practice</li>
-              <li><span className="font-medium text-foreground">Bachelor of Commerce (BCom)</span> — Foundation in business and organisational understanding</li>
+              <li><span className="font-medium text-gray-900">Master of Social Work (MSW)</span> — Advanced professional qualification in social work practice</li>
+              <li><span className="font-medium text-gray-900">Bachelor of Commerce (BCom)</span> — Foundation in business and organisational understanding</li>
             </ul>
-            <h4 className="font-medium text-foreground">In Progress</h4>
+            <h4 className="font-medium text-gray-900">In Progress</h4>
             <ul className="list-disc pl-5 space-y-1">
-              <li><span className="font-medium text-foreground">Graduate Certificate in Counselling</span> — Expanding therapeutic skills and counselling competency</li>
+              <li><span className="font-medium text-gray-900">Graduate Certificate in Counselling</span> — Expanding therapeutic skills and counselling competency</li>
             </ul>
-            <p>This combination of qualifications ensures a well-rounded, evidence-based approach to mental health and social work practice.</p>
+            <p className="leading-relaxed">This combination of qualifications ensures a well-rounded, evidence-based approach to mental health and social work practice.</p>
           </div>
-        </DialogContent>
-      </Dialog>
+        </CredentialModal>
+      )}
     </section>
   );
 };
