@@ -85,7 +85,7 @@ const FormInfoModal: React.FC<FormInfoModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-lg max-h-[90vh] flex flex-col p-0">
+      <DialogContent className="max-w-lg max-h-[90vh] flex flex-col p-0 rounded-2xl overflow-hidden">
         <DialogHeader className="px-6 pt-6 pb-4 flex-shrink-0">
           <div className="flex items-start gap-3">
             <div className="rounded-lg bg-primary/10 p-2.5 flex-shrink-0">
