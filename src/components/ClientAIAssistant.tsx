@@ -779,7 +779,7 @@ export const ClientAIAssistant = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setShowVoiceSession(true)}
+                  onClick={() => { setIsOpen(false); setTimeout(() => setShowVoiceSession(true), 300); }}
                   className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
                   title="Voice counselling session"
                 >

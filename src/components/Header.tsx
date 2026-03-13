@@ -247,9 +247,8 @@ const Header = () => {
                     Book a Session
                   </Button>
                    <Button
-                    variant="outline"
                     onClick={() => { handleProfessionalLogin(); setIsMenuOpen(false); }}
-                    className="border-gray-400 text-white hover:text-white hover:bg-white/10 w-full"
+                    className="bg-gray-700 text-white hover:bg-gray-600 border border-gray-500 w-full"
                   >
                     Professional Login
                   </Button>
