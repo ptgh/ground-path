@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import AuthPage from "@/components/AuthPage";
 import AuthCallback from "@/components/AuthCallback";
+import LinkedInCallback from "@/components/LinkedInCallback";
 import Dashboard from "@/components/Dashboard";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -108,6 +109,7 @@ const App = () => {
             <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
             <Route path="/practitioner/auth" element={<AuthPage />} />
             <Route path="/practitioner/auth/callback" element={<AuthCallback />} />
+            <Route path="/auth/callback" element={<LinkedInCallback />} />
             <Route path="/practitioner/dashboard" element={<Dashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
