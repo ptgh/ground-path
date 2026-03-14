@@ -66,8 +66,30 @@ const AuthPage = () => {
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [showResetForm, setShowResetForm] = useState(false);
   const [verification, setVerification] = useState<VerificationState | null>(null);
+  const [linkedInStatus, setLinkedInStatus] = useState<'success' | 'failed' | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Check for LinkedIn verification result on mount
+  useEffect(() => {
+    const result = sessionStorage.getItem('linkedin_verification');
+    if (result === 'success' || result === 'failed') {
+      setLinkedInStatus(result);
+      sessionStorage.removeItem('linkedin_verification');
+      // If returning from LinkedIn, show signup tab as practitioner
+      if (result === 'success') {
+        setAuthMode('signup');
+        setUserType('practitioner');
+      }
+      toast({
+        title: result === 'success' ? 'LinkedIn verification successful' : 'LinkedIn verification failed',
+        description: result === 'success'
+          ? 'Your professional status has been verified via LinkedIn.'
+          : 'LinkedIn verification failed. Please try again.',
+        variant: result === 'success' ? 'default' : 'destructive',
+      });
+    }
+  }, [toast]);
 
   // Check authentication state on mount
   useEffect(() => {
