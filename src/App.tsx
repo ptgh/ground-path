@@ -109,6 +109,7 @@ const App = () => {
             <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
             <Route path="/practitioner/auth" element={<AuthPage />} />
             <Route path="/practitioner/auth/callback" element={<AuthCallback />} />
+            <Route path="/auth/callback" element={<LinkedInCallback />} />
             <Route path="/practitioner/dashboard" element={<Dashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
