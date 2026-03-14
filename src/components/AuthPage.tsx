@@ -202,11 +202,24 @@ const AuthPage = () => {
     }
   };
 
-  const handleLinkedInVerify = () => {
-    toast({
-      title: "LinkedIn Verification",
-      description: "LinkedIn verification requires OAuth configuration. Please contact admin to enable this feature.",
-    });
+  const handleLinkedInVerify = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'linkedin_oidc',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          scopes: 'openid profile email',
+        },
+      });
+      if (error) {
+        toast({ title: "LinkedIn verification failed", description: error.message, variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "LinkedIn verification failed", description: "An unexpected error occurred.", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
