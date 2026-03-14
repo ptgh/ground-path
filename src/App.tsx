@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import AuthPage from "@/components/AuthPage";
 import AuthCallback from "@/components/AuthCallback";
+import LinkedInCallback from "@/components/LinkedInCallback";
 import Dashboard from "@/components/Dashboard";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
