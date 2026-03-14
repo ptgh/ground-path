@@ -379,16 +379,38 @@ const AuthPage = () => {
                         <span className="text-sm font-semibold text-foreground">Professional Verification</span>
                       </div>
 
-                      {/* LinkedIn verification */}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full gap-2 rounded-xl"
-                        onClick={handleLinkedInVerify}
-                      >
-                        <Linkedin className="h-4 w-4 text-[#0A66C2]" />
-                        Verify Professional Status with LinkedIn
-                      </Button>
+                       {/* LinkedIn verification status */}
+                       {linkedInStatus === 'success' && (
+                         <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+                           <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                           <span className="text-sm font-medium text-emerald-800">LinkedIn verification successful.</span>
+                         </div>
+                       )}
+                       {linkedInStatus === 'failed' && (
+                         <div className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/5 p-3">
+                           <AlertCircle className="h-5 w-5 text-destructive" />
+                           <span className="text-sm font-medium text-destructive">LinkedIn verification failed. Please try again.</span>
+                         </div>
+                       )}
+
+                       {/* LinkedIn verification button */}
+                       <div className="relative">
+                         <Button
+                           type="button"
+                           variant="outline"
+                           className="w-full gap-2 rounded-xl"
+                           onClick={handleLinkedInVerify}
+                           disabled={linkedInStatus === 'success'}
+                         >
+                           <Linkedin className="h-4 w-4 text-[#0A66C2]" />
+                           Verify Professional Status with LinkedIn
+                           {linkedInStatus === 'success' && (
+                             <Badge className="ml-2 gap-1 bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-100">
+                               <CheckCircle2 className="h-3 w-3" /> Verified
+                             </Badge>
+                           )}
+                         </Button>
+                       </div>
 
                       <div className="space-y-2">
                         <Label htmlFor="registrationBody">Registration Body</Label>
