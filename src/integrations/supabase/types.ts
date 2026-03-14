@@ -335,9 +335,12 @@ export type Database = {
           insurance_provider: string | null
           license_number: string | null
           linkedin_profile: string | null
+          linkedin_verified_data: Json | null
+          organisation: string | null
           practice_location: string | null
           preferred_contact_method: string | null
           profession: string | null
+          professional_verified: boolean | null
           qualifications: string[] | null
           registration_body: string | null
           registration_country: string | null
@@ -348,6 +351,9 @@ export type Database = {
           swe_registration_number: string | null
           updated_at: string | null
           user_id: string
+          user_type: string | null
+          verification_method: string | null
+          verification_status: string | null
           website_url: string | null
           years_experience: number | null
         }
@@ -369,9 +375,12 @@ export type Database = {
           insurance_provider?: string | null
           license_number?: string | null
           linkedin_profile?: string | null
+          linkedin_verified_data?: Json | null
+          organisation?: string | null
           practice_location?: string | null
           preferred_contact_method?: string | null
           profession?: string | null
+          professional_verified?: boolean | null
           qualifications?: string[] | null
           registration_body?: string | null
           registration_country?: string | null
@@ -382,6 +391,9 @@ export type Database = {
           swe_registration_number?: string | null
           updated_at?: string | null
           user_id: string
+          user_type?: string | null
+          verification_method?: string | null
+          verification_status?: string | null
           website_url?: string | null
           years_experience?: number | null
         }
@@ -403,9 +415,12 @@ export type Database = {
           insurance_provider?: string | null
           license_number?: string | null
           linkedin_profile?: string | null
+          linkedin_verified_data?: Json | null
+          organisation?: string | null
           practice_location?: string | null
           preferred_contact_method?: string | null
           profession?: string | null
+          professional_verified?: boolean | null
           qualifications?: string[] | null
           registration_body?: string | null
           registration_country?: string | null
@@ -416,6 +431,9 @@ export type Database = {
           swe_registration_number?: string | null
           updated_at?: string | null
           user_id?: string
+          user_type?: string | null
+          verification_method?: string | null
+          verification_status?: string | null
           website_url?: string | null
           years_experience?: number | null
         }
