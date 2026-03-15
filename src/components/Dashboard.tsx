@@ -420,7 +420,7 @@ const Dashboard = () => {
                            Halaxy Profile
                          </Button>
                         <a 
-                          href="https://www.halaxy.com/book/paul-habermann/location/1321025"
+                          href="https://www.halaxy.com/profile/groundpath/location/1353667"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex-shrink-0"
