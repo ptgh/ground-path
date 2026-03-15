@@ -42,7 +42,7 @@ export const NewsletterEmail = ({
             src="https://vzwhccciarvirzqmvldl.supabase.co/storage/v1/object/public/resources/ground-path-logo.png"
             width="200"
             height="60"
-            alt="Ground Path"
+            alt="groundpath"
             style={logo}
           />
           <Text style={headerText}>Professional Social Work Resources</Text>
