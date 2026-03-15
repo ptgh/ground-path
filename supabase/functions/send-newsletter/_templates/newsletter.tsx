@@ -51,7 +51,7 @@ export const NewsletterEmail = ({
                 strokeLinejoin="round"
               />
             </svg>
-            <Text style={logoText}>ground path</Text>
+            <Text style={logoText}>groundpath</Text>
           </Link>
         </Section>
 
