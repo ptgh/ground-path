@@ -74,7 +74,7 @@ const CountriesModal = ({ isOpen, onClose }: CountriesModalProps) => {
             <section>
               <h3 className="text-lg font-medium text-gray-900 mb-3">Dual Country Registration</h3>
               <p className="text-gray-600 leading-relaxed text-sm">
-                Ground Path practitioners maintain professional registration in both Australia and the United Kingdom, enabling comprehensive service delivery across international boundaries and ensuring adherence to the highest professional standards in both jurisdictions.
+                groundpath practitioners maintain professional registration in both Australia and the United Kingdom, enabling comprehensive service delivery across international boundaries and ensuring adherence to the highest professional standards in both jurisdictions.
               </p>
             </section>
 

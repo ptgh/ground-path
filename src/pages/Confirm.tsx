@@ -130,7 +130,7 @@ const ConfirmPage = () => {
         <CardHeader className="text-center">
           <CardTitle className="flex items-center justify-center gap-2">
             <Mail className="h-6 w-6 text-sage-600" />
-            Ground Path Newsletter
+            groundpath Newsletter
           </CardTitle>
         </CardHeader>
         <CardContent>

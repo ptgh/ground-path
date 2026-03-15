@@ -189,7 +189,7 @@ ${JSON.stringify(submission.form_data, null, 2)}
           </div>
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666;">
             <p><strong>Confidential Document</strong> - This assessment contains confidential patient information and should be handled according to privacy regulations.</p>
-            <p>Generated on ${new Date().toLocaleString()} | Ground Path Professional Services</p>
+            <p>Generated on ${new Date().toLocaleString()} | groundpath Professional Services</p>
           </div>
         </div>
       </div>

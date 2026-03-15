@@ -495,7 +495,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
       </p>
       <h2 className="text-foreground text-lg font-medium mb-1">{selectedCounsellor?.name}</h2>
       <p className="text-muted-foreground text-[11px] mb-8">
-        Ground Path • {country === "AU" ? "Australia" : country === "UK" ? "United Kingdom" : "International"}
+        groundpath • {country === "AU" ? "Australia" : country === "UK" ? "United Kingdom" : "International"}
       </p>
 
       {/* Avatar with pulse rings */}

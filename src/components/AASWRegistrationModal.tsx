@@ -80,7 +80,7 @@ const AASWRegistrationModal = ({ isOpen, onClose }: AASWRegistrationModalProps) 
             <section>
               <h3 className="text-lg font-medium text-gray-900 mb-3">Australian Association of Social Workers</h3>
               <p className="text-gray-600 leading-relaxed text-sm">
-                Ground Path practitioners maintain active membership with the Australian Association of Social Workers (AASW), the national professional body for social workers in Australia. AASW Member #486997 represents our commitment to professional excellence and ethical practice.
+                groundpath practitioners maintain active membership with the Australian Association of Social Workers (AASW), the national professional body for social workers in Australia. AASW Member #486997 represents our commitment to professional excellence and ethical practice.
               </p>
             </section>
 

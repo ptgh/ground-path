@@ -74,7 +74,7 @@ const NDISModal = ({ isOpen, onClose }: NDISModalProps) => {
             <section>
               <h3 className="text-lg font-medium text-gray-900 mb-3">National Disability Insurance Scheme</h3>
               <p className="text-gray-600 leading-relaxed text-sm">
-                Ground Path provides specialised NDIS services for plan-managed and self-managed participants. Our approach integrates disability support with professional social work practice, ensuring holistic, person-centred care that promotes independence and community participation.
+                groundpath provides specialised NDIS services for plan-managed and self-managed participants. Our approach integrates disability support with professional social work practice, ensuring holistic, person-centred care that promotes independence and community participation.
               </p>
             </section>
 

@@ -80,7 +80,7 @@ const ProfessionalIndemnityModal = ({ isOpen, onClose }: ProfessionalIndemnityMo
             <section>
               <h3 className="text-lg font-medium text-gray-900 mb-3">Comprehensive Coverage</h3>
               <p className="text-gray-600 leading-relaxed text-sm">
-                Ground Path maintains comprehensive professional indemnity insurance in accordance with professional standards and Australian legal requirements. Our coverage protects both practitioners and clients, ensuring peace of mind for all parties involved in the therapeutic relationship.
+                groundpath maintains comprehensive professional indemnity insurance in accordance with professional standards and Australian legal requirements. Our coverage protects both practitioners and clients, ensuring peace of mind for all parties involved in the therapeutic relationship.
               </p>
             </section>
 

@@ -51,7 +51,7 @@ const Logo = () => {
       
       {/* Wordmark */}
       <div className="text-white font-light tracking-widest">
-        <span className="text-xl">ground path</span>
+        <span className="text-xl">groundpath</span>
       </div>
     </div>
   );
