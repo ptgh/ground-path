@@ -166,7 +166,7 @@ const FormHistory = ({ onViewForm }: FormHistoryProps) => {
     printContent.innerHTML = `
       <div style="font-family: Arial, sans-serif; margin: 0; padding: 20px;">
         <div style="border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
-          <h1 style="margin: 0; color: #333;">Ground Path Professional Services</h1>
+          <h1 style="margin: 0; color: #333;">groundpath Professional Services</h1>
           <h2 style="margin: 10px 0; color: #666;">${submission.form_type}</h2>
           <p style="margin: 5px 0;"><strong>Patient:</strong> ${clientName}</p>
           <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(submission.completed_at).toLocaleDateString()}</p>
