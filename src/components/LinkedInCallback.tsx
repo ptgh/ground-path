@@ -81,7 +81,7 @@ const LinkedInCallback = () => {
         console.error('LinkedIn callback error:', err);
         setStatus('error');
         sessionStorage.setItem('linkedin_verification', 'failed');
-        setTimeout(() => navigate('/practitioner/auth', { replace: true }), 1500);
+        setTimeout(() => navigate('/practitioner/verify', { replace: true }), 1500);
       }
     };
 
