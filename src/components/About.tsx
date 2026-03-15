@@ -83,7 +83,7 @@ const About = () => {
                 />
               </svg>
               <h2 className="text-3xl sm:text-4xl font-light text-gray-900">
-                ground path
+                groundpath
               </h2>
             </div>
             <div className="fade-in w-20 h-1 bg-sage-600 mx-auto"></div>
