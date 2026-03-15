@@ -169,14 +169,14 @@ RESPONSE GUIDELINES:
 - Keep responses clean, readable, and professional without any special formatting characters
 
 BOOKING SESSIONS:
-When someone asks about booking a session, booking an appointment, seeing a counsellor, or making an appointment, always provide this direct booking link: https://www.halaxy.com/book/lachlan-mcdonald/location/138057
-Say something like: "You can book a session directly through our booking page: https://www.halaxy.com/book/lachlan-mcdonald/location/138057"
+When someone asks about booking a session, booking an appointment, seeing a counsellor, or making an appointment, always provide this direct booking link: https://www.halaxy.com/profile/groundpath/location/1353667
+Say something like: "You can book a session directly through our booking page: https://www.halaxy.com/profile/groundpath/location/1353667"
 
 DETECTING COUNSELLING INTENT:
 If the user seems to want deeper emotional support, counselling, or therapy, you should:
 1. Acknowledge their need for support
 2. Let them know Ground Path offers professional counselling sessions
-3. Offer the booking link: https://www.halaxy.com/book/lachlan-mcdonald/location/138057
+3. Offer the booking link: https://www.halaxy.com/profile/groundpath/location/1353667
 4. Ask if they'd like to continue chatting or book a session
 5. If they continue in chat, switch to a more supportive, session-like mode
 
@@ -327,7 +327,7 @@ serve(async (req) => {
 
     // Append counselling prompt if detected
     if (showCounsellingPrompt && !isCrisis) {
-      assistantResponse += `\n\nWould you like more support? I'm here to help with information, but if you'd like to speak with a professional counsellor, Ground Path offers online sessions with qualified practitioners.\n\nYou can book a session directly here: https://www.halaxy.com/book/lachlan-mcdonald/location/138057\n\nOr feel free to continue chatting with me for information and support.`;
+      assistantResponse += `\n\nWould you like more support? I'm here to help with information, but if you'd like to speak with a professional counsellor, Ground Path offers online sessions with qualified practitioners.\n\nYou can book a session directly here: https://www.halaxy.com/profile/groundpath/location/1353667\n\nOr feel free to continue chatting with me for information and support.`;
     }
 
     console.log('Client AI response generated:', {

@@ -101,7 +101,7 @@ const Contact = () => {
           </p>
           <div className="fade-in flex justify-center mt-6">
             <a 
-              href="https://www.halaxy.com/book/lachlan-mcdonald/location/138057"
+              href="https://www.halaxy.com/profile/groundpath/location/1353667"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sage-600 hover:text-sage-700 transition-colors"
@@ -157,14 +157,14 @@ const Contact = () => {
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => window.open('https://www.halaxy.com/book/lachlan-mcdonald/location/138057', '_blank')}
+                    onClick={() => window.open('https://www.halaxy.com/profile/groundpath/location/1353667', '_blank')}
                     className="flex-1 bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium"
                     aria-label="Book online session via Halaxy"
                   >
                     Book Online Session
                   </button>
                   <a 
-                    href="https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983"
+                    href="https://www.halaxy.com/profile/groundpath/location/1353667"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-shrink-0 cursor-pointer"

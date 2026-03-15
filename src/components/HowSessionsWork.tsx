@@ -91,7 +91,7 @@ const HowSessionsWork = () => {
         {/* CTA */}
         <div className="text-center mt-10">
           <a
-            href="https://www.halaxy.com/book/lachlan-mcdonald/location/138057"
+            href="https://www.halaxy.com/profile/groundpath/location/1353667"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-lg"

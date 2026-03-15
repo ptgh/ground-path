@@ -102,7 +102,7 @@ export const NewsletterEmail = ({
             <Text style={servicesText}>
               Need professional consultation or support? Our experienced team is here to help.
             </Text>
-            <Button style={outlineButton} href="https://www.halaxy.com/book/groundpath/location/125730">
+            <Button style={outlineButton} href="https://www.halaxy.com/profile/groundpath/location/1353667">
               Book a Consultation
             </Button>
           </Section>

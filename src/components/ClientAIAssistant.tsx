@@ -936,7 +936,7 @@ export const ClientAIAssistant = () => {
                 <p className="text-xs text-gray-500">Quick questions:</p>
                 <Button
                   size="sm"
-                  onClick={() => window.open('https://www.halaxy.com/book/lachlan-mcdonald/location/138057', '_blank')}
+                  onClick={() => window.open('https://www.halaxy.com/profile/groundpath/location/1353667', '_blank')}
                   className="text-xs bg-green-600 hover:bg-green-700 h-7 px-3"
                 >
                   <Calendar className="h-3 w-3 mr-1" />
