@@ -102,7 +102,7 @@ export const NewsletterEmail = ({
           <Hr style={hr} />
           
           <Text style={footer}>
-            Thank you for being part of the Ground Path community. We're committed to supporting your professional development and practice excellence.
+            Thank you for being part of the groundpath community. We're committed to supporting your professional development and practice excellence.
           </Text>
         </Section>
 
