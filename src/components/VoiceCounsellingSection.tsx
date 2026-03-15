@@ -26,7 +26,7 @@ const VoiceCounsellingSection = () => {
             This is AI-powered support and does not replace professional therapy.
             For professional sessions,{' '}
             <a
-              href="https://www.halaxy.com/book/lachlan-mcdonald/location/138057"
+              href="https://www.halaxy.com/profile/groundpath/location/1353667"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary underline"

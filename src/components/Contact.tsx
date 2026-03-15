@@ -164,7 +164,7 @@ const Contact = () => {
                     Book Online Session
                   </button>
                   <a 
-                    href="https://www.halaxy.com/profile/mr-paul-habermann/social-worker/1722983"
+                    href="https://www.halaxy.com/profile/groundpath/location/1353667"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-shrink-0 cursor-pointer"

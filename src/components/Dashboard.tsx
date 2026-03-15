@@ -638,7 +638,7 @@ const Dashboard = () => {
                       </ProfessionalProfileModal>
                        <Button
                          variant="outline"
-                         onClick={() => window.open('https://www.halaxy.com/book/paul-habermann/location/1321025', '_blank')}
+                         onClick={() => window.open('https://www.halaxy.com/profile/groundpath/location/1353667', '_blank')}
                          className="dashboard-cta w-full border-sage-200 text-sage-700 hover:bg-sage-50"
                        >
                          Halaxy Profile
