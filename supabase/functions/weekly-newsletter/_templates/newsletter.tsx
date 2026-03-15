@@ -116,7 +116,7 @@ export const NewsletterEmail = ({
 
         <Section style={footerSection}>
           <Text style={footerText}>
-            © 2024 Ground Path. All rights reserved.<br />
+            © 2024 groundpath. All rights reserved.<br />
             Supporting social workers and mental health professionals across Australia.
           </Text>
           <Text style={footerText}>

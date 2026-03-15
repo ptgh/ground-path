@@ -161,7 +161,7 @@ export const NewsletterEmail = ({
           </Text>
           
           <Text style={copyrightText}>
-            © 2024 Ground Path. All rights reserved.
+            © 2024 groundpath. All rights reserved.
           </Text>
         </Section>
       </Container>
