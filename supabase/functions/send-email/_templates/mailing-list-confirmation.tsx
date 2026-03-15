@@ -89,7 +89,7 @@ export const MailingListConfirmationEmail = ({
           <Hr style={hr} />
           
           <Text style={footer}>
-            This email was sent to you because you subscribed to Ground Path's mailing list.<br />
+            This email was sent to you because you subscribed to groundpath's mailing list.<br />
             If you didn't subscribe, you can safely ignore this email.
           </Text>
           
