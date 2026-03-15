@@ -48,7 +48,7 @@ const ConfirmPage = () => {
             <CheckCircle className="h-16 w-16 mx-auto text-green-600 mb-4" />
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Subscription Confirmed!</h2>
             <p className="text-gray-600 mb-6">
-              Thank you for confirming your subscription to Ground Path's professional mailing list.
+              Thank you for confirming your subscription to groundpath's professional mailing list.
             </p>
             <p className="text-sm text-gray-500 mb-6">
               You'll start receiving our curated content including:
