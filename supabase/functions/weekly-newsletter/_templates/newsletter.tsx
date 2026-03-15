@@ -49,7 +49,7 @@ export const NewsletterEmail = ({
                 strokeLinejoin="round"
               />
             </svg>
-            <Text style={logoText}>ground path</Text>
+            <Text style={logoText}>groundpath</Text>
           </Link>
           <Text style={headerText}>Professional Social Work Resources</Text>
         </Section>
