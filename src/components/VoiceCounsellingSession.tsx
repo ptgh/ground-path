@@ -159,7 +159,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
             setTimeout(() => {
               if (!mountedRef.current) return;
               try {
-                conv.sendUserMessage(`*Now introduce yourself as ${selectedCounsellor?.name} from Ground Path, a supportive counselling service.*`);
+                conv.sendUserMessage(`*Now introduce yourself as ${selectedCounsellor?.name} from groundpath, a supportive counselling service.*`);
               } catch {}
             }, 1500);
           }, 3000);
