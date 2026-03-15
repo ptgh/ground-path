@@ -157,7 +157,7 @@ const Contact = () => {
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => window.open('https://www.halaxy.com/book/lachlan-mcdonald/location/138057', '_blank')}
+                    onClick={() => window.open('https://www.halaxy.com/profile/groundpath/location/1353667', '_blank')}
                     className="flex-1 bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium"
                     aria-label="Book online session via Halaxy"
                   >
