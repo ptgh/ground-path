@@ -182,7 +182,7 @@ const Header = () => {
                   onClick={handleProfessionalLogin}
                   className="border-gray-400 text-white hover:text-white hover:border-white hover:bg-white/10 px-5 py-2 rounded-lg font-medium text-sm"
                 >
-                  Professional Login
+                  Login
                 </Button>
               </>
             )}
