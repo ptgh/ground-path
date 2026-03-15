@@ -76,7 +76,7 @@ const LinkedInCallback = () => {
         // (LinkedIn OAuth creates a separate auth session)
         await supabase.auth.signOut();
 
-        navigate('/practitioner/auth', { replace: true });
+        navigate('/practitioner/verify', { replace: true });
       } catch (err) {
         console.error('LinkedIn callback error:', err);
         setStatus('error');
