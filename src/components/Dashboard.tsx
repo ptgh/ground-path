@@ -413,7 +413,7 @@ const Dashboard = () => {
                       <div className="flex items-center gap-2">
                          <Button
                            variant="outline"
-                           onClick={() => window.open('https://www.halaxy.com/book/paul-habermann/location/1321025', '_blank')}
+                            onClick={() => window.open('https://www.halaxy.com/profile/groundpath/location/1353667', '_blank')}
                            className="dashboard-cta flex-1 border-sage-200 text-sage-700 hover:bg-sage-50"
                            size="sm"
                          >
