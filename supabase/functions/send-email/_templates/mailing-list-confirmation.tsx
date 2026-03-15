@@ -40,7 +40,7 @@ export const MailingListConfirmationEmail = ({
                 <path d="M100 20 L100 45 M100 20 Q100 15 105 15 L115 15 Q120 15 120 20 L120 30" stroke="#7B9B85" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M135 20 L135 45 M135 20 L150 45 M150 20 L150 45" stroke="#7B9B85" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M165 20 L165 50 L180 50" stroke="#7B9B85" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                <text x="20" y="58" fontFamily="Inter, sans-serif" fontSize="8" fill="#7B9B85" fontWeight="600">GROUND PATH</text>
+                <text x="20" y="58" fontFamily="Inter, sans-serif" fontSize="8" fill="#7B9B85" fontWeight="600">GROUNDPATH</text>
               </svg>
             </div>
           </Link>
