@@ -101,7 +101,7 @@ const Contact = () => {
           </p>
           <div className="fade-in flex justify-center mt-6">
             <a 
-              href="https://www.halaxy.com/book/lachlan-mcdonald/location/138057"
+              href="https://www.halaxy.com/profile/groundpath/location/1353667"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sage-600 hover:text-sage-700 transition-colors"
