@@ -282,7 +282,7 @@ const About = () => {
         <CredentialModal title="AMHSW — Accredited Mental Health Social Worker" onClose={() => setIsAMHSWOpen(false)}>
           <div className="space-y-4 text-sm text-gray-600">
             <p className="leading-relaxed">Accredited Mental Health Social Worker (AMHSW) status is a specialist endorsement through the Australian Association of Social Workers (AASW), recognising advanced competency in mental health practice.</p>
-            <p className="leading-relaxed">AMHSW registration is currently in progress for Ground Path practitioners. Once accredited, this will enable Medicare-rebated mental health sessions under the Better Access initiative via GP Mental Health Treatment Plans.</p>
+            <p className="leading-relaxed">AMHSW registration is currently in progress for groundpath practitioners. Once accredited, this will enable Medicare-rebated mental health sessions under the Better Access initiative via GP Mental Health Treatment Plans.</p>
             <h4 className="font-medium text-gray-900">Requirements include:</h4>
             <ul className="list-disc pl-5 space-y-1">
               <li>Master of Social Work qualification from an AASW-accredited program</li>
