@@ -34,7 +34,7 @@ export const NewsletterEmail = ({
 }: NewsletterProps) => (
   <Html>
     <Head />
-    <Preview>Your Weekly Social Work Resources from Ground Path</Preview>
+    <Preview>Your Weekly Social Work Resources from groundpath</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
