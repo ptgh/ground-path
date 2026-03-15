@@ -17,7 +17,7 @@ const LinkedInCallback = () => {
         if (error || !session) {
           console.error('LinkedIn callback: no session', error);
           sessionStorage.setItem('linkedin_verification', 'failed');
-          navigate('/practitioner/auth', { replace: true });
+          navigate('/practitioner/verify', { replace: true });
           return;
         }
 
