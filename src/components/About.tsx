@@ -83,7 +83,7 @@ const About = () => {
                 />
               </svg>
               <h2 className="text-3xl sm:text-4xl font-light text-gray-900">
-                ground path
+                groundpath
               </h2>
             </div>
             <div className="fade-in w-20 h-1 bg-sage-600 mx-auto"></div>
@@ -99,7 +99,7 @@ const About = () => {
                     Qualified & Experienced Social Work
                   </h3>
                   <p className="text-gray-600 leading-relaxed text-sm">
-                    At Ground Path, we provide person-centred, evidence-based support grounded in the AASW Code of Ethics and best-practice standards.
+                    At groundpath, we provide person-centred, evidence-based support grounded in the AASW Code of Ethics and best-practice standards.
                   </p>
                 </div>
 
@@ -282,7 +282,7 @@ const About = () => {
         <CredentialModal title="AMHSW — Accredited Mental Health Social Worker" onClose={() => setIsAMHSWOpen(false)}>
           <div className="space-y-4 text-sm text-gray-600">
             <p className="leading-relaxed">Accredited Mental Health Social Worker (AMHSW) status is a specialist endorsement through the Australian Association of Social Workers (AASW), recognising advanced competency in mental health practice.</p>
-            <p className="leading-relaxed">AMHSW registration is currently in progress for Ground Path practitioners. Once accredited, this will enable Medicare-rebated mental health sessions under the Better Access initiative via GP Mental Health Treatment Plans.</p>
+            <p className="leading-relaxed">AMHSW registration is currently in progress for groundpath practitioners. Once accredited, this will enable Medicare-rebated mental health sessions under the Better Access initiative via GP Mental Health Treatment Plans.</p>
             <h4 className="font-medium text-gray-900">Requirements include:</h4>
             <ul className="list-disc pl-5 space-y-1">
               <li>Master of Social Work qualification from an AASW-accredited program</li>
@@ -299,7 +299,7 @@ const About = () => {
         <CredentialModal title="ACA — Australian Counselling Association" onClose={() => setIsACAOpen(false)}>
           <div className="space-y-4 text-sm text-gray-600">
             <p className="leading-relaxed">The Australian Counselling Association (ACA) is the largest national professional body for counsellors and psychotherapists in Australia.</p>
-            <p className="leading-relaxed">ACA registration is currently in progress for Ground Path practitioners. This registration will provide additional professional recognition and enable clients to access private health insurance rebates where applicable.</p>
+            <p className="leading-relaxed">ACA registration is currently in progress for groundpath practitioners. This registration will provide additional professional recognition and enable clients to access private health insurance rebates where applicable.</p>
             <h4 className="font-medium text-gray-900">ACA Membership includes:</h4>
             <ul className="list-disc pl-5 space-y-1">
               <li>Professional recognition as a qualified counsellor</li>

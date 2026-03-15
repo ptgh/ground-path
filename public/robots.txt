@@ -1,5 +1,5 @@
 # Professional Healthcare and Social Work Services
-# Ground Path - Mental Health and Social Work Support
+# groundpath - Mental Health and Social Work Support
 # This site provides professional healthcare services including:
 # - Mental health counselling and support
 # - NDIS psychosocial recovery coaching

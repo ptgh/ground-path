@@ -80,7 +80,7 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
             <section>
               <h3 className="text-lg font-medium text-gray-900 mb-3">1. Introduction</h3>
               <p className="text-gray-600 leading-relaxed text-sm">
-                Ground Path is committed to protecting your privacy in accordance with the Privacy Act 1988 (Cth) and the Australian Privacy Principles (APPs). This Privacy Policy explains how we collect, use, store, and disclose your personal information.
+                groundpath is committed to protecting your privacy in accordance with the Privacy Act 1988 (Cth) and the Australian Privacy Principles (APPs). This Privacy Policy explains how we collect, use, store, and disclose your personal information.
               </p>
             </section>
 

@@ -80,7 +80,7 @@ const CPDModal = ({ isOpen, onClose }: CPDModalProps) => {
             <section>
               <h3 className="text-lg font-medium text-gray-900 mb-3">Annual Requirements</h3>
               <p className="text-gray-600 leading-relaxed text-sm">
-                Ground Path practitioners exceed minimum CPD requirements, completing a minimum of 30 hours of continuing professional development annually. This commitment ensures our practice remains current with emerging research, best-practice guidelines, and evolving professional standards.
+                groundpath practitioners exceed minimum CPD requirements, completing a minimum of 30 hours of continuing professional development annually. This commitment ensures our practice remains current with emerging research, best-practice guidelines, and evolving professional standards.
               </p>
             </section>
 

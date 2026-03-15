@@ -34,7 +34,7 @@ export const NewsletterEmail = ({
 }: NewsletterProps) => (
   <Html>
     <Head />
-    <Preview>Your Weekly Social Work Resources from Ground Path</Preview>
+    <Preview>Your Weekly Social Work Resources from groundpath</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
@@ -42,7 +42,7 @@ export const NewsletterEmail = ({
             src="https://vzwhccciarvirzqmvldl.supabase.co/storage/v1/object/public/resources/ground-path-logo.png"
             width="200"
             height="60"
-            alt="Ground Path"
+            alt="groundpath"
             style={logo}
           />
           <Text style={headerText}>Professional Social Work Resources</Text>
@@ -102,13 +102,13 @@ export const NewsletterEmail = ({
           <Hr style={hr} />
           
           <Text style={footer}>
-            Thank you for being part of the Ground Path community. We're committed to supporting your professional development and practice excellence.
+            Thank you for being part of the groundpath community. We're committed to supporting your professional development and practice excellence.
           </Text>
         </Section>
 
         <Section style={footerSection}>
           <Text style={footerText}>
-            © 2024 Ground Path. All rights reserved.<br />
+            © 2024 groundpath. All rights reserved.<br />
             Supporting social workers and mental health professionals across Australia.
           </Text>
           <Text style={footerText}>

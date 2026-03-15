@@ -17,7 +17,7 @@ const LinkedInCallback = () => {
         if (error || !session) {
           console.error('LinkedIn callback: no session', error);
           sessionStorage.setItem('linkedin_verification', 'failed');
-          navigate('/practitioner/auth', { replace: true });
+          navigate('/practitioner/verify', { replace: true });
           return;
         }
 
@@ -76,12 +76,12 @@ const LinkedInCallback = () => {
         // (LinkedIn OAuth creates a separate auth session)
         await supabase.auth.signOut();
 
-        navigate('/practitioner/auth', { replace: true });
+        navigate('/practitioner/verify', { replace: true });
       } catch (err) {
         console.error('LinkedIn callback error:', err);
         setStatus('error');
         sessionStorage.setItem('linkedin_verification', 'failed');
-        setTimeout(() => navigate('/practitioner/auth', { replace: true }), 1500);
+        setTimeout(() => navigate('/practitioner/verify', { replace: true }), 1500);
       }
     };
 

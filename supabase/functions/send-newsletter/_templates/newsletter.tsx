@@ -51,7 +51,7 @@ export const NewsletterEmail = ({
                 strokeLinejoin="round"
               />
             </svg>
-            <Text style={logoText}>ground path</Text>
+            <Text style={logoText}>groundpath</Text>
           </Link>
         </Section>
 
@@ -138,7 +138,7 @@ export const NewsletterEmail = ({
           </Section>
           
           <Text style={footerText}>
-            Ground Path - Supporting social work professionals with evidence-based tools and resources.
+            groundpath - Supporting social work professionals with evidence-based tools and resources.
           </Text>
           
           <Text style={footerText}>
@@ -154,14 +154,14 @@ export const NewsletterEmail = ({
           <Hr style={footerDivider} />
           
           <Text style={unsubscribeText}>
-            You're receiving this because you subscribed to Ground Path updates.{' '}
+            You're receiving this because you subscribed to groundpath updates.{' '}
             <Link href={unsubscribeUrl} style={unsubscribeLink}>
               Unsubscribe
             </Link>
           </Text>
           
           <Text style={copyrightText}>
-            © 2024 Ground Path. All rights reserved.
+            © 2024 groundpath. All rights reserved.
           </Text>
         </Section>
       </Container>

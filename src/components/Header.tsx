@@ -182,7 +182,7 @@ const Header = () => {
                   onClick={handleProfessionalLogin}
                   className="border-gray-400 text-white hover:text-white hover:border-white hover:bg-white/10 px-5 py-2 rounded-lg font-medium text-sm"
                 >
-                  Professional Login
+                  Login
                 </Button>
               </>
             )}
@@ -248,9 +248,9 @@ const Header = () => {
                   </Button>
                    <Button
                     onClick={() => { handleProfessionalLogin(); setIsMenuOpen(false); }}
-                    className="bg-gray-700 text-white hover:bg-gray-600 border border-gray-500 w-full"
-                  >
-                    Professional Login
+                     className="bg-gray-700 text-white hover:bg-gray-600 border border-gray-500 w-full"
+                   >
+                     Login
                   </Button>
                 </>
               )}

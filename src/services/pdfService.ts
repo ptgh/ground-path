@@ -37,11 +37,11 @@ export const pdfService = {
   },
 
   addHeader(pdf: jsPDF, yPosition: number) {
-    // Add Ground Path professional header with enhanced branding
+    // Add groundpath professional header with enhanced branding
     pdf.setFontSize(20);
     pdf.setFont('helvetica', 'bold');
     pdf.setTextColor(46, 79, 79); // Dark slate gray matching the logo
-    pdf.text('Ground Path', 20, yPosition);
+    pdf.text('groundpath', 20, yPosition);
     
     pdf.setFontSize(10);
     pdf.setFont('helvetica', 'normal');

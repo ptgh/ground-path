@@ -27,7 +27,7 @@ export const MailingListConfirmationEmail = ({
 }: MailingListConfirmationProps) => (
   <Html>
     <Head />
-    <Preview>Confirm your subscription to Ground Path - Professional Social Work Resources</Preview>
+    <Preview>Confirm your subscription to groundpath - Professional Social Work Resources</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
@@ -40,14 +40,14 @@ export const MailingListConfirmationEmail = ({
                 <path d="M100 20 L100 45 M100 20 Q100 15 105 15 L115 15 Q120 15 120 20 L120 30" stroke="#7B9B85" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M135 20 L135 45 M135 20 L150 45 M150 20 L150 45" stroke="#7B9B85" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M165 20 L165 50 L180 50" stroke="#7B9B85" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                <text x="20" y="58" fontFamily="Inter, sans-serif" fontSize="8" fill="#7B9B85" fontWeight="600">GROUND PATH</text>
+                <text x="20" y="58" fontFamily="Inter, sans-serif" fontSize="8" fill="#7B9B85" fontWeight="600">GROUNDPATH</text>
               </svg>
             </div>
           </Link>
         </Section>
 
         <Section style={content}>
-          <Heading style={h1}>Welcome to Ground Path!</Heading>
+          <Heading style={h1}>Welcome to groundpath!</Heading>
           
           {name && (
             <Text style={greeting}>Hi {name},</Text>
@@ -89,7 +89,7 @@ export const MailingListConfirmationEmail = ({
           <Hr style={hr} />
           
           <Text style={footer}>
-            This email was sent to you because you subscribed to Ground Path's mailing list.<br />
+            This email was sent to you because you subscribed to groundpath's mailing list.<br />
             If you didn't subscribe, you can safely ignore this email.
           </Text>
           
@@ -121,7 +121,7 @@ export const MailingListConfirmationEmail = ({
 
         <Section style={footerSection}>
           <Text style={footerText}>
-            © 2024 Ground Path. All rights reserved.<br />
+            © 2024 groundpath. All rights reserved.<br />
             Supporting social workers and mental health professionals across Australia.
           </Text>
         </Section>

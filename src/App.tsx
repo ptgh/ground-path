@@ -33,6 +33,8 @@ import UnsubscribePage from "./pages/Unsubscribe";
 import ConfirmPage from "./pages/Confirm";
 import Article from "./pages/Article";
 import VoiceSessionPage from "./pages/VoiceSession";
+import VerifyEmail from "./pages/VerifyEmail";
+import PractitionerVerify from "./pages/PractitionerVerify";
 import { AIAssistant } from "./components/AIAssistant";
 import { ClientAIAssistant } from "./components/ClientAIAssistant";
 import { useAuth } from "./hooks/useAuth";
@@ -86,8 +88,10 @@ const App = () => {
             <Route path="/voice-session" element={<VoiceSessionPage />} />
             <Route path="/confirm" element={<ConfirmPage />} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/professional-forms" element={<ProfessionalForms />} />
             <Route path="/practitioner/forms" element={<ProfessionalForms />} />
+            <Route path="/practitioner/verify" element={<PractitionerVerify />} />
             <Route path="/practitioner/forms/phq-9/fill" element={<PHQ9Form />} />
             <Route path="/practitioner/forms/gad-7/fill" element={<GAD7Form />} />
             <Route path="/practitioner/forms/dass-21/fill" element={<DASS21Form />} />

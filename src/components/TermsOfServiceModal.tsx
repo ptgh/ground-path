@@ -80,7 +80,7 @@ const TermsOfServiceModal = ({ isOpen, onClose }: TermsOfServiceModalProps) => {
             <section>
               <h3 className="text-lg font-medium text-gray-900 mb-3">1. Professional Services</h3>
               <p className="text-gray-600 leading-relaxed text-sm">
-                Ground Path provides professional social work, counseling, and mental health support services. Services are provided by qualified practitioners registered with relevant professional bodies and operating under applicable codes of ethics and practice standards.
+                groundpath provides professional social work, counseling, and mental health support services. Services are provided by qualified practitioners registered with relevant professional bodies and operating under applicable codes of ethics and practice standards.
               </p>
             </section>
 

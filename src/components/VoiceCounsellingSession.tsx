@@ -93,7 +93,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
   const countryRef = useRef<HTMLDivElement>(null);
 
   const counsellorContext = selectedCounsellor
-    ? `You are ${selectedCounsellor.name}, a compassionate and professional AI counsellor for Ground Path. You provide supportive, non-judgmental mental health guidance. You are NOT a replacement for professional therapy — always recommend professional help for serious concerns. ${getCountryResources(country)} Keep responses conversational and brief (2-4 sentences) for voice. Be warm, use active listening, and validate emotions. If you detect crisis indicators (suicidal ideation, self-harm), immediately provide crisis resources. Never diagnose or prescribe medication. Introduce yourself naturally as ${selectedCounsellor.name} from Ground Path.`
+    ? `You are ${selectedCounsellor.name}, a compassionate and professional AI counsellor for groundpath. You provide supportive, non-judgmental mental health guidance. You are NOT a replacement for professional therapy — always recommend professional help for serious concerns. ${getCountryResources(country)} Keep responses conversational and brief (2-4 sentences) for voice. Be warm, use active listening, and validate emotions. If you detect crisis indicators (suicidal ideation, self-harm), immediately provide crisis resources. Never diagnose or prescribe medication. Introduce yourself naturally as ${selectedCounsellor.name} from groundpath.`
     : "";
 
   const counsellorContextRef = useRef(counsellorContext);
@@ -159,7 +159,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
             setTimeout(() => {
               if (!mountedRef.current) return;
               try {
-                conv.sendUserMessage(`*Now introduce yourself as ${selectedCounsellor?.name} from Ground Path, a supportive counselling service.*`);
+                conv.sendUserMessage(`*Now introduce yourself as ${selectedCounsellor?.name} from groundpath, a supportive counselling service.*`);
               } catch {}
             }, 1500);
           }, 3000);
@@ -495,7 +495,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
       </p>
       <h2 className="text-foreground text-lg font-medium mb-1">{selectedCounsellor?.name}</h2>
       <p className="text-muted-foreground text-[11px] mb-8">
-        Ground Path • {country === "AU" ? "Australia" : country === "UK" ? "United Kingdom" : "International"}
+        groundpath • {country === "AU" ? "Australia" : country === "UK" ? "United Kingdom" : "International"}
       </p>
 
       {/* Avatar with pulse rings */}
