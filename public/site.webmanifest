@@ -1,6 +1,6 @@
 {
-  "name": "Ground Path - Social Work & Mental Health Support Australia",
-  "short_name": "Ground Path",
+  "name": "groundpath - Social Work & Mental Health Support Australia",
+  "short_name": "groundpath",
   "description": "Professional social work and mental health support services in Australia",
   "start_url": "/",
   "display": "standalone",
