@@ -27,7 +27,7 @@ export const MailingListConfirmationEmail = ({
 }: MailingListConfirmationProps) => (
   <Html>
     <Head />
-    <Preview>Confirm your subscription to Ground Path - Professional Social Work Resources</Preview>
+    <Preview>Confirm your subscription to groundpath - Professional Social Work Resources</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
