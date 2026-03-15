@@ -47,7 +47,7 @@ export const MailingListConfirmationEmail = ({
         </Section>
 
         <Section style={content}>
-          <Heading style={h1}>Welcome to Ground Path!</Heading>
+          <Heading style={h1}>Welcome to groundpath!</Heading>
           
           {name && (
             <Text style={greeting}>Hi {name},</Text>
