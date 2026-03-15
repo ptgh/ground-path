@@ -138,7 +138,7 @@ export const NewsletterEmail = ({
           </Section>
           
           <Text style={footerText}>
-            Ground Path - Supporting social work professionals with evidence-based tools and resources.
+            groundpath - Supporting social work professionals with evidence-based tools and resources.
           </Text>
           
           <Text style={footerText}>
