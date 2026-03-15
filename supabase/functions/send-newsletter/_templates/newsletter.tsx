@@ -154,7 +154,7 @@ export const NewsletterEmail = ({
           <Hr style={footerDivider} />
           
           <Text style={unsubscribeText}>
-            You're receiving this because you subscribed to Ground Path updates.{' '}
+            You're receiving this because you subscribed to groundpath updates.{' '}
             <Link href={unsubscribeUrl} style={unsubscribeLink}>
               Unsubscribe
             </Link>
