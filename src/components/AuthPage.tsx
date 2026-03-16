@@ -31,22 +31,18 @@ const AuthPage = () => {
     checkAuth();
   }, [navigate]);
 
-  // Handle OAuth redirects
+  // Handle OAuth callback redirects only (not signup/signin)
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
+      // Only handle OAuth provider callbacks — not email/password signup or signin
+      if (event === 'SIGNED_IN' && session?.user?.app_metadata?.provider && session.user.app_metadata.provider !== 'email') {
         if (session.user.email_confirmed_at) {
-          const userType = session.user.user_metadata?.user_type;
-          if (userType === 'practitioner') {
-            window.location.href = '/practitioner/dashboard';
-          } else {
-            window.location.href = '/practitioner/dashboard';
-          }
+          navigate('/practitioner/dashboard');
         }
       }
     });
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
