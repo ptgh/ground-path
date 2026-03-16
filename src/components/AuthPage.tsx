@@ -49,7 +49,7 @@ const AuthPage = () => {
     const trimmedEmail = email.trim();
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email: trimmedEmail, password });
+      const { error } = await supabase.auth.signInWithPassword({ email: trimmedEmail, password });
       if (error) {
         const msg = error.message.includes('Invalid login credentials')
           ? 'Please check your email and password and try again.'

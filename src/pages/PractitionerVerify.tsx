@@ -35,7 +35,6 @@ const PractitionerVerify = () => {
   // Check for LinkedIn verification result on mount
   useEffect(() => {
     const result = sessionStorage.getItem('linkedin_verification');
-    const returnEmail = sessionStorage.getItem('linkedin_verify_return_email');
     
     if (result === 'success' || result === 'failed') {
       setLinkedInStatus(result);
