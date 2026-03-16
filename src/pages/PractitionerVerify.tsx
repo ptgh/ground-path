@@ -35,16 +35,21 @@ const PractitionerVerify = () => {
   // Check for LinkedIn verification result on mount
   useEffect(() => {
     const result = sessionStorage.getItem('linkedin_verification');
+    const returnEmail = sessionStorage.getItem('linkedin_verify_return_email');
+    
     if (result === 'success' || result === 'failed') {
       setLinkedInStatus(result);
       sessionStorage.removeItem('linkedin_verification');
+      sessionStorage.removeItem('linkedin_verify_return_email');
+      
       if (result === 'success') {
         setIsVerified(true);
         toast({
           title: 'LinkedIn verification successful',
-          description: 'Your professional status has been verified via LinkedIn.',
+          description: 'Your professional status has been verified. Please sign in again to continue.',
         });
-        setTimeout(() => navigate('/practitioner/dashboard', { replace: true }), 2000);
+        // User was signed out during LinkedIn flow — redirect to auth
+        setTimeout(() => navigate('/practitioner/auth', { replace: true }), 2500);
       } else {
         toast({
           title: 'LinkedIn verification failed',
@@ -80,6 +85,16 @@ const PractitionerVerify = () => {
   const handleLinkedInVerify = async () => {
     setLoading(true);
     try {
+      // Store the original user's ID so the callback can update the correct profile
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      if (!currentSession) {
+        toast({ title: 'Not authenticated', description: 'Please sign in first.', variant: 'destructive' });
+        navigate('/practitioner/auth');
+        return;
+      }
+      sessionStorage.setItem('linkedin_verify_user_id', currentSession.user.id);
+      sessionStorage.setItem('linkedin_verify_email', currentSession.user.email || '');
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'linkedin_oidc',
         options: {
@@ -88,9 +103,13 @@ const PractitionerVerify = () => {
         },
       });
       if (error) {
+        sessionStorage.removeItem('linkedin_verify_user_id');
+        sessionStorage.removeItem('linkedin_verify_email');
         toast({ title: 'LinkedIn verification failed', description: error.message, variant: 'destructive' });
       }
     } catch {
+      sessionStorage.removeItem('linkedin_verify_user_id');
+      sessionStorage.removeItem('linkedin_verify_email');
       toast({ title: 'LinkedIn verification failed', description: 'An unexpected error occurred.', variant: 'destructive' });
     } finally {
       setLoading(false);
