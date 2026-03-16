@@ -65,7 +65,7 @@ const Dashboard = () => {
     // Redirect unverified practitioners to verification page
     if (!authLoading && user && profile) {
       const userType = user.user_metadata?.user_type;
-      if (userType === 'practitioner' && !profile.verification_status) {
+      if (userType === 'practitioner' && (!profile.verification_status || profile.verification_status === 'unverified')) {
         navigate('/practitioner/verify', { replace: true });
       }
     }
