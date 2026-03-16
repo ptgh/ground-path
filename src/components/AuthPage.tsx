@@ -102,6 +102,7 @@ const AuthPage = () => {
       toast({ title: "Role required", description: "Please select whether you're a client or practitioner.", variant: "destructive" });
       return;
     }
+    const trimmedEmail = email.trim();
     setLoading(true);
     try {
       const metadata: Record<string, any> = {
@@ -109,7 +110,7 @@ const AuthPage = () => {
       };
 
       const { error } = await supabase.auth.signUp({
-        email,
+        email: trimmedEmail,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/verify-email`,

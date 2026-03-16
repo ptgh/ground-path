@@ -83,8 +83,8 @@ export const useAuth = () => {
       (event, session) => {
         if (!mounted) return;
         
-        // Prevent rapid state changes
-        if (initialized && session === null && event === 'SIGNED_OUT') {
+        // Reset auth state cleanly on sign out or token expiry
+        if (initialized && event === 'SIGNED_OUT') {
           setSession(null);
           setUser(null);
           setProfile(null);
