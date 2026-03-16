@@ -121,11 +121,11 @@ export const useAuth = () => {
       initialized = true;
       
       if (session?.user) {
-        setTimeout(() => {
+        queueMicrotask(() => {
           if (mounted) {
             fetchProfile(session.user.id);
           }
-        }, 100);
+        });
       }
     });
 
