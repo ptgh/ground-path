@@ -93,29 +93,29 @@ const App = () => {
             <Route path="/professional-forms" element={<ProfessionalForms />} />
             <Route path="/practitioner/forms" element={<ProfessionalForms />} />
             <Route path="/practitioner/verify" element={<PractitionerVerify />} />
-            <Route path="/practitioner/forms/phq-9/fill" element={<PHQ9Form />} />
-            <Route path="/practitioner/forms/gad-7/fill" element={<GAD7Form />} />
-            <Route path="/practitioner/forms/dass-21/fill" element={<DASS21Form />} />
-            <Route path="/practitioner/forms/mental-status-exam/fill" element={<MSEForm />} />
-            <Route path="/practitioner/forms/suicide-risk-assessment/fill" element={<SuicideRiskForm />} />
-            <Route path="/practitioner/forms/treatment-plan/fill" element={<TreatmentPlanForm />} />
-            <Route path="/practitioner/forms/client-intake/fill" element={<ClientIntakeForm />} />
-            <Route path="/practitioner/forms/gaf-scale/fill" element={<GAFForm />} />
-            <Route path="/practitioner/forms/safety-planning/fill" element={<SafetyPlanForm />} />
-            <Route path="/practitioner/forms/crisis-intervention/fill" element={<CrisisInterventionForm />} />
-            <Route path="/practitioner/forms/cpd-log/fill" element={<CPDLogForm />} />
-            <Route path="/practitioner/forms/incident-report/fill" element={<IncidentReportForm />} />
-            <Route path="/practitioner/forms/progress-notes/fill" element={<ProgressNotesForm />} />
-            <Route path="/practitioner/forms/case-review/fill" element={<CaseReviewForm />} />
-            <Route path="/practitioner/forms/supervision-record/fill" element={<SupervisionRecordForm />} />
-            <Route path="/practitioner/forms/reflective-practice/fill" element={<ReflectivePracticeForm />} />
-            <Route path="/practitioner/forms/k10/fill" element={<BDIForm />} />
+            <Route path="/practitioner/forms/phq-9/fill" element={<ProtectedRoute><PHQ9Form /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/gad-7/fill" element={<ProtectedRoute><GAD7Form /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/dass-21/fill" element={<ProtectedRoute><DASS21Form /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/mental-status-exam/fill" element={<ProtectedRoute><MSEForm /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/suicide-risk-assessment/fill" element={<ProtectedRoute><SuicideRiskForm /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/treatment-plan/fill" element={<ProtectedRoute><TreatmentPlanForm /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/client-intake/fill" element={<ProtectedRoute><ClientIntakeForm /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/gaf-scale/fill" element={<ProtectedRoute><GAFForm /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/safety-planning/fill" element={<ProtectedRoute><SafetyPlanForm /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/crisis-intervention/fill" element={<ProtectedRoute><CrisisInterventionForm /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/cpd-log/fill" element={<ProtectedRoute><CPDLogForm /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/incident-report/fill" element={<ProtectedRoute><IncidentReportForm /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/progress-notes/fill" element={<ProtectedRoute><ProgressNotesForm /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/case-review/fill" element={<ProtectedRoute><CaseReviewForm /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/supervision-record/fill" element={<ProtectedRoute><SupervisionRecordForm /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/reflective-practice/fill" element={<ProtectedRoute><ReflectivePracticeForm /></ProtectedRoute>} />
+            <Route path="/practitioner/forms/k10/fill" element={<ProtectedRoute><BDIForm /></ProtectedRoute>} />
             {/* Redirect /auth to /practitioner/auth for backwards compatibility */}
             <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
             <Route path="/practitioner/auth" element={<AuthPage />} />
             <Route path="/practitioner/auth/callback" element={<AuthCallback />} />
             <Route path="/auth/callback" element={<LinkedInCallback />} />
-            <Route path="/practitioner/dashboard" element={<Dashboard />} />
+            <Route path="/practitioner/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
