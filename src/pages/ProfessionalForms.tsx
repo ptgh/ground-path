@@ -122,16 +122,16 @@ const ProfessionalForms = () => {
           sourceUrl: 'https://www2.psy.unsw.edu.au/dass/'
         },
         {
-          id: 'beck-depression',
-          title: 'Beck Depression Inventory',
-          description: 'BDI-II for assessing depression severity',
+          id: 'k10',
+          title: 'K10 – Kessler Psychological Distress Scale',
+          description: '10 item screening tool measuring psychological distress widely used in Australian healthcare systems.',
           category: 'standardized-assessments',
           required: false,
           formType: 'interactive',
-          downloadUrl: '/forms/BDI-II.pdf',
+          downloadUrl: '/forms/K10.pdf',
           lastUpdated: '2024-01-15',
-          source: 'Beck Depression Inventory-II (BDI-II) - Aaron T. Beck',
-          sourceUrl: 'https://www.pearsonassessments.com/store/usassessments/en/Store/Professional-Assessments/Personality-%26-Biopsychosocial/Beck-Depression-Inventory-II/p/100000159.html'
+          source: 'Kessler Psychological Distress Scale',
+          sourceUrl: 'https://www.abs.gov.au/ausstats/abs@.nsf/Lookup/4817.0.55.001Chapter92007-08'
         }
       ]
     },
