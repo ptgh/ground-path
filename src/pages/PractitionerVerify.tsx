@@ -27,6 +27,7 @@ const PractitionerVerify = () => {
   const [registrationBody, setRegistrationBody] = useState('');
   const [registrationNumber, setRegistrationNumber] = useState('');
   const [loading, setLoading] = useState(false);
+  const [linkedInLoading, setLinkedInLoading] = useState(false);
   const [linkedInStatus, setLinkedInStatus] = useState<'success' | 'failed' | null>(null);
   const [isVerified, setIsVerified] = useState(false);
   const { toast } = useToast();
@@ -83,7 +84,7 @@ const PractitionerVerify = () => {
   }, [navigate]);
 
   const handleLinkedInVerify = async () => {
-    setLoading(true);
+    setLinkedInLoading(true);
     try {
       // Store the original user's ID so the callback can update the correct profile
       const { data: { session: currentSession } } = await supabase.auth.getSession();
@@ -112,7 +113,7 @@ const PractitionerVerify = () => {
       sessionStorage.removeItem('linkedin_verify_email');
       toast({ title: 'LinkedIn verification failed', description: 'An unexpected error occurred.', variant: 'destructive' });
     } finally {
-      setLoading(false);
+      setLinkedInLoading(false);
     }
   };
 
