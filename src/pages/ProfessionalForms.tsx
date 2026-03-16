@@ -344,7 +344,7 @@ const ProfessionalForms = () => {
       'client-intake': 'Client Intake',
       'treatment-plan': 'Treatment Plan',
       'cpd-log': 'CPD Log',
-      'beck-depression': 'BDI-II',
+      'k10': 'K10',
       'incident-report': 'Incident Report'
     };
     return formTypeMap[formId] || formId;

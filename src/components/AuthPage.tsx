@@ -111,7 +111,7 @@ const AuthPage = () => {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/practitioner/dashboard`,
+          emailRedirectTo: `${window.location.origin}/verify-email`,
           data: metadata,
         },
       });

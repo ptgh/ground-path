@@ -55,13 +55,21 @@ const Dashboard = () => {
   // Development bypass for testing (remove in production)
   const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   
-  // Redirect to auth if not authenticated (bypass in development)
+  // Redirect to auth if not authenticated, or to verify if practitioner not verified
   useEffect(() => {
     if (!authLoading && !user && !isDevelopment) {
       console.log('Dashboard: Redirecting unauthenticated user to auth page');
       navigate('/practitioner/auth');
+      return;
     }
-  }, [user, authLoading, navigate, isDevelopment]);
+    // Redirect unverified practitioners to verification page
+    if (!authLoading && user && profile) {
+      const userType = user.user_metadata?.user_type;
+      if (userType === 'practitioner' && !profile.verification_status) {
+        navigate('/practitioner/verify', { replace: true });
+      }
+    }
+  }, [user, authLoading, profile, navigate, isDevelopment]);
 
   // Load user notes
   useEffect(() => {

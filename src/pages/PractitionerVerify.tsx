@@ -133,7 +133,18 @@ const PractitionerVerify = () => {
     }
   };
 
-  const handleVerifyLater = () => {
+  const handleVerifyLater = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await supabase
+          .from('profiles')
+          .update({ verification_status: 'pending_review' })
+          .eq('user_id', session.user.id);
+      }
+    } catch (e) {
+      console.error('Failed to update verification status:', e);
+    }
     navigate('/practitioner/dashboard', { replace: true });
   };
 
