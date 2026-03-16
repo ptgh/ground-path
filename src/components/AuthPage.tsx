@@ -46,15 +46,20 @@ const AuthPage = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    const trimmedEmail = email.trim();
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email: trimmedEmail, password });
       if (error) {
         const msg = error.message.includes('Invalid login credentials')
           ? 'Please check your email and password and try again.'
           : error.message.includes('Email not confirmed')
           ? 'Please verify your email first. Check your inbox for the confirmation link.'
-          : error.message;
+          : error.message.includes('Too many requests')
+          ? 'Too many attempts. Please wait a moment and try again.'
+          : error.message.includes('Network')
+          ? 'Network error. Please check your connection and try again.'
+          : 'Something went wrong. Please try again.';
         toast({ title: "Sign in failed", description: msg, variant: "destructive" });
         return;
       }

@@ -98,13 +98,13 @@ export const useAuth = () => {
         setLoading(false);
         initialized = true;
         
-        // Defer profile fetching to prevent deadlocks
+        // Defer profile fetching without timers to prevent deadlocks
         if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
-          setTimeout(() => {
+          queueMicrotask(() => {
             if (mounted) {
               fetchProfile(session.user.id);
             }
-          }, 100);
+          });
         } else if (!session) {
           setProfile(null);
           setRoles([]);
