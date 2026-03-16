@@ -59,6 +59,11 @@ const VerifyEmail = () => {
   }, [navigate]);
 
   const handleResend = async () => {
+    if (redirectTimer.current) {
+      clearTimeout(redirectTimer.current);
+      redirectTimer.current = null;
+    }
+
     setResendLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();

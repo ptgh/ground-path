@@ -213,9 +213,9 @@ const PractitionerVerify = () => {
                     onClick={handleLinkedInVerify}
                     variant="outline"
                     className="w-full gap-2 rounded-xl"
-                    disabled={loading}
+                    disabled={linkedInLoading}
                   >
-                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {linkedInLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     <Linkedin className="h-4 w-4 text-[#0A66C2]" />
                     Verify Professional Status with LinkedIn
                   </Button>
