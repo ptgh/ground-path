@@ -23,13 +23,14 @@ const LinkedInCallback = () => {
         // Retrieve the ORIGINAL user's ID that initiated the verification
         const originalUserId = sessionStorage.getItem('linkedin_verify_user_id');
         const originalEmail = sessionStorage.getItem('linkedin_verify_email');
+        const isValidUUID = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
         sessionStorage.removeItem('linkedin_verify_user_id');
         sessionStorage.removeItem('linkedin_verify_email');
 
-        if (!originalUserId) {
+        if (!originalUserId || !isValidUUID(originalUserId)) {
           // No original user context — this might be a direct LinkedIn login attempt
           // or session data was lost. Treat as failed verification.
-          console.error('LinkedIn callback: no original user_id found in sessionStorage');
+          console.error('LinkedIn callback: invalid or missing original user_id');
           sessionStorage.setItem('linkedin_verification', 'failed');
           await supabase.auth.signOut();
           navigate('/practitioner/verify', { replace: true });

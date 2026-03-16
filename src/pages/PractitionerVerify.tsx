@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Linkedin, ShieldCheck, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import Header from '@/components/Header';
@@ -27,6 +26,7 @@ const PractitionerVerify = () => {
   const [registrationBody, setRegistrationBody] = useState('');
   const [registrationNumber, setRegistrationNumber] = useState('');
   const [loading, setLoading] = useState(false);
+  const [linkedInLoading, setLinkedInLoading] = useState(false);
   const [linkedInStatus, setLinkedInStatus] = useState<'success' | 'failed' | null>(null);
   const [isVerified, setIsVerified] = useState(false);
   const { toast } = useToast();
@@ -35,7 +35,6 @@ const PractitionerVerify = () => {
   // Check for LinkedIn verification result on mount
   useEffect(() => {
     const result = sessionStorage.getItem('linkedin_verification');
-    const returnEmail = sessionStorage.getItem('linkedin_verify_return_email');
     
     if (result === 'success' || result === 'failed') {
       setLinkedInStatus(result);
@@ -83,7 +82,7 @@ const PractitionerVerify = () => {
   }, [navigate]);
 
   const handleLinkedInVerify = async () => {
-    setLoading(true);
+    setLinkedInLoading(true);
     try {
       // Store the original user's ID so the callback can update the correct profile
       const { data: { session: currentSession } } = await supabase.auth.getSession();
@@ -112,7 +111,7 @@ const PractitionerVerify = () => {
       sessionStorage.removeItem('linkedin_verify_email');
       toast({ title: 'LinkedIn verification failed', description: 'An unexpected error occurred.', variant: 'destructive' });
     } finally {
-      setLoading(false);
+      setLinkedInLoading(false);
     }
   };
 
@@ -212,9 +211,9 @@ const PractitionerVerify = () => {
                     onClick={handleLinkedInVerify}
                     variant="outline"
                     className="w-full gap-2 rounded-xl"
-                    disabled={loading}
+                    disabled={linkedInLoading}
                   >
-                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {linkedInLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     <Linkedin className="h-4 w-4 text-[#0A66C2]" />
                     Verify Professional Status with LinkedIn
                   </Button>

@@ -49,27 +49,15 @@ const Dashboard = () => {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const buttonsRef = useRef<HTMLDivElement>(null);
 
-  // Debug logging
-  console.log('Dashboard render - isNoteModalOpen:', isNoteModalOpen);
-
-  // Development bypass for testing (remove in production)
-  const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  
-  // Redirect to auth if not authenticated, or to verify if practitioner not verified
+  // Redirect unverified practitioners to verification page
   useEffect(() => {
-    if (!authLoading && !user && !isDevelopment) {
-      console.log('Dashboard: Redirecting unauthenticated user to auth page');
-      navigate('/practitioner/auth');
-      return;
-    }
-    // Redirect unverified practitioners to verification page
     if (!authLoading && user && profile) {
       const userType = user.user_metadata?.user_type;
       if (userType === 'practitioner' && (!profile.verification_status || profile.verification_status === 'unverified')) {
         navigate('/practitioner/verify', { replace: true });
       }
     }
-  }, [user, authLoading, profile, navigate, isDevelopment]);
+  }, [user, authLoading, profile, navigate]);
 
   // Load user notes
   useEffect(() => {

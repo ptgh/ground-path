@@ -1,34 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, CheckCircle2 } from 'lucide-react';
-import Logo from '@/components/Logo';
 
 const VerifyEmail = () => {
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [verified, setVerified] = useState(false);
+  const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
+    const scheduleRedirect = (userType?: string) => {
+      if (redirectTimer.current) {
+        clearTimeout(redirectTimer.current);
+      }
+
+      redirectTimer.current = setTimeout(() => {
+        if (userType === 'practitioner') {
+          navigate('/practitioner/verify', { replace: true });
+        } else {
+          navigate('/practitioner/dashboard', { replace: true });
+        }
+      }, 1500);
+    };
+
     // Listen for auth state changes — email confirmation triggers SIGNED_IN
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
         setVerified(true);
         const userType = session.user.user_metadata?.user_type;
-        setTimeout(() => {
-          if (userType === 'practitioner') {
-            navigate('/practitioner/verify', { replace: true });
-          } else {
-            navigate('/practitioner/dashboard', { replace: true });
-          }
-        }, 1500);
+        scheduleRedirect(userType);
       }
     });
 
@@ -38,21 +44,23 @@ const VerifyEmail = () => {
       if (session?.user?.email_confirmed_at) {
         setVerified(true);
         const userType = session.user.user_metadata?.user_type;
-        setTimeout(() => {
-          if (userType === 'practitioner') {
-            navigate('/practitioner/verify', { replace: true });
-          } else {
-            navigate('/practitioner/dashboard', { replace: true });
-          }
-        }, 1500);
+        scheduleRedirect(userType);
       }
     };
     checkVerification();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      if (redirectTimer.current) clearTimeout(redirectTimer.current);
+    };
   }, [navigate]);
 
   const handleResend = async () => {
+    if (redirectTimer.current) {
+      clearTimeout(redirectTimer.current);
+      redirectTimer.current = null;
+    }
+
     setResendLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();

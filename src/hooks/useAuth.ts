@@ -83,8 +83,8 @@ export const useAuth = () => {
       (event, session) => {
         if (!mounted) return;
         
-        // Prevent rapid state changes
-        if (initialized && session === null && event === 'SIGNED_OUT') {
+        // Reset auth state cleanly on sign out or token expiry
+        if (initialized && event === 'SIGNED_OUT') {
           setSession(null);
           setUser(null);
           setProfile(null);
@@ -98,13 +98,13 @@ export const useAuth = () => {
         setLoading(false);
         initialized = true;
         
-        // Defer profile fetching to prevent deadlocks
+        // Defer profile fetching without timers to prevent deadlocks
         if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
-          setTimeout(() => {
+          queueMicrotask(() => {
             if (mounted) {
               fetchProfile(session.user.id);
             }
-          }, 100);
+          });
         } else if (!session) {
           setProfile(null);
           setRoles([]);
@@ -121,11 +121,11 @@ export const useAuth = () => {
       initialized = true;
       
       if (session?.user) {
-        setTimeout(() => {
+        queueMicrotask(() => {
           if (mounted) {
             fetchProfile(session.user.id);
           }
-        }, 100);
+        });
       }
     });
 
