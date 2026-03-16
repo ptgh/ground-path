@@ -35,16 +35,21 @@ const PractitionerVerify = () => {
   // Check for LinkedIn verification result on mount
   useEffect(() => {
     const result = sessionStorage.getItem('linkedin_verification');
+    const returnEmail = sessionStorage.getItem('linkedin_verify_return_email');
+    
     if (result === 'success' || result === 'failed') {
       setLinkedInStatus(result);
       sessionStorage.removeItem('linkedin_verification');
+      sessionStorage.removeItem('linkedin_verify_return_email');
+      
       if (result === 'success') {
         setIsVerified(true);
         toast({
           title: 'LinkedIn verification successful',
-          description: 'Your professional status has been verified via LinkedIn.',
+          description: 'Your professional status has been verified. Please sign in again to continue.',
         });
-        setTimeout(() => navigate('/practitioner/dashboard', { replace: true }), 2000);
+        // User was signed out during LinkedIn flow — redirect to auth
+        setTimeout(() => navigate('/practitioner/auth', { replace: true }), 2500);
       } else {
         toast({
           title: 'LinkedIn verification failed',
