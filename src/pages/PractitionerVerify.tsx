@@ -80,6 +80,16 @@ const PractitionerVerify = () => {
   const handleLinkedInVerify = async () => {
     setLoading(true);
     try {
+      // Store the original user's ID so the callback can update the correct profile
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      if (!currentSession) {
+        toast({ title: 'Not authenticated', description: 'Please sign in first.', variant: 'destructive' });
+        navigate('/practitioner/auth');
+        return;
+      }
+      sessionStorage.setItem('linkedin_verify_user_id', currentSession.user.id);
+      sessionStorage.setItem('linkedin_verify_email', currentSession.user.email || '');
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'linkedin_oidc',
         options: {
@@ -88,9 +98,13 @@ const PractitionerVerify = () => {
         },
       });
       if (error) {
+        sessionStorage.removeItem('linkedin_verify_user_id');
+        sessionStorage.removeItem('linkedin_verify_email');
         toast({ title: 'LinkedIn verification failed', description: error.message, variant: 'destructive' });
       }
     } catch {
+      sessionStorage.removeItem('linkedin_verify_user_id');
+      sessionStorage.removeItem('linkedin_verify_email');
       toast({ title: 'LinkedIn verification failed', description: 'An unexpected error occurred.', variant: 'destructive' });
     } finally {
       setLoading(false);

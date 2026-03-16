@@ -10,8 +10,7 @@ const LinkedInCallback = () => {
   useEffect(() => {
     const handleLinkedInCallback = async () => {
       try {
-        // Supabase handles the OAuth code exchange automatically.
-        // We just need to wait for the session to be available.
+        // Get the LinkedIn OAuth session
         const { data: { session }, error } = await supabase.auth.getSession();
 
         if (error || !session) {
@@ -21,8 +20,23 @@ const LinkedInCallback = () => {
           return;
         }
 
-        // Session exists — user authenticated via LinkedIn.
-        // Extract LinkedIn identity data from the user object.
+        // Retrieve the ORIGINAL user's ID that initiated the verification
+        const originalUserId = sessionStorage.getItem('linkedin_verify_user_id');
+        const originalEmail = sessionStorage.getItem('linkedin_verify_email');
+        sessionStorage.removeItem('linkedin_verify_user_id');
+        sessionStorage.removeItem('linkedin_verify_email');
+
+        if (!originalUserId) {
+          // No original user context — this might be a direct LinkedIn login attempt
+          // or session data was lost. Treat as failed verification.
+          console.error('LinkedIn callback: no original user_id found in sessionStorage');
+          sessionStorage.setItem('linkedin_verification', 'failed');
+          await supabase.auth.signOut();
+          navigate('/practitioner/verify', { replace: true });
+          return;
+        }
+
+        // Extract LinkedIn identity data from the OAuth session
         const user = session.user;
         const linkedInIdentity = user.identities?.find(
           (id) => id.provider === 'linkedin_oidc' || id.provider === 'linkedin'
@@ -45,42 +59,50 @@ const LinkedInCallback = () => {
           searchText.includes(kw)
         );
 
-        // Update the user's profile with LinkedIn verification data
+        // Update the ORIGINAL user's profile (not the LinkedIn OAuth user)
         const { error: updateError } = await supabase
           .from('profiles')
           .update({
-            professional_verified: isVerifiedProfessional || true, // LinkedIn auth itself is verification
+            professional_verified: true,
             verification_method: 'linkedin',
             verification_status: isVerifiedProfessional ? 'verified' : 'pending_review',
             linkedin_verified_data: {
               linkedin_id: linkedInIdentity?.id || null,
+              linkedin_email: user.email || null,
               full_name: fullName,
               job_title: jobTitle,
               industry: industry,
               profile_url: profileUrl,
               verified_at: new Date().toISOString(),
+              is_professional_match: isVerifiedProfessional,
             },
             linkedin_profile: profileUrl || null,
-            user_type: 'practitioner',
           })
-          .eq('user_id', user.id);
+          .eq('user_id', originalUserId);
 
         if (updateError) {
-          console.error('Failed to update profile:', updateError);
+          console.error('Failed to update original user profile:', updateError);
           sessionStorage.setItem('linkedin_verification', 'failed');
         } else {
+          console.log('LinkedIn verification saved for original user:', originalUserId);
           sessionStorage.setItem('linkedin_verification', 'success');
         }
 
-        // Sign out so the user can complete signup with email/password
-        // (LinkedIn OAuth creates a separate auth session)
+        // Sign out the LinkedIn OAuth session (it's a different user)
         await supabase.auth.signOut();
+
+        // Store original email so the user can re-authenticate easily
+        if (originalEmail) {
+          sessionStorage.setItem('linkedin_verify_return_email', originalEmail);
+        }
 
         navigate('/practitioner/verify', { replace: true });
       } catch (err) {
         console.error('LinkedIn callback error:', err);
         setStatus('error');
         sessionStorage.setItem('linkedin_verification', 'failed');
+        sessionStorage.removeItem('linkedin_verify_user_id');
+        sessionStorage.removeItem('linkedin_verify_email');
         setTimeout(() => navigate('/practitioner/verify', { replace: true }), 1500);
       }
     };

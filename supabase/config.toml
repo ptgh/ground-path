@@ -11,7 +11,19 @@ max_rows = 1000
 enabled = true
 port = 9999
 site_url = "https://groundpath.com.au"
-additional_redirect_urls = ["https://localhost:3000", "https://groundpath.com.au"]
+additional_redirect_urls = [
+  "https://localhost:3000",
+  "https://groundpath.com.au",
+  "https://groundpath.com.au/auth/callback",
+  "https://groundpath.com.au/practitioner/auth/callback",
+  "https://groundpath.com.au/verify-email",
+  "https://groundpath.com.au/practitioner/verify",
+  "https://ground-path.lovable.app",
+  "https://ground-path.lovable.app/auth/callback",
+  "https://ground-path.lovable.app/practitioner/auth/callback",
+  "https://ground-path.lovable.app/verify-email",
+  "https://ground-path.lovable.app/practitioner/verify"
+]
 jwt_expiry = 600
 refresh_token_rotation_enabled = true
 refresh_token_reuse_interval = 10
