@@ -8,6 +8,7 @@ import AuthPage from "@/components/AuthPage";
 import AuthCallback from "@/components/AuthCallback";
 import LinkedInCallback from "@/components/LinkedInCallback";
 import Dashboard from "@/components/Dashboard";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Resources from "./pages/Resources";
