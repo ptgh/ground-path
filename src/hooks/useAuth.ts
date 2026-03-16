@@ -33,6 +33,12 @@ interface Profile {
   supervisor_details?: any;
   emergency_contact?: any;
   halaxy_integration?: any;
+  user_type?: string;
+  verification_status?: string;
+  verification_method?: string;
+  professional_verified?: boolean;
+  organisation?: string;
+  linkedin_verified_data?: any;
 }
 
 interface UserRole {

@@ -108,7 +108,7 @@ const App = () => {
             <Route path="/practitioner/forms/case-review/fill" element={<CaseReviewForm />} />
             <Route path="/practitioner/forms/supervision-record/fill" element={<SupervisionRecordForm />} />
             <Route path="/practitioner/forms/reflective-practice/fill" element={<ReflectivePracticeForm />} />
-            <Route path="/practitioner/forms/beck-depression/fill" element={<BDIForm />} />
+            <Route path="/practitioner/forms/k10/fill" element={<BDIForm />} />
             {/* Redirect /auth to /practitioner/auth for backwards compatibility */}
             <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
             <Route path="/practitioner/auth" element={<AuthPage />} />
