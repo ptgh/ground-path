@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      client_messages: {
+        Row: {
+          attachment_url: string | null
+          conversation_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message_text: string
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          attachment_url?: string | null
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message_text: string
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          attachment_url?: string | null
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message_text?: string
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           contact_email: string | null
@@ -95,6 +136,48 @@ export type Database = {
           status?: string | null
           subject?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          last_message_at: string | null
+          last_message_text: string | null
+          linked_halaxy_client_id: string | null
+          practitioner_id: string
+          status: string
+          unread_count_practitioner: number
+          unread_count_user: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          last_message_text?: string | null
+          linked_halaxy_client_id?: string | null
+          practitioner_id: string
+          status?: string
+          unread_count_practitioner?: number
+          unread_count_user?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          last_message_text?: string | null
+          linked_halaxy_client_id?: string | null
+          practitioner_id?: string
+          status?: string
+          unread_count_practitioner?: number
+          unread_count_user?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
