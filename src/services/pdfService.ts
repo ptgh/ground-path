@@ -50,8 +50,8 @@ export const pdfService = {
     
     pdf.setFontSize(9);
     pdf.setTextColor(100, 100, 100); // Gray
-    pdf.text('Professional Clinical Services | ABN: 12 345 678 901', 20, yPosition + 16);
-    pdf.text('Email: info@groundpath.com.au | Web: www.groundpath.com.au | Ph: 1300 GROUND', 20, yPosition + 22);
+    pdf.text('Professional Clinical Services | ABN: 98 434 283 298', 20, yPosition + 16);
+    pdf.text('Email: connect@groundpath.com.au | Web: www.groundpath.com.au | Ph: +61 410 883 659', 20, yPosition + 22);
     
     // Add professional gradient line separator
     pdf.setLineWidth(1.2);

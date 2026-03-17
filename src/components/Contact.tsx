@@ -134,6 +134,26 @@ const Contact = () => {
                     </a>
                   </div>
                 </div>
+
+                <div className="flex items-center space-x-4">
+                  <Phone className="h-5 w-5 text-sage-600" />
+                  <div>
+                    <div className="font-medium text-gray-900">Phone</div>
+                    <a href="tel:+61410883659" className="text-sage-600 hover:text-sage-700">
+                      +61 410 883 659
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <Linkedin className="h-5 w-5 text-sage-600" />
+                  <div>
+                    <div className="font-medium text-gray-900">LinkedIn</div>
+                    <a href="https://www.linkedin.com/company/groundpath" target="_blank" rel="noopener noreferrer" className="text-sage-600 hover:text-sage-700">
+                      groundpath
+                    </a>
+                  </div>
+                </div>
                 
                 <div className="flex items-start space-x-4">
                   <div className="h-5 w-5 text-sage-600 mt-0.5">📍</div>
