@@ -166,6 +166,8 @@ const App = () => {
             <Route path="/practitioner/auth/callback" element={<AuthCallback />} />
             <Route path="/auth/callback" element={<LinkedInCallback />} />
             <Route path="/practitioner/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/practitioner/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+            <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <AIAssistantRouter />

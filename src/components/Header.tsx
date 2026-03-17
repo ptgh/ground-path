@@ -152,6 +152,7 @@ const Header = () => {
 
   const practitionerNavItems = [
     { label: 'Dashboard', path: '/practitioner/dashboard', icon: LayoutDashboard },
+    { label: 'Messages', path: '/practitioner/messages', icon: MessageSquare },
     { label: 'Forms', path: '/practitioner/forms', icon: FileText },
     { label: 'Resources', path: '/resources', icon: BookOpen },
   ];
