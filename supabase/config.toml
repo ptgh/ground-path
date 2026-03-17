@@ -1,54 +1,39 @@
 project_id = "vzwhccciarvirzqmvldl"
 
 [api]
-enabled = true
-port = 54321
-schemas = ["public", "graphql_public"]
-extra_search_path = ["public", "extensions"]
-max_rows = 1000
+  enabled = true
+  extra_search_path = ["public", "extensions"]
+  max_rows = 1000
+  port = 54321
+  schemas = ["public", "graphql_public"]
 
 [auth]
-enabled = true
-port = 9999
-site_url = "https://groundpath.com.au"
-additional_redirect_urls = [
-  "https://localhost:3000",
-  "https://groundpath.com.au",
-  "https://groundpath.com.au/auth/callback",
-  "https://groundpath.com.au/practitioner/auth/callback",
-  "https://groundpath.com.au/verify-email",
-  "https://groundpath.com.au/practitioner/verify",
-  "https://ground-path.lovable.app",
-  "https://ground-path.lovable.app/auth/callback",
-  "https://ground-path.lovable.app/practitioner/auth/callback",
-  "https://ground-path.lovable.app/verify-email",
-  "https://ground-path.lovable.app/practitioner/verify"
-]
-jwt_expiry = 600
-refresh_token_rotation_enabled = true
-refresh_token_reuse_interval = 10
-enable_signup = true
-
+  additional_redirect_urls = ["https://localhost:3000", "https://groundpath.com.au", "https://groundpath.com.au/auth/callback", "https://groundpath.com.au/practitioner/auth/callback", "https://groundpath.com.au/verify-email", "https://groundpath.com.au/practitioner/verify", "https://ground-path.lovable.app", "https://ground-path.lovable.app/auth/callback", "https://ground-path.lovable.app/practitioner/auth/callback", "https://ground-path.lovable.app/verify-email", "https://ground-path.lovable.app/practitioner/verify"]
+  enable_signup = true
+  enabled = true
+  jwt_expiry = 600
+  port = 9999
+  refresh_token_reuse_interval = 10
+  refresh_token_rotation_enabled = true
+  site_url = "https://groundpath.com.au"
 
 [db]
-enabled = true
-port = 54322
-major_version = 15
+  enabled = true
+  major_version = 15
+  port = 54322
 
-[functions.ai-assistant]
-verify_jwt = true
-
-[functions.send-email]
-verify_jwt = true
-
-[functions.weekly-newsletter]
-verify_jwt = false
-
-[functions.generate-articles]
-verify_jwt = false
-
-[functions.check-links]
-verify_jwt = false
-
-[functions.client-ai-assistant]
-verify_jwt = false
+[functions]
+  [functions.ai-assistant]
+    verify_jwt = true
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.check-links]
+    verify_jwt = false
+  [functions.client-ai-assistant]
+    verify_jwt = false
+  [functions.generate-articles]
+    verify_jwt = false
+  [functions.send-email]
+    verify_jwt = true
+  [functions.weekly-newsletter]
+    verify_jwt = false
