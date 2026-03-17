@@ -35,6 +35,7 @@ import UnsubscribePage from "./pages/Unsubscribe";
 import ConfirmPage from "./pages/Confirm";
 import Article from "./pages/Article";
 import VoiceSessionPage from "./pages/VoiceSession";
+import Messages from "./pages/Messages";
 import VerifyEmail from "./pages/VerifyEmail";
 import PractitionerVerify from "./pages/PractitionerVerify";
 import { AIAssistant } from "./components/AIAssistant";
