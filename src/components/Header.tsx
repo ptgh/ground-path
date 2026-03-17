@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Menu, X, User, LogOut, FileText, BookOpen, LayoutDashboard, Newspaper } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { gsap } from 'gsap';
 import Logo from './Logo';
 
 // Auth-aware component that only loads auth when needed
@@ -69,6 +70,57 @@ const AuthAwareSection = () => {
   }
 
   return null;
+};
+
+// Flip Calendar Login Button
+const FlipLoginButton = ({ onClick }: { onClick: () => void }) => {
+  const [showSignUp, setShowSignUp] = useState(false);
+  const frontRef = useRef<HTMLSpanElement>(null);
+  const backRef = useRef<HTMLSpanElement>(null);
+  const containerRef = useRef<HTMLButtonElement>(null);
+  const flipInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    flipInterval.current = setInterval(() => {
+      setShowSignUp(prev => !prev);
+    }, 3000);
+    return () => { if (flipInterval.current) clearInterval(flipInterval.current); };
+  }, []);
+
+  useEffect(() => {
+    if (!frontRef.current || !backRef.current) return;
+    if (showSignUp) {
+      gsap.to(frontRef.current, { rotateX: -90, opacity: 0, duration: 0.3, ease: 'power2.in' });
+      gsap.fromTo(backRef.current, { rotateX: 90, opacity: 0 }, { rotateX: 0, opacity: 1, duration: 0.3, ease: 'power2.out', delay: 0.15 });
+    } else {
+      gsap.to(backRef.current, { rotateX: 90, opacity: 0, duration: 0.3, ease: 'power2.in' });
+      gsap.fromTo(frontRef.current, { rotateX: -90, opacity: 0 }, { rotateX: 0, opacity: 1, duration: 0.3, ease: 'power2.out', delay: 0.15 });
+    }
+  }, [showSignUp]);
+
+  return (
+    <button
+      ref={containerRef}
+      onClick={onClick}
+      className="relative border border-gray-400 text-white hover:text-white hover:border-white hover:bg-white/10 px-5 py-2 rounded-lg font-medium text-sm h-10 overflow-hidden"
+      style={{ perspective: '400px', minWidth: '80px' }}
+    >
+      <span
+        ref={frontRef}
+        className="block"
+        style={{ transformOrigin: 'center bottom', backfaceVisibility: 'hidden' }}
+      >
+        Sign In
+      </span>
+      <span
+        ref={backRef}
+        className="absolute inset-0 flex items-center justify-center"
+        style={{ transformOrigin: 'center top', backfaceVisibility: 'hidden', opacity: 0 }}
+      >
+        Sign Up
+      </span>
+    </button>
+  );
 };
 
 const Header = () => {
@@ -177,13 +229,7 @@ const Header = () => {
                 >
                   Book a Session
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleProfessionalLogin}
-                  className="border-gray-400 text-white hover:text-white hover:border-white hover:bg-white/10 px-5 py-2 rounded-lg font-medium text-sm"
-                >
-                  Login
-                </Button>
+                <FlipLoginButton onClick={handleProfessionalLogin} />
               </>
             )}
           </div>

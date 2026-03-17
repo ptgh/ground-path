@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Mail } from 'lucide-react';
+import { Mail, Phone, Linkedin } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useContactFormSubmission } from '@/hooks/useMailingList';
 import { contactFormSchema, checkRateLimit } from '@/lib/validation';
@@ -131,6 +131,26 @@ const Contact = () => {
                     <div className="font-medium text-gray-900">Email</div>
                     <a href="mailto:connect@groundpath.com.au" className="text-sage-600 hover:text-sage-700">
                       connect@groundpath.com.au
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <Phone className="h-5 w-5 text-sage-600" />
+                  <div>
+                    <div className="font-medium text-gray-900">Phone</div>
+                    <a href="tel:+61410883659" className="text-sage-600 hover:text-sage-700">
+                      +61 410 883 659
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <Linkedin className="h-5 w-5 text-sage-600" />
+                  <div>
+                    <div className="font-medium text-gray-900">LinkedIn</div>
+                    <a href="https://www.linkedin.com/company/groundpath" target="_blank" rel="noopener noreferrer" className="text-sage-600 hover:text-sage-700">
+                      groundpath
                     </a>
                   </div>
                 </div>
