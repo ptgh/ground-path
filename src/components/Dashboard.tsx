@@ -28,6 +28,7 @@ import {
   Globe,
   Newspaper
 } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import Header from './Header';
 import Footer from './Footer';
 import ProfessionalProfileModal from './ProfessionalProfileModal';
