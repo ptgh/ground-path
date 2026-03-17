@@ -7,7 +7,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, CheckCircle2 } from 'lucide-react';
 
 const VerifyEmail = () => {
-  const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [verified, setVerified] = useState(false);
   const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -15,39 +14,34 @@ const VerifyEmail = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const scheduleRedirect = (userType?: string) => {
-      if (redirectTimer.current) {
-        clearTimeout(redirectTimer.current);
+    const moveToCompletion = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.user?.email_confirmed_at) {
+        return;
       }
 
+      const userType = session.user.user_metadata?.user_type === 'practitioner' ? 'practitioner' : 'user';
+      sessionStorage.setItem('pending_signup_email', session.user.email || '');
+      sessionStorage.setItem('pending_signup_user_type', userType);
+      setVerified(true);
+
       redirectTimer.current = setTimeout(() => {
-        if (userType === 'practitioner') {
-          navigate('/practitioner/verify', { replace: true });
-        } else {
-          navigate('/practitioner/dashboard', { replace: true });
-        }
-      }, 1500);
+        navigate(`/practitioner/auth?signup=complete&type=${userType}`, { replace: true });
+      }, 1200);
     };
 
-    // Listen for auth state changes — email confirmation triggers SIGNED_IN
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
-        setVerified(true);
-        const userType = session.user.user_metadata?.user_type;
-        scheduleRedirect(userType);
+        void moveToCompletion();
       }
     });
 
-    // Check if already verified
-    const checkVerification = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user?.email_confirmed_at) {
-        setVerified(true);
-        const userType = session.user.user_metadata?.user_type;
-        scheduleRedirect(userType);
-      }
-    };
-    checkVerification();
+    void moveToCompletion();
 
     return () => {
       subscription.unsubscribe();
@@ -63,25 +57,36 @@ const VerifyEmail = () => {
 
     setResendLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user?.email) {
-        const { error } = await supabase.auth.resend({
-          type: 'signup',
-          email: session.user.email,
-        });
-        if (error) throw error;
+      const storedEmail = sessionStorage.getItem('pending_signup_email');
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const targetEmail = session?.user?.email || storedEmail;
+
+      if (!targetEmail) {
         toast({
-          title: 'Verification email sent',
-          description: 'Please check your inbox for the confirmation link.',
-        });
-      } else {
-        toast({
-          title: 'No active session',
-          description: 'Please sign up again.',
+          title: 'Email not found',
+          description: 'Please sign up again to resend the verification email.',
           variant: 'destructive',
         });
-        navigate('/practitioner/auth');
+        navigate('/practitioner/auth', { replace: true });
+        return;
       }
+
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: targetEmail,
+        options: {
+          emailRedirectTo: `${window.location.origin}/practitioner/auth/callback?flow=signup`,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Verification email sent',
+        description: 'Please check your inbox for the latest confirmation link.',
+      });
     } catch (error: any) {
       toast({
         title: 'Failed to resend',
@@ -100,7 +105,7 @@ const VerifyEmail = () => {
           <div className="flex justify-center mb-4">
             <div className="bg-primary/10 p-4 rounded-full">
               {verified ? (
-                <CheckCircle2 className="h-10 w-10 text-emerald-600" />
+                <CheckCircle2 className="h-10 w-10 text-primary" />
               ) : (
                 <Mail className="h-10 w-10 text-primary" />
               )}
@@ -111,38 +116,27 @@ const VerifyEmail = () => {
           </CardTitle>
           <CardDescription>
             {verified
-              ? 'Redirecting you now...'
-              : 'We sent a confirmation link to your email. Please check your inbox and click the link to verify your account.'
-            }
+              ? 'Finishing your signup now...'
+              : 'We sent a confirmation link to your email. Please check your inbox and click the link to verify your account.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {!verified && (
+          {!verified ? (
             <>
               <div className="bg-muted/50 rounded-xl p-4 text-center">
                 <p className="text-sm text-muted-foreground">
-                  Didn't receive the email? Check your spam folder or click below to resend.
+                  Didn&apos;t receive the email? Check your spam folder or click below to resend.
                 </p>
               </div>
-              <Button
-                onClick={handleResend}
-                variant="outline"
-                className="w-full"
-                disabled={resendLoading}
-              >
+              <Button onClick={handleResend} variant="outline" className="w-full" disabled={resendLoading}>
                 {resendLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Resend Verification Email
               </Button>
-              <Button
-                variant="ghost"
-                className="w-full text-muted-foreground"
-                onClick={() => navigate('/practitioner/auth')}
-              >
+              <Button variant="ghost" className="w-full text-muted-foreground" onClick={() => navigate('/practitioner/auth', { replace: true })}>
                 Back to Sign In
               </Button>
             </>
-          )}
-          {verified && (
+          ) : (
             <div className="flex justify-center">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>

@@ -3,7 +3,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import AuthPage from "@/components/AuthPage";
 import AuthCallback from "@/components/AuthCallback";
 import LinkedInCallback from "@/components/LinkedInCallback";
@@ -42,46 +43,95 @@ import { useAuth } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
 
-// Component to conditionally render the correct AI assistant
 const AIAssistantRouter = () => {
   const location = useLocation();
   const { user } = useAuth();
-  
+
   const isPractitionerRoute = location.pathname.startsWith('/practitioner');
-  
-  // Show practitioner assistant on practitioner routes when logged in
+
   if (isPractitionerRoute && user) {
     return <AIAssistant />;
   }
-  
-  // Show client assistant on public routes (not practitioner routes)
+
   if (!isPractitionerRoute) {
     return <ClientAIAssistant />;
   }
-  
-  // Don't show any assistant on practitioner routes when not logged in (auth page)
+
+  return null;
+};
+
+const AuthCompletionRouter = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const hasAuthHash =
+      location.hash.includes('access_token') ||
+      location.hash.includes('refresh_token') ||
+      location.hash.includes('type=signup');
+
+    if (!hasAuthHash) {
+      return;
+    }
+
+    let mounted = true;
+
+    const moveToCompletion = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!mounted || !session?.user?.email_confirmed_at) {
+        return;
+      }
+
+      const userType = session.user.user_metadata?.user_type === 'practitioner' ? 'practitioner' : 'user';
+      sessionStorage.setItem('pending_signup_email', session.user.email || '');
+      sessionStorage.setItem('pending_signup_user_type', userType);
+
+      navigate(`/practitioner/auth?signup=complete&type=${userType}`, { replace: true });
+    };
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (
+        (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') &&
+        session?.user?.email_confirmed_at
+      ) {
+        sessionStorage.setItem('pending_signup_email', session.user.email || '');
+        sessionStorage.setItem(
+          'pending_signup_user_type',
+          session.user.user_metadata?.user_type === 'practitioner' ? 'practitioner' : 'user'
+        );
+        navigate(
+          `/practitioner/auth?signup=complete&type=${
+            session.user.user_metadata?.user_type === 'practitioner' ? 'practitioner' : 'user'
+          }`,
+          { replace: true }
+        );
+      }
+    });
+
+    void moveToCompletion();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [location.hash, navigate]);
+
   return null;
 };
 
 const App = () => {
-  // Clear any auth state on app load to prevent unwanted redirects
-  useEffect(() => {
-    const currentPath = window.location.pathname;
-    console.log('App loading - current path:', currentPath);
-    
-    // If we're on root and there's some cached redirect, clear it
-    if (currentPath === '/' && window.location.href.includes('practitioner')) {
-      console.log('Clearing unwanted redirect, forcing home page load');
-      window.history.replaceState({}, '', '/');
-    }
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <AuthCompletionRouter />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/resources" element={<Resources />} />
@@ -110,16 +160,13 @@ const App = () => {
             <Route path="/practitioner/forms/supervision-record/fill" element={<ProtectedRoute><SupervisionRecordForm /></ProtectedRoute>} />
             <Route path="/practitioner/forms/reflective-practice/fill" element={<ProtectedRoute><ReflectivePracticeForm /></ProtectedRoute>} />
             <Route path="/practitioner/forms/k10/fill" element={<ProtectedRoute><BDIForm /></ProtectedRoute>} />
-            {/* Redirect /auth to /practitioner/auth for backwards compatibility */}
             <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
             <Route path="/practitioner/auth" element={<AuthPage />} />
             <Route path="/practitioner/auth/callback" element={<AuthCallback />} />
             <Route path="/auth/callback" element={<LinkedInCallback />} />
             <Route path="/practitioner/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-          {/* Route-based AI Assistant */}
           <AIAssistantRouter />
         </BrowserRouter>
       </TooltipProvider>

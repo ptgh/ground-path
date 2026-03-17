@@ -8,36 +8,40 @@ const AuthCallback = () => {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Get the current session after OAuth redirect
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Auth callback error:', error);
-          navigate('/practitioner/auth');
+        const flow = new URLSearchParams(window.location.search).get('flow');
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (error || !session) {
+          navigate('/practitioner/auth', { replace: true });
           return;
         }
 
-        if (session) {
-          console.log('OAuth callback successful, redirecting to dashboard');
-          navigate('/practitioner/dashboard');
-        } else {
-          console.log('No session found, redirecting to auth');
-          navigate('/practitioner/auth');
+        const userType = session.user.user_metadata?.user_type === 'practitioner' ? 'practitioner' : 'user';
+
+        if (flow === 'signup' || session.user.app_metadata?.provider === 'email') {
+          sessionStorage.setItem('pending_signup_email', session.user.email || '');
+          sessionStorage.setItem('pending_signup_user_type', userType);
+          navigate(`/practitioner/auth?signup=complete&type=${userType}`, { replace: true });
+          return;
         }
-      } catch (error) {
-        console.error('Unexpected error in auth callback:', error);
-        navigate('/practitioner/auth');
+
+        navigate('/practitioner/dashboard', { replace: true });
+      } catch {
+        navigate('/practitioner/auth', { replace: true });
       }
     };
 
-    handleAuthCallback();
+    void handleAuthCallback();
   }, [navigate]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="text-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-        <p className="text-muted-foreground">Processing authentication...</p>
+        <p className="text-muted-foreground">Completing authentication...</p>
       </div>
     </div>
   );
