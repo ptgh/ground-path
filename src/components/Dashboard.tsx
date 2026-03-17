@@ -43,6 +43,7 @@ import { gsap } from 'gsap';
 
 const Dashboard = () => {
   const { user, profile, roles, loading: authLoading } = useAuth();
+  const unreadCount = useUnreadMessages();
   const navigate = useNavigate();
   const location = useLocation();
   const [notes, setNotes] = useState<Note[]>([]);
