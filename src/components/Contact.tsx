@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Mail } from 'lucide-react';
+import { Mail, Phone, Linkedin } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useContactFormSubmission } from '@/hooks/useMailingList';
 import { contactFormSchema, checkRateLimit } from '@/lib/validation';
