@@ -442,7 +442,12 @@ const Dashboard = () => {
               </div>
             </TabsContent>
 
-            {/* Professional Tools Tab */}
+            {/* Messages Tab */}
+            <TabsContent value="messages" className="space-y-6">
+              <ClientMessagesPanel />
+            </TabsContent>
+
+
             <TabsContent value="tools" className="space-y-6">
               {isSocialWorker && (
                 <Card>
