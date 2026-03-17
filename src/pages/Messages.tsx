@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { MessageSquare } from 'lucide-react';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { ConversationList } from '@/components/messaging/ConversationList';
 import { MessageThread } from '@/components/messaging/MessageThread';
 import { Conversation, messagingService } from '@/services/messagingService';
@@ -15,36 +14,47 @@ const Messages = () => {
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
 
-  useEffect(() => {
-    loadConversations();
-  }, [user]);
-
-  useEffect(() => {
-    // Auto-open conversation if practitioner_id is in URL
-    const practitionerId = searchParams.get('practitioner');
-    if (practitionerId && user) {
-      openConversationWith(practitionerId);
-    }
-  }, [searchParams, user]);
-
-  const loadConversations = async () => {
+  const loadConversations = useCallback(async () => {
     try {
       setLoading(true);
       const data = await messagingService.getConversations();
       setConversations(data);
+      return data;
     } catch (error) {
       console.error('Error loading conversations:', error);
+      return [];
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    loadConversations();
+  }, [user, loadConversations]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Auto-open conversation from ?practitioner=<id>
+    const practitionerId = searchParams.get('practitioner');
+    if (practitionerId) {
+      openConversationWith(practitionerId);
+      return;
+    }
+
+    // Auto-open conversation from ?open=<conversation_id> (dashboard widget)
+    const openId = searchParams.get('open');
+    if (openId && conversations.length > 0) {
+      const found = conversations.find(c => c.id === openId);
+      if (found) setSelected(found);
+    }
+  }, [searchParams, user, conversations.length]);
 
   const openConversationWith = async (practitionerId: string) => {
     try {
       const conv = await messagingService.getOrCreateConversation(practitionerId);
-      // Reload list and select
-      const data = await messagingService.getConversations();
-      setConversations(data);
+      const data = await loadConversations();
       const found = data.find(c => c.id === conv.id);
       setSelected(found || conv);
     } catch (error) {
@@ -52,15 +62,11 @@ const Messages = () => {
     }
   };
 
-  const handleSelect = (conversation: Conversation) => {
-    setSelected(conversation);
-  };
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <main className="flex-1 pt-[73px]">
-        <div className="max-w-6xl mx-auto h-[calc(100vh-73px-64px)]">
+        <div className="max-w-6xl mx-auto h-[calc(100vh-73px)]">
           <div className="flex h-full border-x border-border">
             {/* Sidebar */}
             <div className={`w-full md:w-80 border-r border-border flex-shrink-0 flex flex-col ${
@@ -75,7 +81,7 @@ const Messages = () => {
               <ConversationList
                 conversations={conversations}
                 selectedId={selected?.id}
-                onSelect={handleSelect}
+                onSelect={setSelected}
                 loading={loading}
               />
             </div>

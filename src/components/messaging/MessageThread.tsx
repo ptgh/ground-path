@@ -2,9 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Send, Paperclip, Link2, ArrowLeft, ExternalLink } from 'lucide-react';
+import { Send, Paperclip, Link2, ArrowLeft, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { Conversation, Message, messagingService } from '@/services/messagingService';
 import { useAuth } from '@/hooks/useAuth';
 import { format } from 'date-fns';
@@ -22,6 +21,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
   const [loading, setLoading] = useState(true);
   const [halaxyId, setHalaxyId] = useState(conversation.linked_halaxy_client_id || '');
   const [showHalaxyLink, setShowHalaxyLink] = useState(false);
+  const [linkedHalaxy, setLinkedHalaxy] = useState(conversation.linked_halaxy_client_id || '');
   const scrollRef = useRef<HTMLDivElement>(null);
   const { user, profile } = useAuth();
 
@@ -31,6 +31,8 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
   useEffect(() => {
     loadMessages();
     messagingService.markMessagesAsRead(conversation.id);
+    setLinkedHalaxy(conversation.linked_halaxy_client_id || '');
+    setHalaxyId(conversation.linked_halaxy_client_id || '');
 
     const channel = messagingService.subscribeToMessages(conversation.id, (newMsg) => {
       setMessages(prev => [...prev, { ...newMsg, sender_name: newMsg.sender_id === user?.id ? (profile?.display_name || 'You') : conversation.other_party_name }]);
@@ -90,10 +92,15 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
   };
 
   const handleLinkHalaxy = async () => {
-    if (!halaxyId.trim()) return;
+    const trimmed = halaxyId.trim();
+    if (!trimmed) {
+      toast.error('Please enter a valid Halaxy Client ID');
+      return;
+    }
     try {
-      await messagingService.linkHalaxyClient(conversation.id, halaxyId.trim());
-      toast.success('Linked to Halaxy client');
+      await messagingService.linkHalaxyClient(conversation.id, trimmed);
+      setLinkedHalaxy(trimmed);
+      toast.success('Linked to Halaxy client record');
       setShowHalaxyLink(false);
     } catch (error) {
       toast.error('Failed to link Halaxy client');
@@ -131,15 +138,17 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
         </Avatar>
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-semibold truncate">{conversation.other_party_name}</h3>
-          {conversation.linked_halaxy_client_id && (
-            <Badge variant="outline" className="text-[10px] h-4 border-sage-300 text-sage-600">
-              Halaxy Linked
-            </Badge>
+          {linkedHalaxy && (
+            <div className="flex items-center gap-1">
+              <CheckCircle2 className="h-3 w-3 text-sage-600" />
+              <span className="text-[10px] text-sage-600 font-medium">Halaxy Linked · {linkedHalaxy}</span>
+            </div>
           )}
         </div>
+        {/* Practitioner-only Halaxy actions */}
         {isPractitioner && (
           <div className="flex items-center gap-1">
-            {!conversation.linked_halaxy_client_id && (
+            {!linkedHalaxy ? (
               <Button
                 variant="ghost"
                 size="sm"
@@ -147,15 +156,14 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
                 onClick={() => setShowHalaxyLink(!showHalaxyLink)}
               >
                 <Link2 className="h-3.5 w-3.5 mr-1" />
-                Link Halaxy
+                Link to Halaxy Client
               </Button>
-            )}
-            {conversation.linked_halaxy_client_id && (
+            ) : (
               <Button
                 variant="ghost"
                 size="sm"
                 className="text-xs text-sage-600"
-                onClick={() => window.open(`https://www.halaxy.com/clients/${conversation.linked_halaxy_client_id}`, '_blank')}
+                onClick={() => window.open(`https://www.halaxy.com/clients/${linkedHalaxy}`, '_blank')}
               >
                 <ExternalLink className="h-3.5 w-3.5 mr-1" />
                 View in Halaxy
@@ -165,21 +173,35 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
         )}
       </div>
 
-      {/* Halaxy link input */}
-      {showHalaxyLink && (
+      {/* Halaxy link input — practitioner only */}
+      {showHalaxyLink && isPractitioner && (
         <div className="flex items-center gap-2 p-2 bg-sage-50 dark:bg-sage-900/20 border-b border-border">
           <Input
-            placeholder="Halaxy Client ID"
+            placeholder="Enter Halaxy Client ID..."
             value={halaxyId}
             onChange={(e) => setHalaxyId(e.target.value)}
             className="h-8 text-sm flex-1"
           />
-          <Button size="sm" className="h-8 bg-sage-600 hover:bg-sage-700 text-white" onClick={handleLinkHalaxy}>
+          <Button
+            size="sm"
+            className="h-8 bg-sage-600 hover:bg-sage-700 text-white"
+            onClick={handleLinkHalaxy}
+            disabled={!halaxyId.trim()}
+          >
             Link
           </Button>
-          <Button size="sm" variant="ghost" className="h-8" onClick={() => setShowHalaxyLink(false)}>
+          <Button size="sm" variant="ghost" className="h-8" onClick={() => { setShowHalaxyLink(false); setHalaxyId(linkedHalaxy || ''); }}>
             Cancel
           </Button>
+        </div>
+      )}
+
+      {/* Halaxy separation notice */}
+      {linkedHalaxy && isPractitioner && (
+        <div className="px-3 py-1.5 bg-muted/50 border-b border-border">
+          <p className="text-[10px] text-muted-foreground text-center">
+            Groundpath messages are separate from Halaxy clinical records. Do not store clinical notes here.
+          </p>
         </div>
       )}
 
@@ -236,7 +258,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
       {/* Input */}
       <div className="border-t border-border p-3 bg-card">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-sage-600" disabled>
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" disabled title="File attachments coming soon">
             <Paperclip className="h-4 w-4" />
           </Button>
           <Input
