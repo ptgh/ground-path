@@ -28,6 +28,7 @@ import {
   Globe,
   Newspaper
 } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import Header from './Header';
 import Footer from './Footer';
 import ProfessionalProfileModal from './ProfessionalProfileModal';
@@ -36,6 +37,7 @@ import NoteModal from './NoteModal';
 import ProfessionalResources from './dashboard/ProfessionalResources';
 import ArticleManager from './dashboard/ArticleManager';
 import { notesService, Note } from '@/services/notesService';
+import { ClientMessagesPanel } from './messaging/ClientMessagesPanel';
 import { gsap } from 'gsap';
 
 const Dashboard = () => {
@@ -286,8 +288,12 @@ const Dashboard = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className={`grid w-full h-auto p-1 gap-1 ${isAdmin ? 'grid-cols-4 lg:grid-cols-7' : 'grid-cols-3 lg:grid-cols-6'}`}>
+            <TabsList className={`grid w-full h-auto p-1 gap-1 ${isAdmin ? 'grid-cols-4 lg:grid-cols-8' : 'grid-cols-4 lg:grid-cols-7'}`}>
               <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Overview</TabsTrigger>
+              <TabsTrigger value="messages" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+                <MessageSquare className="h-3 w-3 mr-1 hidden sm:inline" />
+                Messages
+              </TabsTrigger>
               <TabsTrigger value="tools" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Professional</TabsTrigger>
               <TabsTrigger value="resources" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Resources</TabsTrigger>
               <TabsTrigger value="history" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">History</TabsTrigger>
@@ -436,7 +442,12 @@ const Dashboard = () => {
               </div>
             </TabsContent>
 
-            {/* Professional Tools Tab */}
+            {/* Messages Tab */}
+            <TabsContent value="messages" className="space-y-6">
+              <ClientMessagesPanel />
+            </TabsContent>
+
+
             <TabsContent value="tools" className="space-y-6">
               {isSocialWorker && (
                 <Card>

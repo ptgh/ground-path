@@ -35,6 +35,7 @@ import UnsubscribePage from "./pages/Unsubscribe";
 import ConfirmPage from "./pages/Confirm";
 import Article from "./pages/Article";
 import VoiceSessionPage from "./pages/VoiceSession";
+import Messages from "./pages/Messages";
 import VerifyEmail from "./pages/VerifyEmail";
 import PractitionerVerify from "./pages/PractitionerVerify";
 import { AIAssistant } from "./components/AIAssistant";
@@ -165,6 +166,8 @@ const App = () => {
             <Route path="/practitioner/auth/callback" element={<AuthCallback />} />
             <Route path="/auth/callback" element={<LinkedInCallback />} />
             <Route path="/practitioner/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/practitioner/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+            <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <AIAssistantRouter />

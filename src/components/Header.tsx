@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Menu, X, User, LogOut, FileText, BookOpen, LayoutDashboard, Newspaper } from 'lucide-react';
+import { Menu, X, User, LogOut, FileText, BookOpen, LayoutDashboard, Newspaper, MessageSquare } from 'lucide-react';
+import { messagingService } from '@/services/messagingService';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -151,6 +152,7 @@ const Header = () => {
 
   const practitionerNavItems = [
     { label: 'Dashboard', path: '/practitioner/dashboard', icon: LayoutDashboard },
+    { label: 'Messages', path: '/practitioner/messages', icon: MessageSquare },
     { label: 'Forms', path: '/practitioner/forms', icon: FileText },
     { label: 'Resources', path: '/resources', icon: BookOpen },
   ];
