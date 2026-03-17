@@ -36,7 +36,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "ground-path"
+const SITE_NAME = "groundpath"
 const SENDER_DOMAIN = "notify.groundpath.com.au"
 const ROOT_DOMAIN = "groundpath.com.au"
 const FROM_DOMAIN = "groundpath.com.au" // Domain shown in From address (may be root or sender subdomain)
