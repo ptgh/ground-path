@@ -6,50 +6,132 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Stethoscope } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Loader2, User, Stethoscope, Mail, CheckCircle2 } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+type AccountType = 'user' | 'practitioner' | '';
+type VerificationState = 'none' | 'pending' | 'complete';
 
 const AuthPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userType, setUserType] = useState<'user' | 'practitioner' | ''>('');
+  const [userType, setUserType] = useState<AccountType>('');
   const [loading, setLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [showResetForm, setShowResetForm] = useState(false);
+  const [verificationState, setVerificationState] = useState<VerificationState>('none');
+  const [verificationEmail, setVerificationEmail] = useState('');
+  const [verifiedUserType, setVerifiedUserType] = useState<'user' | 'practitioner'>('user');
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Check authentication state on mount
+  const getStoredUserType = (): 'user' | 'practitioner' =>
+    sessionStorage.getItem('pending_signup_user_type') === 'practitioner' ? 'practitioner' : 'user';
+
+  const clearPendingSignup = () => {
+    sessionStorage.removeItem('pending_signup_email');
+    sessionStorage.removeItem('pending_signup_user_type');
+  };
+
+  const showPendingVerification = (nextEmail: string, nextUserType: 'user' | 'practitioner') => {
+    setVerificationEmail(nextEmail);
+    setVerifiedUserType(nextUserType);
+    setVerificationState('pending');
+    setAuthMode('signup');
+    setShowResetForm(false);
+  };
+
+  const showCompletedVerification = (nextEmail: string, nextUserType: 'user' | 'practitioner') => {
+    setVerificationEmail(nextEmail);
+    setVerifiedUserType(nextUserType);
+    setVerificationState('complete');
+    setAuthMode('signup');
+    setShowResetForm(false);
+    setPassword('');
+  };
+
+  const completeVerifiedFlow = () => {
+    clearPendingSignup();
+    if (verifiedUserType === 'practitioner') {
+      navigate('/practitioner/verify', { replace: true });
+      return;
+    }
+    navigate('/', { replace: true });
+  };
+
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const signupComplete = params.get('signup') === 'complete';
+
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session?.user?.email_confirmed_at && signupComplete) {
+        const nextUserType = session.user.user_metadata?.user_type === 'practitioner' ? 'practitioner' : 'user';
+        sessionStorage.setItem('pending_signup_email', session.user.email || '');
+        sessionStorage.setItem('pending_signup_user_type', nextUserType);
+        showCompletedVerification(session.user.email || '', nextUserType);
+        return;
+      }
+
       if (session) {
-        navigate('/practitioner/dashboard');
+        const sessionUserType = session.user.user_metadata?.user_type;
+        navigate(sessionUserType === 'practitioner' ? '/practitioner/dashboard' : '/', { replace: true });
+        return;
+      }
+
+      const pendingEmail = sessionStorage.getItem('pending_signup_email');
+      if (pendingEmail) {
+        showPendingVerification(pendingEmail, getStoredUserType());
       }
     };
-    checkAuth();
-  }, [navigate]);
 
-  // Handle OAuth callback redirects only (not signup/signin)
+    void checkAuth();
+  }, [location.search, navigate]);
+
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // Only handle OAuth provider callbacks — not email/password signup or signin
-      if (event === 'SIGNED_IN' && session?.user?.app_metadata?.provider && session.user.app_metadata.provider !== 'email') {
-        if (session.user.email_confirmed_at) {
-          navigate('/practitioner/dashboard');
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
+        const provider = session.user.app_metadata?.provider;
+        const nextUserType = session.user.user_metadata?.user_type === 'practitioner' ? 'practitioner' : 'user';
+        const pendingEmail = session.user.email || sessionStorage.getItem('pending_signup_email') || '';
+
+        if (provider === 'email' && (sessionStorage.getItem('pending_signup_email') || location.search.includes('signup=complete'))) {
+          sessionStorage.setItem('pending_signup_email', pendingEmail);
+          sessionStorage.setItem('pending_signup_user_type', nextUserType);
+          showCompletedVerification(pendingEmail, nextUserType);
+          toast({
+            title: 'Email verified',
+            description:
+              nextUserType === 'practitioner'
+                ? 'Your account is ready. Continue to complete practitioner verification.'
+                : 'Your account is ready and you are now signed in.',
+          });
+          return;
+        }
+
+        if (provider && provider !== 'email') {
+          navigate('/practitioner/dashboard', { replace: true });
         }
       }
     });
+
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [location.search, navigate, toast]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedEmail = email.trim();
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email: trimmedEmail, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email: trimmedEmail, password });
       if (error) {
         const msg = error.message.includes('Invalid login credentials')
           ? 'Please check your email and password and try again.'
@@ -60,13 +142,15 @@ const AuthPage = () => {
           : error.message.includes('Network')
           ? 'Network error. Please check your connection and try again.'
           : 'Something went wrong. Please try again.';
-        toast({ title: "Sign in failed", description: msg, variant: "destructive" });
+        toast({ title: 'Sign in failed', description: msg, variant: 'destructive' });
         return;
       }
-      toast({ title: "Welcome back!", description: "You have been signed in successfully." });
-      navigate('/practitioner/dashboard');
+
+      toast({ title: 'Welcome back!', description: 'You have been signed in successfully.' });
+      const sessionUserType = data.user?.user_metadata?.user_type;
+      navigate(sessionUserType === 'practitioner' ? '/practitioner/dashboard' : '/', { replace: true });
     } catch {
-      toast({ title: "Sign in failed", description: "An unexpected error occurred.", variant: "destructive" });
+      toast({ title: 'Sign in failed', description: 'An unexpected error occurred.', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -74,23 +158,24 @@ const AuthPage = () => {
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
-      toast({ title: "Email required", description: "Please enter your email address.", variant: "destructive" });
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      toast({ title: 'Email required', description: 'Please enter your email address.', variant: 'destructive' });
       return;
     }
     setResetLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await supabase.auth.resetPasswordForEmail(trimmedEmail, {
         redirectTo: `${window.location.origin}/practitioner/auth`,
       });
       if (error) {
-        toast({ title: "Reset failed", description: error.message, variant: "destructive" });
+        toast({ title: 'Reset failed', description: error.message, variant: 'destructive' });
         return;
       }
-      toast({ title: "Check your email", description: "We've sent you a password reset link." });
+      toast({ title: 'Check your email', description: "We've sent you a password reset link." });
       setShowResetForm(false);
     } catch {
-      toast({ title: "Reset failed", description: "An unexpected error occurred.", variant: "destructive" });
+      toast({ title: 'Reset failed', description: 'An unexpected error occurred.', variant: 'destructive' });
     } finally {
       setResetLoading(false);
     }
@@ -99,22 +184,21 @@ const AuthPage = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userType) {
-      toast({ title: "Role required", description: "Please select whether you're a client or practitioner.", variant: "destructive" });
+      toast({ title: 'Role required', description: "Please select whether you're a client or practitioner.", variant: 'destructive' });
       return;
     }
+
     const trimmedEmail = email.trim();
     setLoading(true);
     try {
-      const metadata: Record<string, any> = {
-        user_type: userType,
-      };
-
       const { error } = await supabase.auth.signUp({
         email: trimmedEmail,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/verify-email`,
-          data: metadata,
+          emailRedirectTo: `${window.location.origin}/practitioner/auth/callback?flow=signup`,
+          data: {
+            user_type: userType,
+          },
         },
       });
 
@@ -123,35 +207,128 @@ const AuthPage = () => {
           ? 'An account with this email already exists. Please sign in instead.'
           : error.message.includes('Password should be')
           ? 'Password should be at least 6 characters long.'
-          : error.message;
-        toast({ title: "Sign up failed", description: msg, variant: "destructive" });
+          : 'Something went wrong. Please try again.';
+        toast({ title: 'Sign up failed', description: msg, variant: 'destructive' });
         return;
       }
 
+      sessionStorage.setItem('pending_signup_email', trimmedEmail);
+      sessionStorage.setItem('pending_signup_user_type', userType);
+      showPendingVerification(trimmedEmail, userType === 'practitioner' ? 'practitioner' : 'user');
       toast({
-        title: "Account created!",
-        description: "Please check your email to verify your account.",
+        title: 'Check your inbox',
+        description: 'We sent your verification email. Stay on this page until your account is confirmed.',
       });
-      navigate('/verify-email');
     } catch {
-      toast({ title: "Sign up failed", description: "An unexpected error occurred.", variant: "destructive" });
+      toast({ title: 'Sign up failed', description: 'An unexpected error occurred.', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
   };
+
+  const handleResendVerification = async () => {
+    const targetEmail = verificationEmail || email.trim();
+    if (!targetEmail) {
+      toast({ title: 'Email required', description: 'Please enter your email address first.', variant: 'destructive' });
+      return;
+    }
+
+    setResendLoading(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: targetEmail,
+        options: {
+          emailRedirectTo: `${window.location.origin}/practitioner/auth/callback?flow=signup`,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: 'Verification email sent',
+        description: 'Please use the latest email in your inbox to complete signup.',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Failed to resend',
+        description: error.message || 'Please try again in a moment.',
+        variant: 'destructive',
+      });
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  const handleUseDifferentEmail = () => {
+    clearPendingSignup();
+    setVerificationState('none');
+    setVerificationEmail('');
+    setPassword('');
+  };
+
+  const renderVerificationContent = () => (
+    <div className="space-y-4">
+      <div className="flex justify-center mb-4">
+        <div className="bg-primary/10 p-4 rounded-full">
+          {verificationState === 'complete' ? (
+            <CheckCircle2 className="h-10 w-10 text-primary" />
+          ) : (
+            <Mail className="h-10 w-10 text-primary" />
+          )}
+        </div>
+      </div>
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl font-bold text-foreground">
+          {verificationState === 'complete' ? 'Your account is ready' : 'Check your email'}
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          {verificationState === 'complete'
+            ? verifiedUserType === 'practitioner'
+              ? 'Your email is verified and you are signed in. Continue to finish practitioner verification.'
+              : 'Your email is verified and you are signed in. Continue to the site.'
+            : `We sent a verification link to ${verificationEmail}. Keep this page open while you finish signup.`}
+        </p>
+      </div>
+
+      {verificationState === 'pending' ? (
+        <>
+          <div className="bg-muted/50 rounded-xl p-4 text-center">
+            <p className="text-sm text-muted-foreground">
+              Once you confirm the email, we will bring you straight into the next step.
+            </p>
+          </div>
+          <Button onClick={handleResendVerification} variant="outline" className="w-full" disabled={resendLoading}>
+            {resendLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Resend Verification Email
+          </Button>
+          <Button type="button" variant="ghost" className="w-full text-muted-foreground" onClick={handleUseDifferentEmail}>
+            Use a Different Email
+          </Button>
+        </>
+      ) : (
+        <Button onClick={completeVerifiedFlow} className="w-full">
+          {verifiedUserType === 'practitioner' ? 'Continue to Professional Verification' : 'Go to Site'}
+        </Button>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-lg">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">
-            {showResetForm ? 'Reset Password' : 'groundpath'}
+            {showResetForm ? 'Reset Password' : verificationState === 'none' ? 'groundpath' : 'Finish your signup'}
           </CardTitle>
           <CardDescription>
             {showResetForm
-              ? "Enter your email to receive a password reset link"
-              : "Sign in or create an account to get started"
-            }
+              ? 'Enter your email to receive a password reset link'
+              : verificationState === 'none'
+              ? 'Sign in or create an account to get started'
+              : 'A smoother, verified signup flow.'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -169,6 +346,8 @@ const AuthPage = () => {
                 Back to Sign In
               </Button>
             </form>
+          ) : verificationState !== 'none' ? (
+            renderVerificationContent()
           ) : (
             <Tabs value={authMode} onValueChange={(v) => setAuthMode(v as 'signin' | 'signup')}>
               <TabsList className="grid w-full grid-cols-2">
@@ -198,7 +377,6 @@ const AuthPage = () => {
 
               <TabsContent value="signup" className="space-y-4">
                 <form onSubmit={handleSignUp} className="space-y-5">
-                  {/* Step 1: Role Selection */}
                   <div className="space-y-3">
                     <Label className="text-sm font-semibold">I am a...</Label>
                     <div className="grid grid-cols-2 gap-3">
@@ -233,7 +411,6 @@ const AuthPage = () => {
                     </div>
                   </div>
 
-                  {/* Step 2: Email & Password */}
                   {userType && (
                     <>
                       <div className="space-y-2">

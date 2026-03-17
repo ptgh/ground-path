@@ -251,9 +251,10 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                       <Label htmlFor="linkedin_profile">LinkedIn Profile</Label>
                       <Input
                         id="linkedin_profile"
+                        type="url"
                         value={formData.linkedin_profile}
                         onChange={(e) => setFormData({...formData, linkedin_profile: e.target.value})}
-                        placeholder="https://linkedin.com/in/yourprofile"
+                        placeholder="https://www.linkedin.com/in/your-profile"
                       />
                     </div>
                   </div>
