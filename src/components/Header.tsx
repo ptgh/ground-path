@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Menu, X, User, LogOut, FileText, BookOpen, LayoutDashboard, Newspaper } from 'lucide-react';
+import { Menu, X, User, LogOut, FileText, BookOpen, LayoutDashboard, Newspaper, MessageSquare } from 'lucide-react';
+import { messagingService } from '@/services/messagingService';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
