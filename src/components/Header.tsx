@@ -1,10 +1,11 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Menu, X, User, LogOut, FileText, BookOpen, LayoutDashboard, Newspaper, MessageSquare } from 'lucide-react';
-import { messagingService } from '@/services/messagingService';
 import { useAuth } from '@/hooks/useAuth';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -124,13 +125,26 @@ const FlipLoginButton = ({ onClick }: { onClick: () => void }) => {
   );
 };
 
+// Unread badge component for nav items
+const NavUnreadBadge = ({ count }: { count: number }) => {
+  if (count <= 0) return null;
+  return (
+    <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
+      {count > 99 ? '99+' : count}
+    </span>
+  );
+};
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+  const unreadCount = useUnreadMessages();
 
   const shouldShowAuth = location.pathname.includes('/practitioner/');
   const isPractitionerRoute = shouldShowAuth;
+  const isLoggedIn = !!user;
 
   const scrollToSection = (sectionId: string) => {
     if (location.pathname !== '/') {
@@ -152,7 +166,7 @@ const Header = () => {
 
   const practitionerNavItems = [
     { label: 'Dashboard', path: '/practitioner/dashboard', icon: LayoutDashboard },
-    { label: 'Messages', path: '/practitioner/messages', icon: MessageSquare },
+    { label: 'Messages', path: '/practitioner/messages', icon: MessageSquare, showBadge: true },
     { label: 'Forms', path: '/practitioner/forms', icon: FileText },
     { label: 'Resources', path: '/resources', icon: BookOpen },
   ];
@@ -185,7 +199,7 @@ const Header = () => {
                     <button
                       key={item.label}
                       onClick={() => { navigate(item.path); setIsMenuOpen(false); }}
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      className={`relative flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                         isActive
                           ? 'text-white bg-white/10'
                           : 'text-gray-300 hover:text-white hover:bg-white/5'
@@ -193,6 +207,7 @@ const Header = () => {
                     >
                       <item.icon className="h-4 w-4" />
                       {item.label}
+                      {item.showBadge && <NavUnreadBadge count={unreadCount} />}
                     </button>
                   );
                 })}
@@ -206,15 +221,28 @@ const Header = () => {
                 </button>
               </>
             ) : (
-              publicNavItems.map((item) => (
-                <button
-                  key={item.label}
-                  onClick={item.action}
-                  className="text-gray-300 hover:text-white transition-colors font-medium px-3 py-2 rounded-md hover:bg-white/5 text-sm"
-                >
-                  {item.label}
-                </button>
-              ))
+              <>
+                {publicNavItems.map((item) => (
+                  <button
+                    key={item.label}
+                    onClick={item.action}
+                    className="text-gray-300 hover:text-white transition-colors font-medium px-3 py-2 rounded-md hover:bg-white/5 text-sm"
+                  >
+                    {item.label}
+                  </button>
+                ))}
+                {/* Messages icon for logged-in users on public pages */}
+                {isLoggedIn && (
+                  <button
+                    onClick={() => navigate('/messages')}
+                    className="relative text-gray-300 hover:text-white transition-colors font-medium px-3 py-2 rounded-md hover:bg-white/5 text-sm flex items-center gap-1.5"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    Messages
+                    <NavUnreadBadge count={unreadCount} />
+                  </button>
+                )}
+              </>
             )}
           </nav>
 
@@ -257,7 +285,7 @@ const Header = () => {
                       <button
                         key={item.label}
                         onClick={() => { navigate(item.path); setIsMenuOpen(false); }}
-                        className={`flex items-center gap-2 text-left px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                        className={`relative flex items-center gap-2 text-left px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
                           isActive
                             ? 'text-white bg-white/10'
                             : 'text-gray-300 hover:text-white hover:bg-white/5'
@@ -265,6 +293,11 @@ const Header = () => {
                       >
                         <item.icon className="h-4 w-4" />
                         {item.label}
+                        {item.showBadge && unreadCount > 0 && (
+                          <Badge className="ml-auto bg-destructive text-destructive-foreground text-[10px] h-5 min-w-[20px]">
+                            {unreadCount}
+                          </Badge>
+                        )}
                       </button>
                     );
                   })}
@@ -287,6 +320,20 @@ const Header = () => {
                       {item.label}
                     </button>
                   ))}
+                  {isLoggedIn && (
+                    <button
+                      onClick={() => { navigate('/messages'); setIsMenuOpen(false); }}
+                      className="relative flex items-center gap-2 text-left text-gray-300 hover:text-white transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-white/5 text-sm"
+                    >
+                      <MessageSquare className="h-4 w-4" />
+                      Messages
+                      {unreadCount > 0 && (
+                        <Badge className="ml-auto bg-destructive text-destructive-foreground text-[10px] h-5 min-w-[20px]">
+                          {unreadCount}
+                        </Badge>
+                      )}
+                    </button>
+                  )}
                   <div className="border-t border-gray-700 my-2" />
                   <Button
                     onClick={() => { scrollToSection('contact'); setIsMenuOpen(false); }}

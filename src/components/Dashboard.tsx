@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,6 +43,7 @@ import { gsap } from 'gsap';
 
 const Dashboard = () => {
   const { user, profile, roles, loading: authLoading } = useAuth();
+  const unreadCount = useUnreadMessages();
   const navigate = useNavigate();
   const location = useLocation();
   const [notes, setNotes] = useState<Note[]>([]);
@@ -290,9 +292,14 @@ const Dashboard = () => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className={`grid w-full h-auto p-1 gap-1 ${isAdmin ? 'grid-cols-4 lg:grid-cols-8' : 'grid-cols-4 lg:grid-cols-7'}`}>
               <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Overview</TabsTrigger>
-              <TabsTrigger value="messages" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+              <TabsTrigger value="messages" className="relative text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
                 <MessageSquare className="h-3 w-3 mr-1 hidden sm:inline" />
                 Messages
+                {unreadCount > 0 && (
+                  <span className="ml-1 inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
               </TabsTrigger>
               <TabsTrigger value="tools" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Professional</TabsTrigger>
               <TabsTrigger value="resources" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Resources</TabsTrigger>
