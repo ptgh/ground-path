@@ -17,12 +17,12 @@ const corsHeaders = {
 }
 
 const EMAIL_SUBJECTS: Record<string, string> = {
-  signup: 'Confirm your email',
-  invite: "You've been invited",
-  magiclink: 'Your login link',
-  recovery: 'Reset your password',
-  email_change: 'Confirm your new email',
-  reauthentication: 'Your verification code',
+  signup: 'Confirm your email — groundpath',
+  invite: "You've been invited to groundpath",
+  magiclink: 'Your secure login link — groundpath',
+  recovery: 'Reset your password — groundpath',
+  email_change: 'Confirm your email change — groundpath',
+  reauthentication: 'Your verification code — groundpath',
 }
 
 // Template mapping
