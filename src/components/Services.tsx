@@ -4,7 +4,7 @@ const Services = () => {
     {
       name: "Mental Health Support",
       format: "Online via Microsoft Teams",
-      rate: "$110",
+      rate: "$100",
       description: "Social Worker providing professional support via secure Microsoft Teams video calls"
     },
     {
