@@ -160,23 +160,21 @@ export const messagingService = {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) throw new Error('Not authenticated');
 
-    const insertData: Record<string, unknown> = {
-      conversation_id: conversationId,
-      sender_id: userData.user.id,
-      receiver_id: receiverId,
-      message_text: messageText,
-      attachment_url: options?.attachmentUrl || null,
-      attachment_type: options?.attachmentType || null,
-      attachment_name: options?.attachmentName || null,
-      attachment_size: options?.attachmentSize || null,
-      resource_url: options?.resourceUrl || null,
-      resource_title: options?.resourceTitle || null,
-      resource_description: options?.resourceDescription || null,
-    };
-
     const { data, error } = await supabase
       .from('client_messages')
-      .insert(insertData)
+      .insert({
+        conversation_id: conversationId,
+        sender_id: userData.user.id,
+        receiver_id: receiverId,
+        message_text: messageText,
+        attachment_url: options?.attachmentUrl || null,
+        attachment_type: options?.attachmentType || null,
+        attachment_name: options?.attachmentName || null,
+        attachment_size: options?.attachmentSize || null,
+        resource_url: options?.resourceUrl || null,
+        resource_title: options?.resourceTitle || null,
+        resource_description: options?.resourceDescription || null,
+      } as any)
       .select()
       .single();
 
