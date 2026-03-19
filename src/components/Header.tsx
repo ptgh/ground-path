@@ -248,7 +248,7 @@ const Header = () => {
 
           {/* Right side */}
           <div className="hidden md:flex items-center gap-3">
-            {shouldShowAuth ? (
+            {isLoggedIn ? (
               <AuthAwareSection />
             ) : (
               <>
