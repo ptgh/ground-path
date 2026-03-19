@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Mic, Square, Loader2 } from 'lucide-react';
+import { Mic, Square } from 'lucide-react';
 import { toast } from 'sonner';
+import { messagingService } from '@/services/messagingService';
 
 interface VoiceRecorderProps {
   onRecorded: (blob: Blob, durationMs: number) => void;
@@ -17,9 +18,29 @@ export const VoiceRecorder = ({ onRecorded, disabled }: VoiceRecorderProps) => {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startRecording = useCallback(async () => {
+    // Check browser support first
+    const support = messagingService.isVoiceRecordingSupported();
+    if (!support.supported) {
+      toast.error(support.reason || 'Voice recording is not supported in your browser.');
+      return;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+
+      // Pick a supported MIME type
+      let mimeType = 'audio/webm';
+      if (typeof MediaRecorder.isTypeSupported === 'function') {
+        if (!MediaRecorder.isTypeSupported('audio/webm')) {
+          if (MediaRecorder.isTypeSupported('audio/mp4')) {
+            mimeType = 'audio/mp4';
+          } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
+            mimeType = 'audio/ogg';
+          }
+        }
+      }
+
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
       startTimeRef.current = Date.now();
@@ -29,7 +50,7 @@ export const VoiceRecorder = ({ onRecorded, disabled }: VoiceRecorderProps) => {
       };
 
       mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const blob = new Blob(chunksRef.current, { type: mimeType });
         const durationMs = Date.now() - startTimeRef.current;
         stream.getTracks().forEach(t => t.stop());
         if (intervalRef.current) clearInterval(intervalRef.current);
@@ -37,13 +58,27 @@ export const VoiceRecorder = ({ onRecorded, disabled }: VoiceRecorderProps) => {
         onRecorded(blob, durationMs);
       };
 
+      mediaRecorder.onerror = () => {
+        stream.getTracks().forEach(t => t.stop());
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        setRecording(false);
+        setDuration(0);
+        toast.error('Recording failed. Please try again.');
+      };
+
       mediaRecorder.start();
       setRecording(true);
       intervalRef.current = setInterval(() => {
         setDuration(Math.floor((Date.now() - startTimeRef.current) / 1000));
       }, 500);
-    } catch {
-      toast.error('Could not access microphone. Please allow microphone access.');
+    } catch (err: any) {
+      if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
+        toast.error('Microphone access was denied. Please allow microphone access in your browser settings and try again.');
+      } else if (err?.name === 'NotFoundError') {
+        toast.error('No microphone found. Please connect a microphone and try again.');
+      } else {
+        toast.error('Could not start recording. Please check your microphone and try again.');
+      }
     }
   }, [onRecorded]);
 
