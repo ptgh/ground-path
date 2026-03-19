@@ -186,7 +186,7 @@ const PractitionerVerify = () => {
             {isVerified && (
               <div className="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 p-4">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium text-foreground">Verification complete. Taking you to the site...</span>
+                <span className="text-sm font-medium text-foreground">Verification complete. Redirecting to your dashboard...</span>
               </div>
             )}
 

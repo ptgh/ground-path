@@ -341,12 +341,16 @@ const Header = () => {
                   >
                     Book a Session
                   </Button>
-                   <Button
-                    onClick={() => { handleProfessionalLogin(); setIsMenuOpen(false); }}
-                     className="bg-gray-700 text-white hover:bg-gray-600 border border-gray-500 w-full"
-                   >
-                     Login
-                  </Button>
+                  {isLoggedIn ? (
+                    <AuthAwareSection />
+                  ) : (
+                    <Button
+                      onClick={() => { handleProfessionalLogin(); setIsMenuOpen(false); }}
+                      className="bg-gray-700 text-white hover:bg-gray-600 border border-gray-500 w-full"
+                    >
+                      Login
+                    </Button>
+                  )}
                 </>
               )}
             </nav>
