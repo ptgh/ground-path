@@ -158,7 +158,7 @@ const PractitionerVerify = () => {
         title: 'Registration submitted',
         description: 'Your professional registration is now pending review.',
       });
-      setTimeout(() => navigate('/', { replace: true }), 700);
+      setTimeout(() => navigate('/practitioner/dashboard', { replace: true }), 1500);
     } catch (error: any) {
       toast({ title: 'Submission failed', description: error.message, variant: 'destructive' });
     } finally {
