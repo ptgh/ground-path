@@ -17,6 +17,7 @@ export type Database = {
       client_messages: {
         Row: {
           attachment_name: string | null
+          attachment_path: string | null
           attachment_size: number | null
           attachment_type: string | null
           attachment_url: string | null
@@ -33,6 +34,7 @@ export type Database = {
         }
         Insert: {
           attachment_name?: string | null
+          attachment_path?: string | null
           attachment_size?: number | null
           attachment_type?: string | null
           attachment_url?: string | null
@@ -49,6 +51,7 @@ export type Database = {
         }
         Update: {
           attachment_name?: string | null
+          attachment_path?: string | null
           attachment_size?: number | null
           attachment_type?: string | null
           attachment_url?: string | null
