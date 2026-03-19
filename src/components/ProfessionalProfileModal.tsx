@@ -44,7 +44,8 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     website_url: '',
     linkedin_profile: '',
     preferred_contact_method: 'email',
-    bio: ''
+    bio: '',
+    halaxy_profile_url: ''
   });
 
   const [specializations, setSpecializations] = useState<string[]>([]);
