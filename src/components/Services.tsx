@@ -17,7 +17,7 @@ const Services = () => {
     {
       name: "Accredited Mental Health Social Worker (AMHSW)",
       format: "Online via Microsoft Teams",
-      rate: "$110",
+      rate: "$100",
       description: "AMHSW registration currently in progress — service coming soon",
       comingSoon: true
     },
