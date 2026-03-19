@@ -31,7 +31,7 @@ const Services = () => {
     {
       name: "In-Person Support",
       format: "Perth, WA",
-      rate: "$120",
+      rate: "$100",
       description: "Face-to-face sessions coming soon — currently all sessions are conducted online via Microsoft Teams",
       comingSoon: true
     }
