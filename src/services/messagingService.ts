@@ -23,6 +23,7 @@ export interface Message {
   receiver_id: string;
   message_text: string;
   attachment_url: string | null;
+  attachment_path: string | null;
   attachment_type: string | null;
   attachment_name: string | null;
   attachment_size: number | null;
@@ -32,6 +33,8 @@ export interface Message {
   is_read: boolean;
   created_at: string;
   sender_name?: string;
+  // Resolved signed URL for rendering (not stored in DB)
+  resolved_attachment_url?: string;
 }
 
 const ALLOWED_FILE_TYPES = [
@@ -45,6 +48,46 @@ const ALLOWED_FILE_TYPES = [
 const ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_VOICE_SIZE = 5 * 1024 * 1024; // 5MB
+
+/**
+ * Generate a fresh signed URL from a storage path.
+ * Returns null if the path is empty or signing fails.
+ */
+async function resolveSignedUrl(path: string | null): Promise<string | null> {
+  if (!path) return null;
+  const { data, error } = await supabase.storage
+    .from('message-attachments')
+    .createSignedUrl(path, 60 * 60); // 1 hour
+  if (error) {
+    console.error('Failed to create signed URL for', path, error);
+    return null;
+  }
+  return data.signedUrl;
+}
+
+/**
+ * Resolve signed URLs for an array of messages that have attachment_path.
+ */
+async function resolveMessageAttachments(messages: Message[]): Promise<Message[]> {
+  const withAttachments = messages.filter(m => m.attachment_path);
+  if (withAttachments.length === 0) return messages;
+
+  // Batch resolve signed URLs
+  const urlMap = new Map<string, string | null>();
+  await Promise.all(
+    withAttachments.map(async (m) => {
+      if (m.attachment_path && !urlMap.has(m.attachment_path)) {
+        const url = await resolveSignedUrl(m.attachment_path);
+        urlMap.set(m.attachment_path!, url);
+      }
+    })
+  );
+
+  return messages.map(m => ({
+    ...m,
+    resolved_attachment_url: m.attachment_path ? (urlMap.get(m.attachment_path) ?? undefined) : undefined,
+  }));
+}
 
 export const messagingService = {
   async getConversations(): Promise<Conversation[]> {
@@ -137,10 +180,13 @@ export const messagingService = {
       }
     }
 
-    return (data || []).map(m => ({
+    const messages = (data || []).map(m => ({
       ...m,
       sender_name: nameMap[m.sender_id] || 'Unknown',
     })) as Message[];
+
+    // Resolve signed URLs for attachments
+    return resolveMessageAttachments(messages);
   },
 
   async sendMessage(
@@ -148,7 +194,7 @@ export const messagingService = {
     receiverId: string,
     messageText: string,
     options?: {
-      attachmentUrl?: string;
+      attachmentPath?: string;
       attachmentType?: string;
       attachmentName?: string;
       attachmentSize?: number;
@@ -167,7 +213,7 @@ export const messagingService = {
         sender_id: userData.user.id,
         receiver_id: receiverId,
         message_text: messageText,
-        attachment_url: options?.attachmentUrl || null,
+        attachment_path: options?.attachmentPath || null,
         attachment_type: options?.attachmentType || null,
         attachment_name: options?.attachmentName || null,
         attachment_size: options?.attachmentSize || null,
@@ -203,25 +249,49 @@ export const messagingService = {
   validateFile(file: File): string | null {
     const ext = file.name.split('.').pop()?.toLowerCase();
     if (!ext || !ALLOWED_EXTENSIONS.includes(ext)) {
-      return `File type .${ext} is not allowed. Supported: ${ALLOWED_EXTENSIONS.join(', ')}`;
+      return `File type ".${ext || 'unknown'}" is not supported. Allowed types: ${ALLOWED_EXTENSIONS.join(', ').toUpperCase()}.`;
     }
-    if (!ALLOWED_FILE_TYPES.includes(file.type) && file.type !== '') {
-      return `File type ${file.type} is not allowed.`;
+    if (file.type && !ALLOWED_FILE_TYPES.includes(file.type)) {
+      return `File format "${file.type}" is not supported. Please use PDF, DOC, DOCX, JPG, or PNG files.`;
     }
     if (file.size > MAX_FILE_SIZE) {
-      return `File is too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`;
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      return `File is too large (${sizeMB} MB). Maximum allowed size is ${MAX_FILE_SIZE / (1024 * 1024)} MB.`;
+    }
+    if (file.size === 0) {
+      return 'File appears to be empty. Please select a valid file.';
     }
     return null;
   },
 
   validateVoiceNote(blob: Blob): string | null {
     if (blob.size > MAX_VOICE_SIZE) {
-      return `Voice note is too large. Maximum size is ${MAX_VOICE_SIZE / 1024 / 1024}MB.`;
+      const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
+      return `Voice note is too large (${sizeMB} MB). Maximum allowed size is ${MAX_VOICE_SIZE / (1024 * 1024)} MB.`;
+    }
+    if (blob.size === 0) {
+      return 'Voice recording appears to be empty. Please try again.';
     }
     return null;
   },
 
-  async uploadAttachment(conversationId: string, file: File): Promise<{ url: string; name: string; size: number; type: string }> {
+  /**
+   * Check if the browser supports voice recording.
+   */
+  isVoiceRecordingSupported(): { supported: boolean; reason?: string } {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      return { supported: false, reason: 'Your browser does not support microphone access. Please try a modern browser like Chrome, Firefox, or Safari.' };
+    }
+    if (typeof MediaRecorder === 'undefined') {
+      return { supported: false, reason: 'Your browser does not support audio recording. Please try Chrome, Firefox, or Edge.' };
+    }
+    return { supported: true };
+  },
+
+  /**
+   * Upload a file attachment. Returns the stable storage path (not a signed URL).
+   */
+  async uploadAttachment(conversationId: string, file: File): Promise<{ path: string; name: string; size: number; type: string }> {
     const timestamp = Date.now();
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
     const path = `${conversationId}/${timestamp}_${safeName}`;
@@ -230,31 +300,26 @@ export const messagingService = {
       .from('message-attachments')
       .upload(path, file);
 
-    if (error) throw error;
-
-    const { data: urlData } = supabase.storage
-      .from('message-attachments')
-      .getPublicUrl(path);
-
-    // For private buckets, use signed URL
-    const { data: signedData, error: signedError } = await supabase.storage
-      .from('message-attachments')
-      .createSignedUrl(path, 60 * 60 * 24 * 7); // 7 days
-
-    if (signedError) throw signedError;
+    if (error) {
+      console.error('Storage upload error:', error);
+      throw new Error(`Upload failed: ${error.message}. Please check your connection and try again.`);
+    }
 
     const ext = file.name.split('.').pop()?.toLowerCase() || '';
     const attachmentType = ['jpg', 'jpeg', 'png'].includes(ext) ? 'image' : 'file';
 
     return {
-      url: signedData.signedUrl,
+      path,
       name: file.name,
       size: file.size,
       type: attachmentType,
     };
   },
 
-  async uploadVoiceNote(conversationId: string, blob: Blob, durationMs: number): Promise<{ url: string; name: string; size: number }> {
+  /**
+   * Upload a voice note. Returns the stable storage path.
+   */
+  async uploadVoiceNote(conversationId: string, blob: Blob, durationMs: number): Promise<{ path: string; name: string; size: number }> {
     const timestamp = Date.now();
     const path = `${conversationId}/${timestamp}_voice_note.webm`;
 
@@ -262,28 +327,65 @@ export const messagingService = {
       .from('message-attachments')
       .upload(path, blob, { contentType: 'audio/webm' });
 
-    if (error) throw error;
-
-    const { data: signedData, error: signedError } = await supabase.storage
-      .from('message-attachments')
-      .createSignedUrl(path, 60 * 60 * 24 * 7);
-
-    if (signedError) throw signedError;
+    if (error) {
+      console.error('Voice note upload error:', error);
+      throw new Error(`Voice note upload failed: ${error.message}. Please try again.`);
+    }
 
     const seconds = Math.round(durationMs / 1000);
     return {
-      url: signedData.signedUrl,
+      path,
       name: `Voice note (${seconds}s)`,
       size: blob.size,
     };
   },
 
+  /**
+   * Get a fresh signed URL for a storage path.
+   */
   async getSignedUrl(path: string): Promise<string> {
-    const { data, error } = await supabase.storage
-      .from('message-attachments')
-      .createSignedUrl(path, 60 * 60); // 1 hour
+    const url = await resolveSignedUrl(path);
+    if (!url) throw new Error('Failed to generate download URL');
+    return url;
+  },
+
+  /**
+   * Delete a message. Only the sender can delete their own messages.
+   * If the message has an attachment, also delete the storage file.
+   */
+  async deleteMessage(messageId: string): Promise<void> {
+    // First get the message to check for attachment
+    const { data: message, error: fetchError } = await supabase
+      .from('client_messages')
+      .select('id, sender_id, attachment_path')
+      .eq('id', messageId)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user || userData.user.id !== message.sender_id) {
+      throw new Error('You can only delete your own messages');
+    }
+
+    // Delete storage file if present
+    if (message.attachment_path) {
+      const { error: storageError } = await supabase.storage
+        .from('message-attachments')
+        .remove([message.attachment_path]);
+      if (storageError) {
+        console.error('Failed to delete storage file:', storageError);
+        // Continue with message deletion even if storage delete fails
+      }
+    }
+
+    // Delete the message
+    const { error } = await supabase
+      .from('client_messages')
+      .delete()
+      .eq('id', messageId);
+
     if (error) throw error;
-    return data.signedUrl;
   },
 
   async markMessagesAsRead(conversationId: string): Promise<void> {
@@ -329,6 +431,12 @@ export const messagingService = {
         table: 'client_messages',
         filter: `conversation_id=eq.${conversationId}`,
       }, (payload) => callback(payload.new))
+      .on('postgres_changes', {
+        event: 'DELETE',
+        schema: 'public',
+        table: 'client_messages',
+        filter: `conversation_id=eq.${conversationId}`,
+      }, (payload) => callback({ ...payload.old, _deleted: true }))
       .subscribe();
   },
 

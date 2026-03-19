@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Paperclip, Link2, ArrowLeft, ExternalLink, CheckCircle2 } from 'lucide-react';
+import { Send, Paperclip, Link2, ArrowLeft, ExternalLink, CheckCircle2, Trash2 } from 'lucide-react';
 import { Conversation, Message, messagingService } from '@/services/messagingService';
 import { MessageAttachment } from '@/components/messaging/MessageAttachment';
 import { VoiceRecorder } from '@/components/messaging/VoiceRecorder';
@@ -26,6 +26,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
   const [halaxyId, setHalaxyId] = useState(conversation.linked_halaxy_client_id || '');
   const [showHalaxyLink, setShowHalaxyLink] = useState(false);
   const [linkedHalaxy, setLinkedHalaxy] = useState(conversation.linked_halaxy_client_id || '');
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user, profile } = useAuth();
@@ -39,9 +40,13 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
     setLinkedHalaxy(conversation.linked_halaxy_client_id || '');
     setHalaxyId(conversation.linked_halaxy_client_id || '');
 
-    const channel = messagingService.subscribeToMessages(conversation.id, (newMsg) => {
-      setMessages(prev => [...prev, { ...newMsg, sender_name: newMsg.sender_id === user?.id ? (profile?.display_name || 'You') : conversation.other_party_name }]);
-      if (newMsg.receiver_id === user?.id) {
+    const channel = messagingService.subscribeToMessages(conversation.id, (payload) => {
+      if (payload._deleted) {
+        setMessages(prev => prev.filter(m => m.id !== payload.id));
+        return;
+      }
+      setMessages(prev => [...prev, { ...payload, sender_name: payload.sender_id === user?.id ? (profile?.display_name || 'You') : conversation.other_party_name }]);
+      if (payload.receiver_id === user?.id) {
         messagingService.markMessagesAsRead(conversation.id);
       }
     });
@@ -98,14 +103,14 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
       setUploading(true);
       const attachment = await messagingService.uploadAttachment(conversation.id, file);
       await messagingService.sendMessage(conversation.id, receiverId, '', {
-        attachmentUrl: attachment.url,
+        attachmentPath: attachment.path,
         attachmentType: attachment.type,
         attachmentName: attachment.name,
         attachmentSize: attachment.size,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
-      toast.error('Failed to upload file');
+      toast.error(error?.message || 'Failed to upload file. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -119,13 +124,13 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
       setUploading(true);
       const voiceNote = await messagingService.uploadVoiceNote(conversation.id, blob, durationMs);
       await messagingService.sendMessage(conversation.id, receiverId, '', {
-        attachmentUrl: voiceNote.url,
+        attachmentPath: voiceNote.path,
         attachmentType: 'voice_note',
         attachmentName: voiceNote.name,
         attachmentSize: voiceNote.size,
       });
-    } catch {
-      toast.error('Failed to send voice note');
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to send voice note. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -144,6 +149,19 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
       toast.error('Failed to share resource');
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleDeleteMessage = async (messageId: string) => {
+    try {
+      setDeletingId(messageId);
+      await messagingService.deleteMessage(messageId);
+      setMessages(prev => prev.filter(m => m.id !== messageId));
+      toast.success('Message deleted');
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to delete message');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -254,7 +272,20 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
                 const isOwn = msg.sender_id === user?.id;
                 const hasText = msg.message_text && msg.message_text.trim().length > 0;
                 return (
-                  <div key={msg.id} className={`flex mb-2 ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                  <div key={msg.id} className={`flex mb-2 group ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                    {/* Delete button for own messages */}
+                    {isOwn && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity self-center mr-1 text-muted-foreground hover:text-destructive"
+                        onClick={() => handleDeleteMessage(msg.id)}
+                        disabled={deletingId === msg.id}
+                        title="Delete message"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    )}
                     <div className={`max-w-[75%] rounded-2xl px-3.5 py-2 ${
                       isOwn ? 'bg-sage-600 text-white rounded-br-md' : 'bg-muted text-foreground rounded-bl-md'
                     }`}>

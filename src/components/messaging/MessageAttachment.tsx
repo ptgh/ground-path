@@ -1,5 +1,6 @@
-import { FileText, Image, Download, ExternalLink } from 'lucide-react';
-import { Message } from '@/services/messagingService';
+import { useState, useEffect } from 'react';
+import { FileText, Download, ExternalLink, AlertCircle } from 'lucide-react';
+import { Message, messagingService } from '@/services/messagingService';
 
 interface MessageAttachmentProps {
   message: Message;
@@ -7,12 +8,48 @@ interface MessageAttachmentProps {
 }
 
 export const MessageAttachment = ({ message, isOwn }: MessageAttachmentProps) => {
+  const [resolvedUrl, setResolvedUrl] = useState<string | null>(
+    message.resolved_attachment_url || null
+  );
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  // Resolve URL on demand if we have a path but no resolved URL
+  useEffect(() => {
+    if (message.attachment_path && !resolvedUrl && !error) {
+      setLoading(true);
+      messagingService.getSignedUrl(message.attachment_path)
+        .then(url => setResolvedUrl(url))
+        .catch(() => setError(true))
+        .finally(() => setLoading(false));
+    }
+  }, [message.attachment_path, resolvedUrl, error]);
+
+  const attachmentUrl = resolvedUrl || message.attachment_url;
+
+  if (loading && message.attachment_path) {
+    return (
+      <div className="mt-1.5 text-[10px] text-muted-foreground animate-pulse">
+        Loading attachment…
+      </div>
+    );
+  }
+
+  if (error && message.attachment_path) {
+    return (
+      <div className={`mt-1.5 flex items-center gap-1.5 text-[10px] ${isOwn ? 'text-white/60' : 'text-muted-foreground'}`}>
+        <AlertCircle className="h-3 w-3" />
+        Attachment unavailable
+      </div>
+    );
+  }
+
   // Voice note
-  if (message.attachment_type === 'voice_note' && message.attachment_url) {
+  if (message.attachment_type === 'voice_note' && attachmentUrl) {
     return (
       <div className="mt-1.5">
         <audio controls preload="metadata" className="max-w-[220px] h-8" style={{ filter: isOwn ? 'invert(1) hue-rotate(180deg)' : 'none' }}>
-          <source src={message.attachment_url} type="audio/webm" />
+          <source src={attachmentUrl} type="audio/webm" />
           Your browser does not support audio playback.
         </audio>
         {message.attachment_name && (
@@ -25,12 +62,12 @@ export const MessageAttachment = ({ message, isOwn }: MessageAttachmentProps) =>
   }
 
   // Image attachment
-  if (message.attachment_type === 'image' && message.attachment_url) {
+  if (message.attachment_type === 'image' && attachmentUrl) {
     return (
       <div className="mt-1.5">
-        <a href={message.attachment_url} target="_blank" rel="noopener noreferrer">
+        <a href={attachmentUrl} target="_blank" rel="noopener noreferrer">
           <img
-            src={message.attachment_url}
+            src={attachmentUrl}
             alt={message.attachment_name || 'Image'}
             className="max-w-[200px] max-h-[200px] rounded-lg object-cover"
             loading="lazy"
@@ -46,7 +83,7 @@ export const MessageAttachment = ({ message, isOwn }: MessageAttachmentProps) =>
   }
 
   // File attachment
-  if (message.attachment_type === 'file' && message.attachment_url) {
+  if (message.attachment_type === 'file' && attachmentUrl) {
     const sizeStr = message.attachment_size
       ? message.attachment_size > 1024 * 1024
         ? `${(message.attachment_size / (1024 * 1024)).toFixed(1)} MB`
@@ -55,7 +92,7 @@ export const MessageAttachment = ({ message, isOwn }: MessageAttachmentProps) =>
 
     return (
       <a
-        href={message.attachment_url}
+        href={attachmentUrl}
         target="_blank"
         rel="noopener noreferrer"
         className={`mt-1.5 flex items-center gap-2 rounded-lg p-2 ${
@@ -109,8 +146,8 @@ export const MessageAttachment = ({ message, isOwn }: MessageAttachmentProps) =>
     );
   }
 
-  // Legacy attachment_url fallback
-  if (message.attachment_url) {
+  // Legacy attachment_url fallback (no path stored)
+  if (message.attachment_url && !message.attachment_path) {
     return (
       <a
         href={message.attachment_url}
