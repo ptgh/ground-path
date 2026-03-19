@@ -262,6 +262,17 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                       />
                     </div>
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="halaxy_profile_url">Halaxy Profile URL</Label>
+                    <Input
+                      id="halaxy_profile_url"
+                      type="url"
+                      value={formData.halaxy_profile_url}
+                      onChange={(e) => setFormData({...formData, halaxy_profile_url: e.target.value})}
+                      placeholder="https://www.halaxy.com/profile/your-practice/location/..."
+                    />
+                    <p className="text-xs text-muted-foreground">Your personal Halaxy booking page URL</p>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
