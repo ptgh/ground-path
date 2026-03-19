@@ -85,7 +85,7 @@ const FlipLoginButton = ({ onClick }: { onClick: () => void }) => {
   useEffect(() => {
     flipInterval.current = setInterval(() => {
       setShowSignUp(prev => !prev);
-    }, 3000);
+    }, 5000);
     return () => { if (flipInterval.current) clearInterval(flipInterval.current); };
   }, []);
 
@@ -248,7 +248,7 @@ const Header = () => {
 
           {/* Right side */}
           <div className="hidden md:flex items-center gap-3">
-            {shouldShowAuth ? (
+            {isLoggedIn ? (
               <AuthAwareSection />
             ) : (
               <>
@@ -341,12 +341,16 @@ const Header = () => {
                   >
                     Book a Session
                   </Button>
-                   <Button
-                    onClick={() => { handleProfessionalLogin(); setIsMenuOpen(false); }}
-                     className="bg-gray-700 text-white hover:bg-gray-600 border border-gray-500 w-full"
-                   >
-                     Login
-                  </Button>
+                  {isLoggedIn ? (
+                    <AuthAwareSection />
+                  ) : (
+                    <Button
+                      onClick={() => { handleProfessionalLogin(); setIsMenuOpen(false); }}
+                      className="bg-gray-700 text-white hover:bg-gray-600 border border-gray-500 w-full"
+                    >
+                      Login
+                    </Button>
+                  )}
                 </>
               )}
             </nav>

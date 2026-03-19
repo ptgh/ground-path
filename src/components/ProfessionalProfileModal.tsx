@@ -44,7 +44,8 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     website_url: '',
     linkedin_profile: '',
     preferred_contact_method: 'email',
-    bio: ''
+    bio: '',
+    halaxy_profile_url: ''
   });
 
   const [specializations, setSpecializations] = useState<string[]>([]);
@@ -76,7 +77,8 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         website_url: profile.website_url || '',
         linkedin_profile: profile.linkedin_profile || '',
         preferred_contact_method: profile.preferred_contact_method || 'email',
-        bio: profile.bio || ''
+        bio: profile.bio || '',
+        halaxy_profile_url: (profile.halaxy_integration as any)?.profile_url || ''
       });
       setSpecializations(profile.specializations || []);
       setQualifications(profile.qualifications || []);
@@ -88,15 +90,17 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     setLoading(true);
 
     try {
+      const { halaxy_profile_url, ...rest } = formData;
       const updates = {
-        ...formData,
+        ...rest,
         years_experience: formData.years_experience ? parseInt(formData.years_experience) : null,
         cpd_hours_current_year: formData.cpd_hours_current_year ? parseInt(formData.cpd_hours_current_year) : 0,
         cpd_requirements: formData.cpd_requirements ? parseInt(formData.cpd_requirements) : 0,
         specializations,
         qualifications,
         registration_expiry: formData.registration_expiry || null,
-        insurance_expiry: formData.insurance_expiry || null
+        insurance_expiry: formData.insurance_expiry || null,
+        halaxy_integration: { ...((profile?.halaxy_integration as any) || {}), profile_url: halaxy_profile_url || null }
       };
 
       await updateProfile(updates);
@@ -257,6 +261,17 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                         placeholder="https://www.linkedin.com/in/your-profile"
                       />
                     </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="halaxy_profile_url">Halaxy Profile URL</Label>
+                    <Input
+                      id="halaxy_profile_url"
+                      type="url"
+                      value={formData.halaxy_profile_url}
+                      onChange={(e) => setFormData({...formData, halaxy_profile_url: e.target.value})}
+                      placeholder="https://www.halaxy.com/profile/your-practice/location/..."
+                    />
+                    <p className="text-xs text-muted-foreground">Your personal Halaxy booking page URL</p>
                   </div>
                 </CardContent>
               </Card>

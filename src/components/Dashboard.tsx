@@ -270,22 +270,24 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-              <div className="hidden lg:block">
-                <a 
-                  href="https://www.halaxy.com/profile/groundpath/location/1353667"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block"
-                >
-                  <img 
-                    src="https://cdn.halaxy.com/h/images/logo.png" 
-                    alt="Book with Halaxy"
-                    className="h-12 w-auto opacity-70 hover:opacity-100 transition-opacity"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </a>
-              </div>
+              {(profile?.halaxy_integration as any)?.profile_url && (
+                <div className="hidden lg:block">
+                  <a 
+                    href={(profile.halaxy_integration as any).profile_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block"
+                  >
+                    <img 
+                      src="https://cdn.halaxy.com/h/images/logo.png" 
+                      alt="Book with Halaxy"
+                      className="h-12 w-auto opacity-70 hover:opacity-100 transition-opacity"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </a>
+                </div>
+              )}
             </div>
           </div>
 
@@ -420,28 +422,34 @@ const Dashboard = () => {
                          </Button>
                        </ProfessionalProfileModal>
                       <div className="flex items-center gap-2">
-                         <Button
-                           variant="outline"
-                            onClick={() => window.open('https://www.halaxy.com/profile/groundpath/location/1353667', '_blank')}
-                           className="dashboard-cta flex-1 border-sage-200 text-sage-700 hover:bg-sage-50"
-                           size="sm"
-                         >
-                           Halaxy Profile
-                         </Button>
-                        <a 
-                          href="https://www.halaxy.com/profile/groundpath/location/1353667"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-shrink-0"
-                        >
-                          <img 
-                            src="https://cdn.halaxy.com/h/images/logo.png" 
-                            alt="Halaxy booking system"
-                            className="h-8 w-auto"
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        </a>
+                          {(profile?.halaxy_integration as any)?.profile_url ? (
+                            <>
+                              <Button
+                                variant="outline"
+                                onClick={() => window.open((profile.halaxy_integration as any).profile_url, '_blank')}
+                                className="dashboard-cta flex-1 border-sage-200 text-sage-700 hover:bg-sage-50"
+                                size="sm"
+                              >
+                                Halaxy Profile
+                              </Button>
+                              <a 
+                                href={(profile.halaxy_integration as any).profile_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-shrink-0"
+                              >
+                                <img 
+                                  src="https://cdn.halaxy.com/h/images/logo.png" 
+                                  alt="Halaxy booking system"
+                                  className="h-8 w-auto"
+                                  loading="lazy"
+                                  decoding="async"
+                                />
+                              </a>
+                            </>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">Set your Halaxy URL in Professional Profile settings</span>
+                          )}
                       </div>
                     </div>
                   </CardContent>

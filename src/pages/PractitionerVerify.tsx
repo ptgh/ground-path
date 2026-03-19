@@ -44,9 +44,9 @@ const PractitionerVerify = () => {
         setIsVerified(true);
         toast({
           title: 'LinkedIn verification successful',
-          description: 'Your professional status has been verified. Taking you into the site now.',
+          description: 'Your professional status has been verified. Redirecting to your dashboard...',
         });
-        setTimeout(() => navigate('/', { replace: true }), 1800);
+        setTimeout(() => navigate('/practitioner/dashboard', { replace: true }), 3000);
       } else {
         toast({
           title: 'LinkedIn verification failed',
@@ -158,7 +158,7 @@ const PractitionerVerify = () => {
         title: 'Registration submitted',
         description: 'Your professional registration is now pending review.',
       });
-      setTimeout(() => navigate('/', { replace: true }), 700);
+      setTimeout(() => navigate('/practitioner/dashboard', { replace: true }), 1500);
     } catch (error: any) {
       toast({ title: 'Submission failed', description: error.message, variant: 'destructive' });
     } finally {
@@ -177,7 +177,7 @@ const PractitionerVerify = () => {
                 <ShieldCheck className="h-10 w-10 text-primary" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold">Finish practitioner verification</CardTitle>
+            <CardTitle className="text-2xl font-bold">Complete practitioner verification</CardTitle>
             <CardDescription>
               Choose one verification method to complete your setup and unlock practitioner features.
             </CardDescription>
@@ -186,7 +186,7 @@ const PractitionerVerify = () => {
             {isVerified && (
               <div className="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 p-4">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium text-foreground">Verification complete. Taking you to the site...</span>
+                <span className="text-sm font-medium text-foreground">Verification complete. Redirecting to your dashboard...</span>
               </div>
             )}
 
