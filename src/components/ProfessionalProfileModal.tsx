@@ -77,7 +77,8 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         website_url: profile.website_url || '',
         linkedin_profile: profile.linkedin_profile || '',
         preferred_contact_method: profile.preferred_contact_method || 'email',
-        bio: profile.bio || ''
+        bio: profile.bio || '',
+        halaxy_profile_url: (profile.halaxy_integration as any)?.profile_url || ''
       });
       setSpecializations(profile.specializations || []);
       setQualifications(profile.qualifications || []);
