@@ -270,22 +270,24 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-              <div className="hidden lg:block">
-                <a 
-                  href="https://www.halaxy.com/profile/groundpath/location/1353667"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block"
-                >
-                  <img 
-                    src="https://cdn.halaxy.com/h/images/logo.png" 
-                    alt="Book with Halaxy"
-                    className="h-12 w-auto opacity-70 hover:opacity-100 transition-opacity"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </a>
-              </div>
+              {(profile?.halaxy_integration as any)?.profile_url && (
+                <div className="hidden lg:block">
+                  <a 
+                    href={(profile.halaxy_integration as any).profile_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block"
+                  >
+                    <img 
+                      src="https://cdn.halaxy.com/h/images/logo.png" 
+                      alt="Book with Halaxy"
+                      className="h-12 w-auto opacity-70 hover:opacity-100 transition-opacity"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </a>
+                </div>
+              )}
             </div>
           </div>
 
