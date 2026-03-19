@@ -85,7 +85,7 @@ const FlipLoginButton = ({ onClick }: { onClick: () => void }) => {
   useEffect(() => {
     flipInterval.current = setInterval(() => {
       setShowSignUp(prev => !prev);
-    }, 3000);
+    }, 5000);
     return () => { if (flipInterval.current) clearInterval(flipInterval.current); };
   }, []);
 
