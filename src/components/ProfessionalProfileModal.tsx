@@ -90,15 +90,17 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     setLoading(true);
 
     try {
+      const { halaxy_profile_url, ...rest } = formData;
       const updates = {
-        ...formData,
+        ...rest,
         years_experience: formData.years_experience ? parseInt(formData.years_experience) : null,
         cpd_hours_current_year: formData.cpd_hours_current_year ? parseInt(formData.cpd_hours_current_year) : 0,
         cpd_requirements: formData.cpd_requirements ? parseInt(formData.cpd_requirements) : 0,
         specializations,
         qualifications,
         registration_expiry: formData.registration_expiry || null,
-        insurance_expiry: formData.insurance_expiry || null
+        insurance_expiry: formData.insurance_expiry || null,
+        halaxy_integration: { ...((profile?.halaxy_integration as any) || {}), profile_url: halaxy_profile_url || null }
       };
 
       await updateProfile(updates);
