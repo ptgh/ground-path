@@ -146,19 +146,31 @@ const Header = () => {
   const isPractitionerRoute = shouldShowAuth;
   const isLoggedIn = !!user;
 
-  const scrollToSection = (sectionId: string) => {
+  const scrollToSection = useCallback((sectionId: string) => {
+    const doScroll = () => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+
     if (location.pathname !== '/') {
       navigate('/');
-      setTimeout(() => {
+      // Wait for page to fully render before scrolling
+      const tryScroll = (attempts = 0) => {
         const element = document.getElementById(sectionId);
-        element?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        } else if (attempts < 10) {
+          setTimeout(() => tryScroll(attempts + 1), 100);
+        }
+      };
+      setTimeout(() => tryScroll(), 200);
     } else {
-      const element = document.getElementById(sectionId);
-      element?.scrollIntoView({ behavior: 'smooth' });
+      doScroll();
     }
     setIsMenuOpen(false);
-  };
+  }, [location.pathname, navigate]);
 
   const handleProfessionalLogin = () => {
     navigate('/practitioner/auth');
