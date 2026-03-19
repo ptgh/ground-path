@@ -12,7 +12,6 @@ export interface Conversation {
   status: string;
   created_at: string;
   updated_at: string;
-  // Joined fields
   other_party_name?: string;
   other_party_avatar?: string;
 }
@@ -24,10 +23,28 @@ export interface Message {
   receiver_id: string;
   message_text: string;
   attachment_url: string | null;
+  attachment_type: string | null;
+  attachment_name: string | null;
+  attachment_size: number | null;
+  resource_url: string | null;
+  resource_title: string | null;
+  resource_description: string | null;
   is_read: boolean;
   created_at: string;
   sender_name?: string;
 }
+
+const ALLOWED_FILE_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'image/jpeg',
+  'image/png',
+];
+
+const ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_VOICE_SIZE = 5 * 1024 * 1024; // 5MB
 
 export const messagingService = {
   async getConversations(): Promise<Conversation[]> {
@@ -44,7 +61,6 @@ export const messagingService = {
 
     if (error) throw error;
 
-    // Fetch profile names for the other party
     const otherIds = (data || []).map(c =>
       c.user_id === userId ? c.practitioner_id : c.user_id
     );
@@ -79,7 +95,6 @@ export const messagingService = {
     if (!userData.user) throw new Error('Not authenticated');
     const userId = userData.user.id;
 
-    // Check existing
     const { data: existing } = await supabase
       .from('conversations')
       .select('*')
@@ -89,13 +104,9 @@ export const messagingService = {
 
     if (existing) return existing as Conversation;
 
-    // Create new
     const { data, error } = await supabase
       .from('conversations')
-      .insert({
-        user_id: userId,
-        practitioner_id: practitionerId,
-      })
+      .insert({ user_id: userId, practitioner_id: practitionerId })
       .select()
       .single();
 
@@ -112,7 +123,6 @@ export const messagingService = {
 
     if (error) throw error;
 
-    // Get sender names
     const senderIds = [...new Set((data || []).map(m => m.sender_id))];
     let nameMap: Record<string, string> = {};
     if (senderIds.length > 0) {
@@ -133,7 +143,20 @@ export const messagingService = {
     })) as Message[];
   },
 
-  async sendMessage(conversationId: string, receiverId: string, messageText: string, attachmentUrl?: string): Promise<Message> {
+  async sendMessage(
+    conversationId: string,
+    receiverId: string,
+    messageText: string,
+    options?: {
+      attachmentUrl?: string;
+      attachmentType?: string;
+      attachmentName?: string;
+      attachmentSize?: number;
+      resourceUrl?: string;
+      resourceTitle?: string;
+      resourceDescription?: string;
+    }
+  ): Promise<Message> {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) throw new Error('Not authenticated');
 
@@ -144,23 +167,123 @@ export const messagingService = {
         sender_id: userData.user.id,
         receiver_id: receiverId,
         message_text: messageText,
-        attachment_url: attachmentUrl || null,
-      })
+        attachment_url: options?.attachmentUrl || null,
+        attachment_type: options?.attachmentType || null,
+        attachment_name: options?.attachmentName || null,
+        attachment_size: options?.attachmentSize || null,
+        resource_url: options?.resourceUrl || null,
+        resource_title: options?.resourceTitle || null,
+        resource_description: options?.resourceDescription || null,
+      } as any)
       .select()
       .single();
 
     if (error) throw error;
 
     // Update conversation last message
+    const previewText = options?.attachmentType === 'voice_note'
+      ? '🎤 Voice note'
+      : options?.attachmentName
+        ? `📎 ${options.attachmentName}`
+        : options?.resourceUrl
+          ? `🔗 ${options.resourceTitle || 'Resource'}`
+          : messageText.substring(0, 100);
+
     await supabase
       .from('conversations')
       .update({
-        last_message_text: messageText.substring(0, 100),
+        last_message_text: previewText,
         last_message_at: new Date().toISOString(),
       })
       .eq('id', conversationId);
 
     return data as Message;
+  },
+
+  validateFile(file: File): string | null {
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    if (!ext || !ALLOWED_EXTENSIONS.includes(ext)) {
+      return `File type .${ext} is not allowed. Supported: ${ALLOWED_EXTENSIONS.join(', ')}`;
+    }
+    if (!ALLOWED_FILE_TYPES.includes(file.type) && file.type !== '') {
+      return `File type ${file.type} is not allowed.`;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      return `File is too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`;
+    }
+    return null;
+  },
+
+  validateVoiceNote(blob: Blob): string | null {
+    if (blob.size > MAX_VOICE_SIZE) {
+      return `Voice note is too large. Maximum size is ${MAX_VOICE_SIZE / 1024 / 1024}MB.`;
+    }
+    return null;
+  },
+
+  async uploadAttachment(conversationId: string, file: File): Promise<{ url: string; name: string; size: number; type: string }> {
+    const timestamp = Date.now();
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const path = `${conversationId}/${timestamp}_${safeName}`;
+
+    const { error } = await supabase.storage
+      .from('message-attachments')
+      .upload(path, file);
+
+    if (error) throw error;
+
+    const { data: urlData } = supabase.storage
+      .from('message-attachments')
+      .getPublicUrl(path);
+
+    // For private buckets, use signed URL
+    const { data: signedData, error: signedError } = await supabase.storage
+      .from('message-attachments')
+      .createSignedUrl(path, 60 * 60 * 24 * 7); // 7 days
+
+    if (signedError) throw signedError;
+
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+    const attachmentType = ['jpg', 'jpeg', 'png'].includes(ext) ? 'image' : 'file';
+
+    return {
+      url: signedData.signedUrl,
+      name: file.name,
+      size: file.size,
+      type: attachmentType,
+    };
+  },
+
+  async uploadVoiceNote(conversationId: string, blob: Blob, durationMs: number): Promise<{ url: string; name: string; size: number }> {
+    const timestamp = Date.now();
+    const path = `${conversationId}/${timestamp}_voice_note.webm`;
+
+    const { error } = await supabase.storage
+      .from('message-attachments')
+      .upload(path, blob, { contentType: 'audio/webm' });
+
+    if (error) throw error;
+
+    const { data: signedData, error: signedError } = await supabase.storage
+      .from('message-attachments')
+      .createSignedUrl(path, 60 * 60 * 24 * 7);
+
+    if (signedError) throw signedError;
+
+    const seconds = Math.round(durationMs / 1000);
+    return {
+      url: signedData.signedUrl,
+      name: `Voice note (${seconds}s)`,
+      size: blob.size,
+    };
+  },
+
+  async getSignedUrl(path: string): Promise<string> {
+    const { data, error } = await supabase.storage
+      .from('message-attachments')
+      .createSignedUrl(path, 60 * 60); // 1 hour
+    if (error) throw error;
+    return data.signedUrl;
   },
 
   async markMessagesAsRead(conversationId: string): Promise<void> {
@@ -194,38 +317,29 @@ export const messagingService = {
       .from('conversations')
       .update({ linked_halaxy_client_id: halaxyClientId })
       .eq('id', conversationId);
-
     if (error) throw error;
   },
 
   subscribeToMessages(conversationId: string, callback: (message: any) => void) {
     return supabase
       .channel(`messages:${conversationId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'client_messages',
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        (payload) => callback(payload.new)
-      )
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'client_messages',
+        filter: `conversation_id=eq.${conversationId}`,
+      }, (payload) => callback(payload.new))
       .subscribe();
   },
 
   subscribeToConversations(userId: string, callback: (payload: any) => void) {
     return supabase
       .channel(`conversations:${userId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'conversations',
-        },
-        (payload) => callback(payload)
-      )
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'conversations',
+      }, (payload) => callback(payload))
       .subscribe();
   },
 };
