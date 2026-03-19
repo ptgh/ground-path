@@ -24,7 +24,7 @@ const Services = () => {
     {
       name: "ACA Counselling Support",
       format: "Online via Microsoft Teams",
-      rate: "$80",
+      rate: "$100",
       description: "Australian Counselling Association (ACA) registration in progress — service coming soon",
       comingSoon: true
     },
