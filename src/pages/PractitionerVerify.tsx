@@ -177,7 +177,7 @@ const PractitionerVerify = () => {
                 <ShieldCheck className="h-10 w-10 text-primary" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold">Finish practitioner verification</CardTitle>
+            <CardTitle className="text-2xl font-bold">Complete practitioner verification</CardTitle>
             <CardDescription>
               Choose one verification method to complete your setup and unlock practitioner features.
             </CardDescription>
