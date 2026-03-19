@@ -44,9 +44,9 @@ const PractitionerVerify = () => {
         setIsVerified(true);
         toast({
           title: 'LinkedIn verification successful',
-          description: 'Your professional status has been verified. Taking you into the site now.',
+          description: 'Your professional status has been verified. Redirecting to your dashboard...',
         });
-        setTimeout(() => navigate('/', { replace: true }), 1800);
+        setTimeout(() => navigate('/practitioner/dashboard', { replace: true }), 3000);
       } else {
         toast({
           title: 'LinkedIn verification failed',
