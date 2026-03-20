@@ -440,6 +440,7 @@ export type Database = {
           license_number: string | null
           linkedin_profile: string | null
           linkedin_verified_data: Json | null
+          notification_preferences: Json | null
           organisation: string | null
           practice_location: string | null
           preferred_contact_method: string | null
@@ -480,6 +481,7 @@ export type Database = {
           license_number?: string | null
           linkedin_profile?: string | null
           linkedin_verified_data?: Json | null
+          notification_preferences?: Json | null
           organisation?: string | null
           practice_location?: string | null
           preferred_contact_method?: string | null
@@ -520,6 +522,7 @@ export type Database = {
           license_number?: string | null
           linkedin_profile?: string | null
           linkedin_verified_data?: Json | null
+          notification_preferences?: Json | null
           organisation?: string | null
           practice_location?: string | null
           preferred_contact_method?: string | null

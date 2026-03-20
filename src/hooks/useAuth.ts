@@ -39,6 +39,7 @@ interface Profile {
   professional_verified?: boolean;
   organisation?: string;
   linkedin_verified_data?: any;
+  notification_preferences?: any;
 }
 
 interface UserRole {

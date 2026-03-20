@@ -243,6 +243,11 @@ export const messagingService = {
       })
       .eq('id', conversationId);
 
+    // Fire-and-forget email notification to recipient
+    this.sendEmailNotification(conversationId, receiverId, userData.user).catch(err =>
+      console.warn('Email notification failed (non-blocking):', err)
+    );
+
     return data as Message;
   },
 
@@ -412,6 +417,22 @@ export const messagingService = {
 
     if (error) return 0;
     return count || 0;
+  },
+
+  async sendEmailNotification(conversationId: string, recipientId: string, sender: any): Promise<void> {
+    const { data: senderProfile } = await supabase
+      .from('profiles')
+      .select('display_name')
+      .eq('user_id', sender.id)
+      .single();
+
+    await supabase.functions.invoke('message-notification', {
+      body: {
+        recipientId,
+        senderName: senderProfile?.display_name || 'A participant',
+        conversationId,
+      },
+    });
   },
 
   async linkHalaxyClient(conversationId: string, halaxyClientId: string): Promise<void> {
