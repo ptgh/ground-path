@@ -243,6 +243,11 @@ export const messagingService = {
       })
       .eq('id', conversationId);
 
+    // Fire-and-forget email notification to recipient
+    this.sendEmailNotification(conversationId, receiverId, userData.user).catch(err =>
+      console.warn('Email notification failed (non-blocking):', err)
+    );
+
     return data as Message;
   },
 
