@@ -69,7 +69,7 @@ serve(async (req: Request): Promise<Response> => {
       });
     }
 
-    if (conversation.user_id !== caller.id && conversation.practitioner_id !== caller.id) {
+    if (conversation.user_id !== callerId && conversation.practitioner_id !== callerId) {
       return new Response(JSON.stringify({ error: 'Not a participant' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
