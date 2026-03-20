@@ -668,6 +668,9 @@ const Dashboard = () => {
                    </div>
                 </CardContent>
               </Card>
+
+              {/* Notification Preferences */}
+              <NotificationPreferencesCard userId={user.id} currentPrefs={profile?.notification_preferences} />
             </TabsContent>
           </Tabs>
         </div>

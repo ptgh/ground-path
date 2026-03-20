@@ -419,6 +419,22 @@ export const messagingService = {
     return count || 0;
   },
 
+  async sendEmailNotification(conversationId: string, recipientId: string, sender: any): Promise<void> {
+    const { data: senderProfile } = await supabase
+      .from('profiles')
+      .select('display_name')
+      .eq('user_id', sender.id)
+      .single();
+
+    await supabase.functions.invoke('message-notification', {
+      body: {
+        recipientId,
+        senderName: senderProfile?.display_name || 'A participant',
+        conversationId,
+      },
+    });
+  },
+
   async linkHalaxyClient(conversationId: string, halaxyClientId: string): Promise<void> {
     const { error } = await supabase
       .from('conversations')
