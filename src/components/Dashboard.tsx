@@ -37,6 +37,7 @@ import FormHistory from './FormHistory';
 import NoteModal from './NoteModal';
 import ProfessionalResources from './dashboard/ProfessionalResources';
 import ArticleManager from './dashboard/ArticleManager';
+import { NotificationPreferencesCard } from './dashboard/NotificationPreferencesCard';
 import { notesService, Note } from '@/services/notesService';
 import { ClientMessagesPanel } from './messaging/ClientMessagesPanel';
 import { gsap } from 'gsap';
