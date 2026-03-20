@@ -19,11 +19,21 @@ export const NotificationPreferencesCard = ({ userId, currentPrefs }: Notificati
     setEmailMessages(value);
     setSaving(true);
     try {
+      // Fetch current preferences first to avoid overwriting future fields
+      const { data: current } = await supabase
+        .from('profiles')
+        .select('notification_preferences')
+        .eq('user_id', userId)
+        .single();
+
+      const merged = {
+        ...(current?.notification_preferences as Record<string, unknown> || {}),
+        email_messages: value,
+      };
+
       const { error } = await supabase
         .from('profiles')
-        .update({
-          notification_preferences: { email_messages: value },
-        } as any)
+        .update({ notification_preferences: merged } as any)
         .eq('user_id', userId);
       if (error) throw error;
       toast.success(value ? 'Email notifications enabled' : 'Email notifications disabled');
