@@ -113,6 +113,7 @@ export const useAuth = () => {
         } else if (!session) {
           setProfile(null);
           setRoles([]);
+          setProfileLoading(false);
         }
       }
     );
