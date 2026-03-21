@@ -707,20 +707,24 @@ const Dashboard = () => {
                       <ProfessionalProfileModal>
                         <Button className="dashboard-cta bg-sage-600 hover:bg-sage-700 text-white">Update Professional Profile</Button>
                       </ProfessionalProfileModal>
-                       <Button
-                         variant="outline"
-                         onClick={() => {
-                           const halaxyUrl = (profile?.halaxy_integration as any)?.profile_url;
-                           if (halaxyUrl) {
-                             window.open(halaxyUrl, '_blank');
-                           } else {
-                             toast.info('Set your Halaxy URL in Professional Profile settings');
-                           }
-                         }}
-                         className="dashboard-cta w-full border-sage-200 text-sage-700 hover:bg-sage-50"
-                       >
-                         Halaxy Profile
-                       </Button>
+                       {(profile?.halaxy_integration as any)?.verified && (profile?.halaxy_integration as any)?.profile_url ? (
+                         <Button
+                           variant="outline"
+                           onClick={() => window.open((profile.halaxy_integration as any).profile_url, '_blank')}
+                           className="dashboard-cta w-full border-sage-200 text-sage-700 hover:bg-sage-50"
+                         >
+                           Halaxy Profile
+                         </Button>
+                       ) : (
+                         <ProfessionalProfileModal>
+                           <Button
+                             variant="outline"
+                             className="dashboard-cta w-full border-sage-200 text-sage-700 hover:bg-sage-50"
+                           >
+                             Verify Halaxy Profile
+                           </Button>
+                         </ProfessionalProfileModal>
+                       )}
                    </div>
                 </CardContent>
               </Card>
