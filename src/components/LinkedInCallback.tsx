@@ -48,11 +48,10 @@ const LinkedInCallback = () => {
         );
 
         const linkedInData = linkedInIdentity?.identity_data || {};
-        const publicProfileUrl = [
-          linkedInData.profile_url,
-          linkedInData.public_profile_url,
-          linkedInData.profile,
-        ].find((value) => typeof value === 'string' && value.includes('linkedin.com')) || '';
+
+        // LinkedIn OIDC only provides 'picture' (avatar CDN URL), NOT the public profile page URL.
+        // Extract avatar for display purposes; the user enters their profile URL manually.
+        const avatarUrl = linkedInData.picture || linkedInData.avatar_url || '';
         const fullName = linkedInData.full_name || linkedInData.name || '';
         const jobTitle = linkedInData.job_title || linkedInData.headline || '';
         const industry = linkedInData.industry || '';
