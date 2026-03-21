@@ -416,6 +416,10 @@ const AuthPage = () => {
                   {userType && (
                     <>
                       <div className="space-y-2">
+                        <Label htmlFor="signup-fullname">Full Name</Label>
+                        <Input id="signup-fullname" type="text" placeholder="Your full name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+                      </div>
+                      <div className="space-y-2">
                         <Label htmlFor="signup-email">Email</Label>
                         <Input id="signup-email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
                       </div>
