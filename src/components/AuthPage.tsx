@@ -121,6 +121,7 @@ const AuthPage = () => {
     }
   };
 
+  useEffect(() => {
     const params = new URLSearchParams(location.search);
     const signupComplete = params.get('signup') === 'complete';
 
