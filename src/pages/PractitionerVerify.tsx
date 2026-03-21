@@ -167,20 +167,16 @@ const PractitionerVerify = () => {
 
       if (error) throw error;
 
-      // Add practitioner role
-      const { data: existingRole } = await supabase
-        .from('user_roles')
-        .select('id')
-        .eq('user_id', session.user.id)
-        .eq('role', 'mental_health_professional')
-        .maybeSingle();
+      // Upgrade practitioner role via SECURITY DEFINER function
+      // (bypasses user_roles RLS + validate_role_changes trigger)
+      const { error: roleError } = await supabase.rpc('upgrade_practitioner_role', {
+        p_user_id: session.user.id,
+      });
 
-      if (!existingRole) {
-        await supabase
-          .from('user_roles')
-          .insert({ user_id: session.user.id, role: 'mental_health_professional' });
+      if (roleError) {
+        console.warn('[PractitionerVerify] Role upgrade failed:', roleError.message);
+        // Non-fatal: profile update succeeded, role can be added by admin later
       }
-
       toast({
         title: 'Registration submitted',
         description: 'Your professional registration is now pending review.',

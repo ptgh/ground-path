@@ -585,6 +585,21 @@ export type Database = {
         }
         Returns: boolean
       }
+      upgrade_practitioner_role: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
+      verify_practitioner_linkedin: {
+        Args: {
+          p_display_name?: string
+          p_linkedin_profile?: string
+          p_linkedin_verified_data: Json
+          p_professional_verified: boolean
+          p_user_id: string
+          p_verification_status: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role:

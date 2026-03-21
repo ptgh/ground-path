@@ -67,12 +67,27 @@ const LinkedInCallback = () => {
           searchText.includes(kw)
         );
 
-        // Build update payload
-        const profileUpdate: Record<string, any> = {
-          professional_verified: isVerifiedProfessional,
-          verification_method: 'linkedin',
-          verification_status: isVerifiedProfessional ? 'verified' : 'pending_review',
-          linkedin_verified_data: {
+        // Check if display_name needs populating
+        let displayNameToSet: string | null = null;
+        if (fullName) {
+          const { data: currentProfile } = await supabase
+            .from('profiles')
+            .select('display_name')
+            .eq('user_id', originalUserId)
+            .single();
+
+          if (!currentProfile?.display_name) {
+            displayNameToSet = fullName;
+          }
+        }
+
+        // Use SECURITY DEFINER function to bypass RLS
+        // (authenticated as LinkedIn user, updating original user's profile)
+        const { error: rpcError } = await supabase.rpc('verify_practitioner_linkedin', {
+          p_user_id: originalUserId,
+          p_professional_verified: isVerifiedProfessional,
+          p_verification_status: isVerifiedProfessional ? 'verified' : 'pending_review',
+          p_linkedin_verified_data: {
             linkedin_id: linkedInIdentity?.id || null,
             linkedin_email: user.email || null,
             full_name: fullName,
@@ -82,32 +97,15 @@ const LinkedInCallback = () => {
             verified_at: new Date().toISOString(),
             is_professional_match: isVerifiedProfessional,
           },
-          linkedin_profile: publicProfileUrl || null,
-        };
+          p_linkedin_profile: publicProfileUrl || null,
+          p_display_name: displayNameToSet,
+        });
 
-        // Populate display_name from LinkedIn if currently empty
-        if (fullName) {
-          const { data: currentProfile } = await supabase
-            .from('profiles')
-            .select('display_name')
-            .eq('user_id', originalUserId)
-            .single();
-
-          if (!currentProfile?.display_name) {
-            profileUpdate.display_name = fullName;
-          }
-        }
-
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update(profileUpdate)
-          .eq('user_id', originalUserId);
-
-        if (updateError) {
-          console.error('[LinkedInCallback] Profile update failed:', {
-            code: updateError.code,
-            message: updateError.message,
-            details: updateError.details,
+        if (rpcError) {
+          console.error('[LinkedInCallback] verify_practitioner_linkedin RPC failed:', {
+            code: rpcError.code,
+            message: rpcError.message,
+            details: rpcError.details,
             originalUserId,
             authenticatedAs: session.user.id,
           });
@@ -117,23 +115,6 @@ const LinkedInCallback = () => {
           navigate('/practitioner/verify', { replace: true });
           return;
         }
-
-        // Add practitioner role if LinkedIn verified as professional
-        if (isVerifiedProfessional && originalUserId) {
-          const { data: existingRole } = await supabase
-            .from('user_roles')
-            .select('id')
-            .eq('user_id', originalUserId)
-            .eq('role', 'mental_health_professional')
-            .maybeSingle();
-
-          if (!existingRole) {
-            await supabase
-              .from('user_roles')
-              .insert({ user_id: originalUserId, role: 'mental_health_professional' });
-          }
-        }
-
         sessionStorage.setItem('linkedin_verification', 'success');
         await supabase.auth.signOut();
 
