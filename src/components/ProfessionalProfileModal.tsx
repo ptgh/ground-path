@@ -438,12 +438,20 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="registration_number">Registration Number</Label>
-                      <Input
-                        id="registration_number"
-                        value={formData.registration_number}
-                        onChange={(e) => setFormData({...formData, registration_number: e.target.value})}
-                        placeholder="General registration number"
-                      />
+                      <div className="flex gap-1">
+                        <Input
+                          id="registration_number"
+                          value={formData.registration_number}
+                          onChange={(e) => setFormData({...formData, registration_number: e.target.value})}
+                          placeholder="General registration number"
+                          className="flex-1"
+                        />
+                        {formData.registration_number && (
+                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.registration_number); toast({ title: 'Copied', description: 'Registration number copied to clipboard' }); }}>
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="registration_body">Registration Body</Label>
