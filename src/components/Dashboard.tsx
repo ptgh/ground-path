@@ -437,7 +437,7 @@ const Dashboard = () => {
                          </Button>
                        </ProfessionalProfileModal>
                       <div className="flex items-center gap-2">
-                          {(profile?.halaxy_integration as any)?.profile_url ? (
+                          {(profile?.halaxy_integration as any)?.verified && (profile?.halaxy_integration as any)?.profile_url ? (
                             <>
                               <Button
                                 variant="outline"
@@ -463,7 +463,9 @@ const Dashboard = () => {
                               </a>
                             </>
                           ) : (
-                            <span className="text-xs text-muted-foreground">Set your Halaxy URL in Professional Profile settings</span>
+                            <ProfessionalProfileModal>
+                              <span className="text-xs text-muted-foreground cursor-pointer hover:underline">Verify your Halaxy URL in Professional Profile settings</span>
+                            </ProfessionalProfileModal>
                           )}
                       </div>
                     </div>
