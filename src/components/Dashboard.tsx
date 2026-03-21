@@ -609,23 +609,31 @@ const Dashboard = () => {
 
             {/* Profile Tab */}
             <TabsContent value="profile" className="space-y-6">
-              {/* Prompt for LinkedIn-verified users missing their profile URL */}
-              {(profile?.professional_verified || profile?.verification_method === 'linkedin') && !profile?.linkedin_profile && (
+              {/* Verification Status Banner */}
+              {profile?.professional_verified || profile?.verification_method === 'linkedin' ? (
+                <Card className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
+                  <CardContent className="p-4 flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+                    <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                      Verified Practitioner
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
                 <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
                   <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                    <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0" />
                     <div className="flex-1">
                       <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-                        Your LinkedIn is verified but your profile URL is missing.
+                        Unverified Practitioner
                       </p>
                       <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
-                        Add your LinkedIn URL in Professional Profile so others can find you.
+                        Complete verification to unlock your full professional profile.
                       </p>
                     </div>
-                    <ProfessionalProfileModal>
-                      <Button size="sm" variant="outline" className="border-amber-300 text-amber-800 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-200 dark:hover:bg-amber-900 shrink-0">
-                        Add LinkedIn URL
-                      </Button>
-                    </ProfessionalProfileModal>
+                    <Button size="sm" variant="outline" className="border-amber-300 text-amber-800 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-200 dark:hover:bg-amber-900 shrink-0" onClick={() => navigate('/practitioner/verify')}>
+                      Verify Now
+                    </Button>
                   </CardContent>
                 </Card>
               )}
@@ -642,52 +650,38 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Display Name</label>
-                      <p className="text-sm text-muted-foreground">
-                        {profile?.display_name || 'Not set'}
-                      </p>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Email</label>
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
-                    </div>
-                     <div className="space-y-2">
-                       <label className="text-sm font-medium">Profession</label>
-                       <p className="text-sm text-muted-foreground">
-                         {formatProfession(profile?.profession)}
-                       </p>
-                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">License Number</label>
-                      <p className="text-sm text-muted-foreground">
-                        {profile?.license_number || 'Not provided'}
-                      </p>
-                    </div>
+                    <ProfileField label="Display Name" value={profile?.display_name || 'Not set'} />
+                    <ProfileField label="Email" value={user.email || ''} />
+                    <ProfileField label="Profession" value={formatProfession(profile?.profession)} />
+                    <ProfileField label="License Number" value={profile?.license_number || 'Not provided'} />
                     <div className="space-y-2">
                       <label className="text-sm font-medium">LinkedIn</label>
                       <div className="flex items-center gap-2">
-                        {(profile?.professional_verified || profile?.verification_method === 'linkedin') && (
+                        {(profile?.professional_verified || profile?.verification_method === 'linkedin') ? (
                           <Badge variant="outline" className="border-green-300 text-green-700 bg-green-50 dark:border-green-700 dark:text-green-300 dark:bg-green-950 text-xs">
                             Verified
                           </Badge>
+                        ) : (
+                          <Badge variant="outline" className="border-amber-300 text-amber-700 bg-amber-50 dark:border-amber-700 dark:text-amber-300 dark:bg-amber-950 text-xs">
+                            Unverified
+                          </Badge>
                         )}
                         {profile?.linkedin_profile ? (
-                          <a href={profile.linkedin_profile} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline truncate">
-                            {profile.linkedin_profile}
-                          </a>
+                          <>
+                            <a href={profile.linkedin_profile} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline truncate">
+                              {profile.linkedin_profile}
+                            </a>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => { navigator.clipboard.writeText(profile.linkedin_profile || ''); toast.success('LinkedIn URL copied'); }}>
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </>
                         ) : (
                           <span className="text-sm text-muted-foreground">Not provided</span>
                         )}
                       </div>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Bio</label>
-                    <p className="text-sm text-muted-foreground">
-                      {profile?.bio || 'No bio provided'}
-                    </p>
-                  </div>
+                  <ProfileField label="Bio" value={profile?.bio || 'No bio provided'} />
                    <div className="space-y-2">
                       <ProfessionalProfileModal>
                         <Button className="dashboard-cta bg-sage-600 hover:bg-sage-700 text-white">Update Professional Profile</Button>
