@@ -198,9 +198,7 @@ const Header = () => {
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <div className="logo-animate cursor-pointer" onClick={() => {
-            if (isPractitionerRoute) {
-              navigate('/practitioner/dashboard');
-            } else if (location.pathname === '/') {
+            if (location.pathname === '/') {
               window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
               navigate('/');
