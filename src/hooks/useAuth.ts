@@ -94,6 +94,7 @@ export const useAuth = () => {
           setUser(null);
           setProfile(null);
           setRoles([]);
+          setProfileLoading(false);
           setLoading(false);
           return;
         }

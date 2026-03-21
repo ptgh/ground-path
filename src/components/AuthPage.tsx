@@ -20,11 +20,16 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [showResetForm, setShowResetForm] = useState(false);
   const [verificationState, setVerificationState] = useState<VerificationState>('none');
   const [verificationEmail, setVerificationEmail] = useState('');
   const [verifiedUserType, setVerifiedUserType] = useState<'user' | 'practitioner'>('user');
+  const [isRecoveryMode, setIsRecoveryMode] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [recoveryLoading, setRecoveryLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -61,6 +66,59 @@ const AuthPage = () => {
       return;
     }
     navigate('/', { replace: true });
+  };
+
+  // Resend cooldown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
+
+  // Detect password recovery mode
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsRecoveryMode(true);
+        setShowResetForm(false);
+        setVerificationState('none');
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      toast({ title: 'Passwords do not match', description: 'Please make sure both passwords match.', variant: 'destructive' });
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast({ title: 'Password too short', description: 'Password must be at least 6 characters.', variant: 'destructive' });
+      return;
+    }
+    setRecoveryLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) {
+        toast({ title: 'Update failed', description: error.message, variant: 'destructive' });
+        return;
+      }
+      toast({ title: 'Password updated', description: 'Your password has been changed. You are now signed in.' });
+      setIsRecoveryMode(false);
+      setNewPassword('');
+      setConfirmPassword('');
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: profileData } = await supabase.from('profiles').select('user_type').eq('user_id', session.user.id).single();
+        const effectiveUserType = profileData?.user_type || session.user.user_metadata?.user_type;
+        navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/', { replace: true });
+      }
+    } catch {
+      toast({ title: 'Update failed', description: 'An unexpected error occurred.', variant: 'destructive' });
+    } finally {
+      setRecoveryLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -148,8 +206,9 @@ const AuthPage = () => {
       }
 
       toast({ title: 'Welcome back!', description: 'You have been signed in successfully.' });
-      const sessionUserType = data.user?.user_metadata?.user_type;
-      navigate(sessionUserType === 'practitioner' ? '/practitioner/dashboard' : '/', { replace: true });
+      const { data: profileData } = await supabase.from('profiles').select('user_type').eq('user_id', data.user!.id).single();
+      const effectiveUserType = profileData?.user_type || data.user?.user_metadata?.user_type;
+      navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/', { replace: true });
     } catch {
       toast({ title: 'Sign in failed', description: 'An unexpected error occurred.', variant: 'destructive' });
     } finally {
@@ -253,6 +312,7 @@ const AuthPage = () => {
         title: 'Verification email sent',
         description: 'Please use the latest email in your inbox to complete signup.',
       });
+      setResendCooldown(60);
     } catch (error: any) {
       toast({
         title: 'Failed to resend',
@@ -302,9 +362,9 @@ const AuthPage = () => {
               Once you confirm the email, we will bring you straight into the next step.
             </p>
           </div>
-          <Button onClick={handleResendVerification} variant="outline" className="w-full" disabled={resendLoading}>
+          <Button onClick={handleResendVerification} variant="outline" className="w-full" disabled={resendLoading || resendCooldown > 0}>
             {resendLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Resend Verification Email
+            {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend Verification Email'}
           </Button>
           <Button type="button" variant="ghost" className="w-full text-muted-foreground" onClick={handleUseDifferentEmail}>
             Use a Different Email
@@ -323,10 +383,12 @@ const AuthPage = () => {
       <Card className="w-full max-w-lg">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">
-            {showResetForm ? 'Reset Password' : verificationState === 'none' ? 'groundpath' : 'Finish your signup'}
+            {isRecoveryMode ? 'Reset Password' : showResetForm ? 'Reset Password' : verificationState === 'none' ? 'groundpath' : 'Finish your signup'}
           </CardTitle>
           <CardDescription>
-            {showResetForm
+            {isRecoveryMode
+              ? 'Enter your new password below'
+              : showResetForm
               ? 'Enter your email to receive a password reset link'
               : verificationState === 'none'
               ? 'Sign in or create an account to get started'
@@ -334,7 +396,31 @@ const AuthPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {showResetForm ? (
+          {isRecoveryMode ? (
+            <form onSubmit={handleUpdatePassword} className="space-y-4">
+              <div className="flex justify-center mb-4">
+                <div className="bg-primary/10 p-4 rounded-full">
+                  <CheckCircle2 className="h-10 w-10 text-primary" />
+                </div>
+              </div>
+              <div className="text-center space-y-2 mb-4">
+                <h2 className="text-xl font-bold text-foreground">Set a New Password</h2>
+                <p className="text-sm text-muted-foreground">Choose a strong password for your account.</p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="new-password">New Password</Label>
+                <Input id="new-password" type="password" placeholder="••••••••" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={6} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Input id="confirm-password" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
+              </div>
+              <Button type="submit" className="w-full" disabled={recoveryLoading}>
+                {recoveryLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Update Password
+              </Button>
+            </form>
+          ) : showResetForm ? (
             <form onSubmit={handlePasswordReset} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="reset-email">Email</Label>
