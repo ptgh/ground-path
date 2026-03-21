@@ -58,15 +58,12 @@ const PractitionerVerify = () => {
   }, [toast, navigate]);
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkVerificationStatus = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
 
-      if (!session) {
-        navigate('/practitioner/auth', { replace: true });
-        return;
-      }
+      if (!session) return;
 
       const { data: profile } = await supabase
         .from('profiles')
@@ -79,8 +76,8 @@ const PractitionerVerify = () => {
       }
     };
 
-    void checkAuth();
-  }, [navigate]);
+    void checkVerificationStatus();
+  }, []);
 
   const handleLinkedInVerify = async () => {
     setLinkedInLoading(true);

@@ -67,24 +67,40 @@ const LinkedInCallback = () => {
           searchText.includes(kw)
         );
 
+        // Build update payload
+        const profileUpdate: Record<string, any> = {
+          professional_verified: isVerifiedProfessional,
+          verification_method: 'linkedin',
+          verification_status: isVerifiedProfessional ? 'verified' : 'pending_review',
+          linkedin_verified_data: {
+            linkedin_id: linkedInIdentity?.id || null,
+            linkedin_email: user.email || null,
+            full_name: fullName,
+            job_title: jobTitle,
+            industry,
+            profile_url: publicProfileUrl || null,
+            verified_at: new Date().toISOString(),
+            is_professional_match: isVerifiedProfessional,
+          },
+          linkedin_profile: publicProfileUrl || null,
+        };
+
+        // Populate display_name from LinkedIn if currently empty
+        if (fullName) {
+          const { data: currentProfile } = await supabase
+            .from('profiles')
+            .select('display_name')
+            .eq('user_id', originalUserId)
+            .single();
+
+          if (!currentProfile?.display_name) {
+            profileUpdate.display_name = fullName;
+          }
+        }
+
         const { error: updateError } = await supabase
           .from('profiles')
-          .update({
-            professional_verified: true,
-            verification_method: 'linkedin',
-            verification_status: isVerifiedProfessional ? 'verified' : 'pending_review',
-            linkedin_verified_data: {
-              linkedin_id: linkedInIdentity?.id || null,
-              linkedin_email: user.email || null,
-              full_name: fullName,
-              job_title: jobTitle,
-              industry,
-              profile_url: publicProfileUrl || null,
-              verified_at: new Date().toISOString(),
-              is_professional_match: isVerifiedProfessional,
-            },
-            linkedin_profile: publicProfileUrl || null,
-          })
+          .update(profileUpdate)
           .eq('user_id', originalUserId);
 
         if (updateError) {
