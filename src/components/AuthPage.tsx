@@ -362,9 +362,9 @@ const AuthPage = () => {
               Once you confirm the email, we will bring you straight into the next step.
             </p>
           </div>
-          <Button onClick={handleResendVerification} variant="outline" className="w-full" disabled={resendLoading}>
+          <Button onClick={handleResendVerification} variant="outline" className="w-full" disabled={resendLoading || resendCooldown > 0}>
             {resendLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Resend Verification Email
+            {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend Verification Email'}
           </Button>
           <Button type="button" variant="ghost" className="w-full text-muted-foreground" onClick={handleUseDifferentEmail}>
             Use a Different Email
