@@ -29,6 +29,7 @@ const PractitionerVerify = () => {
   const [linkedInLoading, setLinkedInLoading] = useState(false);
   const [linkedInStatus, setLinkedInStatus] = useState<'success' | 'failed' | null>(null);
   const [isVerified, setIsVerified] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -59,25 +60,34 @@ const PractitionerVerify = () => {
 
   useEffect(() => {
     const checkVerificationStatus = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-      if (!session) return;
+        if (!session) {
+          setCheckingStatus(false);
+          return;
+        }
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('professional_verified, verification_status')
-        .eq('user_id', session.user.id)
-        .single();
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('professional_verified, verification_status')
+          .eq('user_id', session.user.id)
+          .single();
 
-      if (profile?.professional_verified || profile?.verification_status === 'verified') {
-        setIsVerified(true);
+        if (profile?.professional_verified || profile?.verification_status === 'verified') {
+          setIsVerified(true);
+          navigate('/practitioner/dashboard', { replace: true });
+          return;
+        }
+      } finally {
+        setCheckingStatus(false);
       }
     };
 
     void checkVerificationStatus();
-  }, []);
+  }, [navigate]);
 
   const handleLinkedInVerify = async () => {
     setLinkedInLoading(true);
