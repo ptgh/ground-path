@@ -375,9 +375,11 @@ export const messagingService = {
     if (!userData.user) throw new Error('Not authenticated');
 
     const now = new Date().toISOString();
+    // Set both delivered_at (if not yet set) and read_at in one update
+    // so status progresses correctly: sent → delivered → read
     await supabase
       .from('client_messages')
-      .update({ is_read: true, read_at: now } as any)
+      .update({ is_read: true, read_at: now, delivered_at: now } as any)
       .eq('conversation_id', conversationId)
       .eq('receiver_id', userData.user.id)
       .eq('is_read', false);

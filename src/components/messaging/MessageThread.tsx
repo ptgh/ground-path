@@ -56,12 +56,22 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
       }
 
       if (payload._updated) {
-        // Update existing message (e.g. read_at changed)
-        setMessages(prev => prev.map(m => m.id === payload.id ? { ...m, ...payload, _updated: undefined } : m));
+        // Recalculate status from updated fields (read_at, delivered_at)
+        setMessages(prev => prev.map(m => {
+          if (m.id !== payload.id) return m;
+          const updated = { ...m, ...payload, _updated: undefined };
+          // Recalculate _status for own messages
+          if (updated.sender_id === user?.id) {
+            if (updated.read_at || updated.is_read) updated._status = 'read';
+            else if (updated.delivered_at) updated._status = 'delivered';
+            else updated._status = 'sent';
+          }
+          return updated;
+        }));
         return;
       }
 
-      // Dedup: skip if we already have this message
+      // Dedup: skip if we already have this message (by real ID)
       if (messageIdsRef.current.has(payload.id)) return;
       messageIdsRef.current.add(payload.id);
 
@@ -71,10 +81,15 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
         _status: payload.sender_id === user?.id ? 'sent' : 'read',
       };
 
-      // Replace optimistic message if present
+      // Replace optimistic/failed message from this sender, keep others
       setMessages(prev => {
-        const withoutOptimistic = prev.filter(m => !(m._tempId && m._status === 'sending'));
-        return [...withoutOptimistic, newMsg];
+        // Remove optimistic messages (sending or failed) that match this sender's pending sends
+        const cleaned = prev.filter(m => {
+          if (!m._tempId) return true; // keep real messages
+          if (m._status === 'sending' || m._status === 'failed') return false; // remove pending
+          return true;
+        });
+        return [...cleaned, newMsg];
       });
 
       if (payload.receiver_id === user?.id) {
