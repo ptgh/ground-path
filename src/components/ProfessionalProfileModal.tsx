@@ -378,12 +378,20 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="license_number">License Number</Label>
-                      <Input
-                        id="license_number"
-                        value={formData.license_number}
-                        onChange={(e) => setFormData({...formData, license_number: e.target.value})}
-                        placeholder="Professional license number"
-                      />
+                      <div className="flex gap-1">
+                        <Input
+                          id="license_number"
+                          value={formData.license_number}
+                          onChange={(e) => setFormData({...formData, license_number: e.target.value})}
+                          placeholder="Professional license number"
+                          className="flex-1"
+                        />
+                        {formData.license_number && (
+                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.license_number); toast({ title: 'Copied', description: 'License number copied to clipboard' }); }}>
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                   
