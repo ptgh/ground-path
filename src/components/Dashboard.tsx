@@ -606,6 +606,27 @@ const Dashboard = () => {
 
             {/* Profile Tab */}
             <TabsContent value="profile" className="space-y-6">
+              {/* Prompt for LinkedIn-verified users missing their profile URL */}
+              {(profile?.professional_verified || profile?.verification_method === 'linkedin') && !profile?.linkedin_profile && (
+                <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+                  <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                        Your LinkedIn is verified but your profile URL is missing.
+                      </p>
+                      <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                        Add your LinkedIn URL in Professional Profile so others can find you.
+                      </p>
+                    </div>
+                    <ProfessionalProfileModal>
+                      <Button size="sm" variant="outline" className="border-amber-300 text-amber-800 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-200 dark:hover:bg-amber-900 shrink-0">
+                        Add LinkedIn URL
+                      </Button>
+                    </ProfessionalProfileModal>
+                  </CardContent>
+                </Card>
+              )}
+
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -640,6 +661,23 @@ const Dashboard = () => {
                         {profile?.license_number || 'Not provided'}
                       </p>
                     </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">LinkedIn</label>
+                      <div className="flex items-center gap-2">
+                        {(profile?.professional_verified || profile?.verification_method === 'linkedin') && (
+                          <Badge variant="outline" className="border-green-300 text-green-700 bg-green-50 dark:border-green-700 dark:text-green-300 dark:bg-green-950 text-xs">
+                            Verified
+                          </Badge>
+                        )}
+                        {profile?.linkedin_profile ? (
+                          <a href={profile.linkedin_profile} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline truncate">
+                            {profile.linkedin_profile}
+                          </a>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">Not provided</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Bio</label>
@@ -653,7 +691,14 @@ const Dashboard = () => {
                       </ProfessionalProfileModal>
                        <Button
                          variant="outline"
-                         onClick={() => window.open('https://www.halaxy.com/profile/groundpath/location/1353667', '_blank')}
+                         onClick={() => {
+                           const halaxyUrl = (profile?.halaxy_integration as any)?.profile_url;
+                           if (halaxyUrl) {
+                             window.open(halaxyUrl, '_blank');
+                           } else {
+                             toast.info('Set your Halaxy URL in Professional Profile settings');
+                           }
+                         }}
                          className="dashboard-cta w-full border-sage-200 text-sage-700 hover:bg-sage-50"
                        >
                          Halaxy Profile
