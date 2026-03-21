@@ -1,13 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Paperclip, Link2, ArrowLeft, ExternalLink, CheckCircle2, Trash2 } from 'lucide-react';
-import { Conversation, Message, messagingService } from '@/services/messagingService';
+import { Send, Paperclip, Link2, ArrowLeft, ExternalLink, CheckCircle2, Trash2, RotateCcw } from 'lucide-react';
+import { Conversation, Message, MessageStatus as MsgStatusType, messagingService } from '@/services/messagingService';
 import { MessageAttachment } from '@/components/messaging/MessageAttachment';
+import { MessageStatus } from '@/components/messaging/MessageStatus';
+import { TypingIndicator } from '@/components/messaging/TypingIndicator';
 import { VoiceRecorder } from '@/components/messaging/VoiceRecorder';
 import { ResourceShareForm } from '@/components/messaging/ResourceShareForm';
 import { useAuth } from '@/hooks/useAuth';
+import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -27,25 +30,53 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
   const [showHalaxyLink, setShowHalaxyLink] = useState(false);
   const [linkedHalaxy, setLinkedHalaxy] = useState(conversation.linked_halaxy_client_id || '');
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [failedMessages, setFailedMessages] = useState<Map<string, { text: string; options?: any }>>(new Map());
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const messageIdsRef = useRef<Set<string>>(new Set());
   const { user, profile } = useAuth();
 
   const isPractitioner = user?.id === conversation.practitioner_id;
   const receiverId = isPractitioner ? conversation.user_id : conversation.practitioner_id;
 
+  const { othersTyping, sendTyping, stopTyping } = useTypingIndicator(conversation.id, user?.id);
+
   useEffect(() => {
     loadMessages();
     messagingService.markMessagesAsRead(conversation.id);
+    messagingService.markMessagesAsDelivered(conversation.id);
     setLinkedHalaxy(conversation.linked_halaxy_client_id || '');
     setHalaxyId(conversation.linked_halaxy_client_id || '');
 
     const channel = messagingService.subscribeToMessages(conversation.id, (payload) => {
       if (payload._deleted) {
         setMessages(prev => prev.filter(m => m.id !== payload.id));
+        messageIdsRef.current.delete(payload.id);
         return;
       }
-      setMessages(prev => [...prev, { ...payload, sender_name: payload.sender_id === user?.id ? (profile?.display_name || 'You') : conversation.other_party_name }]);
+
+      if (payload._updated) {
+        // Update existing message (e.g. read_at changed)
+        setMessages(prev => prev.map(m => m.id === payload.id ? { ...m, ...payload, _updated: undefined } : m));
+        return;
+      }
+
+      // Dedup: skip if we already have this message
+      if (messageIdsRef.current.has(payload.id)) return;
+      messageIdsRef.current.add(payload.id);
+
+      const newMsg: Message = {
+        ...payload,
+        sender_name: payload.sender_id === user?.id ? (profile?.display_name || 'You') : conversation.other_party_name,
+        _status: payload.sender_id === user?.id ? 'sent' : 'read',
+      };
+
+      // Replace optimistic message if present
+      setMessages(prev => {
+        const withoutOptimistic = prev.filter(m => !(m._tempId && m._status === 'sending'));
+        return [...withoutOptimistic, newMsg];
+      });
+
       if (payload.receiver_id === user?.id) {
         messagingService.markMessagesAsRead(conversation.id);
       }
@@ -54,12 +85,13 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
     return () => { channel.unsubscribe(); };
   }, [conversation.id]);
 
-  useEffect(() => { scrollToBottom(); }, [messages]);
+  useEffect(() => { scrollToBottom(); }, [messages, othersTyping]);
 
   const loadMessages = async () => {
     try {
       setLoading(true);
       const data = await messagingService.getMessages(conversation.id);
+      messageIdsRef.current = new Set(data.map(m => m.id));
       setMessages(data);
     } catch (error) {
       console.error('Error loading messages:', error);
@@ -72,16 +104,60 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   };
 
-  const handleSend = async () => {
-    const text = newMessage.trim();
+  const handleSend = async (retryTempId?: string) => {
+    const text = retryTempId
+      ? failedMessages.get(retryTempId)?.text || ''
+      : newMessage.trim();
     if (!text || sending) return;
+
+    const tempId = retryTempId || `temp_${Date.now()}_${Math.random()}`;
+
+    // Remove from failed if retrying
+    if (retryTempId) {
+      setFailedMessages(prev => {
+        const next = new Map(prev);
+        next.delete(retryTempId);
+        return next;
+      });
+    }
+
+    // Optimistic message
+    const optimistic: Message = {
+      id: tempId,
+      _tempId: tempId,
+      _status: 'sending',
+      conversation_id: conversation.id,
+      sender_id: user?.id || '',
+      receiver_id: receiverId,
+      message_text: text,
+      attachment_url: null,
+      attachment_path: null,
+      attachment_type: null,
+      attachment_name: null,
+      attachment_size: null,
+      resource_url: null,
+      resource_title: null,
+      resource_description: null,
+      is_read: false,
+      delivered_at: null,
+      read_at: null,
+      created_at: new Date().toISOString(),
+      sender_name: profile?.display_name || 'You',
+    };
+
+    if (!retryTempId) setNewMessage('');
+    setMessages(prev => [...prev.filter(m => m._tempId !== tempId), optimistic]);
+    stopTyping();
+
     try {
       setSending(true);
-      setNewMessage('');
       await messagingService.sendMessage(conversation.id, receiverId, text);
+      // The realtime INSERT event will replace the optimistic message
     } catch {
-      toast.error('Failed to send message');
-      setNewMessage(text);
+      // Mark as failed, preserve text
+      setMessages(prev => prev.map(m => m._tempId === tempId ? { ...m, _status: 'failed' as MsgStatusType } : m));
+      setFailedMessages(prev => new Map(prev).set(tempId, { text }));
+      toast.error('Failed to send message. Tap to retry.');
     } finally {
       setSending(false);
     }
@@ -89,6 +165,11 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(e.target.value);
+    if (e.target.value.trim()) sendTyping();
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -178,7 +259,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
     }
   };
 
-  const groupMessagesByDate = (msgs: Message[]) => {
+  const groupMessagesByDate = useCallback((msgs: Message[]) => {
     const groups: { date: string; messages: Message[] }[] = [];
     msgs.forEach(msg => {
       const date = format(new Date(msg.created_at), 'MMMM d, yyyy');
@@ -187,7 +268,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
       else { groups.push({ date, messages: [msg] }); }
     });
     return groups;
-  };
+  }, []);
 
   return (
     <div className="flex flex-col h-full">
@@ -271,10 +352,13 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
               {group.messages.map((msg) => {
                 const isOwn = msg.sender_id === user?.id;
                 const hasText = msg.message_text && msg.message_text.trim().length > 0;
+                const isFailed = msg._status === 'failed';
+                const isSending = msg._status === 'sending';
+
                 return (
                   <div key={msg.id} className={`flex mb-2 group ${isOwn ? 'justify-end' : 'justify-start'}`}>
-                    {/* Delete button for own messages */}
-                    {isOwn && (
+                    {/* Delete button for own messages (not optimistic) */}
+                    {isOwn && !msg._tempId && (
                       <Button
                         variant="ghost"
                         size="icon"
@@ -286,14 +370,37 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
                         <Trash2 className="h-3 w-3" />
                       </Button>
                     )}
-                    <div className={`max-w-[75%] rounded-2xl px-3.5 py-2 ${
-                      isOwn ? 'bg-sage-600 text-white rounded-br-md' : 'bg-muted text-foreground rounded-bl-md'
-                    }`}>
+                    <div
+                      className={`max-w-[75%] rounded-2xl px-3.5 py-2 ${
+                        isFailed
+                          ? 'bg-destructive/10 text-foreground border border-destructive/30 rounded-br-md'
+                          : isSending
+                            ? 'bg-sage-600/70 text-white rounded-br-md'
+                            : isOwn
+                              ? 'bg-sage-600 text-white rounded-br-md'
+                              : 'bg-muted text-foreground rounded-bl-md'
+                      }`}
+                      onClick={isFailed && msg._tempId ? () => handleSend(msg._tempId) : undefined}
+                      role={isFailed ? 'button' : undefined}
+                      tabIndex={isFailed ? 0 : undefined}
+                    >
                       {hasText && <p className="text-sm whitespace-pre-wrap break-words">{msg.message_text}</p>}
                       <MessageAttachment message={msg} isOwn={isOwn} />
-                      <span className={`text-[10px] mt-0.5 block ${isOwn ? 'text-white/60' : 'text-muted-foreground'}`}>
-                        {format(new Date(msg.created_at), 'h:mm a')}
-                      </span>
+
+                      <div className={`flex items-center gap-1 mt-0.5 ${isOwn ? 'justify-end' : ''}`}>
+                        <span className={`text-[10px] ${isOwn && !isFailed ? 'text-white/60' : isFailed ? 'text-destructive' : 'text-muted-foreground'}`}>
+                          {isFailed ? (
+                            <span className="flex items-center gap-1">
+                              <RotateCcw className="h-2.5 w-2.5" /> Tap to retry
+                            </span>
+                          ) : (
+                            format(new Date(msg.created_at), 'h:mm a')
+                          )}
+                        </span>
+                        {isOwn && !isFailed && (
+                          <MessageStatus status={msg._status || 'sent'} />
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -301,6 +408,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
             </div>
           ))
         )}
+        <TypingIndicator names={othersTyping} />
       </div>
 
       {/* Hidden file input */}
@@ -347,16 +455,16 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
           <Input
             placeholder="Type a message..."
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             className="flex-1 h-9"
-            disabled={sending || uploading}
+            disabled={uploading}
           />
           <Button
             size="icon"
             className="h-9 w-9 bg-sage-600 hover:bg-sage-700 text-white"
-            onClick={handleSend}
-            disabled={!newMessage.trim() || sending || uploading}
+            onClick={() => handleSend()}
+            disabled={!newMessage.trim() || uploading}
           >
             <Send className="h-4 w-4" />
           </Button>

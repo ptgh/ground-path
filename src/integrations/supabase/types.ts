@@ -23,9 +23,11 @@ export type Database = {
           attachment_url: string | null
           conversation_id: string
           created_at: string
+          delivered_at: string | null
           id: string
           is_read: boolean
           message_text: string
+          read_at: string | null
           receiver_id: string
           resource_description: string | null
           resource_title: string | null
@@ -40,9 +42,11 @@ export type Database = {
           attachment_url?: string | null
           conversation_id: string
           created_at?: string
+          delivered_at?: string | null
           id?: string
           is_read?: boolean
           message_text: string
+          read_at?: string | null
           receiver_id: string
           resource_description?: string | null
           resource_title?: string | null
@@ -57,9 +61,11 @@ export type Database = {
           attachment_url?: string | null
           conversation_id?: string
           created_at?: string
+          delivered_at?: string | null
           id?: string
           is_read?: boolean
           message_text?: string
+          read_at?: string | null
           receiver_id?: string
           resource_description?: string | null
           resource_title?: string | null
