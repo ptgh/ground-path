@@ -1,46 +1,41 @@
 
 
-# Fix Auth Flow, Verification UX, Header State, and Halaxy Personalisation
+# Simplify LinkedIn URL to Manual + Add Copy Icons + Verification Status
 
-## Problems Identified
+## What's changing
 
-1. **Verification page says "Finish" and shows confusing "Verification complete" message** that disappears after ~2 seconds, redirecting to homepage where user appears signed out
-2. **After submitting registration, user is redirected to homepage and appears signed out** — the redirect goes to `/` (public page) instead of `/practitioner/dashboard`
-3. **Header shows "Sign In/Sign Up" flip button even when user is logged in** on public pages — should show "Sign Out" instead
-4. **Flip animation interval (3s) is too fast** and jarring
-5. **Sign in/up stops working after submitting registration** — likely because the redirect to `/` loses auth context and the header still shows the flip login button
-6. **Halaxy profile link is hardcoded** to a single practice URL for all users — each practitioner needs their own Halaxy link
+1. **Keep LinkedIn URL as manual paste** — no re-verify flow, no auto-capture attempts
+2. **Add copy-to-clipboard icons** next to all profile data fields in the Dashboard Settings view so users can easily extract their own data
+3. **Show verified/unverified badge** on the profile — if unverified, show an "Unverify" status with a link/icon to go verify
+4. **Remove the amber "missing LinkedIn URL" banner** from Dashboard since URL is manual and optional
 
 ## Plan
 
-### 1. Fix PractitionerVerify page copy and redirect
-- Change title from "Finish practitioner verification" to "Complete practitioner verification"
-- Change success message from "Verification complete. Taking you to the site..." to "Verification complete. Redirecting to your dashboard..."
-- Change both redirect targets (LinkedIn success and registration submit) from `navigate('/')` to `navigate('/practitioner/dashboard')`
-- Increase the LinkedIn redirect delay from 1800ms to 3000ms so users can read the message
+### 1. Dashboard Profile Settings — add copy icons + verification status
+**File: `src/components/Dashboard.tsx`**
 
-### 2. Fix Header to show Sign Out when logged in on public pages
-- When `user` is truthy and NOT on a practitioner route, replace the `FlipLoginButton` with a proper signed-in state: avatar dropdown with Dashboard link and Sign Out
-- Reuse the existing `AuthAwareSection` component for both practitioner and public pages
-- Remove the condition `shouldShowAuth` that restricts the avatar to practitioner routes only
+- Remove the amber LinkedIn URL missing banner (lines 609-628)
+- For each profile data field (Display Name, Email, Profession, License Number, LinkedIn, Bio), add a small copy icon button that copies the value to clipboard with a toast confirmation
+- Replace the LinkedIn section's conditional "Verified" badge with a clear verified/unverified indicator:
+  - **Verified**: green badge + checkmark
+  - **Unverified**: amber badge + link to `/practitioner/verify` to complete verification
+- Import `Copy` from lucide-react
 
-### 3. Slow down the flip animation
-- Change the flip interval from 3000ms to 5000ms
+### 2. Professional Profile Modal — simplify LinkedIn section
+**File: `src/components/ProfessionalProfileModal.tsx`**
 
-### 4. Personalise Halaxy link per practitioner
-- The `profiles` table already has a `halaxy_integration` JSONB field — use it to store the practitioner's own Halaxy profile URL
-- In the Dashboard Settings tab, replace the hardcoded Halaxy link with the practitioner's stored URL, or show an input field to set it if not configured
-- Add a Halaxy URL field to the `ProfessionalProfileModal` so practitioners can enter their own Halaxy profile link
-- The top-right Halaxy logo in the dashboard welcome section should also link to the practitioner's own URL (or hide if not set)
+- Remove the re-verify button logic (already not present, confirm clean)
+- Keep the verified badge when verified, keep manual URL input always
+- For unverified users, show an "Unverified" indicator with a small shield icon linking to `/practitioner/verify`
+- Add copy icons next to each input field in the modal for easy extraction
 
-### Files to edit
-- `src/pages/PractitionerVerify.tsx` — fix copy, redirect targets, delay
-- `src/components/Header.tsx` — show sign out when logged in on public pages, slow flip interval
-- `src/components/Dashboard.tsx` — personalise Halaxy links from profile data
-- `src/components/ProfessionalProfileModal.tsx` — add Halaxy URL field
+### Files to modify
+- `src/components/Dashboard.tsx` — remove amber banner, add copy icons to profile fields, show verified/unverified status
+- `src/components/ProfessionalProfileModal.tsx` — ensure clean verified/unverified indicator, add copy icons
 
 ### Technical details
-- Header right-side logic changes from `shouldShowAuth ? <AuthAwareSection /> : <FlipLoginButton />` to checking `isLoggedIn` first — if logged in, always show `<AuthAwareSection />`, otherwise show Book a Session + FlipLoginButton on public pages
-- Halaxy URL stored in existing `halaxy_integration` JSONB as `{ profile_url: "https://..." }` — no migration needed
-- No changes to auth flow, forms library, or messaging system
+- Copy function: `navigator.clipboard.writeText(value)` with toast feedback
+- Copy icon: `Copy` from lucide-react, small ghost button beside each value
+- Verified status reads from `profile.professional_verified` or `profile.verification_method === 'linkedin'`
+- Unverified icon links to `/practitioner/verify` using react-router `Link`
 
