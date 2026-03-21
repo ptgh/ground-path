@@ -180,6 +180,7 @@ export const useAuth = () => {
     profile,
     roles,
     loading,
+    profileLoading,
     signOut,
     updateProfile,
     hasRole,
