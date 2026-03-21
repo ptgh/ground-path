@@ -139,6 +139,12 @@ const PractitionerVerify = () => {
       return;
     }
 
+    const trimmedNumber = registrationNumber.trim();
+    if (trimmedNumber && trimmedNumber.length < 3) {
+      toast({ title: 'Invalid registration number', description: 'Registration number must be at least 3 characters.', variant: 'destructive' });
+      return;
+    }
+
     setLoading(true);
     try {
       const {
@@ -154,12 +160,26 @@ const PractitionerVerify = () => {
         .from('profiles')
         .update({
           registration_body: registrationBody,
-          registration_number: registrationNumber || null,
+          registration_number: trimmedNumber || null,
           verification_status: 'pending_review',
         })
         .eq('user_id', session.user.id);
 
       if (error) throw error;
+
+      // Add practitioner role
+      const { data: existingRole } = await supabase
+        .from('user_roles')
+        .select('id')
+        .eq('user_id', session.user.id)
+        .eq('role', 'mental_health_professional')
+        .maybeSingle();
+
+      if (!existingRole) {
+        await supabase
+          .from('user_roles')
+          .insert({ user_id: session.user.id, role: 'mental_health_professional' });
+      }
 
       toast({
         title: 'Registration submitted',
