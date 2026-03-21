@@ -92,11 +92,11 @@ const LinkedInCallback = () => {
             full_name: fullName,
             job_title: jobTitle,
             industry,
-            profile_url: publicProfileUrl || null,
+            avatar_url: avatarUrl || null,
             verified_at: new Date().toISOString(),
             is_professional_match: isVerifiedProfessional,
           },
-          p_linkedin_profile: publicProfileUrl || null,
+          p_linkedin_profile: null,
           p_display_name: displayNameToSet,
         });
 

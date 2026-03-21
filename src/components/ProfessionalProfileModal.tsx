@@ -253,19 +253,11 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="linkedin_profile">LinkedIn Profile</Label>
-                      {profile?.linkedin_verified_data && (profile.linkedin_verified_data as any)?.profile_url ? (
+                      {profile?.professional_verified || profile?.verification_method === 'linkedin' ? (
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 p-3 rounded-md border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
                             <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
                             <span className="text-sm text-green-700 dark:text-green-300 font-medium">Verified via LinkedIn</span>
-                            <a
-                              href={(profile.linkedin_verified_data as any).profile_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="ml-auto text-sm text-primary hover:underline flex items-center gap-1"
-                            >
-                              View <ExternalLink className="h-3 w-3" />
-                            </a>
                           </div>
                           <Input
                             id="linkedin_profile"
@@ -274,6 +266,9 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                             onChange={(e) => setFormData({...formData, linkedin_profile: e.target.value})}
                             placeholder="https://www.linkedin.com/in/your-profile"
                           />
+                          <p className="text-xs text-muted-foreground">
+                            Paste your LinkedIn profile URL to display it on your profile.
+                          </p>
                         </div>
                       ) : (
                         <div className="space-y-2">
