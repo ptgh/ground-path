@@ -285,14 +285,19 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="halaxy_profile_url">Halaxy Profile URL</Label>
+                    <Label htmlFor="halaxy_profile_url">Halaxy Profile</Label>
                     {(profile?.halaxy_integration as any)?.verified ? (
-                      <div className="flex items-center gap-2 p-3 rounded-md border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950 mb-2">
+                      <div className="flex items-center gap-2 p-2 rounded-md border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950 mb-2">
                         <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
-                        <span className="text-sm text-green-700 dark:text-green-300 font-medium">Halaxy profile verified</span>
+                        <span className="text-xs text-green-700 dark:text-green-300 font-medium">Verified via Halaxy</span>
                       </div>
-                    ) : null}
-                    <div className="flex gap-2">
+                    ) : (
+                      <div className="flex items-center gap-2 p-2 rounded-md border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950 mb-2">
+                        <ShieldAlert className="h-4 w-4 text-amber-600 shrink-0" />
+                        <span className="text-xs text-amber-700 dark:text-amber-300 font-medium">Unverified</span>
+                      </div>
+                    )}
+                    <div className="flex gap-1">
                       <Input
                         id="halaxy_profile_url"
                         type="url"
@@ -301,10 +306,16 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                         placeholder="https://www.halaxy.com/profile/your-practice/location/..."
                         className="flex-1"
                       />
+                      {formData.halaxy_profile_url && (
+                        <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.halaxy_profile_url); toast({ title: 'Copied', description: 'Halaxy URL copied to clipboard' }); }}>
+                          <Copy className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
+                        className="shrink-0"
                         disabled={halaxyVerifying || !formData.halaxy_profile_url.trim()}
                         onClick={async () => {
                           setHalaxyVerifying(true);
@@ -314,7 +325,6 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                             });
                             if (error) throw error;
                             if (data?.verified) {
-                              // Save verification status immediately
                               await updateProfile({
                                 halaxy_integration: {
                                   ...((profile?.halaxy_integration as any) || {}),
@@ -368,48 +378,80 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="license_number">License Number</Label>
-                      <Input
-                        id="license_number"
-                        value={formData.license_number}
-                        onChange={(e) => setFormData({...formData, license_number: e.target.value})}
-                        placeholder="Professional license number"
-                      />
+                      <div className="flex gap-1">
+                        <Input
+                          id="license_number"
+                          value={formData.license_number}
+                          onChange={(e) => setFormData({...formData, license_number: e.target.value})}
+                          placeholder="Professional license number"
+                          className="flex-1"
+                        />
+                        {formData.license_number && (
+                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.license_number); toast({ title: 'Copied', description: 'License number copied to clipboard' }); }}>
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                   
                   {(formData.registration_country === 'AU' || formData.registration_country === 'BOTH') && (
                     <div className="space-y-2 p-3 rounded-lg bg-sage-50 border border-sage-200">
                       <Label htmlFor="aasw_membership_number">AASW Membership Number (Australia)</Label>
-                      <Input
-                        id="aasw_membership_number"
-                        value={formData.aasw_membership_number}
-                        onChange={(e) => setFormData({...formData, aasw_membership_number: e.target.value})}
-                        placeholder="e.g., 123456"
-                      />
+                      <div className="flex gap-1">
+                        <Input
+                          id="aasw_membership_number"
+                          value={formData.aasw_membership_number}
+                          onChange={(e) => setFormData({...formData, aasw_membership_number: e.target.value})}
+                          placeholder="e.g., 123456"
+                          className="flex-1"
+                        />
+                        {formData.aasw_membership_number && (
+                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.aasw_membership_number); toast({ title: 'Copied', description: 'AASW number copied to clipboard' }); }}>
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   )}
                   
                   {(formData.registration_country === 'UK' || formData.registration_country === 'BOTH') && (
                     <div className="space-y-2 p-3 rounded-lg bg-blue-50 border border-blue-200">
                       <Label htmlFor="swe_registration_number">SWE Registration Number (UK)</Label>
-                      <Input
-                        id="swe_registration_number"
-                        value={formData.swe_registration_number}
-                        onChange={(e) => setFormData({...formData, swe_registration_number: e.target.value})}
-                        placeholder="e.g., SW12345"
-                      />
+                      <div className="flex gap-1">
+                        <Input
+                          id="swe_registration_number"
+                          value={formData.swe_registration_number}
+                          onChange={(e) => setFormData({...formData, swe_registration_number: e.target.value})}
+                          placeholder="e.g., SW12345"
+                          className="flex-1"
+                        />
+                        {formData.swe_registration_number && (
+                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.swe_registration_number); toast({ title: 'Copied', description: 'SWE number copied to clipboard' }); }}>
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   )}
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="registration_number">Registration Number</Label>
-                      <Input
-                        id="registration_number"
-                        value={formData.registration_number}
-                        onChange={(e) => setFormData({...formData, registration_number: e.target.value})}
-                        placeholder="General registration number"
-                      />
+                      <div className="flex gap-1">
+                        <Input
+                          id="registration_number"
+                          value={formData.registration_number}
+                          onChange={(e) => setFormData({...formData, registration_number: e.target.value})}
+                          placeholder="General registration number"
+                          className="flex-1"
+                        />
+                        {formData.registration_number && (
+                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.registration_number); toast({ title: 'Copied', description: 'Registration number copied to clipboard' }); }}>
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="registration_body">Registration Body</Label>
