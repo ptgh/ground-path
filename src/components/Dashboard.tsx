@@ -27,7 +27,10 @@ import {
   ArrowRight,
   Loader2,
   Globe,
-  Newspaper
+  Newspaper,
+  Copy,
+  CheckCircle2,
+  ShieldAlert
 } from 'lucide-react';
 import { MessageSquare } from 'lucide-react';
 import Header from './Header';
