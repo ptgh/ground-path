@@ -22,6 +22,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [halaxyVerifying, setHalaxyVerifying] = useState(false);
 
   // Form states
   const [formData, setFormData] = useState({
