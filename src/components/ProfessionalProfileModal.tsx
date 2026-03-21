@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { Settings, User, Shield, Briefcase, Heart, Plus, X, Linkedin, CheckCircle2, ExternalLink } from 'lucide-react';
+import { Settings, User, Shield, Briefcase, Heart, Plus, X, Linkedin, CheckCircle2, ExternalLink, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ProfessionalProfileModalProps {
   children: React.ReactNode;
