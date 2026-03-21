@@ -1,5 +1,35 @@
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Services = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const cards = sectionRef.current.querySelectorAll('.service-card');
+    if (cards.length > 0) {
+      gsap.fromTo(cards,
+        { opacity: 0, y: 30, scale: 0.97 },
+        {
+          opacity: 1, y: 0, scale: 1,
+          duration: 0.6, stagger: 0.12, ease: 'power2.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', toggleActions: 'play none none reverse' },
+        }
+      );
+    }
+
+    const bookable = sectionRef.current.querySelectorAll('.service-card-bookable');
+    bookable.forEach((card) => {
+      const enter = () => gsap.to(card, { scale: 1.02, y: -4, duration: 0.3, ease: 'power2.out' });
+      const leave = () => gsap.to(card, { scale: 1, y: 0, duration: 0.3, ease: 'power2.out' });
+      card.addEventListener('mouseenter', enter);
+      card.addEventListener('mouseleave', leave);
+    });
+  }, []);
   const services = [
     {
       name: "Mental Health Support",
@@ -38,7 +68,7 @@ const Services = () => {
   ];
 
   return (
-    <section id="services" className="py-20 bg-white">
+    <section id="services" ref={sectionRef} className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
@@ -64,7 +94,7 @@ const Services = () => {
               },
             } : {};
             return (
-            <CardTag key={index} {...cardProps} className={`fade-in bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow duration-300 block ${service.comingSoon ? 'opacity-75' : 'cursor-pointer'}`}>
+            <CardTag key={index} {...cardProps} className={`service-card ${isBookable ? 'service-card-bookable' : ''} bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow duration-300 block ${service.comingSoon ? 'opacity-75' : 'cursor-pointer'}`}>
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-xl font-medium text-gray-900">{service.name}</h3>
