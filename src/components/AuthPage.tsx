@@ -68,7 +68,59 @@ const AuthPage = () => {
     navigate('/', { replace: true });
   };
 
+  // Resend cooldown timer
   useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
+
+  // Detect password recovery mode
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsRecoveryMode(true);
+        setShowResetForm(false);
+        setVerificationState('none');
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      toast({ title: 'Passwords do not match', description: 'Please make sure both passwords match.', variant: 'destructive' });
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast({ title: 'Password too short', description: 'Password must be at least 6 characters.', variant: 'destructive' });
+      return;
+    }
+    setRecoveryLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) {
+        toast({ title: 'Update failed', description: error.message, variant: 'destructive' });
+        return;
+      }
+      toast({ title: 'Password updated', description: 'Your password has been changed. You are now signed in.' });
+      setIsRecoveryMode(false);
+      setNewPassword('');
+      setConfirmPassword('');
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: profileData } = await supabase.from('profiles').select('user_type').eq('user_id', session.user.id).single();
+        const effectiveUserType = profileData?.user_type || session.user.user_metadata?.user_type;
+        navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/', { replace: true });
+      }
+    } catch {
+      toast({ title: 'Update failed', description: 'An unexpected error occurred.', variant: 'destructive' });
+    } finally {
+      setRecoveryLoading(false);
+    }
+  };
+
     const params = new URLSearchParams(location.search);
     const signupComplete = params.get('signup') === 'complete';
 
