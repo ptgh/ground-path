@@ -294,13 +294,57 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="halaxy_profile_url">Halaxy Profile URL</Label>
-                    <Input
-                      id="halaxy_profile_url"
-                      type="url"
-                      value={formData.halaxy_profile_url}
-                      onChange={(e) => setFormData({...formData, halaxy_profile_url: e.target.value})}
-                      placeholder="https://www.halaxy.com/profile/your-practice/location/..."
-                    />
+                    {(profile?.halaxy_integration as any)?.verified ? (
+                      <div className="flex items-center gap-2 p-3 rounded-md border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950 mb-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+                        <span className="text-sm text-green-700 dark:text-green-300 font-medium">Halaxy profile verified</span>
+                      </div>
+                    ) : null}
+                    <div className="flex gap-2">
+                      <Input
+                        id="halaxy_profile_url"
+                        type="url"
+                        value={formData.halaxy_profile_url}
+                        onChange={(e) => setFormData({...formData, halaxy_profile_url: e.target.value})}
+                        placeholder="https://www.halaxy.com/profile/your-practice/location/..."
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={halaxyVerifying || !formData.halaxy_profile_url.trim()}
+                        onClick={async () => {
+                          setHalaxyVerifying(true);
+                          try {
+                            const { data, error } = await supabase.functions.invoke('verify-halaxy-url', {
+                              body: { url: formData.halaxy_profile_url.trim() },
+                            });
+                            if (error) throw error;
+                            if (data?.verified) {
+                              // Save verification status immediately
+                              await updateProfile({
+                                halaxy_integration: {
+                                  ...((profile?.halaxy_integration as any) || {}),
+                                  profile_url: formData.halaxy_profile_url.trim(),
+                                  verified: true,
+                                  verified_at: data.verified_at,
+                                },
+                              });
+                              toast({ title: 'Halaxy verified', description: 'Your Halaxy profile page has been confirmed.' });
+                            } else {
+                              toast({ title: 'Verification failed', description: data?.error || 'Could not confirm the Halaxy profile page. Please check the URL.', variant: 'destructive' });
+                            }
+                          } catch (err: any) {
+                            toast({ title: 'Verification error', description: err.message || 'Could not verify URL.', variant: 'destructive' });
+                          } finally {
+                            setHalaxyVerifying(false);
+                          }
+                        }}
+                      >
+                        {halaxyVerifying ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Verify'}
+                      </Button>
+                    </div>
                     <p className="text-xs text-muted-foreground">Your personal Halaxy booking page URL</p>
                   </div>
                 </CardContent>
