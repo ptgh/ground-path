@@ -209,8 +209,7 @@ const Dashboard = () => {
       </div>
     </div>
   );
-
-
+  const quickActions = [
     { 
       title: 'Create Note', 
       description: 'Document client interactions', 
