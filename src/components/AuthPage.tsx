@@ -312,6 +312,7 @@ const AuthPage = () => {
         title: 'Verification email sent',
         description: 'Please use the latest email in your inbox to complete signup.',
       });
+      setResendCooldown(60);
     } catch (error: any) {
       toast({
         title: 'Failed to resend',
