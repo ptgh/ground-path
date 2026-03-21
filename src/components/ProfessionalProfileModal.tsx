@@ -398,12 +398,20 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                   {(formData.registration_country === 'AU' || formData.registration_country === 'BOTH') && (
                     <div className="space-y-2 p-3 rounded-lg bg-sage-50 border border-sage-200">
                       <Label htmlFor="aasw_membership_number">AASW Membership Number (Australia)</Label>
-                      <Input
-                        id="aasw_membership_number"
-                        value={formData.aasw_membership_number}
-                        onChange={(e) => setFormData({...formData, aasw_membership_number: e.target.value})}
-                        placeholder="e.g., 123456"
-                      />
+                      <div className="flex gap-1">
+                        <Input
+                          id="aasw_membership_number"
+                          value={formData.aasw_membership_number}
+                          onChange={(e) => setFormData({...formData, aasw_membership_number: e.target.value})}
+                          placeholder="e.g., 123456"
+                          className="flex-1"
+                        />
+                        {formData.aasw_membership_number && (
+                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.aasw_membership_number); toast({ title: 'Copied', description: 'AASW number copied to clipboard' }); }}>
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   )}
                   
