@@ -383,10 +383,12 @@ const AuthPage = () => {
       <Card className="w-full max-w-lg">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">
-            {showResetForm ? 'Reset Password' : verificationState === 'none' ? 'groundpath' : 'Finish your signup'}
+            {isRecoveryMode ? 'Reset Password' : showResetForm ? 'Reset Password' : verificationState === 'none' ? 'groundpath' : 'Finish your signup'}
           </CardTitle>
           <CardDescription>
-            {showResetForm
+            {isRecoveryMode
+              ? 'Enter your new password below'
+              : showResetForm
               ? 'Enter your email to receive a password reset link'
               : verificationState === 'none'
               ? 'Sign in or create an account to get started'
@@ -394,7 +396,31 @@ const AuthPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {showResetForm ? (
+          {isRecoveryMode ? (
+            <form onSubmit={handleUpdatePassword} className="space-y-4">
+              <div className="flex justify-center mb-4">
+                <div className="bg-primary/10 p-4 rounded-full">
+                  <CheckCircle2 className="h-10 w-10 text-primary" />
+                </div>
+              </div>
+              <div className="text-center space-y-2 mb-4">
+                <h2 className="text-xl font-bold text-foreground">Set a New Password</h2>
+                <p className="text-sm text-muted-foreground">Choose a strong password for your account.</p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="new-password">New Password</Label>
+                <Input id="new-password" type="password" placeholder="••••••••" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={6} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Input id="confirm-password" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
+              </div>
+              <Button type="submit" className="w-full" disabled={recoveryLoading}>
+                {recoveryLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Update Password
+              </Button>
+            </form>
+          ) : showResetForm ? (
             <form onSubmit={handlePasswordReset} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="reset-email">Email</Label>
