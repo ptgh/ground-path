@@ -94,7 +94,7 @@ const Services = () => {
               },
             } : {};
             return (
-            <CardTag key={index} {...cardProps} className={`fade-in bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow duration-300 block ${service.comingSoon ? 'opacity-75' : 'cursor-pointer'}`}>
+            <CardTag key={index} {...cardProps} className={`service-card ${isBookable ? 'service-card-bookable' : ''} bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow duration-300 block ${service.comingSoon ? 'opacity-75' : 'cursor-pointer'}`}>
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-xl font-medium text-gray-900">{service.name}</h3>
