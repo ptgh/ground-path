@@ -418,12 +418,20 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                   {(formData.registration_country === 'UK' || formData.registration_country === 'BOTH') && (
                     <div className="space-y-2 p-3 rounded-lg bg-blue-50 border border-blue-200">
                       <Label htmlFor="swe_registration_number">SWE Registration Number (UK)</Label>
-                      <Input
-                        id="swe_registration_number"
-                        value={formData.swe_registration_number}
-                        onChange={(e) => setFormData({...formData, swe_registration_number: e.target.value})}
-                        placeholder="e.g., SW12345"
-                      />
+                      <div className="flex gap-1">
+                        <Input
+                          id="swe_registration_number"
+                          value={formData.swe_registration_number}
+                          onChange={(e) => setFormData({...formData, swe_registration_number: e.target.value})}
+                          placeholder="e.g., SW12345"
+                          className="flex-1"
+                        />
+                        {formData.swe_registration_number && (
+                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.swe_registration_number); toast({ title: 'Copied', description: 'SWE number copied to clipboard' }); }}>
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   )}
                   
