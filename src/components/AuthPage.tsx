@@ -93,8 +93,8 @@ const AuthPage = () => {
       toast({ title: 'Passwords do not match', description: 'Please make sure both passwords match.', variant: 'destructive' });
       return;
     }
-    if (newPassword.length < 6) {
-      toast({ title: 'Password too short', description: 'Password must be at least 6 characters.', variant: 'destructive' });
+    if (newPassword.length < 8) {
+      toast({ title: 'Password too short', description: 'Password must be at least 8 characters.', variant: 'destructive' });
       return;
     }
     setRecoveryLoading(true);
@@ -139,8 +139,14 @@ const AuthPage = () => {
       }
 
       if (session) {
-        const sessionUserType = session.user.user_metadata?.user_type;
-        navigate(sessionUserType === 'practitioner' ? '/practitioner/dashboard' : '/', { replace: true });
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('user_type')
+          .eq('user_id', session.user.id)
+          .single();
+
+        const effectiveUserType = profileData?.user_type || session.user.user_metadata?.user_type;
+        navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/', { replace: true });
         return;
       }
 
@@ -267,7 +273,7 @@ const AuthPage = () => {
         const msg = error.message.includes('User already registered')
           ? 'An account with this email already exists. Please sign in instead.'
           : error.message.includes('Password should be')
-          ? 'Password should be at least 6 characters long.'
+          ? 'Password should be at least 8 characters long.'
           : 'Something went wrong. Please try again.';
         toast({ title: 'Sign up failed', description: msg, variant: 'destructive' });
         return;
@@ -409,11 +415,11 @@ const AuthPage = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="new-password">New Password</Label>
-                <Input id="new-password" type="password" placeholder="••••••••" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={6} />
+                <Input id="new-password" type="password" placeholder="••••••••" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input id="confirm-password" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
+                <Input id="confirm-password" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} />
               </div>
               <Button type="submit" className="w-full" disabled={recoveryLoading}>
                 {recoveryLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -511,7 +517,7 @@ const AuthPage = () => {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="signup-password">Password</Label>
-                        <Input id="signup-password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+                        <Input id="signup-password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
                       </div>
                       <Button type="submit" className="w-full" disabled={loading}>
                         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

@@ -104,11 +104,34 @@ const LinkedInCallback = () => {
           .eq('user_id', originalUserId);
 
         if (updateError) {
+          console.error('[LinkedInCallback] Profile update failed:', {
+            code: updateError.code,
+            message: updateError.message,
+            details: updateError.details,
+            originalUserId,
+            authenticatedAs: session.user.id,
+          });
           sessionStorage.setItem('linkedin_verification', 'failed');
           await supabase.auth.signOut();
           clearStoredVerificationState();
           navigate('/practitioner/verify', { replace: true });
           return;
+        }
+
+        // Add practitioner role if LinkedIn verified as professional
+        if (isVerifiedProfessional && originalUserId) {
+          const { data: existingRole } = await supabase
+            .from('user_roles')
+            .select('id')
+            .eq('user_id', originalUserId)
+            .eq('role', 'mental_health_professional')
+            .maybeSingle();
+
+          if (!existingRole) {
+            await supabase
+              .from('user_roles')
+              .insert({ user_id: originalUserId, role: 'mental_health_professional' });
+          }
         }
 
         sessionStorage.setItem('linkedin_verification', 'success');

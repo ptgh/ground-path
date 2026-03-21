@@ -103,7 +103,7 @@ const AuthCompletionRouter = () => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (
-        (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') &&
+        (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') &&
         session?.user?.email_confirmed_at
       ) {
         sessionStorage.setItem('pending_signup_email', session.user.email || '');
@@ -146,9 +146,9 @@ const App = () => {
             <Route path="/voice-session" element={<VoiceSessionPage />} />
             <Route path="/confirm" element={<ConfirmPage />} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/professional-forms" element={<ProfessionalForms />} />
-            <Route path="/practitioner/forms" element={<ProfessionalForms />} />
+            <Route path="/verify-email" element={<Navigate to="/practitioner/auth" replace />} />
+            <Route path="/professional-forms" element={<VerifiedPractitionerRoute><ProfessionalForms /></VerifiedPractitionerRoute>} />
+            <Route path="/practitioner/forms" element={<VerifiedPractitionerRoute><ProfessionalForms /></VerifiedPractitionerRoute>} />
             <Route path="/practitioner/verify" element={<ProtectedRoute><PractitionerVerify /></ProtectedRoute>} />
             <Route path="/practitioner/forms/phq-9/fill" element={<VerifiedPractitionerRoute><PHQ9Form /></VerifiedPractitionerRoute>} />
             <Route path="/practitioner/forms/gad-7/fill" element={<VerifiedPractitionerRoute><GAD7Form /></VerifiedPractitionerRoute>} />
