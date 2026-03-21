@@ -199,6 +199,7 @@ const AuthPage = () => {
           emailRedirectTo: `${window.location.origin}/practitioner/auth/callback?flow=signup`,
           data: {
             user_type: userType,
+            display_name: fullName.trim(),
           },
         },
       });
