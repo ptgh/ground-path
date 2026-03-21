@@ -1,5 +1,35 @@
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Services = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const cards = sectionRef.current.querySelectorAll('.service-card');
+    if (cards.length > 0) {
+      gsap.fromTo(cards,
+        { opacity: 0, y: 30, scale: 0.97 },
+        {
+          opacity: 1, y: 0, scale: 1,
+          duration: 0.6, stagger: 0.12, ease: 'power2.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', toggleActions: 'play none none reverse' },
+        }
+      );
+    }
+
+    const bookable = sectionRef.current.querySelectorAll('.service-card-bookable');
+    bookable.forEach((card) => {
+      const enter = () => gsap.to(card, { scale: 1.02, y: -4, duration: 0.3, ease: 'power2.out' });
+      const leave = () => gsap.to(card, { scale: 1, y: 0, duration: 0.3, ease: 'power2.out' });
+      card.addEventListener('mouseenter', enter);
+      card.addEventListener('mouseleave', leave);
+    });
+  }, []);
   const services = [
     {
       name: "Mental Health Support",
