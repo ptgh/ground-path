@@ -190,7 +190,27 @@ const Dashboard = () => {
       .join(' ');
   };
 
-  const quickActions = [
+  const copyToClipboard = (value: string, label: string) => {
+    if (!value || value === 'Not set' || value === 'Not provided' || value === 'Not specified' || value === 'No bio provided') return;
+    navigator.clipboard.writeText(value);
+    toast.success(`${label} copied`);
+  };
+
+  const ProfileField = ({ label, value }: { label: string; value: string }) => (
+    <div className="space-y-2">
+      <label className="text-sm font-medium">{label}</label>
+      <div className="flex items-center gap-2">
+        <p className="text-sm text-muted-foreground flex-1">{value}</p>
+        {value && value !== 'Not set' && value !== 'Not provided' && value !== 'Not specified' && value !== 'No bio provided' && (
+          <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => copyToClipboard(value, label)}>
+            <Copy className="h-3 w-3" />
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+
+
     { 
       title: 'Create Note', 
       description: 'Document client interactions', 
