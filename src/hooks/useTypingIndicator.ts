@@ -39,6 +39,7 @@ export function useTypingIndicator(conversationId: string, userId: string | unde
     channelRef.current = channel;
 
     return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       channel.unsubscribe();
       channelRef.current = null;
     };
