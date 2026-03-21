@@ -81,15 +81,19 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
         _status: payload.sender_id === user?.id ? 'sent' : 'read',
       };
 
-      // Replace optimistic/failed message from this sender, keep others
+      // Replace only the oldest matching optimistic message from this sender
       setMessages(prev => {
-        // Remove optimistic messages (sending or failed) that match this sender's pending sends
-        const cleaned = prev.filter(m => {
-          if (!m._tempId) return true; // keep real messages
-          if (m._status === 'sending' || m._status === 'failed') return false; // remove pending
-          return true;
-        });
-        return [...cleaned, newMsg];
+        const optimisticIdx = prev.findIndex(m =>
+          m._tempId &&
+          m.sender_id === payload.sender_id &&
+          (m._status === 'sending' || m._status === 'failed')
+        );
+        if (optimisticIdx !== -1) {
+          const updated = [...prev];
+          updated[optimisticIdx] = newMsg;
+          return updated;
+        }
+        return [...prev, newMsg];
       });
 
       if (payload.receiver_id === user?.id) {
