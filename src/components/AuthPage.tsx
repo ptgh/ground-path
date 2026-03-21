@@ -20,11 +20,16 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [showResetForm, setShowResetForm] = useState(false);
   const [verificationState, setVerificationState] = useState<VerificationState>('none');
   const [verificationEmail, setVerificationEmail] = useState('');
   const [verifiedUserType, setVerifiedUserType] = useState<'user' | 'practitioner'>('user');
+  const [isRecoveryMode, setIsRecoveryMode] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [recoveryLoading, setRecoveryLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
