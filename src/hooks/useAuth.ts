@@ -132,6 +132,8 @@ export const useAuth = () => {
             fetchProfile(session.user.id);
           }
         });
+      } else {
+        setProfileLoading(false);
       }
     });
 
