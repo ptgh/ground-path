@@ -54,9 +54,11 @@ export const useAuth = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<UserRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
     try {
+      setProfileLoading(true);
       const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
@@ -72,6 +74,8 @@ export const useAuth = () => {
       setRoles(rolesData || []);
     } catch (error) {
       console.error('Error fetching profile:', error);
+    } finally {
+      setProfileLoading(false);
     }
   };
 
@@ -109,6 +113,7 @@ export const useAuth = () => {
         } else if (!session) {
           setProfile(null);
           setRoles([]);
+          setProfileLoading(false);
         }
       }
     );
@@ -127,6 +132,8 @@ export const useAuth = () => {
             fetchProfile(session.user.id);
           }
         });
+      } else {
+        setProfileLoading(false);
       }
     });
 
@@ -173,6 +180,7 @@ export const useAuth = () => {
     profile,
     roles,
     loading,
+    profileLoading,
     signOut,
     updateProfile,
     hasRole,

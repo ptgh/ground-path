@@ -54,15 +54,7 @@ const Dashboard = () => {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const buttonsRef = useRef<HTMLDivElement>(null);
 
-  // Redirect unverified practitioners to verification page
-  useEffect(() => {
-    if (!authLoading && user && profile) {
-      const userType = user.user_metadata?.user_type;
-      if (userType === 'practitioner' && (!profile.verification_status || profile.verification_status === 'unverified')) {
-        navigate('/practitioner/verify', { replace: true });
-      }
-    }
-  }, [user, authLoading, profile, navigate]);
+  // Note: Unverified practitioner redirect is now handled by VerifiedPractitionerRoute
 
   // Load user notes
   useEffect(() => {

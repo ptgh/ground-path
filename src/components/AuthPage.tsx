@@ -16,6 +16,7 @@ const AuthPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [userType, setUserType] = useState<AccountType>('');
+  const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
@@ -198,6 +199,7 @@ const AuthPage = () => {
           emailRedirectTo: `${window.location.origin}/practitioner/auth/callback?flow=signup`,
           data: {
             user_type: userType,
+            display_name: fullName.trim(),
           },
         },
       });
@@ -413,6 +415,10 @@ const AuthPage = () => {
 
                   {userType && (
                     <>
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-fullname">Full Name</Label>
+                        <Input id="signup-fullname" type="text" placeholder="Your full name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+                      </div>
                       <div className="space-y-2">
                         <Label htmlFor="signup-email">Email</Label>
                         <Input id="signup-email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
