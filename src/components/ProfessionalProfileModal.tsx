@@ -256,40 +256,32 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                     <div className="space-y-2">
                       <Label htmlFor="linkedin_profile">LinkedIn Profile</Label>
                       {profile?.professional_verified || profile?.verification_method === 'linkedin' ? (
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2 p-3 rounded-md border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
-                            <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
-                            <span className="text-sm text-green-700 dark:text-green-300 font-medium">Verified via LinkedIn</span>
-                          </div>
-                          <Input
-                            id="linkedin_profile"
-                            type="url"
-                            value={formData.linkedin_profile}
-                            onChange={(e) => setFormData({...formData, linkedin_profile: e.target.value})}
-                            placeholder="https://www.linkedin.com/in/your-profile"
-                          />
-                          <p className="text-xs text-muted-foreground">
-                            Paste your LinkedIn profile URL to display it on your profile.
-                          </p>
+                        <div className="flex items-center gap-2 p-2 rounded-md border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950 mb-2">
+                          <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+                          <span className="text-xs text-green-700 dark:text-green-300 font-medium">Verified via LinkedIn</span>
                         </div>
                       ) : (
-                        <div className="space-y-2">
-                          <Input
-                            id="linkedin_profile"
-                            type="url"
-                            value={formData.linkedin_profile}
-                            onChange={(e) => setFormData({...formData, linkedin_profile: e.target.value})}
-                            placeholder="https://www.linkedin.com/in/your-profile"
-                          />
-                          <p className="text-xs text-muted-foreground">
-                            Paste your LinkedIn URL, or{' '}
-                            <a href="/practitioner/verify" className="text-primary hover:underline">
-                              verify via LinkedIn
-                            </a>{' '}
-                            for a verified badge.
-                          </p>
+                        <div className="flex items-center gap-2 p-2 rounded-md border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950 mb-2">
+                          <ShieldAlert className="h-4 w-4 text-amber-600 shrink-0" />
+                          <span className="text-xs text-amber-700 dark:text-amber-300 font-medium">Unverified</span>
+                          <a href="/practitioner/verify" className="text-xs text-primary hover:underline ml-auto">Verify</a>
                         </div>
                       )}
+                      <div className="flex gap-1">
+                        <Input
+                          id="linkedin_profile"
+                          type="url"
+                          value={formData.linkedin_profile}
+                          onChange={(e) => setFormData({...formData, linkedin_profile: e.target.value})}
+                          placeholder="https://www.linkedin.com/in/your-profile"
+                          className="flex-1"
+                        />
+                        {formData.linkedin_profile && (
+                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.linkedin_profile); toast({ title: 'Copied', description: 'LinkedIn URL copied to clipboard' }); }}>
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="space-y-2">
