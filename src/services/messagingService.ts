@@ -16,6 +16,8 @@ export interface Conversation {
   other_party_avatar?: string;
 }
 
+export type MessageStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
+
 export interface Message {
   id: string;
   conversation_id: string;
@@ -31,10 +33,14 @@ export interface Message {
   resource_title: string | null;
   resource_description: string | null;
   is_read: boolean;
+  delivered_at: string | null;
+  read_at: string | null;
   created_at: string;
   sender_name?: string;
-  // Resolved signed URL for rendering (not stored in DB)
   resolved_attachment_url?: string;
+  // Client-side only fields
+  _status?: MessageStatus;
+  _tempId?: string;
 }
 
 const ALLOWED_FILE_TYPES = [
@@ -46,18 +52,14 @@ const ALLOWED_FILE_TYPES = [
 ];
 
 const ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const MAX_VOICE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_VOICE_SIZE = 5 * 1024 * 1024;
 
-/**
- * Generate a fresh signed URL from a storage path.
- * Returns null if the path is empty or signing fails.
- */
 async function resolveSignedUrl(path: string | null): Promise<string | null> {
   if (!path) return null;
   const { data, error } = await supabase.storage
     .from('message-attachments')
-    .createSignedUrl(path, 60 * 60); // 1 hour
+    .createSignedUrl(path, 60 * 60);
   if (error) {
     console.error('Failed to create signed URL for', path, error);
     return null;
@@ -65,14 +67,10 @@ async function resolveSignedUrl(path: string | null): Promise<string | null> {
   return data.signedUrl;
 }
 
-/**
- * Resolve signed URLs for an array of messages that have attachment_path.
- */
 async function resolveMessageAttachments(messages: Message[]): Promise<Message[]> {
   const withAttachments = messages.filter(m => m.attachment_path);
   if (withAttachments.length === 0) return messages;
 
-  // Batch resolve signed URLs
   const urlMap = new Map<string, string | null>();
   await Promise.all(
     withAttachments.map(async (m) => {
@@ -87,6 +85,13 @@ async function resolveMessageAttachments(messages: Message[]): Promise<Message[]
     ...m,
     resolved_attachment_url: m.attachment_path ? (urlMap.get(m.attachment_path) ?? undefined) : undefined,
   }));
+}
+
+function getMessageStatus(msg: Message, currentUserId: string): MessageStatus {
+  if (msg.sender_id !== currentUserId) return 'read'; // not relevant for received
+  if (msg.read_at || msg.is_read) return 'read';
+  if (msg.delivered_at) return 'delivered';
+  return 'sent';
 }
 
 export const messagingService = {
@@ -158,6 +163,9 @@ export const messagingService = {
   },
 
   async getMessages(conversationId: string): Promise<Message[]> {
+    const { data: userData } = await supabase.auth.getUser();
+    const currentUserId = userData?.user?.id;
+
     const { data, error } = await supabase
       .from('client_messages')
       .select('*')
@@ -183,9 +191,9 @@ export const messagingService = {
     const messages = (data || []).map(m => ({
       ...m,
       sender_name: nameMap[m.sender_id] || 'Unknown',
+      _status: currentUserId ? getMessageStatus(m as Message, currentUserId) : ('sent' as MessageStatus),
     })) as Message[];
 
-    // Resolve signed URLs for attachments
     return resolveMessageAttachments(messages);
   },
 
@@ -226,7 +234,6 @@ export const messagingService = {
 
     if (error) throw error;
 
-    // Update conversation last message
     const previewText = options?.attachmentType === 'voice_note'
       ? '🎤 Voice note'
       : options?.attachmentName
@@ -243,12 +250,11 @@ export const messagingService = {
       })
       .eq('id', conversationId);
 
-    // Fire-and-forget email notification to recipient
     this.sendEmailNotification(conversationId, receiverId, userData.user).catch(err =>
       console.warn('Email notification failed (non-blocking):', err)
     );
 
-    return data as Message;
+    return { ...data, _status: 'sent' } as Message;
   },
 
   validateFile(file: File): string | null {
@@ -280,9 +286,6 @@ export const messagingService = {
     return null;
   },
 
-  /**
-   * Check if the browser supports voice recording.
-   */
   isVoiceRecordingSupported(): { supported: boolean; reason?: string } {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       return { supported: false, reason: 'Your browser does not support microphone access. Please try a modern browser like Chrome, Firefox, or Safari.' };
@@ -293,9 +296,6 @@ export const messagingService = {
     return { supported: true };
   },
 
-  /**
-   * Upload a file attachment. Returns the stable storage path (not a signed URL).
-   */
   async uploadAttachment(conversationId: string, file: File): Promise<{ path: string; name: string; size: number; type: string }> {
     const timestamp = Date.now();
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
@@ -313,17 +313,9 @@ export const messagingService = {
     const ext = file.name.split('.').pop()?.toLowerCase() || '';
     const attachmentType = ['jpg', 'jpeg', 'png'].includes(ext) ? 'image' : 'file';
 
-    return {
-      path,
-      name: file.name,
-      size: file.size,
-      type: attachmentType,
-    };
+    return { path, name: file.name, size: file.size, type: attachmentType };
   },
 
-  /**
-   * Upload a voice note. Returns the stable storage path.
-   */
   async uploadVoiceNote(conversationId: string, blob: Blob, durationMs: number): Promise<{ path: string; name: string; size: number }> {
     const timestamp = Date.now();
     const path = `${conversationId}/${timestamp}_voice_note.webm`;
@@ -338,28 +330,16 @@ export const messagingService = {
     }
 
     const seconds = Math.round(durationMs / 1000);
-    return {
-      path,
-      name: `Voice note (${seconds}s)`,
-      size: blob.size,
-    };
+    return { path, name: `Voice note (${seconds}s)`, size: blob.size };
   },
 
-  /**
-   * Get a fresh signed URL for a storage path.
-   */
   async getSignedUrl(path: string): Promise<string> {
     const url = await resolveSignedUrl(path);
     if (!url) throw new Error('Failed to generate download URL');
     return url;
   },
 
-  /**
-   * Delete a message. Only the sender can delete their own messages.
-   * If the message has an attachment, also delete the storage file.
-   */
   async deleteMessage(messageId: string): Promise<void> {
-    // First get the message to check for attachment
     const { data: message, error: fetchError } = await supabase
       .from('client_messages')
       .select('id, sender_id, attachment_path')
@@ -373,18 +353,15 @@ export const messagingService = {
       throw new Error('You can only delete your own messages');
     }
 
-    // Delete storage file if present
     if (message.attachment_path) {
       const { error: storageError } = await supabase.storage
         .from('message-attachments')
         .remove([message.attachment_path]);
       if (storageError) {
         console.error('Failed to delete storage file:', storageError);
-        // Continue with message deletion even if storage delete fails
       }
     }
 
-    // Delete the message
     const { error } = await supabase
       .from('client_messages')
       .delete()
@@ -397,12 +374,26 @@ export const messagingService = {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) throw new Error('Not authenticated');
 
+    const now = new Date().toISOString();
     await supabase
       .from('client_messages')
-      .update({ is_read: true })
+      .update({ is_read: true, read_at: now } as any)
       .eq('conversation_id', conversationId)
       .eq('receiver_id', userData.user.id)
       .eq('is_read', false);
+  },
+
+  async markMessagesAsDelivered(conversationId: string): Promise<void> {
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) return;
+
+    const now = new Date().toISOString();
+    await supabase
+      .from('client_messages')
+      .update({ delivered_at: now } as any)
+      .eq('conversation_id', conversationId)
+      .eq('receiver_id', userData.user.id)
+      .is('delivered_at', null);
   },
 
   async getUnreadCount(): Promise<number> {
@@ -453,6 +444,12 @@ export const messagingService = {
         filter: `conversation_id=eq.${conversationId}`,
       }, (payload) => callback(payload.new))
       .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'client_messages',
+        filter: `conversation_id=eq.${conversationId}`,
+      }, (payload) => callback({ ...payload.new, _updated: true }))
+      .on('postgres_changes', {
         event: 'DELETE',
         schema: 'public',
         table: 'client_messages',
@@ -470,5 +467,12 @@ export const messagingService = {
         table: 'conversations',
       }, (payload) => callback(payload))
       .subscribe();
+  },
+
+  /**
+   * Join a presence channel for typing indicators.
+   */
+  getTypingChannel(conversationId: string) {
+    return supabase.channel(`typing:${conversationId}`);
   },
 };
