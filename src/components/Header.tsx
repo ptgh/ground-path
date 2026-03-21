@@ -147,20 +147,23 @@ const Header = () => {
   const isLoggedIn = !!user;
 
   const scrollToSection = useCallback((sectionId: string) => {
+    const HEADER_OFFSET = 80;
+
     const doScroll = () => {
       const element = document.getElementById(sectionId);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+        const top = element.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+        window.scrollTo({ top, behavior: 'smooth' });
       }
     };
 
     if (location.pathname !== '/') {
       navigate('/');
-      // Wait for page to fully render before scrolling
       const tryScroll = (attempts = 0) => {
         const element = document.getElementById(sectionId);
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+          const top = element.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+          window.scrollTo({ top, behavior: 'smooth' });
         } else if (attempts < 10) {
           setTimeout(() => tryScroll(attempts + 1), 100);
         }
