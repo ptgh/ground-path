@@ -594,7 +594,7 @@ export const AIAssistant = () => {
               )}
 
               {/* Input Area */}
-              <div className="p-6 border-t border-gray-200 bg-white">
+              <div className="p-6 border-t border-border bg-card">
                 <div className="flex gap-3">
                   <Input
                     value={input}
@@ -602,7 +602,7 @@ export const AIAssistant = () => {
                     onKeyPress={handleKeyPress}
                     placeholder="Ask about..."
                     disabled={isLoading}
-                    className="flex-1 border-gray-300 focus:border-sage-500 bg-white"
+                    className="flex-1 border-border focus:border-primary bg-background"
                   />
                   <Button 
                     onClick={isLoading ? stopStreaming : sendMessage} 
