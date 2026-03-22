@@ -395,10 +395,10 @@ export const AIAssistant = () => {
         
         <DialogContent 
           ref={dialogRef}
-          className="sm:max-w-md h-[700px] flex flex-col p-0 border-0 shadow-2xl bg-white backdrop-blur-md"
+          className="sm:max-w-lg lg:max-w-2xl w-[calc(100%-2rem)] max-h-[90vh] h-[700px] lg:h-[80vh] flex flex-col p-0 border-2 border-border shadow-2xl bg-card backdrop-blur-md rounded-2xl overflow-hidden"
         >
-          <DialogHeader className="dialog-header p-6 border-b border-gray-200 bg-gradient-to-r from-sage-50 to-white">
-            <DialogTitle className="flex items-center justify-between text-xl text-gray-900">
+          <DialogHeader className="dialog-header p-6 border-b border-border bg-muted/50">
+            <DialogTitle className="flex items-center justify-between text-xl text-foreground">
               <div className="flex items-center gap-3">
                 <div className="h-8 w-8 rounded-full bg-sage-600 flex items-center justify-center shadow-md">
                   <svg width="24" height="24" viewBox="0 0 40 40" className="text-white">
@@ -594,7 +594,7 @@ export const AIAssistant = () => {
               )}
 
               {/* Input Area */}
-              <div className="p-6 border-t border-gray-200 bg-white">
+              <div className="p-6 border-t border-border bg-card">
                 <div className="flex gap-3">
                   <Input
                     value={input}
@@ -602,7 +602,7 @@ export const AIAssistant = () => {
                     onKeyPress={handleKeyPress}
                     placeholder="Ask about..."
                     disabled={isLoading}
-                    className="flex-1 border-gray-300 focus:border-sage-500 bg-white"
+                    className="flex-1 border-border focus:border-primary bg-background"
                   />
                   <Button 
                     onClick={isLoading ? stopStreaming : sendMessage} 
