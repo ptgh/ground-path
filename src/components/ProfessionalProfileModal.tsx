@@ -645,58 +645,60 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                   )}
 
                   {/* Registration Bodies (from practitioner_registrations table) */}
-                  <div className="space-y-3 p-4 rounded-lg border bg-card">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-medium">Registration Bodies</h4>
+                  <div className="space-y-4 p-4 sm:p-5 rounded-xl border bg-card">
+                    <div className="flex items-center justify-between gap-3">
+                      <h4 className="text-sm font-semibold">Registration Bodies</h4>
                       {!addingRegistration && (
-                        <Button type="button" variant="outline" size="sm" onClick={() => { setAddingRegistration(true); setEditingRegId(null); setNewReg({ body_name: '', custom_body: '', registration_number: '', registration_date: '', years_as_practitioner: '' }); }}>
-                          <Plus className="h-3.5 w-3.5 mr-1" /> Add Registration
+                        <Button type="button" variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => { setAddingRegistration(true); setEditingRegId(null); setNewReg({ body_name: '', custom_body: '', registration_number: '', registration_date: '', years_as_practitioner: '' }); }}>
+                          <Plus className="h-3.5 w-3.5" /> Add Registration
                         </Button>
                       )}
                     </div>
 
                     {/* Saved registrations list */}
-                    {registrations.map((reg) => (
-                      <div key={reg.id} className="p-3 rounded-lg border border-border bg-muted/30">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="space-y-1 min-w-0 flex-1">
-                            <p className="text-sm font-medium">{reg.body_name} Registration</p>
-                            <p className="text-xs text-muted-foreground">{reg.body_name} Registration Number</p>
-                            <p className="text-sm font-mono font-medium truncate">{reg.registration_number || '—'}</p>
-                            <div className="flex gap-4 mt-1">
-                              {reg.registration_date && (
-                                <div>
-                                  <p className="text-xs text-muted-foreground">Registration Date</p>
-                                  <p className="text-xs">{new Date(reg.registration_date + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                                </div>
-                              )}
-                              {reg.years_as_practitioner != null && (
-                                <div>
-                                  <p className="text-xs text-muted-foreground">Years as Practitioner</p>
-                                  <p className="text-xs">{reg.years_as_practitioner}</p>
-                                </div>
-                              )}
+                    <div className="space-y-3">
+                      {registrations.map((reg) => (
+                        <div key={reg.id} className="p-4 rounded-xl border border-border bg-muted/30">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="space-y-1.5 min-w-0 flex-1">
+                              <p className="text-sm font-semibold">{reg.body_name} Registration</p>
+                              <p className="text-xs text-muted-foreground">{reg.body_name} Registration Number</p>
+                              <p className="text-sm font-mono font-medium truncate">{reg.registration_number || '—'}</p>
+                              <div className="flex flex-wrap gap-x-6 gap-y-1 mt-2 pt-2 border-t border-border/50">
+                                {reg.registration_date && (
+                                  <div>
+                                    <p className="text-[11px] text-muted-foreground">Registration Date</p>
+                                    <p className="text-xs font-medium">{new Date(reg.registration_date + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                  </div>
+                                )}
+                                {reg.years_as_practitioner != null && (
+                                  <div>
+                                    <p className="text-[11px] text-muted-foreground">Years as Practitioner</p>
+                                    <p className="text-xs font-medium">{reg.years_as_practitioner}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex gap-0.5 shrink-0">
+                              <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => { navigator.clipboard.writeText(reg.registration_number || ''); toast({ title: 'Copied', description: `${reg.body_name} number copied` }); }}>
+                                <Copy className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => startEditRegistration(reg)}>
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDeleteRegistration(reg.id)}>
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
                             </div>
                           </div>
-                          <div className="flex gap-1 shrink-0">
-                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => { navigator.clipboard.writeText(reg.registration_number || ''); toast({ title: 'Copied', description: `${reg.body_name} number copied` }); }}>
-                              <Copy className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => startEditRegistration(reg)}>
-                              <Pencil className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDeleteRegistration(reg.id)}>
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
 
                     {/* Add / Edit registration form */}
                     {addingRegistration && (
-                      <div className="space-y-3 p-3 rounded-lg border border-primary/20 bg-primary/5">
-                        <h5 className="text-sm font-medium">{editingRegId ? 'Edit Registration' : 'New Registration'}</h5>
+                      <div className="space-y-4 p-4 rounded-xl border border-primary/20 bg-primary/5">
+                        <h5 className="text-sm font-semibold">{editingRegId ? 'Edit Registration' : 'New Registration'}</h5>
                         <div className="space-y-2">
                           <Label className="text-xs">Registration Body</Label>
                           <Select value={newReg.body_name} onValueChange={(v) => setNewReg({ ...newReg, body_name: v, custom_body: v !== 'other' ? '' : newReg.custom_body })}>
@@ -717,7 +719,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                             <Input value={newReg.custom_body} onChange={(e) => setNewReg({ ...newReg, custom_body: e.target.value })} placeholder="e.g., ANZASW, HKASW" />
                           </div>
                         )}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                           <div className="space-y-1.5">
                             <Label className="text-xs">{(newReg.body_name === 'other' ? newReg.custom_body : newReg.body_name) || 'Registration'} Number</Label>
                             <Input value={newReg.registration_number} onChange={(e) => setNewReg({ ...newReg, registration_number: e.target.value })} placeholder="Registration number" />
@@ -731,7 +733,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                             <Input type="number" value={newReg.years_as_practitioner} onChange={(e) => setNewReg({ ...newReg, years_as_practitioner: e.target.value })} placeholder="e.g., 5" />
                           </div>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 pt-1">
                           <Button type="button" size="sm" disabled={regSaving} onClick={handleSaveRegistration}>
                             {regSaving ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
                             {editingRegId ? 'Update' : 'Save'}
@@ -742,7 +744,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                     )}
 
                     {registrations.length === 0 && !addingRegistration && (
-                      <p className="text-sm text-muted-foreground text-center py-4">No registration bodies added yet. Click "Add Registration" to get started.</p>
+                      <p className="text-sm text-muted-foreground text-center py-6">No registration bodies added yet. Click "Add Registration" to get started.</p>
                     )}
                   </div>
                 </CardContent>
