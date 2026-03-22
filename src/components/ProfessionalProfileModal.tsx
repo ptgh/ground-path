@@ -98,6 +98,15 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [halaxyVerifying, setHalaxyVerifying] = useState(false);
+  const [customRegistrationBody, setCustomRegistrationBody] = useState('');
+
+  // Track last-saved values to determine saved state for registration cards
+  const [lastSavedFormData, setLastSavedFormData] = useState({
+    aasw_membership_number: '',
+    swe_registration_number: '',
+    registration_number: '',
+    registration_body: '',
+  });
 
   // Form states
   const [formData, setFormData] = useState({
