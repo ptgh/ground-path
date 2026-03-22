@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -92,20 +92,48 @@ const SavedRegistrationCard = ({
   );
 };
 
+interface PractitionerRegistration {
+  id: string;
+  user_id: string;
+  body_name: string;
+  registration_number: string | null;
+  registration_date: string | null;
+  years_as_practitioner: number | null;
+}
+
+const AU_BODIES = [
+  { value: 'AHPRA', label: 'AHPRA (Australian Health Practitioner Regulation Agency)' },
+  { value: 'ACA', label: 'ACA (Australian Counselling Association)' },
+  { value: 'ACMHN', label: 'ACMHN (Australian College of Mental Health Nurses)' },
+  { value: 'PACFA', label: 'PACFA (Psychotherapy & Counselling Federation)' },
+  { value: 'APS', label: 'APS (Australian Psychological Society)' },
+];
+
+const UK_BODIES = [
+  { value: 'BASW', label: 'BASW (British Association of Social Workers)' },
+  { value: 'BACP', label: 'BACP (British Association for Counselling & Psychotherapy)' },
+  { value: 'HCPC', label: 'HCPC (Health and Care Professions Council)' },
+  { value: 'NMC', label: 'NMC (Nursing and Midwifery Council)' },
+];
+
 const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) => {
-  const { profile, updateProfile } = useAuth();
+  const { profile, updateProfile, user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [halaxyVerifying, setHalaxyVerifying] = useState(false);
-  const [customRegistrationBody, setCustomRegistrationBody] = useState('');
+
+  // Multi-registration state
+  const [registrations, setRegistrations] = useState<PractitionerRegistration[]>([]);
+  const [addingRegistration, setAddingRegistration] = useState(false);
+  const [editingRegId, setEditingRegId] = useState<string | null>(null);
+  const [newReg, setNewReg] = useState({ body_name: '', custom_body: '', registration_number: '', registration_date: '', years_as_practitioner: '' });
+  const [regSaving, setRegSaving] = useState(false);
 
   // Track last-saved values to determine saved state for registration cards
   const [lastSavedFormData, setLastSavedFormData] = useState({
     aasw_membership_number: '',
     swe_registration_number: '',
-    registration_number: '',
-    registration_body: '',
   });
 
   // Form states
@@ -133,6 +161,95 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     bio: '',
     halaxy_profile_url: ''
   });
+
+  // Fetch registrations from the new table
+  const fetchRegistrations = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('practitioner_registrations')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: true });
+    setRegistrations((data as PractitionerRegistration[]) || []);
+  }, [user]);
+
+  useEffect(() => {
+    if (open && user) fetchRegistrations();
+  }, [open, user, fetchRegistrations]);
+
+  const getFilteredBodies = () => {
+    const country = formData.registration_country;
+    let bodies: { value: string; label: string }[] = [];
+    if (country === 'AU' || country === 'BOTH') bodies = [...bodies, ...AU_BODIES];
+    if (country === 'UK' || country === 'BOTH') bodies = [...bodies, ...UK_BODIES];
+    // Filter out bodies already registered
+    const existingNames = registrations.map(r => r.body_name);
+    if (editingRegId) {
+      const editingReg = registrations.find(r => r.id === editingRegId);
+      if (editingReg) existingNames.splice(existingNames.indexOf(editingReg.body_name), 1);
+    }
+    bodies = bodies.filter(b => !existingNames.includes(b.value));
+    return bodies;
+  };
+
+  const handleSaveRegistration = async () => {
+    if (!user) return;
+    const bodyName = newReg.body_name === 'other' ? newReg.custom_body.trim() : newReg.body_name;
+    if (!bodyName) { toast({ title: 'Missing body', description: 'Please select or enter a registration body.', variant: 'destructive' }); return; }
+    if (!newReg.registration_number.trim()) { toast({ title: 'Missing number', description: 'Please enter a registration number.', variant: 'destructive' }); return; }
+
+    setRegSaving(true);
+    try {
+      if (editingRegId) {
+        const { error } = await supabase.from('practitioner_registrations').update({
+          body_name: bodyName,
+          registration_number: newReg.registration_number.trim(),
+          registration_date: newReg.registration_date || null,
+          years_as_practitioner: newReg.years_as_practitioner ? parseInt(newReg.years_as_practitioner) : null,
+        }).eq('id', editingRegId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('practitioner_registrations').insert({
+          user_id: user.id,
+          body_name: bodyName,
+          registration_number: newReg.registration_number.trim(),
+          registration_date: newReg.registration_date || null,
+          years_as_practitioner: newReg.years_as_practitioner ? parseInt(newReg.years_as_practitioner) : null,
+        });
+        if (error) throw error;
+      }
+      await fetchRegistrations();
+      setNewReg({ body_name: '', custom_body: '', registration_number: '', registration_date: '', years_as_practitioner: '' });
+      setAddingRegistration(false);
+      setEditingRegId(null);
+      toast({ title: 'Registration saved', description: `${bodyName} registration saved successfully.` });
+    } catch (err: any) {
+      toast({ title: 'Save failed', description: err.message || 'Could not save registration.', variant: 'destructive' });
+    } finally {
+      setRegSaving(false);
+    }
+  };
+
+  const handleDeleteRegistration = async (id: string) => {
+    const { error } = await supabase.from('practitioner_registrations').delete().eq('id', id);
+    if (error) { toast({ title: 'Delete failed', description: error.message, variant: 'destructive' }); return; }
+    await fetchRegistrations();
+    toast({ title: 'Registration deleted' });
+  };
+
+  const startEditRegistration = (reg: PractitionerRegistration) => {
+    const knownValues = [...AU_BODIES, ...UK_BODIES].map(b => b.value);
+    const isCustom = !knownValues.includes(reg.body_name);
+    setNewReg({
+      body_name: isCustom ? 'other' : reg.body_name,
+      custom_body: isCustom ? reg.body_name : '',
+      registration_number: reg.registration_number || '',
+      registration_date: reg.registration_date || '',
+      years_as_practitioner: reg.years_as_practitioner?.toString() || '',
+    });
+    setEditingRegId(reg.id);
+    setAddingRegistration(true);
+  };
 
   const [specializations, setSpecializations] = useState<string[]>([]);
   const [qualifications, setQualifications] = useState<string[]>([]);
@@ -170,18 +287,9 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
       setLastSavedFormData({
         aasw_membership_number: loadedData.aasw_membership_number,
         swe_registration_number: loadedData.swe_registration_number,
-        registration_number: loadedData.registration_number,
-        registration_body: loadedData.registration_body,
       });
       setSpecializations(profile.specializations || []);
       setQualifications(profile.qualifications || []);
-      // Check if existing registration_body is a custom/other value
-      const knownBodies = ['AHPRA', 'ACA', 'ACMHN', 'PACFA', 'APS', 'BASW', 'BACP', 'HCPC', 'NMC', ''];
-      if (loadedData.registration_body && !knownBodies.includes(loadedData.registration_body)) {
-        setCustomRegistrationBody(loadedData.registration_body);
-        setFormData(prev => ({ ...prev, registration_body: 'other' }));
-        setLastSavedFormData(prev => ({ ...prev, registration_body: 'other' }));
-      }
     }
   }, [profile, open]);
 
@@ -190,18 +298,14 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     setLoading(true);
 
     try {
-      const { halaxy_profile_url, ...rest } = formData;
-      // Resolve "other" registration body to the custom text
-      const resolvedBody = rest.registration_body === 'other' ? customRegistrationBody.trim() : rest.registration_body;
+      const { halaxy_profile_url, registration_number, registration_body, registration_expiry, ...rest } = formData;
       const updates = {
         ...rest,
-        registration_body: resolvedBody,
         years_experience: formData.years_experience ? parseInt(formData.years_experience) : null,
         cpd_hours_current_year: formData.cpd_hours_current_year ? parseInt(formData.cpd_hours_current_year) : 0,
         cpd_requirements: formData.cpd_requirements ? parseInt(formData.cpd_requirements) : 0,
         specializations,
         qualifications,
-        registration_expiry: formData.registration_expiry || null,
         insurance_expiry: formData.insurance_expiry || null,
         halaxy_integration: { ...((profile?.halaxy_integration as any) || {}), profile_url: halaxy_profile_url || null }
       };
@@ -212,8 +316,6 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
       setLastSavedFormData({
         aasw_membership_number: formData.aasw_membership_number,
         swe_registration_number: formData.swe_registration_number,
-        registration_number: formData.registration_number,
-        registration_body: formData.registration_body,
       });
 
       toast({
@@ -542,64 +644,106 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                     />
                   )}
 
-                  {/* General Registration Body */}
+                  {/* Registration Bodies (from practitioner_registrations table) */}
                   <div className="space-y-3 p-4 rounded-lg border bg-card">
-                    <h4 className="text-sm font-medium">General Registration Body</h4>
-                    <div className="space-y-3">
-                      <div className="space-y-2">
-                        <Label htmlFor="registration_body">Registration Body</Label>
-                        <Select value={formData.registration_body} onValueChange={(value) => { setFormData({...formData, registration_body: value}); if (value !== 'other') setCustomRegistrationBody(''); }}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select registration body" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {/* AU bodies */}
-                            {(formData.registration_country === 'AU' || formData.registration_country === 'BOTH') && (
-                              <>
-                                <SelectItem value="AHPRA">AHPRA (Australian Health Practitioner Regulation Agency)</SelectItem>
-                                <SelectItem value="ACA">ACA (Australian Counselling Association)</SelectItem>
-                                <SelectItem value="ACMHN">ACMHN (Australian College of Mental Health Nurses)</SelectItem>
-                                <SelectItem value="PACFA">PACFA (Psychotherapy & Counselling Federation)</SelectItem>
-                                <SelectItem value="APS">APS (Australian Psychological Society)</SelectItem>
-                              </>
-                            )}
-                            {/* UK bodies */}
-                            {(formData.registration_country === 'UK' || formData.registration_country === 'BOTH') && (
-                              <>
-                                <SelectItem value="BASW">BASW (British Association of Social Workers)</SelectItem>
-                                <SelectItem value="BACP">BACP (British Association for Counselling & Psychotherapy)</SelectItem>
-                                <SelectItem value="HCPC">HCPC (Health and Care Professions Council)</SelectItem>
-                                <SelectItem value="NMC">NMC (Nursing and Midwifery Council)</SelectItem>
-                              </>
-                            )}
-                            <SelectItem value="other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      {formData.registration_body === 'other' && (
-                        <div className="space-y-1.5">
-                          <Label className="text-xs">Specify Registration Body</Label>
-                          <Input
-                            value={customRegistrationBody}
-                            onChange={(e) => setCustomRegistrationBody(e.target.value)}
-                            placeholder="e.g., ANZASW, HKASW"
-                          />
-                        </div>
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-medium">Registration Bodies</h4>
+                      {!addingRegistration && (
+                        <Button type="button" variant="outline" size="sm" onClick={() => { setAddingRegistration(true); setEditingRegId(null); setNewReg({ body_name: '', custom_body: '', registration_number: '', registration_date: '', years_as_practitioner: '' }); }}>
+                          <Plus className="h-3.5 w-3.5 mr-1" /> Add Registration
+                        </Button>
                       )}
-                      <SavedRegistrationCard
-                        title=""
-                        numberLabel="Registration Number"
-                        numberValue={formData.registration_number}
-                        savedValue={lastSavedFormData.registration_number}
-                        numberPlaceholder="Registration number"
-                        expiryValue={formData.registration_expiry}
-                        onNumberChange={(v) => setFormData({...formData, registration_number: v})}
-                        onExpiryChange={(v) => setFormData({...formData, registration_expiry: v})}
-                        onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Copied', description: 'Registration number copied to clipboard' }); }}
-                        onDelete={() => { setFormData({...formData, registration_number: '', registration_body: ''}); setLastSavedFormData(prev => ({...prev, registration_number: '', registration_body: ''})); setCustomRegistrationBody(''); }}
-                        inline
-                      />
                     </div>
+
+                    {/* Saved registrations list */}
+                    {registrations.map((reg) => (
+                      <div key={reg.id} className="p-3 rounded-lg border border-border bg-muted/30">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="space-y-1 min-w-0 flex-1">
+                            <p className="text-sm font-medium">{reg.body_name} Registration</p>
+                            <p className="text-xs text-muted-foreground">{reg.body_name} Registration Number</p>
+                            <p className="text-sm font-mono font-medium truncate">{reg.registration_number || '—'}</p>
+                            <div className="flex gap-4 mt-1">
+                              {reg.registration_date && (
+                                <div>
+                                  <p className="text-xs text-muted-foreground">Registration Date</p>
+                                  <p className="text-xs">{new Date(reg.registration_date + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                </div>
+                              )}
+                              {reg.years_as_practitioner != null && (
+                                <div>
+                                  <p className="text-xs text-muted-foreground">Years as Practitioner</p>
+                                  <p className="text-xs">{reg.years_as_practitioner}</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex gap-1 shrink-0">
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => { navigator.clipboard.writeText(reg.registration_number || ''); toast({ title: 'Copied', description: `${reg.body_name} number copied` }); }}>
+                              <Copy className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => startEditRegistration(reg)}>
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDeleteRegistration(reg.id)}>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Add / Edit registration form */}
+                    {addingRegistration && (
+                      <div className="space-y-3 p-3 rounded-lg border border-primary/20 bg-primary/5">
+                        <h5 className="text-sm font-medium">{editingRegId ? 'Edit Registration' : 'New Registration'}</h5>
+                        <div className="space-y-2">
+                          <Label className="text-xs">Registration Body</Label>
+                          <Select value={newReg.body_name} onValueChange={(v) => setNewReg({ ...newReg, body_name: v, custom_body: v !== 'other' ? '' : newReg.custom_body })}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select registration body" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {getFilteredBodies().map(b => (
+                                <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>
+                              ))}
+                              <SelectItem value="other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {newReg.body_name === 'other' && (
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">Specify Registration Body</Label>
+                            <Input value={newReg.custom_body} onChange={(e) => setNewReg({ ...newReg, custom_body: e.target.value })} placeholder="e.g., ANZASW, HKASW" />
+                          </div>
+                        )}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">{(newReg.body_name === 'other' ? newReg.custom_body : newReg.body_name) || 'Registration'} Number</Label>
+                            <Input value={newReg.registration_number} onChange={(e) => setNewReg({ ...newReg, registration_number: e.target.value })} placeholder="Registration number" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">Registration Date</Label>
+                            <Input type="date" value={newReg.registration_date} onChange={(e) => setNewReg({ ...newReg, registration_date: e.target.value })} />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">Years as Practitioner</Label>
+                            <Input type="number" value={newReg.years_as_practitioner} onChange={(e) => setNewReg({ ...newReg, years_as_practitioner: e.target.value })} placeholder="e.g., 5" />
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button type="button" size="sm" disabled={regSaving} onClick={handleSaveRegistration}>
+                            {regSaving ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
+                            {editingRegId ? 'Update' : 'Save'}
+                          </Button>
+                          <Button type="button" variant="ghost" size="sm" onClick={() => { setAddingRegistration(false); setEditingRegId(null); }}>Cancel</Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {registrations.length === 0 && !addingRegistration && (
+                      <p className="text-sm text-muted-foreground text-center py-4">No registration bodies added yet. Click "Add Registration" to get started.</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>

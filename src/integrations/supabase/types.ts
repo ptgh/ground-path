@@ -426,6 +426,39 @@ export type Database = {
         }
         Relationships: []
       }
+      practitioner_registrations: {
+        Row: {
+          body_name: string
+          created_at: string | null
+          id: string
+          registration_date: string | null
+          registration_number: string | null
+          updated_at: string | null
+          user_id: string
+          years_as_practitioner: number | null
+        }
+        Insert: {
+          body_name: string
+          created_at?: string | null
+          id?: string
+          registration_date?: string | null
+          registration_number?: string | null
+          updated_at?: string | null
+          user_id: string
+          years_as_practitioner?: number | null
+        }
+        Update: {
+          body_name?: string
+          created_at?: string | null
+          id?: string
+          registration_date?: string | null
+          registration_number?: string | null
+          updated_at?: string | null
+          user_id?: string
+          years_as_practitioner?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           aasw_membership_number: string | null
