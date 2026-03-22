@@ -463,6 +463,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                       onNumberChange={(v) => setFormData({...formData, aasw_membership_number: v})}
                       onExpiryChange={(v) => setFormData({...formData, registration_expiry: v})}
                       onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Copied', description: 'AASW number copied to clipboard' }); }}
+                      onDelete={() => setFormData({...formData, aasw_membership_number: ''})}
                       accentClass="border-primary/20 bg-primary/5"
                     />
                   )}
