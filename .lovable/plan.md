@@ -1,46 +1,96 @@
 
 
-# Fix Registration Tab — Stay on Tab After Save, Fix General Registration Body Logic
+# Restructure Registration — Multiple Bodies via `practitioner_registrations` Table
 
-## Issues identified
+## Summary
 
-1. **Modal closes on save** — `setOpen(false)` on line 190 closes the dialog after save. User wants to stay in the Registration tab after saving.
-2. **General Registration body saves on 1 character** — The `SavedRegistrationCard` component treats any non-empty `numberValue.trim()` as "saved" and switches to read-only mode immediately as the user types. The "saved" state should only activate after the user clicks "Save Changes", not on every keystroke.
-3. **Registration body dropdown includes AASW and SWE** — these should be removed since they have dedicated sections. Need to expand the list with more recognised bodies, separated by country context.
-4. **"Other" option** — when selected, should show a free-text input so the user can type their custom body name, and that text is what gets saved.
+Add a dedicated `practitioner_registrations` table so practitioners can hold multiple registration bodies simultaneously. The General Registration Body section becomes a list of saved registrations with an "Add Another" flow. AASW and SWE keep their dedicated sections (they map to profile columns as-is).
 
-## Plan
+## Database Changes
+
+### New migration: create `practitioner_registrations` table
+
+```sql
+CREATE TABLE public.practitioner_registrations (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  body_name text NOT NULL,          -- e.g. 'AHPRA', 'ACA', 'BACP', or custom text
+  registration_number text,
+  registration_date date,           -- when they registered (replaces "expiry")
+  years_as_practitioner integer,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  UNIQUE (user_id, body_name)
+);
+
+ALTER TABLE public.practitioner_registrations ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own registrations"
+  ON public.practitioner_registrations FOR SELECT
+  TO authenticated USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own registrations"
+  ON public.practitioner_registrations FOR INSERT
+  TO authenticated WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own registrations"
+  ON public.practitioner_registrations FOR UPDATE
+  TO authenticated USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own registrations"
+  ON public.practitioner_registrations FOR DELETE
+  TO authenticated USING (auth.uid() = user_id);
+
+-- Trigger for updated_at
+CREATE TRIGGER update_practitioner_registrations_updated_at
+  BEFORE UPDATE ON public.practitioner_registrations
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+```
+
+## Frontend Changes
 
 ### File: `src/components/ProfessionalProfileModal.tsx`
 
-**Fix 1: Stay on tab after save**
-- Remove `setOpen(false)` from the success path in `handleSubmit` (line 190)
-- Instead, show the success toast only — modal stays open on the current tab
-- User closes manually via the X or Cancel button
+**General Registration Body section (lines 545-603) — replace with multi-registration list:**
 
-**Fix 2: SavedRegistrationCard — only show "saved" state for values that came from the database**
-- Add a `savedValue` prop to `SavedRegistrationCard` representing the last-persisted value
-- The card shows read-only mode only when `savedValue` matches current `numberValue` and is non-empty (i.e., the value was loaded from DB or just saved)
-- While typing new/changed values, it stays in edit mode
-- After a successful save, re-sync saved values from the refreshed profile so cards flip to read-only
+1. On mount, fetch `practitioner_registrations` for the current user
+2. Display each saved registration as a `SavedRegistrationCard` showing:
+   - Title: body name (e.g. "AHPRA Registration")
+   - Number label: dynamic (e.g. "AHPRA Registration Number")
+   - Registration date (not expiry)
+   - Years as practitioner
+   - Copy / Edit / Delete icons
+3. Below the list, show an "Add Registration" button that reveals:
+   - Registration Body dropdown (country-filtered, with "Other" free-text)
+   - Registration Number input
+   - Registration Date input
+   - Years as Practitioner input
+   - Save button (inserts/upserts to `practitioner_registrations`)
+4. Delete removes the row from the table
+5. Edit switches the card to input mode, save updates the row
 
-Implementation: add state `lastSavedFormData` that captures formData snapshot on load and after each successful save. Pass `savedValue={lastSavedFormData.registration_number}` etc. to each card. The card compares `numberValue === savedValue && savedValue !== ''` to decide display mode.
+**SavedRegistrationCard updates:**
+- Change "Registration Expiry" label to "Registration Date"
+- Add optional `yearsValue` display for years as practitioner
+- Dynamic title/label based on body name
 
-**Fix 3: Remove AASW/SWE from general dropdown, expand with country-appropriate bodies**
-- Remove `AASW` and `SWE` SelectItems (they have dedicated sections)
-- Split remaining options by country context:
-  - **AU bodies**: AHPRA, ACA, ACMHN, PACFA (Psychotherapy & Counselling Federation), APS (Australian Psychological Society)
-  - **UK bodies**: BASW, BACP (British Association for Counselling and Psychotherapy), HCPC (Health and Care Professions Council), NMC (Nursing and Midwifery Council)
-  - **Both**: show all of the above
-- Show the appropriate list based on `formData.registration_country`
-- Keep "Other" at the bottom
+**Data flow:**
+- General registrations read/write directly to `practitioner_registrations` table (not profile columns)
+- AASW and SWE sections remain on the `profiles` table as-is (dedicated fields)
+- The old `registration_body` / `registration_number` / `registration_expiry` profile columns are left in the DB but no longer shown in the UI for new entries — existing data migrated via a one-time insert
 
-**Fix 4: "Other" free-text input**
-- When `registration_body === 'other'`, show a text Input below the dropdown for the user to type the custom body name
-- Store the custom name in `registration_body` (replace 'other' with the actual text on save)
-- Add a local state `customRegistrationBody` for the text input
-- On save, if `registration_body === 'other'`, use `customRegistrationBody` as the value; otherwise use the dropdown value
+**One-time data migration** (in the same migration):
+```sql
+-- Migrate existing general registration data to the new table
+INSERT INTO public.practitioner_registrations (user_id, body_name, registration_number, registration_date)
+SELECT p.user_id, p.registration_body, p.registration_number, p.registration_expiry
+FROM public.profiles p
+WHERE p.registration_body IS NOT NULL
+  AND p.registration_body != ''
+ON CONFLICT (user_id, body_name) DO NOTHING;
+```
 
 ### Files to modify
-- `src/components/ProfessionalProfileModal.tsx` — all four fixes above
+- `src/components/ProfessionalProfileModal.tsx` — multi-registration UI
+- New migration — create table, RLS, migrate existing data
 
