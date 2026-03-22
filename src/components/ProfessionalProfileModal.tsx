@@ -162,6 +162,95 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     halaxy_profile_url: ''
   });
 
+  // Fetch registrations from the new table
+  const fetchRegistrations = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('practitioner_registrations')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: true });
+    setRegistrations((data as PractitionerRegistration[]) || []);
+  }, [user]);
+
+  useEffect(() => {
+    if (open && user) fetchRegistrations();
+  }, [open, user, fetchRegistrations]);
+
+  const getFilteredBodies = () => {
+    const country = formData.registration_country;
+    let bodies: { value: string; label: string }[] = [];
+    if (country === 'AU' || country === 'BOTH') bodies = [...bodies, ...AU_BODIES];
+    if (country === 'UK' || country === 'BOTH') bodies = [...bodies, ...UK_BODIES];
+    // Filter out bodies already registered
+    const existingNames = registrations.map(r => r.body_name);
+    if (editingRegId) {
+      const editingReg = registrations.find(r => r.id === editingRegId);
+      if (editingReg) existingNames.splice(existingNames.indexOf(editingReg.body_name), 1);
+    }
+    bodies = bodies.filter(b => !existingNames.includes(b.value));
+    return bodies;
+  };
+
+  const handleSaveRegistration = async () => {
+    if (!user) return;
+    const bodyName = newReg.body_name === 'other' ? newReg.custom_body.trim() : newReg.body_name;
+    if (!bodyName) { toast({ title: 'Missing body', description: 'Please select or enter a registration body.', variant: 'destructive' }); return; }
+    if (!newReg.registration_number.trim()) { toast({ title: 'Missing number', description: 'Please enter a registration number.', variant: 'destructive' }); return; }
+
+    setRegSaving(true);
+    try {
+      if (editingRegId) {
+        const { error } = await supabase.from('practitioner_registrations').update({
+          body_name: bodyName,
+          registration_number: newReg.registration_number.trim(),
+          registration_date: newReg.registration_date || null,
+          years_as_practitioner: newReg.years_as_practitioner ? parseInt(newReg.years_as_practitioner) : null,
+        }).eq('id', editingRegId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('practitioner_registrations').insert({
+          user_id: user.id,
+          body_name: bodyName,
+          registration_number: newReg.registration_number.trim(),
+          registration_date: newReg.registration_date || null,
+          years_as_practitioner: newReg.years_as_practitioner ? parseInt(newReg.years_as_practitioner) : null,
+        });
+        if (error) throw error;
+      }
+      await fetchRegistrations();
+      setNewReg({ body_name: '', custom_body: '', registration_number: '', registration_date: '', years_as_practitioner: '' });
+      setAddingRegistration(false);
+      setEditingRegId(null);
+      toast({ title: 'Registration saved', description: `${bodyName} registration saved successfully.` });
+    } catch (err: any) {
+      toast({ title: 'Save failed', description: err.message || 'Could not save registration.', variant: 'destructive' });
+    } finally {
+      setRegSaving(false);
+    }
+  };
+
+  const handleDeleteRegistration = async (id: string) => {
+    const { error } = await supabase.from('practitioner_registrations').delete().eq('id', id);
+    if (error) { toast({ title: 'Delete failed', description: error.message, variant: 'destructive' }); return; }
+    await fetchRegistrations();
+    toast({ title: 'Registration deleted' });
+  };
+
+  const startEditRegistration = (reg: PractitionerRegistration) => {
+    const knownValues = [...AU_BODIES, ...UK_BODIES].map(b => b.value);
+    const isCustom = !knownValues.includes(reg.body_name);
+    setNewReg({
+      body_name: isCustom ? 'other' : reg.body_name,
+      custom_body: isCustom ? reg.body_name : '',
+      registration_number: reg.registration_number || '',
+      registration_date: reg.registration_date || '',
+      years_as_practitioner: reg.years_as_practitioner?.toString() || '',
+    });
+    setEditingRegId(reg.id);
+    setAddingRegistration(true);
+  };
+
   const [specializations, setSpecializations] = useState<string[]>([]);
   const [qualifications, setQualifications] = useState<string[]>([]);
   const [newSpecialization, setNewSpecialization] = useState('');
