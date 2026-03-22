@@ -20,11 +20,11 @@ interface ProfessionalProfileModalProps {
 // Saved/Edit registration field pattern
 const SavedRegistrationCard = ({
   title, numberLabel, numberValue, numberPlaceholder, expiryValue,
-  onNumberChange, onExpiryChange, onCopy, accentClass, inline
+  onNumberChange, onExpiryChange, onCopy, onDelete, accentClass, inline
 }: {
   title: string; numberLabel: string; numberValue: string; numberPlaceholder: string;
   expiryValue: string; onNumberChange: (v: string) => void; onExpiryChange: (v: string) => void;
-  onCopy: (v: string) => void; accentClass?: string; inline?: boolean;
+  onCopy: (v: string) => void; onDelete?: () => void; accentClass?: string; inline?: boolean;
 }) => {
   const [editing, setEditing] = useState(false);
   const hasSavedValue = !!numberValue.trim();
@@ -51,6 +51,11 @@ const SavedRegistrationCard = ({
             <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing(true)}>
               <Pencil className="h-3.5 w-3.5" />
             </Button>
+            {onDelete && (
+              <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={onDelete}>
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            )}
           </div>
         </div>
       </div>
