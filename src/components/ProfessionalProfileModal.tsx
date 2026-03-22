@@ -142,7 +142,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
   // Load profile data when modal opens
   useEffect(() => {
     if (profile && open) {
-      setFormData({
+      const loadedData = {
         profession: profile.profession || '',
         license_number: profile.license_number || '',
         registration_number: profile.registration_number || '',
@@ -165,9 +165,23 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         preferred_contact_method: profile.preferred_contact_method || 'email',
         bio: profile.bio || '',
         halaxy_profile_url: (profile.halaxy_integration as any)?.profile_url || ''
+      };
+      setFormData(loadedData);
+      setLastSavedFormData({
+        aasw_membership_number: loadedData.aasw_membership_number,
+        swe_registration_number: loadedData.swe_registration_number,
+        registration_number: loadedData.registration_number,
+        registration_body: loadedData.registration_body,
       });
       setSpecializations(profile.specializations || []);
       setQualifications(profile.qualifications || []);
+      // Check if existing registration_body is a custom/other value
+      const knownBodies = ['AHPRA', 'ACA', 'ACMHN', 'PACFA', 'APS', 'BASW', 'BACP', 'HCPC', 'NMC', ''];
+      if (loadedData.registration_body && !knownBodies.includes(loadedData.registration_body)) {
+        setCustomRegistrationBody(loadedData.registration_body);
+        setFormData(prev => ({ ...prev, registration_body: 'other' }));
+        setLastSavedFormData(prev => ({ ...prev, registration_body: 'other' }));
+      }
     }
   }, [profile, open]);
 
