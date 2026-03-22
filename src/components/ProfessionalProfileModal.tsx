@@ -63,9 +63,9 @@ const SavedRegistrationCard = ({
   }
 
   return (
-    <div className={`p-4 rounded-lg border ${accentClass || 'border-border bg-muted/30'} space-y-3 ${inline ? 'p-0 border-0 bg-transparent' : ''}`}>
+    <div className={`p-3 sm:p-4 rounded-lg border ${accentClass || 'border-border bg-muted/30'} space-y-3 ${inline ? 'p-0 border-0 bg-transparent' : ''}`}>
       {title && <h4 className="text-sm font-medium">{title}</h4>}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="space-y-3">
         <div className="space-y-1.5">
           <Label className="text-xs">{numberLabel}</Label>
           <Input
@@ -80,6 +80,7 @@ const SavedRegistrationCard = ({
             type="date"
             value={expiryValue}
             onChange={(e) => onExpiryChange(e.target.value)}
+            className="w-full max-w-[200px]"
           />
         </div>
       </div>
