@@ -644,64 +644,106 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                     />
                   )}
 
-                  {/* General Registration Body */}
+                  {/* Registration Bodies (from practitioner_registrations table) */}
                   <div className="space-y-3 p-4 rounded-lg border bg-card">
-                    <h4 className="text-sm font-medium">General Registration Body</h4>
-                    <div className="space-y-3">
-                      <div className="space-y-2">
-                        <Label htmlFor="registration_body">Registration Body</Label>
-                        <Select value={formData.registration_body} onValueChange={(value) => { setFormData({...formData, registration_body: value}); if (value !== 'other') setCustomRegistrationBody(''); }}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select registration body" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {/* AU bodies */}
-                            {(formData.registration_country === 'AU' || formData.registration_country === 'BOTH') && (
-                              <>
-                                <SelectItem value="AHPRA">AHPRA (Australian Health Practitioner Regulation Agency)</SelectItem>
-                                <SelectItem value="ACA">ACA (Australian Counselling Association)</SelectItem>
-                                <SelectItem value="ACMHN">ACMHN (Australian College of Mental Health Nurses)</SelectItem>
-                                <SelectItem value="PACFA">PACFA (Psychotherapy & Counselling Federation)</SelectItem>
-                                <SelectItem value="APS">APS (Australian Psychological Society)</SelectItem>
-                              </>
-                            )}
-                            {/* UK bodies */}
-                            {(formData.registration_country === 'UK' || formData.registration_country === 'BOTH') && (
-                              <>
-                                <SelectItem value="BASW">BASW (British Association of Social Workers)</SelectItem>
-                                <SelectItem value="BACP">BACP (British Association for Counselling & Psychotherapy)</SelectItem>
-                                <SelectItem value="HCPC">HCPC (Health and Care Professions Council)</SelectItem>
-                                <SelectItem value="NMC">NMC (Nursing and Midwifery Council)</SelectItem>
-                              </>
-                            )}
-                            <SelectItem value="other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      {formData.registration_body === 'other' && (
-                        <div className="space-y-1.5">
-                          <Label className="text-xs">Specify Registration Body</Label>
-                          <Input
-                            value={customRegistrationBody}
-                            onChange={(e) => setCustomRegistrationBody(e.target.value)}
-                            placeholder="e.g., ANZASW, HKASW"
-                          />
-                        </div>
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-medium">Registration Bodies</h4>
+                      {!addingRegistration && (
+                        <Button type="button" variant="outline" size="sm" onClick={() => { setAddingRegistration(true); setEditingRegId(null); setNewReg({ body_name: '', custom_body: '', registration_number: '', registration_date: '', years_as_practitioner: '' }); }}>
+                          <Plus className="h-3.5 w-3.5 mr-1" /> Add Registration
+                        </Button>
                       )}
-                      <SavedRegistrationCard
-                        title=""
-                        numberLabel="Registration Number"
-                        numberValue={formData.registration_number}
-                        savedValue={lastSavedFormData.registration_number}
-                        numberPlaceholder="Registration number"
-                        expiryValue={formData.registration_expiry}
-                        onNumberChange={(v) => setFormData({...formData, registration_number: v})}
-                        onExpiryChange={(v) => setFormData({...formData, registration_expiry: v})}
-                        onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Copied', description: 'Registration number copied to clipboard' }); }}
-                        onDelete={() => { setFormData({...formData, registration_number: '', registration_body: ''}); setLastSavedFormData(prev => ({...prev, registration_number: '', registration_body: ''})); setCustomRegistrationBody(''); }}
-                        inline
-                      />
                     </div>
+
+                    {/* Saved registrations list */}
+                    {registrations.map((reg) => (
+                      <div key={reg.id} className="p-3 rounded-lg border border-border bg-muted/30">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="space-y-1 min-w-0 flex-1">
+                            <p className="text-sm font-medium">{reg.body_name} Registration</p>
+                            <p className="text-xs text-muted-foreground">{reg.body_name} Registration Number</p>
+                            <p className="text-sm font-mono font-medium truncate">{reg.registration_number || '—'}</p>
+                            <div className="flex gap-4 mt-1">
+                              {reg.registration_date && (
+                                <div>
+                                  <p className="text-xs text-muted-foreground">Registration Date</p>
+                                  <p className="text-xs">{new Date(reg.registration_date + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                </div>
+                              )}
+                              {reg.years_as_practitioner != null && (
+                                <div>
+                                  <p className="text-xs text-muted-foreground">Years as Practitioner</p>
+                                  <p className="text-xs">{reg.years_as_practitioner}</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex gap-1 shrink-0">
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => { navigator.clipboard.writeText(reg.registration_number || ''); toast({ title: 'Copied', description: `${reg.body_name} number copied` }); }}>
+                              <Copy className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => startEditRegistration(reg)}>
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDeleteRegistration(reg.id)}>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Add / Edit registration form */}
+                    {addingRegistration && (
+                      <div className="space-y-3 p-3 rounded-lg border border-primary/20 bg-primary/5">
+                        <h5 className="text-sm font-medium">{editingRegId ? 'Edit Registration' : 'New Registration'}</h5>
+                        <div className="space-y-2">
+                          <Label className="text-xs">Registration Body</Label>
+                          <Select value={newReg.body_name} onValueChange={(v) => setNewReg({ ...newReg, body_name: v, custom_body: v !== 'other' ? '' : newReg.custom_body })}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select registration body" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {getFilteredBodies().map(b => (
+                                <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>
+                              ))}
+                              <SelectItem value="other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {newReg.body_name === 'other' && (
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">Specify Registration Body</Label>
+                            <Input value={newReg.custom_body} onChange={(e) => setNewReg({ ...newReg, custom_body: e.target.value })} placeholder="e.g., ANZASW, HKASW" />
+                          </div>
+                        )}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">{(newReg.body_name === 'other' ? newReg.custom_body : newReg.body_name) || 'Registration'} Number</Label>
+                            <Input value={newReg.registration_number} onChange={(e) => setNewReg({ ...newReg, registration_number: e.target.value })} placeholder="Registration number" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">Registration Date</Label>
+                            <Input type="date" value={newReg.registration_date} onChange={(e) => setNewReg({ ...newReg, registration_date: e.target.value })} />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">Years as Practitioner</Label>
+                            <Input type="number" value={newReg.years_as_practitioner} onChange={(e) => setNewReg({ ...newReg, years_as_practitioner: e.target.value })} placeholder="e.g., 5" />
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button type="button" size="sm" disabled={regSaving} onClick={handleSaveRegistration}>
+                            {regSaving ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
+                            {editingRegId ? 'Update' : 'Save'}
+                          </Button>
+                          <Button type="button" variant="ghost" size="sm" onClick={() => { setAddingRegistration(false); setEditingRegId(null); }}>Cancel</Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {registrations.length === 0 && !addingRegistration && (
+                      <p className="text-sm text-muted-foreground text-center py-4">No registration bodies added yet. Click "Add Registration" to get started.</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
