@@ -514,6 +514,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                         onNumberChange={(v) => setFormData({...formData, registration_number: v})}
                         onExpiryChange={(v) => setFormData({...formData, registration_expiry: v})}
                         onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Copied', description: 'Registration number copied to clipboard' }); }}
+                        onDelete={() => setFormData({...formData, registration_number: '', registration_body: ''})}
                         inline
                       />
                     </div>
