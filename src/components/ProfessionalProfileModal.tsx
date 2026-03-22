@@ -19,17 +19,17 @@ interface ProfessionalProfileModalProps {
 
 // Saved/Edit registration field pattern
 const SavedRegistrationCard = ({
-  title, numberLabel, numberValue, numberPlaceholder, expiryValue,
+  title, numberLabel, numberValue, savedValue, numberPlaceholder, expiryValue,
   onNumberChange, onExpiryChange, onCopy, onDelete, accentClass, inline
 }: {
-  title: string; numberLabel: string; numberValue: string; numberPlaceholder: string;
+  title: string; numberLabel: string; numberValue: string; savedValue: string; numberPlaceholder: string;
   expiryValue: string; onNumberChange: (v: string) => void; onExpiryChange: (v: string) => void;
   onCopy: (v: string) => void; onDelete?: () => void; accentClass?: string; inline?: boolean;
 }) => {
   const [editing, setEditing] = useState(false);
-  const hasSavedValue = !!numberValue.trim();
+  const isSaved = !!savedValue.trim() && savedValue === numberValue;
 
-  if (hasSavedValue && !editing) {
+  if (isSaved && !editing) {
     return (
       <div className={`p-4 rounded-lg border ${accentClass || 'border-border bg-muted/30'} ${inline ? 'p-0 border-0 bg-transparent' : ''}`}>
         {title && <h4 className="text-sm font-medium mb-2">{title}</h4>}
@@ -83,7 +83,7 @@ const SavedRegistrationCard = ({
           />
         </div>
       </div>
-      {hasSavedValue && (
+      {isSaved && (
         <Button type="button" variant="ghost" size="sm" className="text-xs" onClick={() => setEditing(false)}>
           Done editing
         </Button>
