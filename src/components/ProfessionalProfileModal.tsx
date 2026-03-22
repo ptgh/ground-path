@@ -92,20 +92,48 @@ const SavedRegistrationCard = ({
   );
 };
 
+interface PractitionerRegistration {
+  id: string;
+  user_id: string;
+  body_name: string;
+  registration_number: string | null;
+  registration_date: string | null;
+  years_as_practitioner: number | null;
+}
+
+const AU_BODIES = [
+  { value: 'AHPRA', label: 'AHPRA (Australian Health Practitioner Regulation Agency)' },
+  { value: 'ACA', label: 'ACA (Australian Counselling Association)' },
+  { value: 'ACMHN', label: 'ACMHN (Australian College of Mental Health Nurses)' },
+  { value: 'PACFA', label: 'PACFA (Psychotherapy & Counselling Federation)' },
+  { value: 'APS', label: 'APS (Australian Psychological Society)' },
+];
+
+const UK_BODIES = [
+  { value: 'BASW', label: 'BASW (British Association of Social Workers)' },
+  { value: 'BACP', label: 'BACP (British Association for Counselling & Psychotherapy)' },
+  { value: 'HCPC', label: 'HCPC (Health and Care Professions Council)' },
+  { value: 'NMC', label: 'NMC (Nursing and Midwifery Council)' },
+];
+
 const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) => {
-  const { profile, updateProfile } = useAuth();
+  const { profile, updateProfile, user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [halaxyVerifying, setHalaxyVerifying] = useState(false);
-  const [customRegistrationBody, setCustomRegistrationBody] = useState('');
+
+  // Multi-registration state
+  const [registrations, setRegistrations] = useState<PractitionerRegistration[]>([]);
+  const [addingRegistration, setAddingRegistration] = useState(false);
+  const [editingRegId, setEditingRegId] = useState<string | null>(null);
+  const [newReg, setNewReg] = useState({ body_name: '', custom_body: '', registration_number: '', registration_date: '', years_as_practitioner: '' });
+  const [regSaving, setRegSaving] = useState(false);
 
   // Track last-saved values to determine saved state for registration cards
   const [lastSavedFormData, setLastSavedFormData] = useState({
     aasw_membership_number: '',
     swe_registration_number: '',
-    registration_number: '',
-    registration_body: '',
   });
 
   // Form states
