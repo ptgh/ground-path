@@ -353,7 +353,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
               </Card>
             </TabsContent>
 
-            <TabsContent value="registration" className="space-y-4">
+            <TabsContent value="registration" className="space-y-4 mt-0">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -361,142 +361,83 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                     Professional Registration
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="registration_country">Practice Country</Label>
-                      <Select value={formData.registration_country} onValueChange={(value) => setFormData({...formData, registration_country: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select country" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="AU">Australia</SelectItem>
-                          <SelectItem value="UK">United Kingdom</SelectItem>
-                          <SelectItem value="BOTH">Both</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="license_number">License Number</Label>
-                      <div className="flex gap-1">
-                        <Input
-                          id="license_number"
-                          value={formData.license_number}
-                          onChange={(e) => setFormData({...formData, license_number: e.target.value})}
-                          placeholder="Professional license number"
-                          className="flex-1"
-                        />
-                        {formData.license_number && (
-                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.license_number); toast({ title: 'Copied', description: 'License number copied to clipboard' }); }}>
-                            <Copy className="h-3.5 w-3.5" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
+                <CardContent className="space-y-6">
+                  {/* Practice Country */}
+                  <div className="space-y-2">
+                    <Label htmlFor="registration_country">Practice Country</Label>
+                    <Select value={formData.registration_country} onValueChange={(value) => setFormData({...formData, registration_country: value})}>
+                      <SelectTrigger className="w-full md:w-1/2">
+                        <SelectValue placeholder="Select country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="AU">Australia</SelectItem>
+                        <SelectItem value="UK">United Kingdom</SelectItem>
+                        <SelectItem value="BOTH">Both</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                  
+
+                  {/* AASW Section (AU) */}
                   {(formData.registration_country === 'AU' || formData.registration_country === 'BOTH') && (
-                    <div className="space-y-2 p-3 rounded-lg bg-sage-50 border border-sage-200">
-                      <Label htmlFor="aasw_membership_number">AASW Membership Number (Australia)</Label>
-                      <div className="flex gap-1">
-                        <Input
-                          id="aasw_membership_number"
-                          value={formData.aasw_membership_number}
-                          onChange={(e) => setFormData({...formData, aasw_membership_number: e.target.value})}
-                          placeholder="e.g., 123456"
-                          className="flex-1"
-                        />
-                        {formData.aasw_membership_number && (
-                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.aasw_membership_number); toast({ title: 'Copied', description: 'AASW number copied to clipboard' }); }}>
-                            <Copy className="h-3.5 w-3.5" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
+                    <SavedRegistrationCard
+                      title="AASW Membership (Australia)"
+                      numberLabel="Membership Number"
+                      numberValue={formData.aasw_membership_number}
+                      numberPlaceholder="e.g., 123456"
+                      expiryValue={formData.registration_expiry}
+                      onNumberChange={(v) => setFormData({...formData, aasw_membership_number: v})}
+                      onExpiryChange={(v) => setFormData({...formData, registration_expiry: v})}
+                      onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Copied', description: 'AASW number copied to clipboard' }); }}
+                      accentClass="border-primary/20 bg-primary/5"
+                    />
                   )}
-                  
+
+                  {/* SWE Section (UK) */}
                   {(formData.registration_country === 'UK' || formData.registration_country === 'BOTH') && (
-                    <div className="space-y-2 p-3 rounded-lg bg-blue-50 border border-blue-200">
-                      <Label htmlFor="swe_registration_number">SWE Registration Number (UK)</Label>
-                      <div className="flex gap-1">
-                        <Input
-                          id="swe_registration_number"
-                          value={formData.swe_registration_number}
-                          onChange={(e) => setFormData({...formData, swe_registration_number: e.target.value})}
-                          placeholder="e.g., SW12345"
-                          className="flex-1"
-                        />
-                        {formData.swe_registration_number && (
-                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.swe_registration_number); toast({ title: 'Copied', description: 'SWE number copied to clipboard' }); }}>
-                            <Copy className="h-3.5 w-3.5" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
+                    <SavedRegistrationCard
+                      title="SWE Registration (UK)"
+                      numberLabel="Registration Number"
+                      numberValue={formData.swe_registration_number}
+                      numberPlaceholder="e.g., SW12345"
+                      expiryValue={formData.registration_expiry}
+                      onNumberChange={(v) => setFormData({...formData, swe_registration_number: v})}
+                      onExpiryChange={(v) => setFormData({...formData, registration_expiry: v})}
+                      onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Copied', description: 'SWE number copied to clipboard' }); }}
+                      accentClass="border-accent/30 bg-accent/5"
+                    />
                   )}
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="registration_number">Registration Number</Label>
-                      <div className="flex gap-1">
-                        <Input
-                          id="registration_number"
-                          value={formData.registration_number}
-                          onChange={(e) => setFormData({...formData, registration_number: e.target.value})}
-                          placeholder="General registration number"
-                          className="flex-1"
-                        />
-                        {formData.registration_number && (
-                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.registration_number); toast({ title: 'Copied', description: 'Registration number copied to clipboard' }); }}>
-                            <Copy className="h-3.5 w-3.5" />
-                          </Button>
-                        )}
+
+                  {/* General Registration Body */}
+                  <div className="space-y-3 p-4 rounded-lg border bg-card">
+                    <h4 className="text-sm font-medium">General Registration Body</h4>
+                    <div className="space-y-3">
+                      <div className="space-y-2">
+                        <Label htmlFor="registration_body">Registration Body</Label>
+                        <Select value={formData.registration_body} onValueChange={(value) => setFormData({...formData, registration_body: value})}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select registration body" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="AASW">AASW (Australian Association of Social Workers)</SelectItem>
+                            <SelectItem value="AHPRA">AHPRA (Australian Health Practitioner Regulation Agency)</SelectItem>
+                            <SelectItem value="SWE">SWE (Social Work England)</SelectItem>
+                            <SelectItem value="BASW">BASW (British Association of Social Workers)</SelectItem>
+                            <SelectItem value="ACA">ACA (Australian Counselling Association)</SelectItem>
+                            <SelectItem value="ACMHN">ACMHN (Australian College of Mental Health Nurses)</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="registration_body">Registration Body</Label>
-                      <Select value={formData.registration_body} onValueChange={(value) => setFormData({...formData, registration_body: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select registration body" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="AASW">AASW (Australian Association of Social Workers)</SelectItem>
-                          <SelectItem value="AHPRA">AHPRA (Australian Health Practitioner Regulation Agency)</SelectItem>
-                          <SelectItem value="SWE">SWE (Social Work England)</SelectItem>
-                          <SelectItem value="BASW">BASW (British Association of Social Workers)</SelectItem>
-                          <SelectItem value="ACA">ACA (Australian Counselling Association)</SelectItem>
-                          <SelectItem value="ACMHN">ACMHN (Australian College of Mental Health Nurses)</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="registration_expiry">Registration Expiry</Label>
-                      <Input
-                        id="registration_expiry"
-                        type="date"
-                        value={formData.registration_expiry}
-                        onChange={(e) => setFormData({...formData, registration_expiry: e.target.value})}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="ahpra_number">AHPRA Number</Label>
-                      <Input
-                        id="ahpra_number"
-                        value={formData.ahpra_number}
-                        onChange={(e) => setFormData({...formData, ahpra_number: e.target.value})}
-                        placeholder="AHPRA registration number"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="ahpra_profession">AHPRA Profession</Label>
-                      <Input
-                        id="ahpra_profession"
-                        value={formData.ahpra_profession}
-                        onChange={(e) => setFormData({...formData, ahpra_profession: e.target.value})}
-                        placeholder="e.g., Psychology, Social Work"
+                      <SavedRegistrationCard
+                        title=""
+                        numberLabel="Registration Number"
+                        numberValue={formData.registration_number}
+                        numberPlaceholder="Registration number"
+                        expiryValue={formData.registration_expiry}
+                        onNumberChange={(v) => setFormData({...formData, registration_number: v})}
+                        onExpiryChange={(v) => setFormData({...formData, registration_expiry: v})}
+                        onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Copied', description: 'Registration number copied to clipboard' }); }}
+                        inline
                       />
                     </div>
                   </div>
