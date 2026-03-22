@@ -17,6 +17,76 @@ interface ProfessionalProfileModalProps {
   children: React.ReactNode;
 }
 
+// Saved/Edit registration field pattern
+const SavedRegistrationCard = ({
+  title, numberLabel, numberValue, numberPlaceholder, expiryValue,
+  onNumberChange, onExpiryChange, onCopy, accentClass, inline
+}: {
+  title: string; numberLabel: string; numberValue: string; numberPlaceholder: string;
+  expiryValue: string; onNumberChange: (v: string) => void; onExpiryChange: (v: string) => void;
+  onCopy: (v: string) => void; accentClass?: string; inline?: boolean;
+}) => {
+  const [editing, setEditing] = useState(false);
+  const hasSavedValue = !!numberValue.trim();
+
+  if (hasSavedValue && !editing) {
+    return (
+      <div className={`p-4 rounded-lg border ${accentClass || 'border-border bg-muted/30'} ${inline ? 'p-0 border-0 bg-transparent' : ''}`}>
+        {title && <h4 className="text-sm font-medium mb-2">{title}</h4>}
+        <div className="flex items-center justify-between gap-2">
+          <div className="space-y-1 min-w-0 flex-1">
+            <p className="text-xs text-muted-foreground">{numberLabel}</p>
+            <p className="text-sm font-mono font-medium truncate">{numberValue}</p>
+            {expiryValue && (
+              <>
+                <p className="text-xs text-muted-foreground mt-2">Expiry</p>
+                <p className="text-sm">{new Date(expiryValue + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+              </>
+            )}
+          </div>
+          <div className="flex gap-1 shrink-0">
+            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => onCopy(numberValue)}>
+              <Copy className="h-3.5 w-3.5" />
+            </Button>
+            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing(true)}>
+              <Pencil className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`p-4 rounded-lg border ${accentClass || 'border-border bg-muted/30'} space-y-3 ${inline ? 'p-0 border-0 bg-transparent' : ''}`}>
+      {title && <h4 className="text-sm font-medium">{title}</h4>}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs">{numberLabel}</Label>
+          <Input
+            value={numberValue}
+            onChange={(e) => onNumberChange(e.target.value)}
+            placeholder={numberPlaceholder}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs">Registration Expiry</Label>
+          <Input
+            type="date"
+            value={expiryValue}
+            onChange={(e) => onExpiryChange(e.target.value)}
+          />
+        </div>
+      </div>
+      {hasSavedValue && (
+        <Button type="button" variant="ghost" size="sm" className="text-xs" onClick={() => setEditing(false)}>
+          Done editing
+        </Button>
+      )}
+    </div>
+  );
+};
+
 const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) => {
   const { profile, updateProfile } = useAuth();
   const { toast } = useToast();
