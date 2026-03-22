@@ -191,8 +191,11 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
 
     try {
       const { halaxy_profile_url, ...rest } = formData;
+      // Resolve "other" registration body to the custom text
+      const resolvedBody = rest.registration_body === 'other' ? customRegistrationBody.trim() : rest.registration_body;
       const updates = {
         ...rest,
+        registration_body: resolvedBody,
         years_experience: formData.years_experience ? parseInt(formData.years_experience) : null,
         cpd_hours_current_year: formData.cpd_hours_current_year ? parseInt(formData.cpd_hours_current_year) : 0,
         cpd_requirements: formData.cpd_requirements ? parseInt(formData.cpd_requirements) : 0,
@@ -205,12 +208,20 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
 
       await updateProfile(updates);
       
+      // Sync saved state so cards flip to read-only
+      setLastSavedFormData({
+        aasw_membership_number: formData.aasw_membership_number,
+        swe_registration_number: formData.swe_registration_number,
+        registration_number: formData.registration_number,
+        registration_body: formData.registration_body,
+      });
+
       toast({
         title: "Profile updated",
         description: "Your professional profile has been updated successfully.",
       });
       
-      setOpen(false);
+      // Stay on the current tab — don't close the modal
     } catch (error: any) {
       toast({
         title: "Update failed",
