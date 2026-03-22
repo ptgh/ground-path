@@ -514,12 +514,13 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                       title="AASW Membership (Australia)"
                       numberLabel="Membership Number"
                       numberValue={formData.aasw_membership_number}
+                      savedValue={lastSavedFormData.aasw_membership_number}
                       numberPlaceholder="e.g., 123456"
                       expiryValue={formData.registration_expiry}
                       onNumberChange={(v) => setFormData({...formData, aasw_membership_number: v})}
                       onExpiryChange={(v) => setFormData({...formData, registration_expiry: v})}
                       onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Copied', description: 'AASW number copied to clipboard' }); }}
-                      onDelete={() => setFormData({...formData, aasw_membership_number: ''})}
+                      onDelete={() => { setFormData({...formData, aasw_membership_number: ''}); setLastSavedFormData(prev => ({...prev, aasw_membership_number: ''})); }}
                       accentClass="border-primary/20 bg-primary/5"
                     />
                   )}
@@ -530,12 +531,13 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                       title="SWE Registration (UK)"
                       numberLabel="Registration Number"
                       numberValue={formData.swe_registration_number}
+                      savedValue={lastSavedFormData.swe_registration_number}
                       numberPlaceholder="e.g., SW12345"
                       expiryValue={formData.registration_expiry}
                       onNumberChange={(v) => setFormData({...formData, swe_registration_number: v})}
                       onExpiryChange={(v) => setFormData({...formData, registration_expiry: v})}
                       onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Copied', description: 'SWE number copied to clipboard' }); }}
-                      onDelete={() => setFormData({...formData, swe_registration_number: ''})}
+                      onDelete={() => { setFormData({...formData, swe_registration_number: ''}); setLastSavedFormData(prev => ({...prev, swe_registration_number: ''})); }}
                       accentClass="border-accent/30 bg-accent/5"
                     />
                   )}
@@ -546,31 +548,55 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                     <div className="space-y-3">
                       <div className="space-y-2">
                         <Label htmlFor="registration_body">Registration Body</Label>
-                        <Select value={formData.registration_body} onValueChange={(value) => setFormData({...formData, registration_body: value})}>
+                        <Select value={formData.registration_body} onValueChange={(value) => { setFormData({...formData, registration_body: value}); if (value !== 'other') setCustomRegistrationBody(''); }}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select registration body" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="AASW">AASW (Australian Association of Social Workers)</SelectItem>
-                            <SelectItem value="AHPRA">AHPRA (Australian Health Practitioner Regulation Agency)</SelectItem>
-                            <SelectItem value="SWE">SWE (Social Work England)</SelectItem>
-                            <SelectItem value="BASW">BASW (British Association of Social Workers)</SelectItem>
-                            <SelectItem value="ACA">ACA (Australian Counselling Association)</SelectItem>
-                            <SelectItem value="ACMHN">ACMHN (Australian College of Mental Health Nurses)</SelectItem>
+                            {/* AU bodies */}
+                            {(formData.registration_country === 'AU' || formData.registration_country === 'BOTH') && (
+                              <>
+                                <SelectItem value="AHPRA">AHPRA (Australian Health Practitioner Regulation Agency)</SelectItem>
+                                <SelectItem value="ACA">ACA (Australian Counselling Association)</SelectItem>
+                                <SelectItem value="ACMHN">ACMHN (Australian College of Mental Health Nurses)</SelectItem>
+                                <SelectItem value="PACFA">PACFA (Psychotherapy & Counselling Federation)</SelectItem>
+                                <SelectItem value="APS">APS (Australian Psychological Society)</SelectItem>
+                              </>
+                            )}
+                            {/* UK bodies */}
+                            {(formData.registration_country === 'UK' || formData.registration_country === 'BOTH') && (
+                              <>
+                                <SelectItem value="BASW">BASW (British Association of Social Workers)</SelectItem>
+                                <SelectItem value="BACP">BACP (British Association for Counselling & Psychotherapy)</SelectItem>
+                                <SelectItem value="HCPC">HCPC (Health and Care Professions Council)</SelectItem>
+                                <SelectItem value="NMC">NMC (Nursing and Midwifery Council)</SelectItem>
+                              </>
+                            )}
                             <SelectItem value="other">Other</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
+                      {formData.registration_body === 'other' && (
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Specify Registration Body</Label>
+                          <Input
+                            value={customRegistrationBody}
+                            onChange={(e) => setCustomRegistrationBody(e.target.value)}
+                            placeholder="e.g., ANZASW, HKASW"
+                          />
+                        </div>
+                      )}
                       <SavedRegistrationCard
                         title=""
                         numberLabel="Registration Number"
                         numberValue={formData.registration_number}
+                        savedValue={lastSavedFormData.registration_number}
                         numberPlaceholder="Registration number"
                         expiryValue={formData.registration_expiry}
                         onNumberChange={(v) => setFormData({...formData, registration_number: v})}
                         onExpiryChange={(v) => setFormData({...formData, registration_expiry: v})}
                         onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Copied', description: 'Registration number copied to clipboard' }); }}
-                        onDelete={() => setFormData({...formData, registration_number: '', registration_body: ''})}
+                        onDelete={() => { setFormData({...formData, registration_number: '', registration_body: ''}); setLastSavedFormData(prev => ({...prev, registration_number: '', registration_body: ''})); setCustomRegistrationBody(''); }}
                         inline
                       />
                     </div>
