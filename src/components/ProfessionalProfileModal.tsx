@@ -479,6 +479,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                       onNumberChange={(v) => setFormData({...formData, swe_registration_number: v})}
                       onExpiryChange={(v) => setFormData({...formData, registration_expiry: v})}
                       onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Copied', description: 'SWE number copied to clipboard' }); }}
+                      onDelete={() => setFormData({...formData, swe_registration_number: ''})}
                       accentClass="border-accent/30 bg-accent/5"
                     />
                   )}
