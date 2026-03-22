@@ -287,18 +287,9 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
       setLastSavedFormData({
         aasw_membership_number: loadedData.aasw_membership_number,
         swe_registration_number: loadedData.swe_registration_number,
-        registration_number: loadedData.registration_number,
-        registration_body: loadedData.registration_body,
       });
       setSpecializations(profile.specializations || []);
       setQualifications(profile.qualifications || []);
-      // Check if existing registration_body is a custom/other value
-      const knownBodies = ['AHPRA', 'ACA', 'ACMHN', 'PACFA', 'APS', 'BASW', 'BACP', 'HCPC', 'NMC', ''];
-      if (loadedData.registration_body && !knownBodies.includes(loadedData.registration_body)) {
-        setCustomRegistrationBody(loadedData.registration_body);
-        setFormData(prev => ({ ...prev, registration_body: 'other' }));
-        setLastSavedFormData(prev => ({ ...prev, registration_body: 'other' }));
-      }
     }
   }, [profile, open]);
 
