@@ -298,18 +298,14 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     setLoading(true);
 
     try {
-      const { halaxy_profile_url, ...rest } = formData;
-      // Resolve "other" registration body to the custom text
-      const resolvedBody = rest.registration_body === 'other' ? customRegistrationBody.trim() : rest.registration_body;
+      const { halaxy_profile_url, registration_number, registration_body, registration_expiry, ...rest } = formData;
       const updates = {
         ...rest,
-        registration_body: resolvedBody,
         years_experience: formData.years_experience ? parseInt(formData.years_experience) : null,
         cpd_hours_current_year: formData.cpd_hours_current_year ? parseInt(formData.cpd_hours_current_year) : 0,
         cpd_requirements: formData.cpd_requirements ? parseInt(formData.cpd_requirements) : 0,
         specializations,
         qualifications,
-        registration_expiry: formData.registration_expiry || null,
         insurance_expiry: formData.insurance_expiry || null,
         halaxy_integration: { ...((profile?.halaxy_integration as any) || {}), profile_url: halaxy_profile_url || null }
       };
@@ -320,8 +316,6 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
       setLastSavedFormData({
         aasw_membership_number: formData.aasw_membership_number,
         swe_registration_number: formData.swe_registration_number,
-        registration_number: formData.registration_number,
-        registration_body: formData.registration_body,
       });
 
       toast({
