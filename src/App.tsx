@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from
 import { supabase } from "@/integrations/supabase/client";
 import AuthPage from "@/components/AuthPage";
 import AuthCallback from "@/components/AuthCallback";
+import AuthenticatedRoute from "@/components/AuthenticatedRoute";
+
 import LinkedInCallback from "@/components/LinkedInCallback";
 import Dashboard from "@/components/Dashboard";
 import ProtectedRoute from "@/components/ProtectedRoute";
