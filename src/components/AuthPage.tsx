@@ -65,7 +65,7 @@ const AuthPage = () => {
       navigate('/practitioner/verify', { replace: true });
       return;
     }
-    navigate('/', { replace: true });
+    navigate('/dashboard', { replace: true });
   };
 
   // Resend cooldown timer
