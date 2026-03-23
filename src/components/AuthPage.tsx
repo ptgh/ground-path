@@ -65,7 +65,7 @@ const AuthPage = () => {
       navigate('/practitioner/verify', { replace: true });
       return;
     }
-    navigate('/', { replace: true });
+    navigate('/dashboard', { replace: true });
   };
 
   // Resend cooldown timer
@@ -112,7 +112,7 @@ const AuthPage = () => {
       if (session?.user) {
         const { data: profileData } = await supabase.from('profiles').select('user_type').eq('user_id', session.user.id).single();
         const effectiveUserType = profileData?.user_type || session.user.user_metadata?.user_type;
-        navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/', { replace: true });
+        navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/dashboard', { replace: true });
       }
     } catch {
       toast({ title: 'Update failed', description: 'An unexpected error occurred.', variant: 'destructive' });
@@ -146,7 +146,7 @@ const AuthPage = () => {
           .single();
 
         const effectiveUserType = profileData?.user_type || session.user.user_metadata?.user_type;
-        navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/', { replace: true });
+        navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/dashboard', { replace: true });
         return;
       }
 
@@ -214,7 +214,7 @@ const AuthPage = () => {
       toast({ title: 'Welcome back!', description: 'You have been signed in successfully.' });
       const { data: profileData } = await supabase.from('profiles').select('user_type').eq('user_id', data.user!.id).single();
       const effectiveUserType = profileData?.user_type || data.user?.user_metadata?.user_type;
-      navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/', { replace: true });
+      navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/dashboard', { replace: true });
     } catch {
       toast({ title: 'Sign in failed', description: 'An unexpected error occurred.', variant: 'destructive' });
     } finally {

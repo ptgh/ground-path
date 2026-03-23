@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from
 import { supabase } from "@/integrations/supabase/client";
 import AuthPage from "@/components/AuthPage";
 import AuthCallback from "@/components/AuthCallback";
+import AuthenticatedRoute from "@/components/AuthenticatedRoute";
+
 import LinkedInCallback from "@/components/LinkedInCallback";
 import Dashboard from "@/components/Dashboard";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -41,6 +43,7 @@ import VerifyEmail from "./pages/VerifyEmail";
 import PractitionerVerify from "./pages/PractitionerVerify";
 import { AIAssistant } from "./components/AIAssistant";
 import { ClientAIAssistant } from "./components/ClientAIAssistant";
+import ClientDashboard from "./pages/ClientDashboard";
 import { useAuth } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
@@ -173,7 +176,8 @@ const App = () => {
             <Route path="/auth/callback" element={<LinkedInCallback />} />
             <Route path="/practitioner/dashboard" element={<VerifiedPractitionerRoute><Dashboard /></VerifiedPractitionerRoute>} />
             <Route path="/practitioner/messages" element={<VerifiedPractitionerRoute><Messages /></VerifiedPractitionerRoute>} />
-            <Route path="/messages" element={<VerifiedPractitionerRoute><Messages /></VerifiedPractitionerRoute>} />
+            <Route path="/messages" element={<AuthenticatedRoute><Messages /></AuthenticatedRoute>} />
+            <Route path="/dashboard" element={<AuthenticatedRoute><ClientDashboard /></AuthenticatedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <AIAssistantRouter />
