@@ -146,7 +146,7 @@ const AuthPage = () => {
           .single();
 
         const effectiveUserType = profileData?.user_type || session.user.user_metadata?.user_type;
-        navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/', { replace: true });
+        navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/dashboard', { replace: true });
         return;
       }
 
