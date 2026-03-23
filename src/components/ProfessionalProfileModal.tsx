@@ -387,6 +387,11 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
             <div className="flex-1 overflow-y-auto min-h-0 mt-4 space-y-4">
             <TabsContent value="basic" className="space-y-4 mt-0">
               <Card>
+                <CardContent className="pt-6">
+                  <AvatarUpload size="md" />
+                </CardContent>
+              </Card>
+              <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <User className="h-4 w-4" />
