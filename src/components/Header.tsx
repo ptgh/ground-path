@@ -252,16 +252,25 @@ const Header = () => {
                     {item.label}
                   </button>
                 ))}
-                {/* Messages icon for logged-in users on public pages */}
+                {/* Nav items for logged-in users on public pages */}
                 {isLoggedIn && (
-                  <button
-                    onClick={() => navigate('/messages')}
-                    className="relative text-gray-300 hover:text-white transition-colors font-medium px-3 py-2 rounded-md hover:bg-white/5 text-sm flex items-center gap-1.5"
-                  >
-                    <MessageSquare className="h-4 w-4" />
-                    Messages
-                    <NavUnreadBadge count={unreadCount} />
-                  </button>
+                  <>
+                    <button
+                      onClick={() => navigate('/dashboard')}
+                      className="relative text-gray-300 hover:text-white transition-colors font-medium px-3 py-2 rounded-md hover:bg-white/5 text-sm flex items-center gap-1.5"
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
+                    </button>
+                    <button
+                      onClick={() => navigate('/messages')}
+                      className="relative text-gray-300 hover:text-white transition-colors font-medium px-3 py-2 rounded-md hover:bg-white/5 text-sm flex items-center gap-1.5"
+                    >
+                      <MessageSquare className="h-4 w-4" />
+                      Messages
+                      <NavUnreadBadge count={unreadCount} />
+                    </button>
+                  </>
                 )}
               </>
             )}
