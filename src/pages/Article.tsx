@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import SEO from '@/components/SEO';
 import { Loader2, Calendar, User, ArrowLeft, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -165,6 +166,7 @@ const Article = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title={article.title} description={article.summary} path={`/articles/${article.slug}`} type="article" />
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div ref={articleRef} className="max-w-3xl mx-auto opacity-0">

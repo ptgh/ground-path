@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
+import SEO from '../components/SEO';
 import About from '../components/About';
 import Services from '../components/Services';
 import HowSessionsWork from '../components/HowSessionsWork';
@@ -73,6 +74,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEO path="/" />
       <Header />
       <main>
         <Hero />

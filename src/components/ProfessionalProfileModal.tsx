@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Settings, User, Shield, Briefcase, Heart, Plus, X, Linkedin, CheckCircle2, ExternalLink, Loader2, Copy, ShieldAlert, Pencil, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import AvatarUpload from './AvatarUpload';
 
 interface ProfessionalProfileModalProps {
   children: React.ReactNode;
@@ -385,6 +386,11 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
 
             <div className="flex-1 overflow-y-auto min-h-0 mt-4 space-y-4">
             <TabsContent value="basic" className="space-y-4 mt-0">
+              <Card>
+                <CardContent className="pt-6">
+                  <AvatarUpload size="md" />
+                </CardContent>
+              </Card>
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">

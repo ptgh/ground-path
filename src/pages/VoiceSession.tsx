@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import VoiceCounsellingSession from "@/components/VoiceCounsellingSession";
 import { Mic } from "lucide-react";
 
@@ -13,6 +14,7 @@ const VoiceSessionPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO title="AI Voice Support" description="Speak with an AI counselling assistant for immediate mental health support and guidance." path="/voice-session" />
       <Header />
       <main className="flex-1 flex items-center justify-center px-4 py-20">
         <div className="max-w-lg w-full text-center">
