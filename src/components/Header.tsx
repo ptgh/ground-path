@@ -58,7 +58,10 @@ const AuthAwareSection = () => {
               </p>
             </div>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/practitioner/dashboard')}>
+          <DropdownMenuItem onClick={() => {
+            const dashPath = profile?.user_type === 'practitioner' ? '/practitioner/dashboard' : '/dashboard';
+            navigate(dashPath);
+          }}>
             <User className="mr-2 h-4 w-4" />
             <span>Dashboard</span>
           </DropdownMenuItem>
