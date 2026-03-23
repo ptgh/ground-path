@@ -351,18 +351,27 @@ const Header = () => {
                     </button>
                   ))}
                   {isLoggedIn && (
-                    <button
-                      onClick={() => { navigate('/messages'); setIsMenuOpen(false); }}
-                      className="relative flex items-center gap-2 text-left text-gray-300 hover:text-white transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-white/5 text-sm"
-                    >
-                      <MessageSquare className="h-4 w-4" />
-                      Messages
-                      {unreadCount > 0 && (
-                        <Badge className="ml-auto bg-destructive text-destructive-foreground text-[10px] h-5 min-w-[20px]">
-                          {unreadCount}
-                        </Badge>
-                      )}
-                    </button>
+                    <>
+                      <button
+                        onClick={() => { navigate('/dashboard'); setIsMenuOpen(false); }}
+                        className="flex items-center gap-2 text-left text-gray-300 hover:text-white transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-white/5 text-sm"
+                      >
+                        <LayoutDashboard className="h-4 w-4" />
+                        Dashboard
+                      </button>
+                      <button
+                        onClick={() => { navigate('/messages'); setIsMenuOpen(false); }}
+                        className="relative flex items-center gap-2 text-left text-gray-300 hover:text-white transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-white/5 text-sm"
+                      >
+                        <MessageSquare className="h-4 w-4" />
+                        Messages
+                        {unreadCount > 0 && (
+                          <Badge className="ml-auto bg-destructive text-destructive-foreground text-[10px] h-5 min-w-[20px]">
+                            {unreadCount}
+                          </Badge>
+                        )}
+                      </button>
+                    </>
                   )}
                   <div className="border-t border-gray-700 my-2" />
                   <Button
