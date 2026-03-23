@@ -41,6 +41,7 @@ import VerifyEmail from "./pages/VerifyEmail";
 import PractitionerVerify from "./pages/PractitionerVerify";
 import { AIAssistant } from "./components/AIAssistant";
 import { ClientAIAssistant } from "./components/ClientAIAssistant";
+import ClientDashboard from "./pages/ClientDashboard";
 import { useAuth } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
