@@ -112,7 +112,7 @@ const AuthPage = () => {
       if (session?.user) {
         const { data: profileData } = await supabase.from('profiles').select('user_type').eq('user_id', session.user.id).single();
         const effectiveUserType = profileData?.user_type || session.user.user_metadata?.user_type;
-        navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/', { replace: true });
+        navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/dashboard', { replace: true });
       }
     } catch {
       toast({ title: 'Update failed', description: 'An unexpected error occurred.', variant: 'destructive' });
