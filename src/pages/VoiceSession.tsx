@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import VoiceCounsellingSession from "@/components/VoiceCounsellingSession";
 import { Mic } from "lucide-react";
 

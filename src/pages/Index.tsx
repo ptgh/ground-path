@@ -74,6 +74,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEO path="/" />
       <Header />
       <main>
         <Hero />

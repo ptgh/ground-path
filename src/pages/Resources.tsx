@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import { AIAssistant } from "@/components/AIAssistant";
 import { gsap } from 'gsap';
 
