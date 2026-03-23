@@ -166,6 +166,7 @@ const Article = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title={article.title} description={article.summary} path={`/articles/${article.slug}`} type="article" />
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div ref={articleRef} className="max-w-3xl mx-auto opacity-0">

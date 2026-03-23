@@ -6,6 +6,8 @@ import { MessageCircle, Phone, BookOpen, User } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ClientMessagesPanel } from '@/components/messaging/ClientMessagesPanel';
+import AvatarUpload from '@/components/AvatarUpload';
+import SEO from '@/components/SEO';
 
 const ClientDashboard = () => {
   const { user, profile } = useAuth();
