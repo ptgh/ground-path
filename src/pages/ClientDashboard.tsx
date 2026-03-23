@@ -15,6 +15,7 @@ const ClientDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO title="Dashboard" noindex />
       <Header />
 
       <main className="flex-1 pt-24 pb-16">
@@ -26,6 +27,19 @@ const ClientDashboard = () => {
             </h1>
             <p className="text-muted-foreground mt-2">Your mental health support hub</p>
           </div>
+
+          {/* Profile Photo */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <User className="h-5 w-5" />
+                Your Profile
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AvatarUpload size="md" />
+            </CardContent>
+          </Card>
 
           {/* Quick Actions */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
