@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Settings, User, Shield, Briefcase, Heart, Plus, X, Linkedin, CheckCircle2, ExternalLink, Loader2, Copy, ShieldAlert, Pencil, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import AvatarUpload from './AvatarUpload';
 
 interface ProfessionalProfileModalProps {
   children: React.ReactNode;
