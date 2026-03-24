@@ -469,6 +469,7 @@ export type Database = {
           cpd_hours_current_year: number | null
           cpd_requirements: number | null
           created_at: string | null
+          directory_approved: boolean | null
           display_name: string | null
           emergency_contact: Json | null
           halaxy_integration: Json | null
@@ -510,6 +511,7 @@ export type Database = {
           cpd_hours_current_year?: number | null
           cpd_requirements?: number | null
           created_at?: string | null
+          directory_approved?: boolean | null
           display_name?: string | null
           emergency_contact?: Json | null
           halaxy_integration?: Json | null
@@ -551,6 +553,7 @@ export type Database = {
           cpd_hours_current_year?: number | null
           cpd_requirements?: number | null
           created_at?: string | null
+          directory_approved?: boolean | null
           display_name?: string | null
           emergency_contact?: Json | null
           halaxy_integration?: Json | null
