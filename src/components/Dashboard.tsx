@@ -634,6 +634,13 @@ const Dashboard = () => {
               </TabsContent>
             )}
 
+            {/* Approvals Tab (Admin Only) */}
+            {isAdmin && (
+              <TabsContent value="approvals" className="space-y-6">
+                <PractitionerApprovals />
+              </TabsContent>
+            )}
+
             {/* Profile Tab */}
             <TabsContent value="profile" className="space-y-6">
               {/* Verification Status Banner */}
