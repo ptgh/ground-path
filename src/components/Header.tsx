@@ -132,7 +132,7 @@ const FlipLoginButton = ({ onClick }: { onClick: () => void }) => {
 const NavUnreadBadge = ({ count }: { count: number }) => {
   if (count <= 0) return null;
   return (
-    <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
+    <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
       {count > 99 ? '99+' : count}
     </span>
   );
