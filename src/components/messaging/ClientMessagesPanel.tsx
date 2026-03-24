@@ -62,7 +62,7 @@ export const ClientMessagesPanel = () => {
             {conversations.slice(0, 5).map((conv) => (
               <button
                 key={conv.id}
-                onClick={() => navigate(`/practitioner/messages?open=${conv.id}`)}
+                onClick={() => navigate(`/messages?open=${conv.id}`)}
                 className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-accent/50 transition-colors text-left"
               >
                 <Avatar className="h-9 w-9 flex-shrink-0">
@@ -88,7 +88,7 @@ export const ClientMessagesPanel = () => {
               variant="ghost"
               className="w-full mt-2"
               size="sm"
-              onClick={() => navigate('/practitioner/messages')}
+              onClick={() => navigate('/messages')}
             >
               View All Messages <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
