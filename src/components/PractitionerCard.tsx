@@ -100,6 +100,7 @@ export const PractitionerList = () => {
           .from('profiles')
           .select('user_id, display_name, avatar_url, profession, bio, specializations, practice_location, professional_verified')
           .eq('user_type', 'practitioner')
+          .eq('directory_approved', true)
           .in('verification_status', ['verified', 'pending_review'])
           .order('professional_verified', { ascending: false });
 

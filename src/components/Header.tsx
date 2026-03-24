@@ -132,7 +132,7 @@ const FlipLoginButton = ({ onClick }: { onClick: () => void }) => {
 const NavUnreadBadge = ({ count }: { count: number }) => {
   if (count <= 0) return null;
   return (
-    <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
+    <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
       {count > 99 ? '99+' : count}
     </span>
   );
@@ -327,7 +327,7 @@ const Header = () => {
                         <item.icon className="h-4 w-4" />
                         {item.label}
                         {item.showBadge && unreadCount > 0 && (
-                          <Badge className="ml-auto bg-destructive text-destructive-foreground text-[10px] h-5 min-w-[20px]">
+                          <Badge className="ml-auto bg-primary text-primary-foreground text-[10px] h-5 min-w-[20px]">
                             {unreadCount}
                           </Badge>
                         )}
@@ -369,7 +369,7 @@ const Header = () => {
                         <MessageSquare className="h-4 w-4" />
                         Messages
                         {unreadCount > 0 && (
-                          <Badge className="ml-auto bg-destructive text-destructive-foreground text-[10px] h-5 min-w-[20px]">
+                          <Badge className="ml-auto bg-primary text-primary-foreground text-[10px] h-5 min-w-[20px]">
                             {unreadCount}
                           </Badge>
                         )}
