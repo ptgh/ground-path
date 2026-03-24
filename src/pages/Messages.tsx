@@ -98,7 +98,7 @@ const Messages = () => {
                 />
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center text-center p-8 overflow-y-auto">
-                  {conversations.length === 0 ? (
+                  {!loading && conversations.length === 0 ? (
                     <>
                       <MessageSquare className="h-12 w-12 text-muted-foreground/30 mb-4" />
                       <h3 className="text-lg font-medium text-foreground">Start a conversation</h3>

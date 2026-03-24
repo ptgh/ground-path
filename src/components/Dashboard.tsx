@@ -307,7 +307,7 @@ const Dashboard = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className={`grid w-full h-auto p-1 gap-1 ${isAdmin ? 'grid-cols-4 lg:grid-cols-8' : 'grid-cols-4 lg:grid-cols-7'}`}>
+            <TabsList className={`grid w-full h-auto p-1 gap-1 ${isAdmin ? 'grid-cols-4 lg:grid-cols-9' : 'grid-cols-4 lg:grid-cols-7'}`}>
               <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Overview</TabsTrigger>
               <TabsTrigger value="messages" className="relative text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
                 <MessageSquare className="h-3 w-3 mr-1 hidden sm:inline" />
@@ -323,10 +323,16 @@ const Dashboard = () => {
               <TabsTrigger value="history" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">History</TabsTrigger>
               <TabsTrigger value="notes" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Notes</TabsTrigger>
               {isAdmin && (
-                <TabsTrigger value="articles" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
-                  <Newspaper className="h-3 w-3 mr-1 hidden sm:inline" />
-                  Articles
-                </TabsTrigger>
+                <>
+                  <TabsTrigger value="articles" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+                    <Newspaper className="h-3 w-3 mr-1 hidden sm:inline" />
+                    Articles
+                  </TabsTrigger>
+                  <TabsTrigger value="approvals" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+                    <Shield className="h-3 w-3 mr-1 hidden sm:inline" />
+                    Approvals
+                  </TabsTrigger>
+                </>
               )}
               <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Settings</TabsTrigger>
             </TabsList>
