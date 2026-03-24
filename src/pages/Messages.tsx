@@ -97,12 +97,27 @@ const Messages = () => {
                   onBack={() => setSelected(null)}
                 />
               ) : (
-                <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
-                  <MessageSquare className="h-12 w-12 text-muted-foreground/30 mb-4" />
-                  <h3 className="text-lg font-medium text-muted-foreground">Select a conversation</h3>
-                  <p className="text-sm text-muted-foreground/70 mt-1">
-                    Choose a conversation from the list to start messaging
-                  </p>
+                <div className="flex-1 flex flex-col items-center justify-center text-center p-8 overflow-y-auto">
+                  {conversations.length === 0 ? (
+                    <>
+                      <MessageSquare className="h-12 w-12 text-muted-foreground/30 mb-4" />
+                      <h3 className="text-lg font-medium text-foreground">Start a conversation</h3>
+                      <p className="text-sm text-muted-foreground mt-1 mb-6">
+                        Choose a practitioner below to send your first message
+                      </p>
+                      <div className="w-full max-w-2xl text-left">
+                        <PractitionerList />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <MessageSquare className="h-12 w-12 text-muted-foreground/30 mb-4" />
+                      <h3 className="text-lg font-medium text-muted-foreground">Select a conversation</h3>
+                      <p className="text-sm text-muted-foreground/70 mt-1">
+                        Choose a conversation from the list to start messaging
+                      </p>
+                    </>
+                  )}
                 </div>
               )}
             </div>

@@ -83,6 +83,19 @@ const Index = () => {
         <Services />
         <HowSessionsWork />
         <VoiceCounsellingSection />
+        {/* Our Practitioners */}
+        <section id="practitioners" className="py-16 bg-accent/30">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-bold text-foreground mb-3">Our Practitioners</h2>
+              <div className="w-16 h-1 bg-primary mx-auto mb-4 rounded-full" />
+              <p className="text-muted-foreground max-w-xl mx-auto">
+                Connect directly with a qualified mental health professional. Send a message or book an online session.
+              </p>
+            </div>
+            <PractitionerList />
+          </div>
+        </section>
         <Newsletter />
         <Contact />
       </main>

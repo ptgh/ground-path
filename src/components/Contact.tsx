@@ -204,13 +204,20 @@ const Contact = () => {
                   Join Mailing List
                 </button>
                 <button
-                  onClick={() => window.location.href = '/messages'}
+                  onClick={() => {
+                    const el = document.getElementById('practitioners');
+                    if (el) {
+                      el.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                      window.location.href = '/#practitioners';
+                    }
+                  }}
                   className="w-full flex items-center justify-center gap-2 border border-sage-600 text-sage-600 py-3 px-4 rounded-lg hover:bg-sage-50 transition-colors font-medium"
                 >
                   <MessageCircle className="h-4 w-4" />
                   Send a Secure Message
                 </button>
-                <p className="text-xs text-gray-500 text-center">Sign in required. Messages are private and encrypted.</p>
+                <p className="text-xs text-gray-500 text-center">Choose a practitioner above to start a secure conversation.</p>
               </div>
             </div>
 

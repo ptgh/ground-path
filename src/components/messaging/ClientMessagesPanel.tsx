@@ -88,7 +88,7 @@ export const ClientMessagesPanel = () => {
               variant="ghost"
               className="w-full mt-2"
               size="sm"
-              onClick={() => navigate('/practitioner/messages')}
+              onClick={() => navigate('/messages')}
             >
               View All Messages <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
