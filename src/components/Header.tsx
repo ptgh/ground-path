@@ -327,7 +327,7 @@ const Header = () => {
                         <item.icon className="h-4 w-4" />
                         {item.label}
                         {item.showBadge && unreadCount > 0 && (
-                          <Badge className="ml-auto bg-destructive text-destructive-foreground text-[10px] h-5 min-w-[20px]">
+                          <Badge className="ml-auto bg-primary text-primary-foreground text-[10px] h-5 min-w-[20px]">
                             {unreadCount}
                           </Badge>
                         )}
