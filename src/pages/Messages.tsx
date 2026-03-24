@@ -4,6 +4,7 @@ import { MessageSquare } from 'lucide-react';
 import Header from '@/components/Header';
 import { ConversationList } from '@/components/messaging/ConversationList';
 import { MessageThread } from '@/components/messaging/MessageThread';
+import { PractitionerList } from '@/components/PractitionerCard';
 import { Conversation, messagingService } from '@/services/messagingService';
 import { useAuth } from '@/hooks/useAuth';
 
