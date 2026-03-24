@@ -313,7 +313,7 @@ const Dashboard = () => {
                 <MessageSquare className="h-3 w-3 mr-1 hidden sm:inline" />
                 Messages
                 {unreadCount > 0 && (
-                  <span className="ml-1 inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
+                  <span className="ml-1 inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
                     {unreadCount > 99 ? '99+' : unreadCount}
                   </span>
                 )}
