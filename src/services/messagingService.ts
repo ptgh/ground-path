@@ -183,7 +183,7 @@ export const messagingService = {
         .in('user_id', senderIds);
       if (profiles) {
         profiles.forEach(p => {
-          nameMap[p.user_id] = p.display_name || 'Unknown';
+          nameMap[p.user_id] = p.display_name || 'User';
         });
       }
     }
