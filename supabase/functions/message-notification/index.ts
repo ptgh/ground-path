@@ -120,7 +120,7 @@ serve(async (req: Request): Promise<Response> => {
       body: JSON.stringify({
         from: 'Groundpath <connect@groundpath.com.au>',
         to: [recipientUser.email],
-        subject: `New message from ${senderName || 'a participant'} — Groundpath`,
+        subject: `New message from ${senderName || 'a client'} — Groundpath`,
         html: `
           <div style="font-family: 'Inter', Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px; background-color: #ffffff;">
             <div style="text-align: center; margin-bottom: 28px;">
@@ -130,11 +130,11 @@ serve(async (req: Request): Promise<Response> => {
             </div>
             <div style="background-color: #f8faf8; border-left: 3px solid #4a7c4f; padding: 16px 20px; border-radius: 0 8px 8px 0; margin-bottom: 24px;">
               <p style="font-size: 14px; color: #374151; line-height: 1.6; margin: 0;">
-                You have a new message from <strong>${senderName || 'a participant'}</strong> in Groundpath.
+                You have a new message from <strong>${senderName || 'a client'}</strong> in Groundpath.
               </p>
             </div>
             <div style="text-align: center; margin-bottom: 28px;">
-              <a href="https://groundpath.com.au/practitioner/messages"
+              <a href="https://groundpath.com.au/messages"
                  style="display: inline-block; background-color: #4a7c4f; color: #ffffff; text-decoration: none; padding: 12px 32px; border-radius: 6px; font-size: 14px; font-weight: 500;">
                 View Message
               </a>

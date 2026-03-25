@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import SEO from '@/components/SEO';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -199,6 +200,7 @@ const PractitionerVerify = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-muted">
+      <SEO title="Practitioner Verification" noindex />
       <Header />
       <main className="flex-1 flex items-center justify-center p-4 pt-24">
         <Card className="w-full max-w-lg">

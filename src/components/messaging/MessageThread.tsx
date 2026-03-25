@@ -368,14 +368,21 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
               <div className="flex items-center justify-center my-4">
                 <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{group.date}</span>
               </div>
-              {group.messages.map((msg) => {
+              {group.messages.map((msg, idx) => {
                 const isOwn = msg.sender_id === user?.id;
+                const showName = idx === 0 || group.messages[idx - 1]?.sender_id !== msg.sender_id;
                 const hasText = msg.message_text && msg.message_text.trim().length > 0;
                 const isFailed = msg._status === 'failed';
                 const isSending = msg._status === 'sending';
 
                 return (
-                  <div key={msg.id} className={`flex mb-2 group ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                  <div key={msg.id} className={`flex flex-col mb-2 group ${isOwn ? 'items-end' : 'items-start'}`}>
+                    {showName && (
+                      <span className={`text-[10px] font-medium text-muted-foreground mb-0.5 px-1 ${isOwn ? 'text-right' : 'text-left'}`}>
+                        {isOwn ? (profile?.display_name || 'You') : conversation.other_party_name}
+                      </span>
+                    )}
+                    <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
                     {/* Delete button for own messages (not optimistic) */}
                     {isOwn && !msg._tempId && (
                       <Button
@@ -420,6 +427,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
                           <MessageStatus status={msg._status || 'sent'} />
                         )}
                       </div>
+                    </div>
                     </div>
                   </div>
                 );

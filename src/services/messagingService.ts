@@ -132,7 +132,7 @@ export const messagingService = {
       const profile = profileMap[otherId];
       return {
         ...c,
-        other_party_name: profile?.display_name || 'Unknown',
+        other_party_name: profile?.display_name || 'User',
         other_party_avatar: profile?.avatar_url || undefined,
       };
     }) as Conversation[];
@@ -183,14 +183,14 @@ export const messagingService = {
         .in('user_id', senderIds);
       if (profiles) {
         profiles.forEach(p => {
-          nameMap[p.user_id] = p.display_name || 'Unknown';
+          nameMap[p.user_id] = p.display_name || 'User';
         });
       }
     }
 
     const messages = (data || []).map(m => ({
       ...m,
-      sender_name: nameMap[m.sender_id] || 'Unknown',
+      sender_name: nameMap[m.sender_id] || 'User',
       _status: currentUserId ? getMessageStatus(m as Message, currentUserId) : ('sent' as MessageStatus),
     })) as Message[];
 
@@ -422,7 +422,7 @@ export const messagingService = {
     await supabase.functions.invoke('message-notification', {
       body: {
         recipientId,
-        senderName: senderProfile?.display_name || 'A participant',
+        senderName: senderProfile?.display_name || 'A client',
         conversationId,
       },
     });
