@@ -120,7 +120,7 @@ serve(async (req: Request): Promise<Response> => {
       body: JSON.stringify({
         from: 'Groundpath <connect@groundpath.com.au>',
         to: [recipientUser.email],
-        subject: `New message from ${senderName || 'a participant'} — Groundpath`,
+        subject: `New message from ${senderName || 'a client'} — Groundpath`,
         html: `
           <div style="font-family: 'Inter', Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px; background-color: #ffffff;">
             <div style="text-align: center; margin-bottom: 28px;">
