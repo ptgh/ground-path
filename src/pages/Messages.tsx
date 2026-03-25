@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { MessageSquare } from 'lucide-react';
 import Header from '@/components/Header';
+import SEO from '@/components/SEO';
 import { ConversationList } from '@/components/messaging/ConversationList';
 import { MessageThread } from '@/components/messaging/MessageThread';
 import { PractitionerList } from '@/components/PractitionerCard';
