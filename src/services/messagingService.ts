@@ -132,7 +132,7 @@ export const messagingService = {
       const profile = profileMap[otherId];
       return {
         ...c,
-        other_party_name: profile?.display_name || 'Unknown',
+        other_party_name: profile?.display_name || 'User',
         other_party_avatar: profile?.avatar_url || undefined,
       };
     }) as Conversation[];
