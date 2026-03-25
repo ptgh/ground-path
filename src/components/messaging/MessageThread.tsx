@@ -368,8 +368,9 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
               <div className="flex items-center justify-center my-4">
                 <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{group.date}</span>
               </div>
-              {group.messages.map((msg) => {
+              {group.messages.map((msg, idx) => {
                 const isOwn = msg.sender_id === user?.id;
+                const showName = idx === 0 || group.messages[idx - 1]?.sender_id !== msg.sender_id;
                 const hasText = msg.message_text && msg.message_text.trim().length > 0;
                 const isFailed = msg._status === 'failed';
                 const isSending = msg._status === 'sending';
