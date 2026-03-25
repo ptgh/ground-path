@@ -161,9 +161,9 @@ const Dashboard = () => {
 
   const getWelcomeMessage = () => {
     if (isAdmin) return 'Administrator Dashboard';
-    if (isSocialWorker && isMentalHealthProfessional) return 'Welcome, Social Worker & Mental Health Professional';
-    if (isSocialWorker) return 'Welcome, Social Worker';
-    if (isMentalHealthProfessional) return 'Welcome, Mental Health Professional';
+    if (userRoles.includes('social_worker') && userRoles.includes('mental_health_professional')) return 'Welcome, Social Worker & Mental Health Professional';
+    if (userRoles.includes('social_worker')) return 'Welcome, Social Worker';
+    if (userRoles.includes('mental_health_professional')) return 'Welcome, Mental Health Professional';
     return 'Welcome to your Professional Dashboard';
   };
 
