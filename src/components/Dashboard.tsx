@@ -305,8 +305,14 @@ const Dashboard = () => {
                   </span>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="tools" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Professional</TabsTrigger>
-              <TabsTrigger value="resources" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Resources</TabsTrigger>
+              <TabsTrigger value="resources" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+                <BookOpen className="h-3 w-3 mr-1 hidden sm:inline" />
+                Learning
+              </TabsTrigger>
+              <TabsTrigger value="forms" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+                <FileText className="h-3 w-3 mr-1 hidden sm:inline" />
+                Forms
+              </TabsTrigger>
               <TabsTrigger value="history" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">History</TabsTrigger>
               <TabsTrigger value="notes" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Notes</TabsTrigger>
               {isAdmin && (
