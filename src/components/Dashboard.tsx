@@ -235,18 +235,6 @@ const Dashboard = () => {
     }
   ];
 
-  const professionalTools = {
-    social_worker: [
-      { name: 'AASW Registration', description: 'Manage registration status', icon: Shield },
-      { name: 'CPD Tracking', description: 'Track professional development', icon: Award },
-      { name: 'NDIS Resources', description: 'Access NDIS tools', icon: Users }
-    ],
-    mental_health_professional: [
-      { name: 'Mental Health Tools', description: 'Assessment and therapy tools', icon: Brain },
-      { name: 'Crisis Resources', description: 'Emergency intervention guides', icon: Heart },
-      { name: 'Treatment Planning', description: 'Plan client treatment', icon: BarChart3 }
-    ]
-  };
 
   return (
     <div className="min-h-screen bg-background">
