@@ -130,7 +130,7 @@ serve(async (req: Request): Promise<Response> => {
             </div>
             <div style="background-color: #f8faf8; border-left: 3px solid #4a7c4f; padding: 16px 20px; border-radius: 0 8px 8px 0; margin-bottom: 24px;">
               <p style="font-size: 14px; color: #374151; line-height: 1.6; margin: 0;">
-                You have a new message from <strong>${senderName || 'a participant'}</strong> in Groundpath.
+                You have a new message from <strong>${senderName || 'a client'}</strong> in Groundpath.
               </p>
             </div>
             <div style="text-align: center; margin-bottom: 28px;">
