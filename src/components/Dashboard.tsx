@@ -16,11 +16,7 @@ import {
   Calendar, 
   Activity, 
   Settings,
-  Heart,
-  Users,
-  Brain,
   Shield,
-  Award,
   Clock,
   BarChart3,
   PlusCircle,
@@ -161,15 +157,13 @@ const Dashboard = () => {
   }
 
   const userRoles = roles.map(r => r.role);
-  const isSocialWorker = userRoles.includes('social_worker');
-  const isMentalHealthProfessional = userRoles.includes('mental_health_professional');
   const isAdmin = userRoles.includes('admin');
 
   const getWelcomeMessage = () => {
     if (isAdmin) return 'Administrator Dashboard';
-    if (isSocialWorker && isMentalHealthProfessional) return 'Welcome, Social Worker & Mental Health Professional';
-    if (isSocialWorker) return 'Welcome, Social Worker';
-    if (isMentalHealthProfessional) return 'Welcome, Mental Health Professional';
+    if (userRoles.includes('social_worker') && userRoles.includes('mental_health_professional')) return 'Welcome, Social Worker & Mental Health Professional';
+    if (userRoles.includes('social_worker')) return 'Welcome, Social Worker';
+    if (userRoles.includes('mental_health_professional')) return 'Welcome, Mental Health Professional';
     return 'Welcome to your Professional Dashboard';
   };
 
@@ -237,18 +231,6 @@ const Dashboard = () => {
     }
   ];
 
-  const professionalTools = {
-    social_worker: [
-      { name: 'AASW Registration', description: 'Manage registration status', icon: Shield },
-      { name: 'CPD Tracking', description: 'Track professional development', icon: Award },
-      { name: 'NDIS Resources', description: 'Access NDIS tools', icon: Users }
-    ],
-    mental_health_professional: [
-      { name: 'Mental Health Tools', description: 'Assessment and therapy tools', icon: Brain },
-      { name: 'Crisis Resources', description: 'Emergency intervention guides', icon: Heart },
-      { name: 'Treatment Planning', description: 'Plan client treatment', icon: BarChart3 }
-    ]
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -319,8 +301,14 @@ const Dashboard = () => {
                   </span>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="tools" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Professional</TabsTrigger>
-              <TabsTrigger value="resources" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Resources</TabsTrigger>
+              <TabsTrigger value="resources" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+                <BookOpen className="h-3 w-3 mr-1 hidden sm:inline" />
+                Learning
+              </TabsTrigger>
+              <TabsTrigger value="forms" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+                <FileText className="h-3 w-3 mr-1 hidden sm:inline" />
+                Forms
+              </TabsTrigger>
               <TabsTrigger value="history" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">History</TabsTrigger>
               <TabsTrigger value="notes" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Notes</TabsTrigger>
               {isAdmin && (
@@ -487,83 +475,57 @@ const Dashboard = () => {
             </TabsContent>
 
 
-            <TabsContent value="tools" className="space-y-6">
-              {isSocialWorker && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="h-5 w-5" />
-                      Social Work Tools
-                    </CardTitle>
-                    <CardDescription>
-                      Specialized tools for social work practice
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                       {professionalTools.social_worker.map((tool, index) => (
-                         <Button key={index} variant="outline" className="dashboard-cta h-auto p-4 flex flex-col space-y-2 border-sage-200 hover:bg-sage-50">
-                           <tool.icon className="h-8 w-8 text-sage-600" />
-                           <div className="text-center">
-                             <div className="font-medium">{tool.name}</div>
-                             <div className="text-xs text-muted-foreground">{tool.description}</div>
-                           </div>
-                         </Button>
-                       ))}
-                     </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {isMentalHealthProfessional && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Brain className="h-5 w-5" />
-                      Mental Health Tools
-                    </CardTitle>
-                    <CardDescription>
-                      Specialized tools for mental health practice
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                       {professionalTools.mental_health_professional.map((tool, index) => (
-                         <Button key={index} variant="outline" className="dashboard-cta h-auto p-4 flex flex-col space-y-2 border-sage-200 hover:bg-sage-50">
-                           <tool.icon className="h-8 w-8 text-sage-600" />
-                           <div className="text-center">
-                             <div className="font-medium">{tool.name}</div>
-                             <div className="text-xs text-muted-foreground">{tool.description}</div>
-                           </div>
-                         </Button>
-                       ))}
-                     </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>General Professional Resources</CardTitle>
-                </CardHeader>
-                <CardContent>
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <Button variant="outline" className="dashboard-cta border-sage-200 text-sage-700 hover:bg-sage-50" onClick={() => setActiveTab('resources')}>
-                       <BookOpen className="h-4 w-4 mr-2" />
-                       Professional Resources
-                     </Button>
-                     <Button variant="outline" className="dashboard-cta border-sage-200 text-sage-700 hover:bg-sage-50" onClick={() => navigate('/practitioner/forms')}>
-                       <FileText className="h-4 w-4 mr-2" />
-                       Professional Forms
-                     </Button>
-                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Resources Tab */}
+            {/* Learning Tab */}
             <TabsContent value="resources" className="space-y-6">
               <ProfessionalResources />
+            </TabsContent>
+
+            {/* Forms Tab */}
+            <TabsContent value="forms" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Professional Forms
+                  </CardTitle>
+                  <CardDescription>
+                    Clinical assessments, intake forms, and professional documentation
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {[
+                      { label: 'Client Intake', desc: 'New client assessment', path: '/practitioner/forms/client-intake/fill' },
+                      { label: 'PHQ-9', desc: 'Depression screening', path: '/practitioner/forms/phq-9/fill' },
+                      { label: 'GAD-7', desc: 'Anxiety screening', path: '/practitioner/forms/gad-7/fill' },
+                      { label: 'DASS-21', desc: 'Depression, anxiety & stress', path: '/practitioner/forms/dass-21/fill' },
+                      { label: 'Mental State Exam', desc: 'MSE assessment', path: '/practitioner/forms/mental-status-exam/fill' },
+                      { label: 'Suicide Risk', desc: 'Risk assessment', path: '/practitioner/forms/suicide-risk-assessment/fill' },
+                      { label: 'Safety Plan', desc: 'Client safety planning', path: '/practitioner/forms/safety-planning/fill' },
+                      { label: 'Treatment Plan', desc: 'Treatment planning', path: '/practitioner/forms/treatment-plan/fill' },
+                      { label: 'Progress Notes', desc: 'Session documentation', path: '/practitioner/forms/progress-notes/fill' },
+                      { label: 'GAF Scale', desc: 'Global assessment', path: '/practitioner/forms/gaf-scale/fill' },
+                      { label: 'Crisis Intervention', desc: 'Emergency protocol', path: '/practitioner/forms/crisis-intervention/fill' },
+                      { label: 'CPD Log', desc: 'Professional development', path: '/practitioner/forms/cpd-log/fill' },
+                      { label: 'Incident Report', desc: 'Report documentation', path: '/practitioner/forms/incident-report/fill' },
+                      { label: 'Case Review', desc: 'Case analysis', path: '/practitioner/forms/case-review/fill' },
+                      { label: 'Supervision Record', desc: 'Supervision documentation', path: '/practitioner/forms/supervision-record/fill' },
+                      { label: 'Reflective Practice', desc: 'Reflection journal', path: '/practitioner/forms/reflective-practice/fill' },
+                      { label: 'K10', desc: 'Psychological distress', path: '/practitioner/forms/k10/fill' },
+                    ].map((form) => (
+                      <Button
+                        key={form.path}
+                        variant="outline"
+                        className="dashboard-cta h-auto p-4 flex flex-col space-y-1 border-sage-200 hover:bg-sage-50 text-left items-start"
+                        onClick={() => navigate(form.path)}
+                      >
+                        <span className="font-medium text-sm">{form.label}</span>
+                        <span className="text-xs text-muted-foreground">{form.desc}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             {/* Form History Tab */}
