@@ -190,7 +190,7 @@ export const messagingService = {
 
     const messages = (data || []).map(m => ({
       ...m,
-      sender_name: nameMap[m.sender_id] || 'Unknown',
+      sender_name: nameMap[m.sender_id] || 'User',
       _status: currentUserId ? getMessageStatus(m as Message, currentUserId) : ('sent' as MessageStatus),
     })) as Message[];
 
