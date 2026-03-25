@@ -161,8 +161,6 @@ const Dashboard = () => {
   }
 
   const userRoles = roles.map(r => r.role);
-  const isSocialWorker = userRoles.includes('social_worker');
-  const isMentalHealthProfessional = userRoles.includes('mental_health_professional');
   const isAdmin = userRoles.includes('admin');
 
   const getWelcomeMessage = () => {
