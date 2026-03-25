@@ -43,6 +43,7 @@ import VerifyEmail from "./pages/VerifyEmail";
 import PractitionerVerify from "./pages/PractitionerVerify";
 import { AIAssistant } from "./components/AIAssistant";
 import { ClientAIAssistant } from "./components/ClientAIAssistant";
+import GoogleAnalytics from "./components/GoogleAnalytics";
 import ClientDashboard from "./pages/ClientDashboard";
 import { useAuth } from "./hooks/useAuth";
 
