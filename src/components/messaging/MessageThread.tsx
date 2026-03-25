@@ -376,7 +376,13 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
                 const isSending = msg._status === 'sending';
 
                 return (
-                  <div key={msg.id} className={`flex mb-2 group ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                  <div key={msg.id} className={`flex flex-col mb-2 group ${isOwn ? 'items-end' : 'items-start'}`}>
+                    {showName && (
+                      <span className={`text-[10px] font-medium text-muted-foreground mb-0.5 px-1 ${isOwn ? 'text-right' : 'text-left'}`}>
+                        {isOwn ? (profile?.display_name || 'You') : conversation.other_party_name}
+                      </span>
+                    )}
+                    <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
                     {/* Delete button for own messages (not optimistic) */}
                     {isOwn && !msg._tempId && (
                       <Button
