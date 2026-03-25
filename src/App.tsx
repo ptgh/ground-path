@@ -143,6 +143,7 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <AuthCompletionRouter />
+          <GoogleAnalytics />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/resources" element={<Resources />} />

@@ -134,7 +134,7 @@ serve(async (req: Request): Promise<Response> => {
               </p>
             </div>
             <div style="text-align: center; margin-bottom: 28px;">
-              <a href="https://groundpath.com.au/practitioner/messages"
+              <a href="https://groundpath.com.au/messages"
                  style="display: inline-block; background-color: #4a7c4f; color: #ffffff; text-decoration: none; padding: 12px 32px; border-radius: 6px; font-size: 14px; font-weight: 500;">
                 View Message
               </a>

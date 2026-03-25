@@ -422,7 +422,7 @@ export const messagingService = {
     await supabase.functions.invoke('message-notification', {
       body: {
         recipientId,
-        senderName: senderProfile?.display_name || 'A participant',
+        senderName: senderProfile?.display_name || 'A client',
         conversationId,
       },
     });

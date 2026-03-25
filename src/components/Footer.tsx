@@ -69,7 +69,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <div className="text-sm text-gray-400">
-            <span className="whitespace-nowrap">© 2025 groundpath. All rights reserved.</span> • <span className="whitespace-nowrap">ABN: 98 434 283 298</span> • <span className="whitespace-nowrap">AASW Member #486997</span>
+            <span className="whitespace-nowrap">© 2026 groundpath. All rights reserved.</span> • <span className="whitespace-nowrap">ABN: 98 434 283 298</span> • <span className="whitespace-nowrap">AASW Member #486997</span> • <span className="whitespace-nowrap">SWE SW134920</span>
           </div>
           <div className="text-sm text-gray-400 mt-4 md:mt-0 space-x-4">
             <button 

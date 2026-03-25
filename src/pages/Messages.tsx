@@ -66,6 +66,7 @@ const Messages = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO title="Messages" noindex />
       <Header />
       <main className="flex-1 pt-[73px]">
         <div className="max-w-6xl mx-auto h-[calc(100vh-73px)]">

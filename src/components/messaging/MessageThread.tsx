@@ -428,6 +428,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
                         )}
                       </div>
                     </div>
+                    </div>
                   </div>
                 );
               })}
