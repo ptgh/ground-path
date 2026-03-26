@@ -14,9 +14,20 @@ import Logo from './Logo';
 
 // Auth-aware component that only loads auth when needed
 const AuthAwareSection = () => {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, roles, signOut } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const getRoleBadge = () => {
+    const isAdmin = roles.some(r => r.role === 'admin');
+    const isPractitioner = profile?.user_type === 'practitioner' || roles.some(r => r.role === 'social_worker' || r.role === 'mental_health_professional');
+    
+    if (isAdmin) return { label: 'Administrator', className: 'bg-emerald-800 text-emerald-50' };
+    if (isPractitioner) return { label: 'Practitioner', className: 'bg-emerald-600/20 text-emerald-700' };
+    return { label: 'Client', className: 'bg-emerald-100 text-emerald-600' };
+  };
+
+  const roleBadge = getRoleBadge();
 
   const handleSignOut = async () => {
     try {
