@@ -14,9 +14,20 @@ import Logo from './Logo';
 
 // Auth-aware component that only loads auth when needed
 const AuthAwareSection = () => {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, roles, signOut } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const getRoleBadge = () => {
+    const isAdmin = roles.some(r => r.role === 'admin');
+    const isPractitioner = profile?.user_type === 'practitioner' || roles.some(r => r.role === 'social_worker' || r.role === 'mental_health_professional');
+    
+    if (isAdmin) return { label: 'Administrator', className: 'bg-emerald-800 text-emerald-50' };
+    if (isPractitioner) return { label: 'Practitioner', className: 'bg-emerald-600/20 text-emerald-700' };
+    return { label: 'Client', className: 'bg-emerald-100 text-emerald-600' };
+  };
+
+  const roleBadge = getRoleBadge();
 
   const handleSignOut = async () => {
     try {
@@ -49,13 +60,16 @@ const AuthAwareSection = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuItem className="font-normal">
-            <div className="flex flex-col space-y-1">
+            <div className="flex flex-col space-y-1.5">
               <p className="text-sm font-medium leading-none">
                 {profile?.display_name || user.email}
               </p>
               <p className="text-xs leading-none text-muted-foreground">
                 {user.email}
               </p>
+              <span className={`inline-flex w-fit items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${roleBadge.className}`}>
+                {roleBadge.label}
+              </span>
             </div>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => {
