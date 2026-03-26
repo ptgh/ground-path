@@ -60,13 +60,16 @@ const AuthAwareSection = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuItem className="font-normal">
-            <div className="flex flex-col space-y-1">
+            <div className="flex flex-col space-y-1.5">
               <p className="text-sm font-medium leading-none">
                 {profile?.display_name || user.email}
               </p>
               <p className="text-xs leading-none text-muted-foreground">
                 {user.email}
               </p>
+              <span className={`inline-flex w-fit items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${roleBadge.className}`}>
+                {roleBadge.label}
+              </span>
             </div>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => {
