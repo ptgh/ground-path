@@ -179,7 +179,7 @@ serve(async (req) => {
 
     if (!response.ok) {
       const error = await response.text();
-      console.error('OpenAI API error:', error);
+      console.error('AI Gateway error:', error);
       throw new Error('Failed to get response from AI service');
     }
 
