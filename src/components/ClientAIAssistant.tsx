@@ -690,7 +690,7 @@ export const ClientAIAssistant = () => {
                     <Globe className="h-7 w-7 text-primary" />
                   </div>
                 </div>
-                <h3 className="text-xl font-semibold text-foreground text-center mb-2">Welcome to Ground Path</h3>
+                <h3 className="text-xl font-semibold text-foreground text-center mb-2">Welcome to groundpath</h3>
                 <p className="text-muted-foreground text-center text-sm mb-6">Please select your location so I can provide relevant resources and information.</p>
                 <div className="flex flex-col gap-2">
                   {[
