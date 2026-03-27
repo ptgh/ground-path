@@ -104,6 +104,7 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
 export const PractitionerList = () => {
   const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
   const [loading, setLoading] = useState(true);
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchPractitioners = async () => {
@@ -128,6 +129,16 @@ export const PractitionerList = () => {
     fetchPractitioners();
   }, []);
 
+  useEffect(() => {
+    if (!loading && practitioners.length > 0 && listRef.current) {
+      const cards = listRef.current.querySelectorAll('.practitioner-card');
+      gsap.fromTo(cards, 
+        { opacity: 0, y: 30, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, ease: 'power2.out' }
+      );
+    }
+  }, [loading, practitioners.length]);
+
   if (loading) {
     return (
       <div className="flex justify-center py-8">
@@ -139,9 +150,11 @@ export const PractitionerList = () => {
   if (practitioners.length === 0) return null;
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div ref={listRef} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {practitioners.map((p) => (
-        <PractitionerCard key={p.user_id} practitioner={p} />
+        <div key={p.user_id} className="practitioner-card">
+          <PractitionerCard practitioner={p} />
+        </div>
       ))}
     </div>
   );
