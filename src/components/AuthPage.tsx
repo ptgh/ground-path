@@ -213,6 +213,11 @@ const AuthPage = () => {
       }
 
       toast({ title: 'Welcome back!', description: 'You have been signed in successfully.' });
+      const redirectParam = new URLSearchParams(location.search).get('redirect');
+      if (redirectParam) {
+        navigate(redirectParam, { replace: true });
+        return;
+      }
       const { data: profileData } = await supabase.from('profiles').select('user_type').eq('user_id', data.user!.id).single();
       const effectiveUserType = profileData?.user_type || data.user?.user_metadata?.user_type;
       navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/dashboard', { replace: true });
