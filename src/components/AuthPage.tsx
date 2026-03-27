@@ -546,6 +546,7 @@ const AuthPage = () => {
           )}
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };
