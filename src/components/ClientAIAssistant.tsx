@@ -586,12 +586,12 @@ export const ClientAIAssistant = () => {
     }
   }, [isOpen]);
 
-  // Session mode colors
-  const sessionColor = isSessionMode ? 'bg-amber-500 hover:bg-amber-600' : 'bg-blue-600 hover:bg-blue-700';
-  const sessionBorderColor = isSessionMode ? 'border-amber-400/30' : 'border-blue-500/20';
-  const sessionHeaderBg = isSessionMode ? 'from-amber-50 to-white' : 'from-blue-50 to-white';
-  const sessionAccent = isSessionMode ? 'text-amber-600' : 'text-blue-600';
-  const sessionBg = isSessionMode ? 'bg-amber-600' : 'bg-blue-600';
+  // Session mode colors - using sage/primary theme
+  const sessionColor = isSessionMode ? 'bg-amber-500 hover:bg-amber-600' : 'bg-primary hover:bg-primary/90';
+  const sessionBorderColor = isSessionMode ? 'border-amber-400/30' : 'border-primary/20';
+  const sessionHeaderBg = isSessionMode ? 'from-amber-50 to-white' : 'from-primary/5 to-white';
+  const sessionAccent = isSessionMode ? 'text-amber-600' : 'text-primary';
+  const sessionBg = isSessionMode ? 'bg-amber-600' : 'bg-primary';
 
   const crisisResources = getCrisisResources();
 
