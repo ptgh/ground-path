@@ -807,10 +807,10 @@ export const ClientAIAssistant = () => {
                 <div className="relative" ref={countryDropdownRef}>
                   <button
                     onClick={() => setCountryOpen(!countryOpen)}
-                    className="flex items-center gap-1.5 bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground hover:bg-muted/50 transition-colors"
+                    className="flex items-center gap-1.5 bg-primary/5 border border-primary/20 rounded-full px-3 py-1.5 text-xs text-foreground hover:bg-primary/10 transition-colors"
                   >
-                    <Globe className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span>{country === 'AU' ? 'Australia' : country === 'UK' ? 'UK' : 'Global'}</span>
+                    <span className="text-sm">{country === 'AU' ? '🇦🇺' : country === 'UK' ? '🇬🇧' : '🌍'}</span>
+                    <span className="font-medium">{country === 'AU' ? 'AU' : country === 'UK' ? 'UK' : 'Global'}</span>
                     <svg className={`w-3 h-3 text-muted-foreground transition-transform ${countryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                   </button>
                   {countryOpen && (
