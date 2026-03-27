@@ -500,7 +500,7 @@ export const ClientAIAssistant = () => {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `I'm having trouble responding right now. If you need immediate support:\n\n${crisisInfo.primary.name}: ${crisisInfo.primary.number}\n${crisisInfo.secondary.name}: ${crisisInfo.secondary.number}\nEmergency: ${crisisInfo.emergency}\n\nOr visit our Contact Page to reach us directly.`,
+        content: `I'm having trouble responding right now. If you need immediate support:\n\n${crisisInfo.primary.name}: ${crisisInfo.primary.number}\n${crisisInfo.secondary.name}: ${crisisInfo.secondary.number}\nEmergency: ${crisisInfo.emergency}\n\nOr visit our contact page to reach us directly.`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
