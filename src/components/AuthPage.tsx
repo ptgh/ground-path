@@ -393,7 +393,15 @@ const AuthPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <SEO title="Sign In" path="/practitioner/auth" noindex />
-      <Card className="w-full max-w-lg">
+      <div className="w-full max-w-lg space-y-4">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to home
+        </Link>
+      <Card className="w-full">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">
             {isRecoveryMode ? 'Reset Password' : showResetForm ? 'Reset Password' : verificationState === 'none' ? 'groundpath' : 'Finish your signup'}
