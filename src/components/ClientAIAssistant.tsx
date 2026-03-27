@@ -938,7 +938,7 @@ export const ClientAIAssistant = () => {
                 <Button
                   size="sm"
                   onClick={() => window.open('https://www.halaxy.com/profile/groundpath/location/1353667', '_blank')}
-                  className="text-xs bg-green-600 hover:bg-green-700 h-7 px-3"
+                  className="text-xs bg-primary hover:bg-primary/90 h-7 px-3"
                 >
                   <Calendar className="h-3 w-3 mr-1" />
                   Book a Session
