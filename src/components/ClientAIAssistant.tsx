@@ -766,7 +766,7 @@ export const ClientAIAssistant = () => {
                   />
                 </svg>
                 <div>
-                  <span className="block font-medium">Ground Path Support</span>
+                  <span className="block font-medium">groundpath support</span>
                   {isSessionMode && (
                     <span className="text-xs font-normal text-amber-600 flex items-center gap-1">
                       <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
