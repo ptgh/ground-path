@@ -340,7 +340,7 @@ export const ClientAIAssistant = () => {
       const { error } = await supabase.functions.invoke('send-email', {
         body: {
           to: emailAddress,
-          subject: 'Your Ground Path Conversation Transcript',
+          subject: 'Your groundpath Conversation Transcript',
           template: 'transcript',
           data: {
             transcript,
