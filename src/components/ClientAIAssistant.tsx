@@ -951,7 +951,7 @@ export const ClientAIAssistant = () => {
                     className={`text-xs px-3 py-1.5 rounded-full ${
                       isSessionMode 
                         ? 'bg-amber-50 text-amber-700 hover:bg-amber-100' 
-                        : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                        : 'bg-primary/10 text-primary hover:bg-primary/20'
                     } transition-colors`}
                   >
                     {question}
