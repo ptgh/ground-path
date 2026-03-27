@@ -7,8 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Stethoscope, Mail, CheckCircle2 } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Loader2, User, Stethoscope, Mail, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 
 type AccountType = 'user' | 'practitioner' | '';
 type VerificationState = 'none' | 'pending' | 'complete';
