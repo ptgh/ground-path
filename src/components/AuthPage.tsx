@@ -7,8 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Stethoscope, Mail, CheckCircle2 } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Loader2, User, Stethoscope, Mail, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 
 type AccountType = 'user' | 'practitioner' | '';
 type VerificationState = 'none' | 'pending' | 'complete';
@@ -62,6 +62,11 @@ const AuthPage = () => {
 
   const completeVerifiedFlow = () => {
     clearPendingSignup();
+    const redirectParam = new URLSearchParams(location.search).get('redirect');
+    if (redirectParam) {
+      navigate(redirectParam, { replace: true });
+      return;
+    }
     if (verifiedUserType === 'practitioner') {
       navigate('/practitioner/verify', { replace: true });
       return;
@@ -213,6 +218,11 @@ const AuthPage = () => {
       }
 
       toast({ title: 'Welcome back!', description: 'You have been signed in successfully.' });
+      const redirectParam = new URLSearchParams(location.search).get('redirect');
+      if (redirectParam) {
+        navigate(redirectParam, { replace: true });
+        return;
+      }
       const { data: profileData } = await supabase.from('profiles').select('user_type').eq('user_id', data.user!.id).single();
       const effectiveUserType = profileData?.user_type || data.user?.user_metadata?.user_type;
       navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/dashboard', { replace: true });
@@ -388,7 +398,15 @@ const AuthPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <SEO title="Sign In" path="/practitioner/auth" noindex />
-      <Card className="w-full max-w-lg">
+      <div className="w-full max-w-lg space-y-4">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to home
+        </Link>
+      <Card className="w-full">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">
             {isRecoveryMode ? 'Reset Password' : showResetForm ? 'Reset Password' : verificationState === 'none' ? 'groundpath' : 'Finish your signup'}
@@ -533,6 +551,7 @@ const AuthPage = () => {
           )}
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };
