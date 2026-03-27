@@ -180,7 +180,7 @@ const Newsletter = () => {
                       {article.summary}
                     </p>
                     <div className="flex items-center gap-3 text-xs text-gray-500">
-                      <Badge variant="secondary" className="bg-sage-100 text-sage-700">
+                      <Badge variant="secondary" className="bg-sage-100 text-sage-700 whitespace-nowrap">
                         {article.category}
                       </Badge>
                       <span>{formatDate(article.published_at)}</span>
