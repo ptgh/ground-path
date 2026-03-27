@@ -814,11 +814,11 @@ export const ClientAIAssistant = () => {
                     <svg className={`w-3 h-3 text-muted-foreground transition-transform ${countryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                   </button>
                   {countryOpen && (
-                    <div className="absolute top-full right-0 mt-1 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50 min-w-[160px]">
+                    <div className="absolute top-full right-0 mt-1.5 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50 min-w-[180px]">
                       {([
-                        { value: 'AU' as Country, label: 'Australia' },
-                        { value: 'UK' as Country, label: 'UK' },
-                        { value: 'OTHER' as Country, label: 'Global' },
+                        { value: 'AU' as Country, label: 'Australia', flag: '🇦🇺' },
+                        { value: 'UK' as Country, label: 'United Kingdom', flag: '🇬🇧' },
+                        { value: 'OTHER' as Country, label: 'Global', flag: '🌍' },
                       ]).map((c) => (
                         <button
                           key={c.value}
@@ -828,10 +828,11 @@ export const ClientAIAssistant = () => {
                             setMessages([getInitialMessage(c.value)]);
                             setCountryOpen(false);
                           }}
-                          className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted/50 transition-colors ${
-                            country === c.value ? "bg-primary/5 text-primary font-medium" : "text-foreground"
+                          className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-primary/5 transition-colors ${
+                            country === c.value ? "bg-primary/10 text-primary font-medium" : "text-foreground"
                           }`}
                         >
+                          <span className="text-base">{c.flag}</span>
                           <span>{c.label}</span>
                           {country === c.value && <CheckCircle2 className="w-4 h-4 text-primary ml-auto" />}
                         </button>
