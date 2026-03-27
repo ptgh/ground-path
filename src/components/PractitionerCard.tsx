@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { MessageCircle, Calendar, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { gsap } from 'gsap';
 
 interface Practitioner {
   user_id: string;
@@ -22,6 +23,17 @@ interface Practitioner {
 const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const onEnter = () => gsap.to(el, { scale: 1.02, y: -4, duration: 0.3, ease: 'power2.out' });
+    const onLeave = () => gsap.to(el, { scale: 1, y: 0, duration: 0.3, ease: 'power2.out' });
+    el.addEventListener('mouseenter', onEnter);
+    el.addEventListener('mouseleave', onLeave);
+    return () => { el.removeEventListener('mouseenter', onEnter); el.removeEventListener('mouseleave', onLeave); };
+  }, []);
 
   const handleMessage = () => {
     if (!user) {
@@ -32,7 +44,7 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+    <Card ref={cardRef} className="overflow-hidden transition-shadow hover:shadow-lg border-border/50">
       <CardContent className="p-5">
         <div className="flex gap-4">
           <Avatar className="h-14 w-14 flex-shrink-0">
@@ -92,6 +104,7 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
 export const PractitionerList = () => {
   const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
   const [loading, setLoading] = useState(true);
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchPractitioners = async () => {
@@ -116,6 +129,16 @@ export const PractitionerList = () => {
     fetchPractitioners();
   }, []);
 
+  useEffect(() => {
+    if (!loading && practitioners.length > 0 && listRef.current) {
+      const cards = listRef.current.querySelectorAll('.practitioner-card');
+      gsap.fromTo(cards, 
+        { opacity: 0, y: 30, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, ease: 'power2.out' }
+      );
+    }
+  }, [loading, practitioners.length]);
+
   if (loading) {
     return (
       <div className="flex justify-center py-8">
@@ -127,9 +150,11 @@ export const PractitionerList = () => {
   if (practitioners.length === 0) return null;
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div ref={listRef} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {practitioners.map((p) => (
-        <PractitionerCard key={p.user_id} practitioner={p} />
+        <div key={p.user_id} className="practitioner-card">
+          <PractitionerCard practitioner={p} />
+        </div>
       ))}
     </div>
   );

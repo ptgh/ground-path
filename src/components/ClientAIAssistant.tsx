@@ -153,7 +153,7 @@ export const ClientAIAssistant = () => {
   const getInitialMessage = (selectedCountry: Country): Message => ({
     id: '1',
     role: 'assistant',
-    content: `Hello! I'm Ground Path's Support Assistant. I'm here to help you find the right mental health and social work support${selectedCountry === 'AU' ? ' in Australia' : selectedCountry === 'UK' ? ' in the UK' : ''}.\n\nI can answer questions about:\n• Our counselling and therapy services\n• Mental health resources and information\n• ${selectedCountry === 'AU' ? 'NDIS support and navigation' : selectedCountry === 'UK' ? 'NHS mental health services' : 'Finding local mental health services'}\n• Finding the right professional support\n\nPlease note: I provide information and guidance, not clinical advice. For personalised treatment, please consult a qualified professional.\n\nHow can I help you today?`,
+    content: `Hello! I'm groundpath's Support Assistant. I'm here to help you find the right mental health and social work support${selectedCountry === 'AU' ? ' in Australia' : selectedCountry === 'UK' ? ' in the UK' : ''}.\n\nI can answer questions about:\n• Our counselling and therapy services\n• Mental health resources and information\n• ${selectedCountry === 'AU' ? 'NDIS support and navigation' : selectedCountry === 'UK' ? 'NHS mental health services' : 'Finding local mental health services'}\n• Finding the right professional support\n\nPlease note: I provide information and guidance, not clinical advice. For personalised treatment, please consult a qualified professional.\n\nHow can I help you today?`,
     timestamp: new Date()
   });
 
@@ -307,7 +307,7 @@ export const ClientAIAssistant = () => {
     const sessionMessage: Message = {
       id: Date.now().toString(),
       role: 'assistant',
-      content: `I'm now in support session mode. While I'm not a replacement for professional therapy, I'm here to listen and provide a supportive space.\n\n🟡 Session Active\n\nTake your time to share what's on your mind. I'll listen without judgment and offer what support I can.\n\nRemember: If you'd prefer to speak with a qualified counsellor, Ground Path offers professional online sessions.`,
+      content: `I'm now in support session mode. While I'm not a replacement for professional therapy, I'm here to listen and provide a supportive space.\n\n🟡 Session Active\n\nTake your time to share what's on your mind. I'll listen without judgment and offer what support I can.\n\nRemember: If you'd prefer to speak with a qualified counsellor, groundpath offers professional online sessions.`,
       timestamp: new Date()
     };
     setMessages(prev => [...prev, sessionMessage]);
@@ -333,14 +333,14 @@ export const ClientAIAssistant = () => {
       // Format transcript
       const transcript = messages.map(msg => {
         const time = new Date(msg.timestamp).toLocaleString();
-        const role = msg.role === 'user' ? 'You' : 'Ground Path Support';
+        const role = msg.role === 'user' ? 'You' : 'groundpath Support';
         return `[${time}] ${role}:\n${msg.content.replace(/\*\*/g, '').replace(/\*/g, '')}`;
       }).join('\n\n---\n\n');
 
       const { error } = await supabase.functions.invoke('send-email', {
         body: {
           to: emailAddress,
-          subject: 'Your Ground Path Conversation Transcript',
+          subject: 'Your groundpath Conversation Transcript',
           template: 'transcript',
           data: {
             transcript,
@@ -500,7 +500,7 @@ export const ClientAIAssistant = () => {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `I'm having trouble responding right now. If you need immediate support:\n\n${crisisInfo.primary.name}: ${crisisInfo.primary.number}\n${crisisInfo.secondary.name}: ${crisisInfo.secondary.number}\nEmergency: ${crisisInfo.emergency}\n\nOr visit our Contact Page to reach us directly.`,
+        content: `I'm having trouble responding right now. If you need immediate support:\n\n${crisisInfo.primary.name}: ${crisisInfo.primary.number}\n${crisisInfo.secondary.name}: ${crisisInfo.secondary.number}\nEmergency: ${crisisInfo.emergency}\n\nOr visit our contact page to reach us directly.`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -516,17 +516,17 @@ export const ClientAIAssistant = () => {
   };
 
   const quickQuestions = country === 'AU' ? [
-    "What services does Ground Path offer?",
+    "What services does groundpath offer?",
     "How can I access NDIS support?",
     "How do I book a counselling session?",
     "What mental health resources are available?"
   ] : country === 'UK' ? [
-    "What services does Ground Path offer?",
+    "What services does groundpath offer?",
     "How do I access NHS mental health support?",
     "How do I book a counselling session?",
     "What mental health resources are available?"
   ] : [
-    "What services does Ground Path offer?",
+    "What services does groundpath offer?",
     "How do I book a counselling session?",
     "What mental health resources are available?",
     "How can I find local support?"
@@ -586,12 +586,12 @@ export const ClientAIAssistant = () => {
     }
   }, [isOpen]);
 
-  // Session mode colors
-  const sessionColor = isSessionMode ? 'bg-amber-500 hover:bg-amber-600' : 'bg-blue-600 hover:bg-blue-700';
-  const sessionBorderColor = isSessionMode ? 'border-amber-400/30' : 'border-blue-500/20';
-  const sessionHeaderBg = isSessionMode ? 'from-amber-50 to-white' : 'from-blue-50 to-white';
-  const sessionAccent = isSessionMode ? 'text-amber-600' : 'text-blue-600';
-  const sessionBg = isSessionMode ? 'bg-amber-600' : 'bg-blue-600';
+  // Session mode colors - using sage/primary theme
+  const sessionColor = isSessionMode ? 'bg-amber-500 hover:bg-amber-600' : 'bg-primary hover:bg-primary/90';
+  const sessionBorderColor = isSessionMode ? 'border-amber-400/30' : 'border-primary/20';
+  const sessionHeaderBg = isSessionMode ? 'from-amber-50 to-white' : 'from-primary/5 to-white';
+  const sessionAccent = isSessionMode ? 'text-amber-600' : 'text-primary';
+  const sessionBg = isSessionMode ? 'bg-amber-600' : 'bg-primary';
 
   const crisisResources = getCrisisResources();
 
@@ -690,7 +690,7 @@ export const ClientAIAssistant = () => {
                     <Globe className="h-7 w-7 text-primary" />
                   </div>
                 </div>
-                <h3 className="text-xl font-semibold text-foreground text-center mb-2">Welcome to Ground Path</h3>
+                <h3 className="text-xl font-semibold text-foreground text-center mb-2">Welcome to groundpath</h3>
                 <p className="text-muted-foreground text-center text-sm mb-6">Please select your location so I can provide relevant resources and information.</p>
                 <div className="flex flex-col gap-2">
                   {[
@@ -766,7 +766,7 @@ export const ClientAIAssistant = () => {
                   />
                 </svg>
                 <div>
-                  <span className="block font-medium">Ground Path Support</span>
+                  <span className="block font-medium">groundpath support</span>
                   {isSessionMode && (
                     <span className="text-xs font-normal text-amber-600 flex items-center gap-1">
                       <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
@@ -807,18 +807,18 @@ export const ClientAIAssistant = () => {
                 <div className="relative" ref={countryDropdownRef}>
                   <button
                     onClick={() => setCountryOpen(!countryOpen)}
-                    className="flex items-center gap-1.5 bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground hover:bg-muted/50 transition-colors"
+                    className="flex items-center gap-1.5 bg-primary/5 border border-primary/20 rounded-full px-3 py-1.5 text-xs text-foreground hover:bg-primary/10 transition-colors"
                   >
-                    <Globe className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span>{country === 'AU' ? 'Australia' : country === 'UK' ? 'UK' : 'Global'}</span>
+                    <span className="text-sm">{country === 'AU' ? '🇦🇺' : country === 'UK' ? '🇬🇧' : '🌍'}</span>
+                    <span className="font-medium">{country === 'AU' ? 'AU' : country === 'UK' ? 'UK' : 'Global'}</span>
                     <svg className={`w-3 h-3 text-muted-foreground transition-transform ${countryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                   </button>
                   {countryOpen && (
-                    <div className="absolute top-full right-0 mt-1 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50 min-w-[160px]">
+                    <div className="absolute top-full right-0 mt-1.5 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50 min-w-[180px]">
                       {([
-                        { value: 'AU' as Country, label: 'Australia' },
-                        { value: 'UK' as Country, label: 'UK' },
-                        { value: 'OTHER' as Country, label: 'Global' },
+                        { value: 'AU' as Country, label: 'Australia', flag: '🇦🇺' },
+                        { value: 'UK' as Country, label: 'United Kingdom', flag: '🇬🇧' },
+                        { value: 'OTHER' as Country, label: 'Global', flag: '🌍' },
                       ]).map((c) => (
                         <button
                           key={c.value}
@@ -828,10 +828,11 @@ export const ClientAIAssistant = () => {
                             setMessages([getInitialMessage(c.value)]);
                             setCountryOpen(false);
                           }}
-                          className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted/50 transition-colors ${
-                            country === c.value ? "bg-primary/5 text-primary font-medium" : "text-foreground"
+                          className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-primary/5 transition-colors ${
+                            country === c.value ? "bg-primary/10 text-primary font-medium" : "text-foreground"
                           }`}
                         >
+                          <span className="text-base">{c.flag}</span>
                           <span>{c.label}</span>
                           {country === c.value && <CheckCircle2 className="w-4 h-4 text-primary ml-auto" />}
                         </button>
@@ -894,9 +895,9 @@ export const ClientAIAssistant = () => {
                   </div>
                   <div className="bg-gray-100 rounded-2xl px-4 py-3">
                     <div className="flex items-center gap-1.5">
-                      <div className={`w-2 h-2 ${isSessionMode ? 'bg-amber-400' : 'bg-blue-400'} rounded-full animate-bounce`} style={{ animationDelay: '0ms' }} />
-                      <div className={`w-2 h-2 ${isSessionMode ? 'bg-amber-400' : 'bg-blue-400'} rounded-full animate-bounce`} style={{ animationDelay: '150ms' }} />
-                      <div className={`w-2 h-2 ${isSessionMode ? 'bg-amber-400' : 'bg-blue-400'} rounded-full animate-bounce`} style={{ animationDelay: '300ms' }} />
+                   <div className={`w-2 h-2 ${isSessionMode ? 'bg-amber-400' : 'bg-primary/60'} rounded-full animate-bounce`} style={{ animationDelay: '0ms' }} />
+                       <div className={`w-2 h-2 ${isSessionMode ? 'bg-amber-400' : 'bg-primary/60'} rounded-full animate-bounce`} style={{ animationDelay: '150ms' }} />
+                       <div className={`w-2 h-2 ${isSessionMode ? 'bg-amber-400' : 'bg-primary/60'} rounded-full animate-bounce`} style={{ animationDelay: '300ms' }} />
                     </div>
                   </div>
                 </div>
@@ -937,7 +938,7 @@ export const ClientAIAssistant = () => {
                 <Button
                   size="sm"
                   onClick={() => window.open('https://www.halaxy.com/profile/groundpath/location/1353667', '_blank')}
-                  className="text-xs bg-green-600 hover:bg-green-700 h-7 px-3"
+                  className="text-xs bg-primary hover:bg-primary/90 h-7 px-3"
                 >
                   <Calendar className="h-3 w-3 mr-1" />
                   Book a Session
@@ -951,7 +952,7 @@ export const ClientAIAssistant = () => {
                     className={`text-xs px-3 py-1.5 rounded-full ${
                       isSessionMode 
                         ? 'bg-amber-50 text-amber-700 hover:bg-amber-100' 
-                        : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                        : 'bg-primary/10 text-primary hover:bg-primary/20'
                     } transition-colors`}
                   >
                     {question}
@@ -977,7 +978,7 @@ export const ClientAIAssistant = () => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder={isSessionMode ? "Share what's on your mind..." : "Type your question..."}
-                className={`flex-1 border-gray-200 focus:ring-2 ${isSessionMode ? 'focus:ring-amber-500' : 'focus:ring-blue-500'}`}
+                className={`flex-1 border-gray-200 focus:ring-2 ${isSessionMode ? 'focus:ring-amber-500' : 'focus:ring-primary'}`}
                 disabled={isLoading}
               />
               <Button

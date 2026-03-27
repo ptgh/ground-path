@@ -84,7 +84,7 @@ const Index = () => {
         <HowSessionsWork />
         <VoiceCounsellingSection />
         {/* Our Practitioners */}
-        <section id="practitioners" className="py-16 bg-accent/30">
+        <section id="practitioners" className="py-16 bg-accent/30 scroll-mt-24">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-10">
               <h2 className="text-3xl font-bold text-foreground mb-3">Our Practitioners</h2>
