@@ -160,20 +160,20 @@ serve(async (req) => {
     ];
 
     // Call OpenAI API
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${lovableApiKey}`,
         'Content-Type': 'application/json',
       },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model: 'google/gemini-3-flash-preview',
           messages,
-          max_tokens: 800, // Reduced for security
+          max_tokens: 800,
           temperature: 0.7,
           presence_penalty: 0.1,
           frequency_penalty: 0.1,
-          user: userId, // Track user for OpenAI safety
+          user: userId,
         }),
     });
 
