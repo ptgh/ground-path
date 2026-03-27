@@ -333,7 +333,7 @@ export const ClientAIAssistant = () => {
       // Format transcript
       const transcript = messages.map(msg => {
         const time = new Date(msg.timestamp).toLocaleString();
-        const role = msg.role === 'user' ? 'You' : 'Ground Path Support';
+        const role = msg.role === 'user' ? 'You' : 'groundpath Support';
         return `[${time}] ${role}:\n${msg.content.replace(/\*\*/g, '').replace(/\*/g, '')}`;
       }).join('\n\n---\n\n');
 
