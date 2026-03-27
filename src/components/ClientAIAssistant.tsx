@@ -307,7 +307,7 @@ export const ClientAIAssistant = () => {
     const sessionMessage: Message = {
       id: Date.now().toString(),
       role: 'assistant',
-      content: `I'm now in support session mode. While I'm not a replacement for professional therapy, I'm here to listen and provide a supportive space.\n\n🟡 Session Active\n\nTake your time to share what's on your mind. I'll listen without judgment and offer what support I can.\n\nRemember: If you'd prefer to speak with a qualified counsellor, Ground Path offers professional online sessions.`,
+      content: `I'm now in support session mode. While I'm not a replacement for professional therapy, I'm here to listen and provide a supportive space.\n\n🟡 Session Active\n\nTake your time to share what's on your mind. I'll listen without judgment and offer what support I can.\n\nRemember: If you'd prefer to speak with a qualified counsellor, groundpath offers professional online sessions.`,
       timestamp: new Date()
     };
     setMessages(prev => [...prev, sessionMessage]);
