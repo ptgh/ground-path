@@ -23,6 +23,17 @@ interface Practitioner {
 const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const onEnter = () => gsap.to(el, { scale: 1.02, y: -4, duration: 0.3, ease: 'power2.out' });
+    const onLeave = () => gsap.to(el, { scale: 1, y: 0, duration: 0.3, ease: 'power2.out' });
+    el.addEventListener('mouseenter', onEnter);
+    el.addEventListener('mouseleave', onLeave);
+    return () => { el.removeEventListener('mouseenter', onEnter); el.removeEventListener('mouseleave', onLeave); };
+  }, []);
 
   const handleMessage = () => {
     if (!user) {
@@ -33,7 +44,7 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+    <Card ref={cardRef} className="overflow-hidden transition-shadow hover:shadow-lg border-border/50">
       <CardContent className="p-5">
         <div className="flex gap-4">
           <Avatar className="h-14 w-14 flex-shrink-0">
