@@ -977,7 +977,7 @@ export const ClientAIAssistant = () => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder={isSessionMode ? "Share what's on your mind..." : "Type your question..."}
-                className={`flex-1 border-gray-200 focus:ring-2 ${isSessionMode ? 'focus:ring-amber-500' : 'focus:ring-blue-500'}`}
+                className={`flex-1 border-gray-200 focus:ring-2 ${isSessionMode ? 'focus:ring-amber-500' : 'focus:ring-primary'}`}
                 disabled={isLoading}
               />
               <Button
