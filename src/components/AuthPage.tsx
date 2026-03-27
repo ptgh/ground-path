@@ -62,6 +62,11 @@ const AuthPage = () => {
 
   const completeVerifiedFlow = () => {
     clearPendingSignup();
+    const redirectParam = new URLSearchParams(location.search).get('redirect');
+    if (redirectParam) {
+      navigate(redirectParam, { replace: true });
+      return;
+    }
     if (verifiedUserType === 'practitioner') {
       navigate('/practitioner/verify', { replace: true });
       return;
