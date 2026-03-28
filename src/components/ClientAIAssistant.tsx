@@ -815,9 +815,9 @@ export const ClientAIAssistant = () => {
                   {countryOpen && (
                     <div className="absolute top-full right-0 mt-1.5 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50 min-w-[180px]">
                       {([
-                        { value: 'AU' as Country, label: 'Australia', flag: '🇦🇺' },
-                        { value: 'UK' as Country, label: 'United Kingdom', flag: '🇬🇧' },
-                        { value: 'OTHER' as Country, label: 'Global', flag: '🌍' },
+                        { value: 'AU' as Country, label: 'Australia' },
+                        { value: 'UK' as Country, label: 'United Kingdom' },
+                        { value: 'OTHER' as Country, label: 'Global' },
                       ]).map((c) => (
                         <button
                           key={c.value}

@@ -331,7 +331,7 @@ serve(async (req) => {
 
     // Append counselling prompt if detected
     if (showCounsellingPrompt && !isCrisis) {
-      assistantResponse += `\n\nWould you like more support? I'm here to help with information, but if you'd like to speak with a professional counsellor, groundpath offers online sessions with qualified practitioners.\n\nYou can book a session directly here: https://www.halaxy.com/profile/groundpath/location/1353667\n\nOr feel free to continue chatting with me for information and support.`;
+      assistantResponse += `\n\nWould you like more support? I'm here to help with information, but if you'd like to speak with a professional counsellor, groundpath offers online sessions with qualified practitioners.\n\nYou can book a session through our website: groundpath.com.au\n\nYou can also try our free AI counselling for immediate, private support — available 24/7.\n\nOr feel free to continue chatting with me for information and support.`;
     }
 
     console.log('Client AI response generated:', {
