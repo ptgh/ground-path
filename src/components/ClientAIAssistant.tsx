@@ -809,7 +809,6 @@ export const ClientAIAssistant = () => {
                     onClick={() => setCountryOpen(!countryOpen)}
                     className="flex items-center gap-1.5 bg-primary/5 border border-primary/20 rounded-full px-3 py-1.5 text-xs text-foreground hover:bg-primary/10 transition-colors"
                   >
-                    <span className="text-sm">{country === 'AU' ? '🇦🇺' : country === 'UK' ? '🇬🇧' : '🌍'}</span>
                     <span className="font-medium">{country === 'AU' ? 'AU' : country === 'UK' ? 'UK' : 'Global'}</span>
                     <svg className={`w-3 h-3 text-muted-foreground transition-transform ${countryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                   </button>
