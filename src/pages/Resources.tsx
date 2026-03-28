@@ -423,7 +423,7 @@ const Resources = () => {
       <SEO title="Client Resources" description="Mental health resources, self-help tools, and educational content for your wellbeing journey." path="/resources" />
       <Header />
       
-      <div className="pt-20 pb-16">
+      <div className="pt-24 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header Section */}
           <div className="text-center mb-12">
