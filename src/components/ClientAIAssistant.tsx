@@ -737,7 +737,7 @@ export const ClientAIAssistant = () => {
                   <Button
                     onClick={handleEmailTranscript}
                     disabled={isSendingEmail}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    className="flex-1 bg-primary hover:bg-primary/90"
                   >
                     {isSendingEmail ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -766,7 +766,7 @@ export const ClientAIAssistant = () => {
                   />
                 </svg>
                 <div>
-                  <span className="block font-medium">groundpath support</span>
+                  <span className="block font-medium">groundpath</span>
                   {isSessionMode && (
                     <span className="text-xs font-normal text-amber-600 flex items-center gap-1">
                       <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
@@ -781,7 +781,7 @@ export const ClientAIAssistant = () => {
                   size="sm"
                   onClick={() => { setIsOpen(false); setTimeout(() => setShowVoiceSession(true), 300); }}
                   className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
-                  title="Voice counselling session"
+                  title="AI counselling session"
                 >
                   <Mic className="h-4 w-4" />
                 </Button>
@@ -809,16 +809,15 @@ export const ClientAIAssistant = () => {
                     onClick={() => setCountryOpen(!countryOpen)}
                     className="flex items-center gap-1.5 bg-primary/5 border border-primary/20 rounded-full px-3 py-1.5 text-xs text-foreground hover:bg-primary/10 transition-colors"
                   >
-                    <span className="text-sm">{country === 'AU' ? '🇦🇺' : country === 'UK' ? '🇬🇧' : '🌍'}</span>
                     <span className="font-medium">{country === 'AU' ? 'AU' : country === 'UK' ? 'UK' : 'Global'}</span>
                     <svg className={`w-3 h-3 text-muted-foreground transition-transform ${countryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                   </button>
                   {countryOpen && (
                     <div className="absolute top-full right-0 mt-1.5 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50 min-w-[180px]">
                       {([
-                        { value: 'AU' as Country, label: 'Australia', flag: '🇦🇺' },
-                        { value: 'UK' as Country, label: 'United Kingdom', flag: '🇬🇧' },
-                        { value: 'OTHER' as Country, label: 'Global', flag: '🌍' },
+                        { value: 'AU' as Country, label: 'Australia' },
+                        { value: 'UK' as Country, label: 'United Kingdom' },
+                        { value: 'OTHER' as Country, label: 'Global' },
                       ]).map((c) => (
                         <button
                           key={c.value}
@@ -832,7 +831,6 @@ export const ClientAIAssistant = () => {
                             country === c.value ? "bg-primary/10 text-primary font-medium" : "text-foreground"
                           }`}
                         >
-                          <span className="text-base">{c.flag}</span>
                           <span>{c.label}</span>
                           {country === c.value && <CheckCircle2 className="w-4 h-4 text-primary ml-auto" />}
                         </button>
@@ -937,7 +935,7 @@ export const ClientAIAssistant = () => {
                 <p className="text-xs text-gray-500">Quick questions:</p>
                 <Button
                   size="sm"
-                  onClick={() => window.open('https://www.halaxy.com/profile/groundpath/location/1353667', '_blank')}
+                  onClick={() => { setIsOpen(false); setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 300); }}
                   className="text-xs bg-primary hover:bg-primary/90 h-7 px-3"
                 >
                   <Calendar className="h-3 w-3 mr-1" />
@@ -985,10 +983,10 @@ export const ClientAIAssistant = () => {
                 onClick={isLoading ? stopStreaming : sendMessage}
                 disabled={!isLoading && !input.trim()}
                 size="icon"
-                className={isLoading ? `bg-red-500 hover:bg-red-600 h-10 w-10` : `${sessionColor} h-10 w-10`}
+                className={isLoading ? `bg-muted-foreground/80 hover:bg-muted-foreground h-10 w-10 rounded-lg` : `${sessionColor} h-10 w-10`}
               >
                 {isLoading ? (
-                  <Square className="h-4 w-4" />
+                  <Square className="h-3.5 w-3.5" />
                 ) : (
                   <Send className="h-4 w-4" />
                 )}

@@ -52,11 +52,10 @@ const Services = () => {
       comingSoon: true
     },
     {
-      name: "ACA Counselling Support",
+      name: "Counselling Support",
       format: "Online via Microsoft Teams",
       rate: "$100",
-      description: "Australian Counselling Association (ACA) registration in progress — service coming soon",
-      comingSoon: true
+      description: "Professional counselling sessions delivered by qualified social workers — providing a safe, supportive space to explore your concerns"
     },
     {
       name: "In-Person Support",

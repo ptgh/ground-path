@@ -22,7 +22,7 @@ const VoiceSessionPage = () => {
             <Mic className="w-10 h-10 text-primary" />
           </div>
           <h1 className="text-3xl font-semibold text-foreground mb-4">
-            Free Voice Counselling
+            Free AI Counselling
           </h1>
           <p className="text-muted-foreground mb-2">
             Speak with an AI counsellor in a private, supportive voice session.
