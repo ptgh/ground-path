@@ -935,7 +935,7 @@ export const ClientAIAssistant = () => {
                 <p className="text-xs text-gray-500">Quick questions:</p>
                 <Button
                   size="sm"
-                  onClick={() => window.open('https://www.halaxy.com/profile/groundpath/location/1353667', '_blank')}
+                  onClick={() => { setIsOpen(false); setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 300); }}
                   className="text-xs bg-primary hover:bg-primary/90 h-7 px-3"
                 >
                   <Calendar className="h-3 w-3 mr-1" />
