@@ -737,7 +737,7 @@ export const ClientAIAssistant = () => {
                   <Button
                     onClick={handleEmailTranscript}
                     disabled={isSendingEmail}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    className="flex-1 bg-primary hover:bg-primary/90"
                   >
                     {isSendingEmail ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
