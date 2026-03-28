@@ -983,7 +983,7 @@ export const ClientAIAssistant = () => {
                 onClick={isLoading ? stopStreaming : sendMessage}
                 disabled={!isLoading && !input.trim()}
                 size="icon"
-                className={isLoading ? `bg-red-500 hover:bg-red-600 h-10 w-10` : `${sessionColor} h-10 w-10`}
+                className={isLoading ? `bg-muted-foreground/80 hover:bg-muted-foreground h-10 w-10 rounded-lg` : `${sessionColor} h-10 w-10`}
               >
                 {isLoading ? (
                   <Square className="h-3.5 w-3.5" />
