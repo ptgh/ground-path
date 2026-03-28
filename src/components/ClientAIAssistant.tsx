@@ -781,7 +781,7 @@ export const ClientAIAssistant = () => {
                   size="sm"
                   onClick={() => { setIsOpen(false); setTimeout(() => setShowVoiceSession(true), 300); }}
                   className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
-                  title="Voice counselling session"
+                  title="AI counselling session"
                 >
                   <Mic className="h-4 w-4" />
                 </Button>
