@@ -417,7 +417,7 @@ const ProfessionalForms = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="pt-20 pb-16">
+      <main className="pt-24 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header Section */}
           <div className="mb-8">
