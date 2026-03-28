@@ -364,7 +364,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
         <div className="relative max-w-md w-full bg-card border-2 border-border rounded-2xl shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
 
           <div className="p-6 pt-8 text-center">
-            <h2 className="text-2xl font-semibold text-foreground mb-2">Voice Counselling Session</h2>
+            <h2 className="text-2xl font-semibold text-foreground mb-2">AI Counselling Session</h2>
             <p className="text-muted-foreground text-sm mb-1">
               Choose your counsellor and start a free, confidential voice session.
             </p>
