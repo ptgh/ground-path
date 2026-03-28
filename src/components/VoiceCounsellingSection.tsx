@@ -8,14 +8,14 @@ const VoiceCounsellingSection = () => {
   const [showSession, setShowSession] = useState(false);
 
   return (
-    <section id="voice-counselling" className="py-20 bg-gray-50">
+    <section id="ai-counselling" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-lg mx-auto text-center">
           <div className="bg-primary/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
             <Mic className="w-10 h-10 text-primary" />
           </div>
           <h2 className="fade-in text-3xl sm:text-4xl font-light text-gray-900 mb-4">
-            Free Voice Counselling
+            Free AI Counselling
           </h2>
           <div className="fade-in w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
           <p className="fade-in text-muted-foreground mb-2">

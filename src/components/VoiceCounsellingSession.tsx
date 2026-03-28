@@ -491,7 +491,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
       </button>
 
       <p className="text-muted-foreground text-xs mb-2 tracking-wider uppercase">
-        Voice Counselling
+        AI Counselling
       </p>
       <h2 className="text-foreground text-lg font-medium mb-1">{selectedCounsellor?.name}</h2>
       <p className="text-muted-foreground text-[11px] mb-8">
