@@ -986,7 +986,7 @@ export const ClientAIAssistant = () => {
                 className={isLoading ? `bg-red-500 hover:bg-red-600 h-10 w-10` : `${sessionColor} h-10 w-10`}
               >
                 {isLoading ? (
-                  <Square className="h-4 w-4" />
+                  <Square className="h-3.5 w-3.5" />
                 ) : (
                   <Send className="h-4 w-4" />
                 )}
