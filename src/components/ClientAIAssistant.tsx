@@ -831,7 +831,6 @@ export const ClientAIAssistant = () => {
                             country === c.value ? "bg-primary/10 text-primary font-medium" : "text-foreground"
                           }`}
                         >
-                          <span className="text-base">{c.flag}</span>
                           <span>{c.label}</span>
                           {country === c.value && <CheckCircle2 className="w-4 h-4 text-primary ml-auto" />}
                         </button>
