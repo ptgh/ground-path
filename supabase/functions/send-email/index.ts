@@ -60,7 +60,7 @@ const handler = async (req: Request): Promise<Response> => {
               <p style="margin: 10px 0; color: #64748b; font-size: 14px;"><em>Submitted at: ${new Date().toLocaleString()}</em></p>
             </div>
             <p style="color: #64748b; font-size: 14px; margin-top: 30px;">
-              This message was sent through the Ground Path contact form.
+              This message was sent through the groundpath contact form.
             </p>
           </div>
         `;
