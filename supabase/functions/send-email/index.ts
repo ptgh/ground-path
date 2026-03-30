@@ -94,7 +94,7 @@ const handler = async (req: Request): Promise<Response> => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Ground Path <noreply@groundpath.com.au>',
+        from: 'groundpath <noreply@groundpath.com.au>',
         to: [recipient],
         subject,
         html: emailContent,
