@@ -88,7 +88,7 @@ const handler = async (req: Request): Promise<Response> => {
       const batch = recipients.slice(i, i + batchSize);
       
       const emailResponse = await resend.emails.send({
-        from: "Ground Path <newsletter@groundpath.com.au>",
+        from: "groundpath newsletter <newsletter@groundpath.com.au>",
         to: batch,
         subject: body.subject,
         html: html,
