@@ -67,7 +67,7 @@ const handler = async (req: Request): Promise<Response> => {
         break;
       
       case 'mailing_list_confirmation':
-        subject = 'Confirm your subscription - Ground Path Professional Resources';
+        subject = 'Confirm your subscription - groundpath professional resources';
         
         const unsubscribeUrl = `https://groundpath.com.au/unsubscribe?email=${encodeURIComponent(to)}`;
         

@@ -74,7 +74,7 @@ const handler = async (req: Request): Promise<Response> => {
     const html = await renderAsync(
       NewsletterEmail({
         subject: body.subject,
-        previewText: body.previewText || "Your latest professional development updates from Ground Path",
+        previewText: body.previewText || "Your latest professional development updates from groundpath",
         articles: body.articles,
         unsubscribeUrl: "https://groundpath.com.au/unsubscribe",
       })

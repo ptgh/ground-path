@@ -157,7 +157,7 @@ const sendNewsletterToSubscribers = async () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: 'Ground Path Newsletter <newsletter@groundpath.com.au>',
+            from: 'groundpath newsletter <newsletter@groundpath.com.au>',
             to: [subscriber.email],
             subject: `This Week in Social Work - ${new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}`,
             html: emailHtml,
