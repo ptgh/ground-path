@@ -43,10 +43,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     switch (type) {
       case 'contact_form':
-        subject = `New Contact Form Submission: ${data.subject} - Ground Path`;
+        subject = `New Contact Form Submission: ${data.subject} - groundpath`;
         emailContent = `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h1 style="color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">New Contact Form Submission - Ground Path</h1>
+            <h1 style="color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">New Contact Form Submission - groundpath</h1>
             <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
               <p style="margin: 10px 0;"><strong>Name:</strong> ${data.name}</p>
               <p style="margin: 10px 0;"><strong>Email:</strong> ${data.email}</p>
@@ -60,14 +60,14 @@ const handler = async (req: Request): Promise<Response> => {
               <p style="margin: 10px 0; color: #64748b; font-size: 14px;"><em>Submitted at: ${new Date().toLocaleString()}</em></p>
             </div>
             <p style="color: #64748b; font-size: 14px; margin-top: 30px;">
-              This message was sent through the Ground Path contact form.
+              This message was sent through the groundpath contact form.
             </p>
           </div>
         `;
         break;
       
       case 'mailing_list_confirmation':
-        subject = 'Confirm your subscription - Ground Path Professional Resources';
+        subject = 'Confirm your subscription - groundpath professional resources';
         
         const unsubscribeUrl = `https://groundpath.com.au/unsubscribe?email=${encodeURIComponent(to)}`;
         
@@ -94,7 +94,7 @@ const handler = async (req: Request): Promise<Response> => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Ground Path <noreply@groundpath.com.au>',
+        from: 'groundpath <noreply@groundpath.com.au>',
         to: [recipient],
         subject,
         html: emailContent,

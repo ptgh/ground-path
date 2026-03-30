@@ -74,7 +74,7 @@ const handler = async (req: Request): Promise<Response> => {
     const html = await renderAsync(
       NewsletterEmail({
         subject: body.subject,
-        previewText: body.previewText || "Your latest professional development updates from Ground Path",
+        previewText: body.previewText || "Your latest professional development updates from groundpath",
         articles: body.articles,
         unsubscribeUrl: "https://groundpath.com.au/unsubscribe",
       })
@@ -88,7 +88,7 @@ const handler = async (req: Request): Promise<Response> => {
       const batch = recipients.slice(i, i + batchSize);
       
       const emailResponse = await resend.emails.send({
-        from: "Ground Path <newsletter@groundpath.com.au>",
+        from: "groundpath newsletter <newsletter@groundpath.com.au>",
         to: batch,
         subject: body.subject,
         html: html,
