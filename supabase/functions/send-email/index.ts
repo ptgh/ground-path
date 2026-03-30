@@ -43,10 +43,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     switch (type) {
       case 'contact_form':
-        subject = `New Contact Form Submission: ${data.subject} - Ground Path`;
+        subject = `New Contact Form Submission: ${data.subject} - groundpath`;
         emailContent = `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h1 style="color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">New Contact Form Submission - Ground Path</h1>
+            <h1 style="color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">New Contact Form Submission - groundpath</h1>
             <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
               <p style="margin: 10px 0;"><strong>Name:</strong> ${data.name}</p>
               <p style="margin: 10px 0;"><strong>Email:</strong> ${data.email}</p>
