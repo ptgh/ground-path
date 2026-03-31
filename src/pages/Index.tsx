@@ -10,7 +10,7 @@ import VoiceCounsellingSection from '../components/VoiceCounsellingSection';
 import Newsletter from '../components/Newsletter';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
-import { AIAssistant } from '../components/AIAssistant';
+
 import { PractitionerList } from '../components/PractitionerCard';
 import NewsletterTest from '../components/NewsletterTest';
 import { Button } from '@/components/ui/button';
@@ -100,7 +100,7 @@ const Index = () => {
         <Contact />
       </main>
       <Footer />
-      <AIAssistant />
+      
       
       {/* Admin/Test Newsletter Button - Show in development or with special query param */}
       {(process.env.NODE_ENV === 'development' || window.location.search.includes('admin=true')) && (
