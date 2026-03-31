@@ -55,7 +55,7 @@ const Services = () => {
       name: "Counselling Support",
       format: "Online via Microsoft Teams",
       rate: "$100",
-      description: "Professional counselling sessions delivered by qualified social workers — providing a safe, supportive space to explore your concerns"
+      description: "Professional counselling sessions delivered by qualified social workers — ACA registration currently in progress"
     },
     {
       name: "In-Person Support",
