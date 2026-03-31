@@ -1,96 +1,41 @@
 
 
-# Restructure Registration — Multiple Bodies via `practitioner_registrations` Table
+## Investigation: AI Assistant Two-Pathway System
 
-## Summary
+### Current State
 
-Add a dedicated `practitioner_registrations` table so practitioners can hold multiple registration bodies simultaneously. The General Registration Body section becomes a list of saved registrations with an "Add Another" flow. AASW and SWE keep their dedicated sections (they map to profile columns as-is).
+The system has **two separate AI assistants** that are both functioning, but there is a routing/rendering bug:
 
-## Database Changes
+### The Two Pathways
 
-### New migration: create `practitioner_registrations` table
+| Feature | Client AI (`ClientAIAssistant`) | Practitioner AI (`AIAssistant`) |
+|---|---|---|
+| **Audience** | Public visitors, clients (no login needed) | Logged-in practitioners on `/practitioner/*` routes |
+| **Trigger button** | Primary-colored floating button with `MessageCircle` icon | Sage-colored floating button with spiral SVG icon |
+| **Edge function** | `client-ai-assistant` | `ai-assistant` |
+| **Features** | Country selector (AU/UK/Global), crisis detection, session mode, booking prompts | Conversation history saved to DB, professional quick questions |
+| **Tone** | Warm, supportive, client-facing | Collegial, practitioner-focused (AASW, CPD, clinical) |
 
-```sql
-CREATE TABLE public.practitioner_registrations (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  body_name text NOT NULL,          -- e.g. 'AHPRA', 'ACA', 'BACP', or custom text
-  registration_number text,
-  registration_date date,           -- when they registered (replaces "expiry")
-  years_as_practitioner integer,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now(),
-  UNIQUE (user_id, body_name)
-);
+### The Bug
 
-ALTER TABLE public.practitioner_registrations ENABLE ROW LEVEL SECURITY;
+**`Index.tsx` line 103 renders `<AIAssistant />`** (the practitioner version) directly on the homepage. Meanwhile, `App.tsx` line 185 renders `<AIAssistantRouter />` which correctly shows `<ClientAIAssistant />` on non-practitioner routes. This causes:
 
-CREATE POLICY "Users can view own registrations"
-  ON public.practitioner_registrations FOR SELECT
-  TO authenticated USING (auth.uid() = user_id);
+- The **wrong** (practitioner) assistant appearing on the homepage, or two overlapping floating buttons
+- The client-facing assistant being hidden or conflicting
 
-CREATE POLICY "Users can insert own registrations"
-  ON public.practitioner_registrations FOR INSERT
-  TO authenticated WITH CHECK (auth.uid() = user_id);
+### Fix Plan
 
-CREATE POLICY "Users can update own registrations"
-  ON public.practitioner_registrations FOR UPDATE
-  TO authenticated USING (auth.uid() = user_id);
+1. **Remove `<AIAssistant />` from `Index.tsx`** (line 103) — delete the import and the component render. The `AIAssistantRouter` in `App.tsx` already handles showing the correct assistant based on route and auth state.
 
-CREATE POLICY "Users can delete own registrations"
-  ON public.practitioner_registrations FOR DELETE
-  TO authenticated USING (auth.uid() = user_id);
+2. **Verify the `AIAssistantRouter` logic** in `App.tsx` is correct:
+   - Non-practitioner routes → `ClientAIAssistant` (no login required, client-facing)
+   - Practitioner routes + logged in → `AIAssistant` (professional, sage-themed)
+   - Practitioner routes + not logged in → nothing (correct)
 
--- Trigger for updated_at
-CREATE TRIGGER update_practitioner_registrations_updated_at
-  BEFORE UPDATE ON public.practitioner_registrations
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-```
+3. **Ensure colour differentiation is clear**:
+   - Client button: uses `sessionColor` which maps to `bg-primary` (site primary green)
+   - Practitioner button: uses `bg-sage-600` (distinct sage green)
+   - Both already have distinct icons (MessageCircle vs spiral SVG)
 
-## Frontend Changes
-
-### File: `src/components/ProfessionalProfileModal.tsx`
-
-**General Registration Body section (lines 545-603) — replace with multi-registration list:**
-
-1. On mount, fetch `practitioner_registrations` for the current user
-2. Display each saved registration as a `SavedRegistrationCard` showing:
-   - Title: body name (e.g. "AHPRA Registration")
-   - Number label: dynamic (e.g. "AHPRA Registration Number")
-   - Registration date (not expiry)
-   - Years as practitioner
-   - Copy / Edit / Delete icons
-3. Below the list, show an "Add Registration" button that reveals:
-   - Registration Body dropdown (country-filtered, with "Other" free-text)
-   - Registration Number input
-   - Registration Date input
-   - Years as Practitioner input
-   - Save button (inserts/upserts to `practitioner_registrations`)
-4. Delete removes the row from the table
-5. Edit switches the card to input mode, save updates the row
-
-**SavedRegistrationCard updates:**
-- Change "Registration Expiry" label to "Registration Date"
-- Add optional `yearsValue` display for years as practitioner
-- Dynamic title/label based on body name
-
-**Data flow:**
-- General registrations read/write directly to `practitioner_registrations` table (not profile columns)
-- AASW and SWE sections remain on the `profiles` table as-is (dedicated fields)
-- The old `registration_body` / `registration_number` / `registration_expiry` profile columns are left in the DB but no longer shown in the UI for new entries — existing data migrated via a one-time insert
-
-**One-time data migration** (in the same migration):
-```sql
--- Migrate existing general registration data to the new table
-INSERT INTO public.practitioner_registrations (user_id, body_name, registration_number, registration_date)
-SELECT p.user_id, p.registration_body, p.registration_number, p.registration_expiry
-FROM public.profiles p
-WHERE p.registration_body IS NOT NULL
-  AND p.registration_body != ''
-ON CONFLICT (user_id, body_name) DO NOTHING;
-```
-
-### Files to modify
-- `src/components/ProfessionalProfileModal.tsx` — multi-registration UI
-- New migration — create table, RLS, migrate existing data
+This is a one-line fix (removing the duplicate render from Index.tsx) that restores the intended two-pathway system.
 
