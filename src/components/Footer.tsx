@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import PrivacyPolicyModal from './PrivacyPolicyModal';
 import TermsOfServiceModal from './TermsOfServiceModal';
 import ABNLookupModal from './ABNLookupModal';
