@@ -28,9 +28,19 @@ const Footer = () => {
               </svg>
               <span className="text-lg font-light tracking-wide">groundpath</span>
             </div>
-            <p className="text-gray-400 text-sm leading-relaxed">
+            <p className="text-gray-400 text-sm leading-relaxed mb-4">
               Professional social work and mental health support, grounded in care and evidence-based practice.
             </p>
+            <div className="bg-white rounded-lg p-2 inline-block">
+              <QRCodeSVG
+                value="https://ground-path.lovable.app"
+                size={80}
+                bgColor="#ffffff"
+                fgColor="#1a1a1a"
+                level="M"
+              />
+            </div>
+            <p className="text-gray-500 text-xs mt-1.5">Scan to visit</p>
           </div>
 
           {/* Quick Links */}
