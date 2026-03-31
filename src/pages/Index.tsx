@@ -100,7 +100,7 @@ const Index = () => {
         <Contact />
       </main>
       <Footer />
-      <AIAssistant />
+      
       
       {/* Admin/Test Newsletter Button - Show in development or with special query param */}
       {(process.env.NODE_ENV === 'development' || window.location.search.includes('admin=true')) && (
