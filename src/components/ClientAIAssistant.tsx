@@ -788,6 +788,15 @@ export const ClientAIAssistant = () => {
                 <Button
                   variant="ghost"
                   size="sm"
+                  onClick={() => setIsOpen(false)}
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                  title="Close"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setShowEmailModal(true)}
                   className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
                   title="Email transcript"

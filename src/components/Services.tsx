@@ -55,8 +55,7 @@ const Services = () => {
       name: "Counselling Support",
       format: "Online via Microsoft Teams",
       rate: "$100",
-      description: "Professional counselling sessions delivered by qualified social workers",
-      acaInProgress: true
+      description: "Professional counselling sessions delivered by qualified social workers — ACA registration currently in progress"
     },
     {
       name: "In-Person Support",
@@ -108,11 +107,6 @@ const Services = () => {
                   {service.ndis && (
                     <span className="bg-sage-100 text-sage-700 px-3 py-1 rounded-full text-sm font-medium">
                       NDIS
-                    </span>
-                  )}
-                  {service.acaInProgress && (
-                    <span className="bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-full text-xs font-medium tracking-wide uppercase whitespace-nowrap">
-                      ACA In Progress
                     </span>
                   )}
                 </div>
