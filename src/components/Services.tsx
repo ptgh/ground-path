@@ -110,6 +110,11 @@ const Services = () => {
                       NDIS
                     </span>
                   )}
+                  {service.acaInProgress && (
+                    <span className="bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-full text-xs font-medium tracking-wide uppercase whitespace-nowrap">
+                      ACA In Progress
+                    </span>
+                  )}
                 </div>
               </div>
               
