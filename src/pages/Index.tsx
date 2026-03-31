@@ -10,7 +10,7 @@ import VoiceCounsellingSection from '../components/VoiceCounsellingSection';
 import Newsletter from '../components/Newsletter';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
-import { AIAssistant } from '../components/AIAssistant';
+
 import { PractitionerList } from '../components/PractitionerCard';
 import NewsletterTest from '../components/NewsletterTest';
 import { Button } from '@/components/ui/button';
