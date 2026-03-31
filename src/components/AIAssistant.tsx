@@ -414,28 +414,39 @@ export const AIAssistant = () => {
                 </div>
                 Professional Assistant
               </div>
-              {user && (
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={startNewConversation}
-                    className="h-8 w-8 p-0"
-                    title="New conversation"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowHistory(!showHistory)}
-                    className="h-8 w-8 p-0"
-                    title="View history"
-                  >
-                    <History className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
+              <div className="flex items-center gap-1">
+                {user && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={startNewConversation}
+                      className="h-8 w-8 p-0"
+                      title="New conversation"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowHistory(!showHistory)}
+                      className="h-8 w-8 p-0"
+                      title="View history"
+                    >
+                      <History className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsOpen(false)}
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                  title="Close"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </DialogTitle>
             <p className="text-sm text-gray-600 mt-2">
               Professional development support for practitioners, students, and educators
