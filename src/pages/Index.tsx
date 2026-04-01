@@ -78,11 +78,13 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-white">
       <SEO path="/" />
+      <CrisisDisclaimer />
       <Header />
       <main>
         <Hero />
         <About />
         <Services />
+        <HowGroundpathIsDifferent />
         <HowSessionsWork />
         <VoiceCounsellingSection />
         {/* Our Practitioners */}
