@@ -101,15 +101,26 @@ const Hero = () => {
 
         {/* Professional Credentials */}
         <div className="fade-in mt-12 sm:mt-16 text-center">
-          <div className="inline-flex flex-col lg:flex-row items-center lg:space-x-4 space-y-2 lg:space-y-0 bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 rounded-lg max-w-4xl mx-auto">
-            <span className="text-xs sm:text-sm text-gray-600 font-medium text-center">Accredited Social Workers</span>
-            <span className="text-gray-300 hidden lg:inline">•</span>
-            <span className="text-xs sm:text-sm text-gray-600 font-medium text-center">NDIS Services</span>
-            <span className="text-gray-300 hidden lg:inline">•</span>
-            <span className="text-xs sm:text-sm text-gray-500 font-medium text-center">AMHSW <span className="text-gray-400 italic">(registration in progress)</span></span>
-            <span className="text-gray-300 hidden lg:inline">•</span>
-            <span className="text-xs sm:text-sm text-gray-500 font-medium text-center">ACA Counsellors <span className="text-gray-400 italic">(registration in progress)</span></span>
+          <div className="inline-flex flex-col lg:flex-row items-center lg:space-x-4 space-y-2 lg:space-y-0 bg-muted px-4 sm:px-6 py-3 sm:py-4 rounded-lg max-w-4xl mx-auto">
+            <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80 font-medium">
+              <span className="inline-block h-2 w-2 rounded-full bg-primary" />
+              AASW Member #486997
+            </span>
+            <span className="text-border hidden lg:inline">•</span>
+            <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80 font-medium">
+              <span className="inline-block h-2 w-2 rounded-full bg-primary" />
+              SWE Registered SW134920
+            </span>
+            <span className="text-border hidden lg:inline">•</span>
+            <span className="text-xs sm:text-sm text-foreground/80 font-medium">NDIS Services</span>
+            <span className="text-border hidden lg:inline">•</span>
+            <span className="text-xs sm:text-sm text-muted-foreground font-medium">AMHSW <span className="italic">(registration in progress)</span></span>
+            <span className="text-border hidden lg:inline">•</span>
+            <span className="text-xs sm:text-sm text-muted-foreground font-medium">ACA Counsellors <span className="italic">(registration in progress)</span></span>
           </div>
+          <p className="mt-3 text-xs text-muted-foreground font-medium tracking-wide">
+            Qualified &amp; Accredited — Not an Algorithm
+          </p>
         </div>
       </div>
 
