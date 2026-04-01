@@ -6,6 +6,10 @@ import { useContactFormSubmission } from '@/hooks/useMailingList';
 import { contactFormSchema, checkRateLimit } from '@/lib/validation';
 import { useToast } from '@/hooks/use-toast';
 import MailingListModal from './MailingListModal';
+import HalaxyEmbed from './booking/HalaxyEmbed';
+
+const HALAXY_EMBED_URL = import.meta.env.VITE_HALAXY_EMBED_URL as string | undefined;
+const HALAXY_EXTERNAL_URL = 'https://www.halaxy.com/profile/groundpath/location/1353667';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -171,20 +175,25 @@ const Contact = () => {
             {/* Booking Information */}
             <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
               <h4 className="font-medium text-gray-900 mb-4">Book an Online Session</h4>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 mb-4">
                 All sessions are via Microsoft Teams. Book a time that suits you and receive your meeting link automatically.
               </p>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
+
+              {HALAXY_EMBED_URL ? (
+                <div className="mb-4">
+                  <HalaxyEmbed embedUrl={HALAXY_EMBED_URL} fallbackUrl={HALAXY_EXTERNAL_URL} />
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 mb-4">
                   <button 
-                    onClick={() => window.open('https://www.halaxy.com/profile/groundpath/location/1353667', '_blank')}
+                    onClick={() => window.open(HALAXY_EXTERNAL_URL, '_blank')}
                     className="flex-1 bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium"
                     aria-label="Book online session via Halaxy"
                   >
                     Book Online Session
                   </button>
                   <a 
-                    href="https://www.halaxy.com/profile/groundpath/location/1353667"
+                    href={HALAXY_EXTERNAL_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-shrink-0 cursor-pointer"
@@ -197,6 +206,9 @@ const Contact = () => {
                     />
                   </a>
                 </div>
+              )}
+
+              <div className="space-y-3">
                 <button 
                   onClick={() => setIsMailingListOpen(true)}
                   className="w-full border border-sage-600 text-sage-600 py-3 px-4 rounded-lg hover:bg-sage-50 transition-colors font-medium"
