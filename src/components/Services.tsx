@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { scrollToSectionWithOffset } from '@/lib/utils';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -89,7 +90,7 @@ const Services = () => {
               href: "#contact",
               onClick: (e: React.MouseEvent) => {
                 e.preventDefault();
-                document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                scrollToSectionWithOffset('contact', 96);
               },
             } : {};
             return (

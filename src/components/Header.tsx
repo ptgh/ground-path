@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import Logo from './Logo';
+import { scrollToSectionWithOffset } from '@/lib/utils';
 
 // Auth-aware component that only loads auth when needed
 const AuthAwareSection = () => {
@@ -164,23 +165,20 @@ const Header = () => {
   const isLoggedIn = !!user;
 
   const scrollToSection = useCallback((sectionId: string) => {
-    const HEADER_OFFSET = 80;
-
     const doScroll = () => {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        const top = element.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
-        window.scrollTo({ top, behavior: 'smooth' });
+      if (sectionId === 'home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return true;
       }
+
+      return scrollToSectionWithOffset(sectionId, 96);
     };
 
     if (location.pathname !== '/') {
       navigate('/');
       const tryScroll = (attempts = 0) => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          const top = element.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
-          window.scrollTo({ top, behavior: 'smooth' });
+        if (doScroll()) {
+          return;
         } else if (attempts < 10) {
           setTimeout(() => tryScroll(attempts + 1), 100);
         }

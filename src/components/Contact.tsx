@@ -7,6 +7,7 @@ import { contactFormSchema, checkRateLimit } from '@/lib/validation';
 import { useToast } from '@/hooks/use-toast';
 import MailingListModal from './MailingListModal';
 import HalaxyEmbed from './booking/HalaxyEmbed';
+import { scrollToSectionWithOffset } from '@/lib/utils';
 
 const HALAXY_EMBED_URL = import.meta.env.VITE_HALAXY_EMBED_URL as string | undefined;
 const HALAXY_EXTERNAL_URL = 'https://www.halaxy.com/profile/groundpath/location/1353667';
@@ -217,10 +218,7 @@ const Contact = () => {
                 </button>
                 <button
                   onClick={() => {
-                    const el = document.getElementById('practitioners');
-                    if (el) {
-                      el.scrollIntoView({ behavior: 'smooth' });
-                    } else {
+                    if (!scrollToSectionWithOffset('practitioners', 96)) {
                       window.location.href = '/#practitioners';
                     }
                   }}
