@@ -88,10 +88,11 @@ const Newsletter = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-light text-gray-900 mb-4">
+          <h2 className="text-3xl sm:text-4xl font-light text-foreground mb-4">
             Stay <span className="text-sage-600 font-normal">Connected</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <div className="w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Get the latest insights on mental health, social work practice, and professional development delivered to your inbox.
           </p>
         </div>

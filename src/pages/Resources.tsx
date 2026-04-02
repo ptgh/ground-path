@@ -427,9 +427,10 @@ const Resources = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header Section */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-foreground mb-4">
+            <h1 className="text-3xl sm:text-4xl font-light text-foreground mb-4">
               Client Resources
             </h1>
+            <div className="w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Support resources, helplines, and information for clients and people seeking help
             </p>
