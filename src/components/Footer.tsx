@@ -1,14 +1,42 @@
 
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import PrivacyPolicyModal from './PrivacyPolicyModal';
 import TermsOfServiceModal from './TermsOfServiceModal';
 import ABNLookupModal from './ABNLookupModal';
+import { scrollToSectionWithOffset } from '@/lib/utils';
 
 const Footer = () => {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isABNOpen, setIsABNOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleSectionNavigation = (sectionId: string) => {
+    const doScroll = () => {
+      if (sectionId === 'home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return true;
+      }
+
+      return scrollToSectionWithOffset(sectionId, 96);
+    };
+
+    if (location.pathname !== '/') {
+      navigate('/');
+      const tryScroll = (attempts = 0) => {
+        if (doScroll()) return;
+        if (attempts < 10) setTimeout(() => tryScroll(attempts + 1), 100);
+      };
+      setTimeout(() => tryScroll(), 200);
+      return;
+    }
+
+    doScroll();
+  };
+
   return (
     <footer className="bg-gray-900 text-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,11 +75,11 @@ const Footer = () => {
           <div>
             <h3 className="font-medium mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#about" className="text-gray-400 hover:text-white transition-colors">About</a></li>
-              <li><a href="#services" className="text-gray-400 hover:text-white transition-colors">Services & Rates</a></li>
-              <li><a href="/resources" className="text-gray-400 hover:text-white transition-colors">Resources</a></li>
-              <li><a href="#newsletter" className="text-gray-400 hover:text-white transition-colors">Newsletter</a></li>
-              <li><a href="#contact" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+              <li><button type="button" onClick={() => handleSectionNavigation('about')} className="text-gray-400 hover:text-white transition-colors">About</button></li>
+              <li><button type="button" onClick={() => handleSectionNavigation('services')} className="text-gray-400 hover:text-white transition-colors">Services & Rates</button></li>
+              <li><button type="button" onClick={() => navigate('/resources')} className="text-gray-400 hover:text-white transition-colors">Resources</button></li>
+              <li><button type="button" onClick={() => handleSectionNavigation('newsletter')} className="text-gray-400 hover:text-white transition-colors">Newsletter</button></li>
+              <li><button type="button" onClick={() => handleSectionNavigation('contact')} className="text-gray-400 hover:text-white transition-colors">Contact</button></li>
             </ul>
           </div>
 
@@ -80,7 +108,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <div className="text-sm text-gray-400">
-            <span className="whitespace-nowrap">© 2026 groundpath. All rights reserved.</span> • <span className="whitespace-nowrap">ABN: 98 434 283 298</span> • <a href="https://www.aasw.asn.au" target="_blank" rel="noopener noreferrer" className="whitespace-nowrap hover:text-white transition-colors duration-300">AASW Member #486997</a> • <a href="https://www.socialworkengland.org.uk" target="_blank" rel="noopener noreferrer" className="whitespace-nowrap hover:text-white transition-colors duration-300">SWE SW134920</a>
+            <span className="whitespace-nowrap">© 2026 groundpath. All rights reserved.</span> • <span className="whitespace-nowrap">ABN: 98 434 283 298</span> • <a href="https://www.aasw.asn.au" target="_blank" rel="noopener noreferrer" className="whitespace-nowrap hover:text-white transition-colors duration-300">AASW Member</a> • <a href="https://www.socialworkengland.org.uk" target="_blank" rel="noopener noreferrer" className="whitespace-nowrap hover:text-white transition-colors duration-300">SWE Registered</a>
           </div>
           <div className="text-sm text-gray-400 mt-4 md:mt-0 space-x-4">
             <button 

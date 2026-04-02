@@ -1,17 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { Mic } from 'lucide-react';
 import MailingListModal from './MailingListModal';
+import { scrollToSectionWithOffset } from '@/lib/utils';
 
 const Hero = () => {
   const [isMailingListOpen, setIsMailingListOpen] = useState(false);
   const ctaButtonsRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    element?.scrollIntoView({ behavior: 'smooth' });
+    scrollToSectionWithOffset(sectionId, 96);
   };
 
   useEffect(() => {
@@ -104,12 +102,12 @@ const Hero = () => {
           <div className="inline-flex flex-col lg:flex-row items-center lg:space-x-4 space-y-2 lg:space-y-0 bg-muted px-4 sm:px-6 py-3 sm:py-4 rounded-lg max-w-4xl mx-auto">
             <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80 font-medium">
               <span className="inline-block h-2 w-2 rounded-full bg-primary" />
-              AASW Member #486997
+              AASW Member
             </span>
             <span className="text-border hidden lg:inline">•</span>
             <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80 font-medium">
               <span className="inline-block h-2 w-2 rounded-full bg-primary" />
-              SWE Registered SW134920
+              SWE Registered
             </span>
             <span className="text-border hidden lg:inline">•</span>
             <span className="text-xs sm:text-sm text-foreground/80 font-medium">NDIS Services</span>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 interface HalaxyEmbedProps {
   embedUrl: string;
@@ -27,10 +28,13 @@ const HalaxyEmbed = ({ embedUrl, fallbackUrl }: HalaxyEmbedProps) => {
         <iframe
           src={embedUrl}
           title="Book a session with Groundpath via Halaxy"
-          className={`w-full border-0 ${isLoading ? 'h-0 overflow-hidden' : ''}`}
-          style={{ minHeight: isLoading ? 0 : 700 }}
+          className={cn(
+            'w-full border-0 overflow-hidden',
+            isLoading ? 'h-0' : 'h-[1350px] md:h-[1250px]'
+          )}
           onLoad={() => setIsLoading(false)}
           allow="payment"
+          scrolling="no"
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
         />
       </div>
