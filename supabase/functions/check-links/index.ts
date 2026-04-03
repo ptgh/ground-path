@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { getCorsHeaders, unauthorizedResponse, verifyAuth } from "../_shared/auth.ts";
+import { getCorsHeaders, unauthorizedResponse, forbiddenResponse, verifyAuth, verifyRole } from "../_shared/auth.ts";
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
@@ -99,8 +99,14 @@ serve(async (req) => {
 
   // Verify JWT authentication
   const { userId, error: authError } = await verifyAuth(req, supabaseUrl, supabaseAnonKey);
-  if (authError) {
+  if (authError || !userId) {
     return unauthorizedResponse(corsHeaders);
+  }
+
+  // Verify admin or internal role — check-links is restricted to admin/internal users only
+  const isAuthorized = await verifyRole(userId, ['admin', 'internal'], supabaseUrl, supabaseServiceKey);
+  if (!isAuthorized) {
+    return forbiddenResponse(corsHeaders);
   }
 
   try {

@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import { getCorsHeaders, unauthorizedResponse, verifyAuth } from "../_shared/auth.ts";
+import { getCorsHeaders, unauthorizedResponse, forbiddenResponse, verifyAuth, verifyRole } from "../_shared/auth.ts";
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -155,8 +155,14 @@ serve(async (req) => {
 
   // Verify JWT authentication
   const { userId, error: authError } = await verifyAuth(req, supabaseUrl, supabaseAnonKey);
-  if (authError) {
+  if (authError || !userId) {
     return unauthorizedResponse(corsHeaders);
+  }
+
+  // Verify admin role — generate-articles is restricted to admin users only
+  const isAdmin = await verifyRole(userId, ['admin'], supabaseUrl, supabaseServiceKey);
+  if (!isAdmin) {
+    return forbiddenResponse(corsHeaders);
   }
 
   try {
