@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, User, Stethoscope, Mail, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { getSafeRedirectPath } from '@/lib/redirectUtils';
 
 type AccountType = 'user' | 'practitioner' | '';
 type VerificationState = 'none' | 'pending' | 'complete';
@@ -63,15 +64,9 @@ const AuthPage = () => {
   const completeVerifiedFlow = () => {
     clearPendingSignup();
     const redirectParam = new URLSearchParams(location.search).get('redirect');
-    if (redirectParam) {
-      navigate(redirectParam, { replace: true });
-      return;
-    }
-    if (verifiedUserType === 'practitioner') {
-      navigate('/practitioner/verify', { replace: true });
-      return;
-    }
-    navigate('/dashboard', { replace: true });
+    const defaultPath = verifiedUserType === 'practitioner' ? '/practitioner/verify' : '/dashboard';
+    const safePath = getSafeRedirectPath(redirectParam, defaultPath);
+    navigate(safePath, { replace: true });
   };
 
   // Resend cooldown timer
@@ -218,14 +213,11 @@ const AuthPage = () => {
       }
 
       toast({ title: 'Welcome back!', description: 'You have been signed in successfully.' });
-      const redirectParam = new URLSearchParams(location.search).get('redirect');
-      if (redirectParam) {
-        navigate(redirectParam, { replace: true });
-        return;
-      }
       const { data: profileData } = await supabase.from('profiles').select('user_type').eq('user_id', data.user!.id).single();
       const effectiveUserType = profileData?.user_type || data.user?.user_metadata?.user_type;
-      navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/dashboard', { replace: true });
+      const defaultPath = effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/dashboard';
+      const redirectParam = new URLSearchParams(location.search).get('redirect');
+      navigate(getSafeRedirectPath(redirectParam, defaultPath), { replace: true });
     } catch {
       toast({ title: 'Sign in failed', description: 'An unexpected error occurred.', variant: 'destructive' });
     } finally {
