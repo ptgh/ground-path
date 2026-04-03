@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -22,21 +22,30 @@ const HalaxyEmbed = ({ embedUrl, fallbackUrl }: HalaxyEmbedProps) => {
             <Skeleton className="h-8 w-48" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-[500px] w-full rounded-lg" />
+            <Skeleton className="h-[400px] w-full rounded-lg" />
           </div>
         )}
-        <iframe
-          src={embedUrl}
-          title="Book a session with Groundpath via Halaxy"
+        <div
           className={cn(
-            'w-full border-0 overflow-hidden',
-            isLoading ? 'h-0' : 'h-[750px] md:h-[700px]'
+            'w-full overflow-y-auto',
+            isLoading ? 'h-0' : 'h-[600px] md:h-[550px]'
           )}
-          onLoad={() => setIsLoading(false)}
-          allow="payment"
-          scrolling="no"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
-        />
+          style={{
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          }}
+        >
+          <style>{`.halaxy-scroll-container::-webkit-scrollbar { display: none; }`}</style>
+          <iframe
+            src={embedUrl}
+            title="Book a session with Groundpath via Halaxy"
+            className="w-full border-0 halaxy-scroll-container"
+            style={{ height: '1200px' }}
+            onLoad={() => setIsLoading(false)}
+            allow="payment"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+          />
+        </div>
       </div>
 
       <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground px-1">
