@@ -34,6 +34,17 @@ interface FormHistoryProps {
   onViewForm?: (submission: FormSubmission) => void;
 }
 
+// Escape special HTML characters to prevent XSS in raw innerHTML assignments
+const escapeHtml = (value: unknown): string => {
+  const str = value == null ? '' : String(value);
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
+
 const FormHistory = ({ onViewForm }: FormHistoryProps) => {
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
@@ -167,29 +178,29 @@ const FormHistory = ({ onViewForm }: FormHistoryProps) => {
       <div style="font-family: Arial, sans-serif; margin: 0; padding: 20px;">
         <div style="border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
           <h1 style="margin: 0; color: #333;">groundpath Professional Services</h1>
-          <h2 style="margin: 10px 0; color: #666;">${submission.form_type}</h2>
-          <p style="margin: 5px 0;"><strong>Patient:</strong> ${clientName}</p>
-          <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(submission.completed_at).toLocaleDateString()}</p>
-          <p style="margin: 5px 0;"><strong>Time:</strong> ${new Date(submission.completed_at).toLocaleTimeString()}</p>
-          <p style="margin: 5px 0;"><strong>Status:</strong> ${submission.status || 'completed'}</p>
+          <h2 style="margin: 10px 0; color: #666;">${escapeHtml(submission.form_type)}</h2>
+          <p style="margin: 5px 0;"><strong>Patient:</strong> ${escapeHtml(clientName)}</p>
+          <p style="margin: 5px 0;"><strong>Date:</strong> ${escapeHtml(new Date(submission.completed_at).toLocaleDateString())}</p>
+          <p style="margin: 5px 0;"><strong>Time:</strong> ${escapeHtml(new Date(submission.completed_at).toLocaleTimeString())}</p>
+          <p style="margin: 5px 0;"><strong>Status:</strong> ${escapeHtml(submission.status || 'completed')}</p>
         </div>
         <div>
           ${submission.score !== null ? `
             <div style="background: #f8f9fa; padding: 15px; border: 1px solid #dee2e6; border-radius: 4px; margin: 15px 0;">
               <div style="font-weight: bold; font-size: 16px; margin-bottom: 10px;">Assessment Results</div>
-              <div style="font-weight: bold;">Total Score: ${submission.score}</div>
-              ${submission.interpretation ? `<p style="margin: 10px 0 0 0;"><strong>Clinical Interpretation:</strong> ${submission.interpretation}</p>` : ''}
+              <div style="font-weight: bold;">Total Score: ${escapeHtml(submission.score)}</div>
+              ${submission.interpretation ? `<p style="margin: 10px 0 0 0;"><strong>Clinical Interpretation:</strong> ${escapeHtml(submission.interpretation)}</p>` : ''}
             </div>
           ` : ''}
           <div style="margin-bottom: 15px;">
             <h3 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Assessment Details</h3>
             <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; white-space: pre-wrap; font-family: monospace; font-size: 12px;">
-${JSON.stringify(submission.form_data, null, 2)}
+${escapeHtml(JSON.stringify(submission.form_data, null, 2))}
             </div>
           </div>
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666;">
             <p><strong>Confidential Document</strong> - This assessment contains confidential patient information and should be handled according to privacy regulations.</p>
-            <p>Generated on ${new Date().toLocaleString()} | groundpath Professional Services</p>
+            <p>Generated on ${escapeHtml(new Date().toLocaleString())} | groundpath Professional Services</p>
           </div>
         </div>
       </div>
@@ -197,7 +208,7 @@ ${JSON.stringify(submission.form_data, null, 2)}
 
     // Create print styles
     const printStyles = document.createElement('style');
-    printStyles.innerHTML = `
+    printStyles.textContent = `
       @media print {
         body * { visibility: hidden; }
         .print-content, .print-content * { visibility: visible; }
