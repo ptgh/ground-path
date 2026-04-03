@@ -4,6 +4,8 @@ import { MemoryRouter } from 'react-router-dom';
 import AuthenticatedRoute from '@/components/AuthenticatedRoute';
 import { useAuth } from '@/hooks/useAuth';
 
+type AuthMock = ReturnType<typeof useAuth>;
+
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: vi.fn(),
 }));
@@ -20,7 +22,7 @@ describe('AuthenticatedRoute', () => {
       user: null,
       loading: true,
       profileLoading: false,
-    } as any);
+    } as unknown as AuthMock);
 
     renderWithRouter(
       <AuthenticatedRoute><div>Authenticated content</div></AuthenticatedRoute>
@@ -36,7 +38,7 @@ describe('AuthenticatedRoute', () => {
       user: { id: 'user-1' },
       loading: false,
       profileLoading: true,
-    } as any);
+    } as unknown as AuthMock);
 
     renderWithRouter(
       <AuthenticatedRoute><div>Authenticated content</div></AuthenticatedRoute>
@@ -50,7 +52,7 @@ describe('AuthenticatedRoute', () => {
       user: null,
       loading: false,
       profileLoading: false,
-    } as any);
+    } as unknown as AuthMock);
 
     renderWithRouter(
       <AuthenticatedRoute><div>Authenticated content</div></AuthenticatedRoute>
@@ -64,7 +66,7 @@ describe('AuthenticatedRoute', () => {
       user: { id: 'user-1', email: 'test@example.com' },
       loading: false,
       profileLoading: false,
-    } as any);
+    } as unknown as AuthMock);
 
     renderWithRouter(
       <AuthenticatedRoute><div>Authenticated content</div></AuthenticatedRoute>

@@ -4,6 +4,8 @@ import { MemoryRouter } from 'react-router-dom';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/hooks/useAuth';
 
+type AuthMock = ReturnType<typeof useAuth>;
+
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: vi.fn(),
 }));
@@ -19,7 +21,7 @@ describe('ProtectedRoute', () => {
     mockUseAuth.mockReturnValue({
       user: null,
       loading: true,
-    } as any);
+    } as unknown as AuthMock);
 
     renderWithRouter(<ProtectedRoute><div>Protected content</div></ProtectedRoute>);
 
@@ -33,7 +35,7 @@ describe('ProtectedRoute', () => {
     mockUseAuth.mockReturnValue({
       user: null,
       loading: false,
-    } as any);
+    } as unknown as AuthMock);
 
     renderWithRouter(<ProtectedRoute><div>Protected content</div></ProtectedRoute>);
 
@@ -44,7 +46,7 @@ describe('ProtectedRoute', () => {
     mockUseAuth.mockReturnValue({
       user: { id: 'user-1', email: 'test@example.com' },
       loading: false,
-    } as any);
+    } as unknown as AuthMock);
 
     renderWithRouter(<ProtectedRoute><div>Protected content</div></ProtectedRoute>);
 
