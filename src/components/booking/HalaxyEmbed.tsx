@@ -22,23 +22,24 @@ const HalaxyEmbed = ({ embedUrl, fallbackUrl }: HalaxyEmbedProps) => {
             <Skeleton className="h-8 w-48" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-[520px] w-full rounded-lg" />
+            <Skeleton className="h-[760px] sm:h-[780px] lg:h-[740px] w-full rounded-lg" />
           </div>
         )}
         <div
           className={cn(
-            'w-full overflow-hidden',
-            isLoading ? 'h-0' : 'min-h-[520px]'
+            'w-full overflow-hidden bg-background',
+            isLoading ? 'h-0' : 'h-[760px] sm:h-[780px] lg:h-[740px]'
           )}
         >
           <iframe
             src={embedUrl}
             title="Book a session with Groundpath via Halaxy"
-            className="block w-full border-0 h-[520px] sm:h-[560px] lg:h-[520px]"
+            className="block border-0 max-w-none h-[1260px] sm:h-[1300px] lg:h-[1220px]"
+            style={{ width: 'calc(100% + 18px)', marginRight: '-18px' }}
             onLoad={() => setIsLoading(false)}
             allow="payment"
             sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
-            scrolling="no"
+            scrolling="yes"
           />
         </div>
       </div>
