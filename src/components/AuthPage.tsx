@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, User, Stethoscope, Mail, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { getSafeRedirect } from '@/lib/safeRedirect';
 
 type AccountType = 'user' | 'practitioner' | '';
 type VerificationState = 'none' | 'pending' | 'complete';
@@ -62,9 +63,9 @@ const AuthPage = () => {
 
   const completeVerifiedFlow = () => {
     clearPendingSignup();
-    const redirectParam = new URLSearchParams(location.search).get('redirect');
-    if (redirectParam) {
-      navigate(redirectParam, { replace: true });
+    const safeRedirect = getSafeRedirect(location.search);
+    if (safeRedirect) {
+      navigate(safeRedirect, { replace: true });
       return;
     }
     if (verifiedUserType === 'practitioner') {
@@ -218,9 +219,9 @@ const AuthPage = () => {
       }
 
       toast({ title: 'Welcome back!', description: 'You have been signed in successfully.' });
-      const redirectParam = new URLSearchParams(location.search).get('redirect');
-      if (redirectParam) {
-        navigate(redirectParam, { replace: true });
+      const safeRedirect = getSafeRedirect(location.search);
+      if (safeRedirect) {
+        navigate(safeRedirect, { replace: true });
         return;
       }
       const { data: profileData } = await supabase.from('profiles').select('user_type').eq('user_id', data.user!.id).single();
