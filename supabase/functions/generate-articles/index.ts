@@ -1,14 +1,11 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { getCorsHeaders, unauthorizedResponse, verifyAuth } from "../_shared/auth.ts";
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 interface GeneratedArticle {
@@ -147,9 +144,19 @@ async function saveArticlesToDatabase(articles: GeneratedArticle[]): Promise<num
 }
 
 serve(async (req) => {
+  const origin = req.headers.get('origin');
+  // generate-articles is admin-only; restrict to production origins
+  const corsHeaders = getCorsHeaders(origin);
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Verify JWT authentication
+  const { userId, error: authError } = await verifyAuth(req, supabaseUrl, supabaseAnonKey);
+  if (authError) {
+    return unauthorizedResponse(corsHeaders);
   }
 
   try {
@@ -184,7 +191,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+        error: 'Internal server error',
       }),
       {
         status: 500,
