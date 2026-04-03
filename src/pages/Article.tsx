@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import DOMPurify from 'dompurify';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -162,7 +163,7 @@ const Article = () => {
     );
   }
 
-  const formattedContent = formatArticleContent(article.content);
+  const formattedContent = DOMPurify.sanitize(formatArticleContent(article.content));
 
   return (
     <div className="min-h-screen bg-background">

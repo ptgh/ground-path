@@ -160,44 +160,72 @@ const FormHistory = ({ onViewForm }: FormHistoryProps) => {
   const handlePrint = (submission: FormSubmission) => {
     const client = submission.client_id ? clients.find(c => c.id === submission.client_id) : null;
     const clientName = client ? `${client.first_name} ${client.last_name}` : 'Practitioner Form';
-    
-    // Create a temporary div for printing
-    const printContent = document.createElement('div');
-    printContent.innerHTML = `
-      <div style="font-family: Arial, sans-serif; margin: 0; padding: 20px;">
-        <div style="border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
-          <h1 style="margin: 0; color: #333;">groundpath Professional Services</h1>
-          <h2 style="margin: 10px 0; color: #666;">${submission.form_type}</h2>
-          <p style="margin: 5px 0;"><strong>Patient:</strong> ${clientName}</p>
-          <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(submission.completed_at).toLocaleDateString()}</p>
-          <p style="margin: 5px 0;"><strong>Time:</strong> ${new Date(submission.completed_at).toLocaleTimeString()}</p>
-          <p style="margin: 5px 0;"><strong>Status:</strong> ${submission.status || 'completed'}</p>
-        </div>
-        <div>
-          ${submission.score !== null ? `
-            <div style="background: #f8f9fa; padding: 15px; border: 1px solid #dee2e6; border-radius: 4px; margin: 15px 0;">
-              <div style="font-weight: bold; font-size: 16px; margin-bottom: 10px;">Assessment Results</div>
-              <div style="font-weight: bold;">Total Score: ${submission.score}</div>
-              ${submission.interpretation ? `<p style="margin: 10px 0 0 0;"><strong>Clinical Interpretation:</strong> ${submission.interpretation}</p>` : ''}
-            </div>
-          ` : ''}
-          <div style="margin-bottom: 15px;">
-            <h3 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Assessment Details</h3>
-            <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; white-space: pre-wrap; font-family: monospace; font-size: 12px;">
-${JSON.stringify(submission.form_data, null, 2)}
-            </div>
-          </div>
-          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666;">
-            <p><strong>Confidential Document</strong> - This assessment contains confidential patient information and should be handled according to privacy regulations.</p>
-            <p>Generated on ${new Date().toLocaleString()} | groundpath Professional Services</p>
-          </div>
-        </div>
-      </div>
-    `;
 
-    // Create print styles
+    // Helper to set text content safely on a new element
+    const el = (tag: string, styles: Partial<CSSStyleDeclaration>, text?: string): HTMLElement => {
+      const node = document.createElement(tag);
+      Object.assign(node.style, styles);
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+
+    // Build print content using DOM APIs to avoid innerHTML with user data
+    const wrapper = el('div', { fontFamily: 'Arial, sans-serif', margin: '0', padding: '20px' });
+
+    const header = el('div', { borderBottom: '2px solid #333', paddingBottom: '10px', marginBottom: '20px' });
+    header.appendChild(el('h1', { margin: '0', color: '#333' }, 'groundpath Professional Services'));
+    header.appendChild(el('h2', { margin: '10px 0', color: '#666' }, submission.form_type));
+    const patientP = el('p', { margin: '5px 0' });
+    patientP.appendChild(el('strong', {}, 'Patient: '));
+    patientP.appendChild(document.createTextNode(clientName));
+    header.appendChild(patientP);
+    const dateP = el('p', { margin: '5px 0' });
+    dateP.appendChild(el('strong', {}, 'Date: '));
+    dateP.appendChild(document.createTextNode(new Date(submission.completed_at).toLocaleDateString()));
+    header.appendChild(dateP);
+    const timeP = el('p', { margin: '5px 0' });
+    timeP.appendChild(el('strong', {}, 'Time: '));
+    timeP.appendChild(document.createTextNode(new Date(submission.completed_at).toLocaleTimeString()));
+    header.appendChild(timeP);
+    const statusP = el('p', { margin: '5px 0' });
+    statusP.appendChild(el('strong', {}, 'Status: '));
+    statusP.appendChild(document.createTextNode(submission.status || 'completed'));
+    header.appendChild(statusP);
+    wrapper.appendChild(header);
+
+    const body = document.createElement('div');
+
+    if (submission.score !== null) {
+      const scoreBox = el('div', { background: '#f8f9fa', padding: '15px', border: '1px solid #dee2e6', borderRadius: '4px', margin: '15px 0' });
+      scoreBox.appendChild(el('div', { fontWeight: 'bold', fontSize: '16px', marginBottom: '10px' }, 'Assessment Results'));
+      scoreBox.appendChild(el('div', { fontWeight: 'bold' }, `Total Score: ${String(submission.score)}`));
+      if (submission.interpretation) {
+        const interpP = el('p', { margin: '10px 0 0 0' });
+        interpP.appendChild(el('strong', {}, 'Clinical Interpretation: '));
+        interpP.appendChild(document.createTextNode(submission.interpretation));
+        scoreBox.appendChild(interpP);
+      }
+      body.appendChild(scoreBox);
+    }
+
+    const detailsDiv = el('div', { marginBottom: '15px' });
+    detailsDiv.appendChild(el('h3', { color: '#333', borderBottom: '1px solid #ddd', paddingBottom: '5px' }, 'Assessment Details'));
+    detailsDiv.appendChild(el('div', { background: '#f8f9fa', padding: '15px', borderRadius: '4px', whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '12px' }, JSON.stringify(submission.form_data, null, 2)));
+    body.appendChild(detailsDiv);
+
+    const footer = el('div', { marginTop: '30px', paddingTop: '20px', borderTop: '1px solid #ddd', fontSize: '12px', color: '#666' });
+    footer.appendChild(el('p', {}, 'Confidential Document - This assessment contains confidential patient information and should be handled according to privacy regulations.'));
+    footer.appendChild(el('p', {}, `Generated on ${new Date().toLocaleString()} | groundpath Professional Services`));
+    body.appendChild(footer);
+
+    wrapper.appendChild(body);
+
+    const printContent = document.createElement('div');
+    printContent.appendChild(wrapper);
+
+    // Create print styles using textContent (static CSS, no user data)
     const printStyles = document.createElement('style');
-    printStyles.innerHTML = `
+    printStyles.textContent = `
       @media print {
         body * { visibility: hidden; }
         .print-content, .print-content * { visibility: visible; }
