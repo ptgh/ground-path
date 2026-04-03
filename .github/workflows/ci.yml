@@ -24,7 +24,10 @@ jobs:
         run: npm ci
 
       - name: Lint
-        # continue-on-error because the repo has pre-existing lint errors unrelated to this PR
+        # TODO: make lint blocking once the ~109 pre-existing errors in legacy files are fixed.
+        # These errors span ~40 files (no-explicit-any, no-empty, react-hooks/exhaustive-deps,
+        # no-require-imports, etc.) that are unrelated to this PR. The route-guard test files
+        # themselves are now lint-clean.
         run: npm run lint
         continue-on-error: true
 

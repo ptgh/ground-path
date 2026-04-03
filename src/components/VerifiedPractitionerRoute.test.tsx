@@ -4,6 +4,8 @@ import { MemoryRouter } from 'react-router-dom';
 import VerifiedPractitionerRoute from '@/components/VerifiedPractitionerRoute';
 import { useAuth } from '@/hooks/useAuth';
 
+type AuthMock = ReturnType<typeof useAuth>;
+
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: vi.fn(),
 }));
@@ -21,7 +23,7 @@ describe('VerifiedPractitionerRoute', () => {
       profile: null,
       loading: true,
       profileLoading: false,
-    } as any);
+    } as unknown as AuthMock);
 
     renderWithRouter(
       <VerifiedPractitionerRoute><div>Verified content</div></VerifiedPractitionerRoute>
@@ -38,7 +40,7 @@ describe('VerifiedPractitionerRoute', () => {
       profile: null,
       loading: false,
       profileLoading: true,
-    } as any);
+    } as unknown as AuthMock);
 
     renderWithRouter(
       <VerifiedPractitionerRoute><div>Verified content</div></VerifiedPractitionerRoute>
@@ -53,7 +55,7 @@ describe('VerifiedPractitionerRoute', () => {
       profile: null,
       loading: false,
       profileLoading: false,
-    } as any);
+    } as unknown as AuthMock);
 
     renderWithRouter(
       <VerifiedPractitionerRoute><div>Verified content</div></VerifiedPractitionerRoute>
@@ -68,7 +70,7 @@ describe('VerifiedPractitionerRoute', () => {
       profile: null,
       loading: false,
       profileLoading: false,
-    } as any);
+    } as unknown as AuthMock);
 
     renderWithRouter(
       <VerifiedPractitionerRoute><div>Verified content</div></VerifiedPractitionerRoute>
@@ -83,7 +85,7 @@ describe('VerifiedPractitionerRoute', () => {
       profile: { user_type: 'practitioner', verification_status: 'unverified' },
       loading: false,
       profileLoading: false,
-    } as any);
+    } as unknown as AuthMock);
 
     renderWithRouter(
       <VerifiedPractitionerRoute><div>Verified content</div></VerifiedPractitionerRoute>
@@ -98,7 +100,7 @@ describe('VerifiedPractitionerRoute', () => {
       profile: { user_type: 'practitioner', verification_status: 'verified' },
       loading: false,
       profileLoading: false,
-    } as any);
+    } as unknown as AuthMock);
 
     renderWithRouter(
       <VerifiedPractitionerRoute><div>Verified content</div></VerifiedPractitionerRoute>
@@ -113,7 +115,7 @@ describe('VerifiedPractitionerRoute', () => {
       profile: { user_type: 'client' },
       loading: false,
       profileLoading: false,
-    } as any);
+    } as unknown as AuthMock);
 
     renderWithRouter(
       <VerifiedPractitionerRoute><div>Verified content</div></VerifiedPractitionerRoute>
