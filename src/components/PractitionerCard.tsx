@@ -20,6 +20,11 @@ interface Practitioner {
   professional_verified: boolean;
 }
 
+const formatProfessionLabel = (profession: string) =>
+  profession
+    .replace(/[_-]+/g, ' ')
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+
 const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -61,7 +66,7 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
               )}
             </div>
             {practitioner.profession && (
-              <p className="text-sm text-muted-foreground">{practitioner.profession}</p>
+              <p className="text-sm text-muted-foreground">{formatProfessionLabel(practitioner.profession)}</p>
             )}
             {practitioner.practice_location && (
               <p className="text-xs text-muted-foreground/70">{practitioner.practice_location}</p>

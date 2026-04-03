@@ -244,7 +244,7 @@ const Contact = () => {
 
           {/* Contact Form */}
           <div className="fade-in">
-            <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-sm h-full flex flex-col">
+            <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-sm flex flex-col">
               <h3 className="text-xl font-medium text-gray-900 mb-6">Send a Message</h3>
               
               <div className="space-y-4 flex-1">
