@@ -1,6 +1,6 @@
 # Full-Stack Audit Instructions
 
-> **Purpose**: Step-by-step instructions for an AI model (or human reviewer) to perform a comprehensive full-stack audit of the Groundpath mental-health and social-work platform.
+> **Purpose**: Step-by-step instructions for an AI model (or human reviewer) to perform a comprehensive full-stack audit of the Groundpath mental health and social work platform.
 
 ---
 
