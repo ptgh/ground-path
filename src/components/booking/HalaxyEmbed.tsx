@@ -30,7 +30,7 @@ const HalaxyEmbed = ({ embedUrl, fallbackUrl }: HalaxyEmbedProps) => {
           title="Book a session with Groundpath via Halaxy"
           className={cn(
             'w-full border-0 overflow-hidden',
-            isLoading ? 'h-0' : 'h-[1350px] md:h-[1250px]'
+            isLoading ? 'h-0' : 'h-[750px] md:h-[700px]'
           )}
           onLoad={() => setIsLoading(false)}
           allow="payment"
