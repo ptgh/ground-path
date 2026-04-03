@@ -1,10 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getCorsHeaders, unauthorizedResponse, verifyAuth } from "../_shared/auth.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 // All resource URLs to check
 const resourceLinks = [
@@ -88,16 +88,23 @@ async function checkLink(url: string): Promise<{ status: number | null; error: s
 }
 
 serve(async (req) => {
+  const origin = req.headers.get('origin');
+  // check-links is admin-only; restrict to production origins
+  const corsHeaders = getCorsHeaders(origin);
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Verify JWT authentication
+  const { userId, error: authError } = await verifyAuth(req, supabaseUrl, supabaseAnonKey);
+  if (authError) {
+    return unauthorizedResponse(corsHeaders);
+  }
+
   try {
     console.log('Starting link health check...');
-    
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
@@ -174,7 +181,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Link check error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

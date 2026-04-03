@@ -3,17 +3,14 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend@2.0.0";
 import { renderAsync } from "npm:@react-email/components@0.0.22";
 import { NewsletterEmail } from "./_templates/newsletter.tsx";
+import { getCorsHeaders, unauthorizedResponse, verifyAuth } from "../_shared/auth.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
 
 interface NewsletterRequest {
   subject: string;
@@ -28,9 +25,19 @@ interface NewsletterRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  const origin = req.headers.get('origin');
+  // send-newsletter is triggered from the admin UI, so also allow local dev origin
+  const corsHeaders = getCorsHeaders(origin, true);
+
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Verify JWT authentication
+  const { userId, error: authError } = await verifyAuth(req, supabaseUrl, supabaseAnonKey);
+  if (authError) {
+    return unauthorizedResponse(corsHeaders);
   }
 
   try {
@@ -120,7 +127,7 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in send-newsletter function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'Internal server error' }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
