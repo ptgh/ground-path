@@ -444,7 +444,7 @@ const AuthPage = () => {
           {verificationState === 'complete'
             ? verifiedUserType === 'practitioner'
               ? 'Your email is verified. Continue to finish practitioner verification.'
-              : 'Your email is verified. You're all set to continue.'
+              : "Your email is verified. You're all set to continue."
             : <>We sent a verification link to <span className="font-medium text-foreground">{verificationEmail}</span>. Keep this page open.</>}
         </p>
       </div>
