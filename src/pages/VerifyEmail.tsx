@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail, CheckCircle2 } from 'lucide-react';
+import { Loader2, Mail, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const VerifyEmail = () => {
   const [resendLoading, setResendLoading] = useState(false);
@@ -100,49 +101,67 @@ const VerifyEmail = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="bg-primary/10 p-4 rounded-full">
-              {verified ? (
-                <CheckCircle2 className="h-10 w-10 text-primary" />
-              ) : (
-                <Mail className="h-10 w-10 text-primary" />
-              )}
-            </div>
-          </div>
-          <CardTitle className="text-2xl font-bold">
-            {verified ? 'Email Verified!' : 'Verify Your Email'}
-          </CardTitle>
-          <CardDescription>
-            {verified
-              ? 'Finishing your signup now...'
-              : 'We sent a confirmation link to your email. Please check your inbox and click the link to verify your account.'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {!verified ? (
-            <>
-              <div className="bg-muted/50 rounded-xl p-4 text-center">
-                <p className="text-sm text-muted-foreground">
-                  Didn&apos;t receive the email? Check your spam folder or click below to resend.
-                </p>
-              </div>
-              <Button onClick={handleResend} variant="outline" className="w-full" disabled={resendLoading}>
-                {resendLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Resend Verification Email
-              </Button>
-              <Button variant="ghost" className="w-full text-muted-foreground" onClick={() => navigate('/practitioner/auth', { replace: true })}>
-                Back to Sign In
-              </Button>
-            </>
-          ) : (
+      <div className="w-full max-w-md space-y-4">
+        <Link
+          to="/practitioner/auth"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to sign in
+        </Link>
+        <Card className="w-full shadow-sm border-border/60">
+          <CardContent className="pt-8 pb-8 space-y-6">
             <div className="flex justify-center">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <div className={`p-5 rounded-full ${verified ? 'bg-primary/10' : 'bg-muted'}`}>
+                {verified ? (
+                  <CheckCircle2 className="h-12 w-12 text-primary" />
+                ) : (
+                  <Mail className="h-12 w-12 text-primary animate-pulse" />
+                )}
+              </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <div className="text-center space-y-2">
+              <h1 className="text-xl font-semibold text-foreground">
+                {verified ? 'Email Verified!' : 'Verify Your Email'}
+              </h1>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {verified
+                  ? 'Finishing your signup now…'
+                  : 'We sent a confirmation link to your email. Click the link to verify your account.'}
+              </p>
+            </div>
+
+            {!verified ? (
+              <>
+                <div className="rounded-xl border border-primary/10 bg-primary/5 p-4 space-y-2">
+                  <div className="flex items-start gap-3">
+                    <Mail className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-foreground">What to do next</p>
+                      <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                        <li>Check your inbox (and spam folder)</li>
+                        <li>Click the verification link</li>
+                        <li>You'll be redirected automatically</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+                <Button onClick={handleResend} variant="outline" className="w-full" disabled={resendLoading}>
+                  {resendLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Resend Verification Email
+                </Button>
+                <Button variant="ghost" className="w-full text-muted-foreground text-sm" onClick={() => navigate('/practitioner/auth', { replace: true })}>
+                  Back to Sign In
+                </Button>
+              </>
+            ) : (
+              <div className="flex justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

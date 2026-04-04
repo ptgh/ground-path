@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import SEO from '@/components/SEO';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Linkedin, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, Linkedin, ShieldCheck, CheckCircle2, AlertCircle, Lock } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -168,15 +168,12 @@ const PractitionerVerify = () => {
 
       if (error) throw error;
 
-      // Upgrade practitioner role via SECURITY DEFINER function
-      // (bypasses user_roles RLS + validate_role_changes trigger)
       const { error: roleError } = await supabase.rpc('upgrade_practitioner_role', {
         p_user_id: session.user.id,
       });
 
       if (roleError) {
         console.warn('[PractitionerVerify] Role upgrade failed:', roleError.message);
-        // Non-fatal: profile update succeeded, role can be added by admin later
       }
       toast({
         title: 'Registration submitted',
@@ -193,7 +190,10 @@ const PractitionerVerify = () => {
   if (checkingStatus) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="text-center space-y-3">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+          <p className="text-sm text-muted-foreground">Checking verification status…</p>
+        </div>
       </div>
     );
   }
@@ -202,108 +202,132 @@ const PractitionerVerify = () => {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-muted">
       <SEO title="Practitioner Verification" noindex />
       <Header />
-      <main className="flex-1 flex items-center justify-center p-4 pt-24">
-        <Card className="w-full max-w-lg">
-          <CardHeader className="space-y-1 text-center">
-            <div className="flex justify-center mb-4">
-              <div className="bg-primary/10 p-4 rounded-full">
-                <ShieldCheck className="h-10 w-10 text-primary" />
-              </div>
-            </div>
-            <CardTitle className="text-2xl font-bold">Complete practitioner verification</CardTitle>
-            <CardDescription>
-              Choose one verification method to complete your setup and unlock practitioner features.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {isVerified && (
-              <div className="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 p-4">
-                <CheckCircle2 className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium text-foreground">Verification complete. Redirecting to your dashboard...</span>
-              </div>
-            )}
-
-            {linkedInStatus === 'failed' && (
-              <div className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/5 p-3">
-                <AlertCircle className="h-5 w-5 text-destructive" />
-                <span className="text-sm font-medium text-destructive">LinkedIn verification failed. Please try again.</span>
-              </div>
-            )}
-
-            {!isVerified && (
-              <>
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                    <Linkedin className="h-4 w-4 text-primary" />
-                    Option 1: Verify with LinkedIn
-                  </h3>
-                  <Button
-                    onClick={handleLinkedInVerify}
-                    variant="outline"
-                    className="w-full gap-2 rounded-xl"
-                    disabled={linkedInLoading}
-                  >
-                    {linkedInLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    <Linkedin className="h-4 w-4 text-primary" />
-                    Verify Professional Status with LinkedIn
-                  </Button>
-                  <p className="text-xs text-muted-foreground">
-                    LinkedIn is used only for verification and returns you to your existing account.
+      <main className="flex-1 flex items-center justify-center p-4 pt-24 pb-12">
+        <div className="w-full max-w-lg space-y-4">
+          <Card className="w-full shadow-sm border-border/60">
+            <CardContent className="pt-8 pb-8 space-y-6">
+              {/* Header */}
+              <div className="text-center space-y-3">
+                <div className="flex justify-center">
+                  <div className="bg-primary/10 p-5 rounded-full">
+                    <ShieldCheck className="h-12 w-12 text-primary" />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <h1 className="text-xl font-semibold text-foreground">Complete practitioner verification</h1>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Choose one verification method to unlock practitioner features.
                   </p>
                 </div>
+              </div>
 
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2 text-muted-foreground">or</span>
+              {/* Status banners */}
+              {isVerified && (
+                <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
+                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+                  <div>
+                    <span className="text-sm font-medium text-foreground block">Verification complete</span>
+                    <span className="text-xs text-muted-foreground">Redirecting to your dashboard…</span>
                   </div>
                 </div>
+              )}
 
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-primary" />
-                    Option 2: Enter professional registration number
-                  </h3>
-                  <div className="space-y-3 rounded-xl border border-border bg-muted/30 p-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="registrationBody">Registration Body</Label>
-                      <Select value={registrationBody} onValueChange={setRegistrationBody}>
-                        <SelectTrigger id="registrationBody" className="rounded-xl">
-                          <SelectValue placeholder="Select your registration body" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {REGISTRATION_BODIES.map((body) => (
-                            <SelectItem key={body.value} value={body.value}>{body.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="registrationNumber">Registration Number</Label>
-                      <Input
-                        id="registrationNumber"
-                        className="rounded-xl"
-                        placeholder="e.g., AASW123456"
-                        value={registrationNumber}
-                        onChange={(e) => setRegistrationNumber(e.target.value)}
-                      />
+              {linkedInStatus === 'failed' && (
+                <div className="flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+                  <AlertCircle className="h-5 w-5 text-destructive shrink-0" />
+                  <span className="text-sm text-destructive">LinkedIn verification failed. Please try again or use registration details.</span>
+                </div>
+              )}
+
+              {!isVerified && (
+                <>
+                  {/* Option 1: LinkedIn */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span className="flex items-center justify-center h-5 w-5 rounded-full bg-primary/10 text-[11px] font-semibold text-primary">1</span>
+                      <h3 className="text-sm font-semibold text-foreground">Verify with LinkedIn</h3>
+                      <span className="text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded-full ml-auto">Instant</span>
                     </div>
                     <Button
-                      onClick={handleRegistrationSubmit}
-                      className="w-full"
-                      disabled={loading || !registrationBody}
+                      onClick={handleLinkedInVerify}
+                      variant="outline"
+                      className="w-full gap-2 rounded-xl h-11"
+                      disabled={linkedInLoading}
                     >
-                      {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Submit for Review
+                      {linkedInLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Linkedin className="h-4 w-4 text-[#0A66C2]" />
+                      )}
+                      Verify with LinkedIn
                     </Button>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      LinkedIn is used only for identity verification. You'll be returned to your existing account.
+                    </p>
                   </div>
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-border" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-card px-3 text-muted-foreground">or</span>
+                    </div>
+                  </div>
+
+                  {/* Option 2: Registration */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span className="flex items-center justify-center h-5 w-5 rounded-full bg-muted text-[11px] font-semibold text-muted-foreground">2</span>
+                      <h3 className="text-sm font-semibold text-foreground">Professional registration</h3>
+                      <span className="text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full ml-auto">Manual review</span>
+                    </div>
+                    <div className="space-y-3 rounded-xl border border-border bg-muted/20 p-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="registrationBody">Registration Body</Label>
+                        <Select value={registrationBody} onValueChange={setRegistrationBody}>
+                          <SelectTrigger id="registrationBody" className="rounded-xl">
+                            <SelectValue placeholder="Select your registration body" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {REGISTRATION_BODIES.map((body) => (
+                              <SelectItem key={body.value} value={body.value}>{body.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="registrationNumber">Registration Number</Label>
+                        <Input
+                          id="registrationNumber"
+                          className="rounded-xl"
+                          placeholder="e.g., AASW123456"
+                          value={registrationNumber}
+                          onChange={(e) => setRegistrationNumber(e.target.value)}
+                        />
+                      </div>
+                      <Button
+                        onClick={handleRegistrationSubmit}
+                        className="w-full"
+                        size="lg"
+                        disabled={loading || !registrationBody}
+                      >
+                        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Submit for Review
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Trust footer */}
+          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+            <Lock className="h-3 w-3" />
+            <span>Your data is kept secure and confidential</span>
+          </div>
+        </div>
       </main>
       <Footer />
     </div>

@@ -5,14 +5,46 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Stethoscope, Mail, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Loader2, User, Stethoscope, Mail, CheckCircle2, ArrowLeft, Lock, Eye, EyeOff, ShieldCheck, KeyRound } from 'lucide-react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { getSafeRedirect } from '@/lib/safeRedirect';
 
 type AccountType = 'user' | 'practitioner' | '';
 type VerificationState = 'none' | 'pending' | 'complete';
+
+const PasswordStrength = ({ password }: { password: string }) => {
+  if (!password) return null;
+  const checks = [
+    { label: '8+ characters', met: password.length >= 8 },
+    { label: 'Uppercase letter', met: /[A-Z]/.test(password) },
+    { label: 'Number', met: /[0-9]/.test(password) },
+  ];
+  const strength = checks.filter(c => c.met).length;
+  return (
+    <div className="space-y-1.5 pt-1">
+      <div className="flex gap-1">
+        {[1, 2, 3].map(i => (
+          <div
+            key={i}
+            className={`h-1 flex-1 rounded-full transition-colors ${
+              i <= strength
+                ? strength === 1 ? 'bg-destructive' : strength === 2 ? 'bg-amber-400' : 'bg-primary'
+                : 'bg-muted'
+            }`}
+          />
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-x-3 gap-y-0.5">
+        {checks.map(c => (
+          <span key={c.label} className={`text-[11px] ${c.met ? 'text-primary' : 'text-muted-foreground'}`}>
+            {c.met ? '✓' : '○'} {c.label}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const AuthPage = () => {
   const [email, setEmail] = useState('');
@@ -32,6 +64,8 @@ const AuthPage = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [recoveryLoading, setRecoveryLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -349,57 +383,331 @@ const AuthPage = () => {
     setPassword('');
   };
 
+  const PasswordInput = ({
+    id,
+    value,
+    onChange,
+    placeholder = '••••••••',
+    showToggle = true,
+    show,
+    onToggle,
+    ...props
+  }: {
+    id: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    placeholder?: string;
+    showToggle?: boolean;
+    show?: boolean;
+    onToggle?: () => void;
+  } & React.InputHTMLAttributes<HTMLInputElement>) => (
+    <div className="relative">
+      <Input
+        id={id}
+        type={show ? 'text' : 'password'}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className="pr-10"
+        {...props}
+      />
+      {showToggle && value && (
+        <button
+          type="button"
+          onClick={onToggle}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+          tabIndex={-1}
+          aria-label={show ? 'Hide password' : 'Show password'}
+        >
+          {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </button>
+      )}
+    </div>
+  );
+
   const renderVerificationContent = () => (
-    <div className="space-y-4">
-      <div className="flex justify-center mb-4">
-        <div className="bg-primary/10 p-4 rounded-full">
+    <div className="space-y-5">
+      <div className="flex justify-center">
+        <div className={`p-5 rounded-full ${verificationState === 'complete' ? 'bg-primary/10' : 'bg-muted'}`}>
           {verificationState === 'complete' ? (
-            <CheckCircle2 className="h-10 w-10 text-primary" />
+            <CheckCircle2 className="h-12 w-12 text-primary" />
           ) : (
-            <Mail className="h-10 w-10 text-primary" />
+            <Mail className="h-12 w-12 text-primary animate-pulse" />
           )}
         </div>
       </div>
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold text-foreground">
+        <h2 className="text-xl font-semibold text-foreground">
           {verificationState === 'complete' ? 'Your account is ready' : 'Check your email'}
         </h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground leading-relaxed">
           {verificationState === 'complete'
             ? verifiedUserType === 'practitioner'
-              ? 'Your email is verified and you are signed in. Continue to finish practitioner verification.'
-              : 'Your email is verified and you are signed in. Continue to the site.'
-            : `We sent a verification link to ${verificationEmail}. Keep this page open while you finish signup.`}
+              ? 'Your email is verified. Continue to finish practitioner verification.'
+              : 'Your email is verified. You're all set to continue.'
+            : <>We sent a verification link to <span className="font-medium text-foreground">{verificationEmail}</span>. Keep this page open.</>}
         </p>
       </div>
 
       {verificationState === 'pending' ? (
         <>
-          <div className="bg-muted/50 rounded-xl p-4 text-center">
-            <p className="text-sm text-muted-foreground">
-              Once you confirm the email, we will bring you straight into the next step.
+          <div className="rounded-xl border border-primary/10 bg-primary/5 p-4 space-y-2">
+            <div className="flex items-start gap-3">
+              <Mail className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-foreground">Next steps</p>
+                <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                  <li>Open the email we just sent</li>
+                  <li>Click the confirmation link</li>
+                  <li>You'll be brought back here automatically</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+          <div className="text-center">
+            <p className="text-xs text-muted-foreground mb-3">
+              Didn't receive it? Check your spam folder, or resend below.
             </p>
           </div>
           <Button onClick={handleResendVerification} variant="outline" className="w-full" disabled={resendLoading || resendCooldown > 0}>
             {resendLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend Verification Email'}
           </Button>
-          <Button type="button" variant="ghost" className="w-full text-muted-foreground" onClick={handleUseDifferentEmail}>
-            Use a Different Email
+          <Button type="button" variant="ghost" className="w-full text-muted-foreground text-sm" onClick={handleUseDifferentEmail}>
+            Use a different email
           </Button>
         </>
       ) : (
-        <Button onClick={completeVerifiedFlow} className="w-full">
-          {verifiedUserType === 'practitioner' ? 'Continue to Professional Verification' : 'Go to Site'}
+        <Button onClick={completeVerifiedFlow} className="w-full" size="lg">
+          {verifiedUserType === 'practitioner' ? 'Continue to Professional Verification' : 'Go to Dashboard'}
         </Button>
       )}
     </div>
   );
 
+  const renderRecoveryForm = () => (
+    <form onSubmit={handleUpdatePassword} className="space-y-5">
+      <div className="flex justify-center">
+        <div className="bg-primary/10 p-5 rounded-full">
+          <KeyRound className="h-12 w-12 text-primary" />
+        </div>
+      </div>
+      <div className="text-center space-y-2">
+        <h2 className="text-xl font-semibold text-foreground">Set a New Password</h2>
+        <p className="text-sm text-muted-foreground">Choose a strong password for your account.</p>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="new-password">New Password</Label>
+        <PasswordInput
+          id="new-password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          required
+          minLength={8}
+          show={showNewPassword}
+          onToggle={() => setShowNewPassword(!showNewPassword)}
+        />
+        <PasswordStrength password={newPassword} />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="confirm-password">Confirm Password</Label>
+        <PasswordInput
+          id="confirm-password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+          minLength={8}
+          showToggle={false}
+        />
+        {confirmPassword && newPassword !== confirmPassword && (
+          <p className="text-xs text-destructive">Passwords do not match</p>
+        )}
+      </div>
+      <Button type="submit" className="w-full" size="lg" disabled={recoveryLoading || newPassword.length < 8 || newPassword !== confirmPassword}>
+        {recoveryLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        Update Password
+      </Button>
+    </form>
+  );
+
+  const renderResetForm = () => (
+    <form onSubmit={handlePasswordReset} className="space-y-5">
+      <div className="flex justify-center">
+        <div className="bg-muted p-5 rounded-full">
+          <Mail className="h-12 w-12 text-primary" />
+        </div>
+      </div>
+      <div className="text-center space-y-2">
+        <h2 className="text-xl font-semibold text-foreground">Reset your password</h2>
+        <p className="text-sm text-muted-foreground">Enter your email and we'll send you a reset link.</p>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="reset-email">Email address</Label>
+        <Input id="reset-email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+      </div>
+      <Button type="submit" className="w-full" size="lg" disabled={resetLoading}>
+        {resetLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        Send Reset Link
+      </Button>
+      <Button type="button" variant="ghost" className="w-full text-muted-foreground text-sm" onClick={() => setShowResetForm(false)}>
+        <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
+        Back to sign in
+      </Button>
+    </form>
+  );
+
+  const renderSignIn = () => (
+    <form onSubmit={handleSignIn} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="email">Email address</Label>
+        <Input id="email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password">Password</Label>
+          <button
+            type="button"
+            onClick={() => setShowResetForm(true)}
+            className="text-xs text-primary hover:text-primary/80 transition-colors font-medium"
+          >
+            Forgot password?
+          </button>
+        </div>
+        <PasswordInput
+          id="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          show={showPassword}
+          onToggle={() => setShowPassword(!showPassword)}
+        />
+      </div>
+      <Button type="submit" className="w-full" size="lg" disabled={loading}>
+        {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lock className="mr-2 h-4 w-4" />}
+        Sign In
+      </Button>
+      <p className="text-center text-sm text-muted-foreground">
+        Don't have an account?{' '}
+        <button type="button" onClick={() => setAuthMode('signup')} className="text-primary font-medium hover:underline">
+          Create one
+        </button>
+      </p>
+    </form>
+  );
+
+  const renderSignUp = () => (
+    <form onSubmit={handleSignUp} className="space-y-5">
+      <div className="space-y-3">
+        <Label className="text-sm font-medium">I am joining as a…</Label>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => setUserType('user')}
+            className={`flex flex-col items-center gap-2.5 rounded-xl border-2 p-4 transition-all duration-200 ${
+              userType === 'user'
+                ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                : 'border-border hover:border-muted-foreground/30 hover:bg-muted/50'
+            }`}
+          >
+            <div className={`p-2.5 rounded-full ${userType === 'user' ? 'bg-primary/10' : 'bg-muted'}`}>
+              <User className={`h-6 w-6 ${userType === 'user' ? 'text-primary' : 'text-muted-foreground'}`} />
+            </div>
+            <div className="text-center">
+              <span className={`text-sm font-medium block ${userType === 'user' ? 'text-primary' : 'text-foreground'}`}>
+                Client
+              </span>
+              <span className="text-[11px] text-muted-foreground">Seeking support</span>
+            </div>
+          </button>
+          <button
+            type="button"
+            onClick={() => setUserType('practitioner')}
+            className={`flex flex-col items-center gap-2.5 rounded-xl border-2 p-4 transition-all duration-200 ${
+              userType === 'practitioner'
+                ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                : 'border-border hover:border-muted-foreground/30 hover:bg-muted/50'
+            }`}
+          >
+            <div className={`p-2.5 rounded-full ${userType === 'practitioner' ? 'bg-primary/10' : 'bg-muted'}`}>
+              <Stethoscope className={`h-6 w-6 ${userType === 'practitioner' ? 'text-primary' : 'text-muted-foreground'}`} />
+            </div>
+            <div className="text-center">
+              <span className={`text-sm font-medium block ${userType === 'practitioner' ? 'text-primary' : 'text-foreground'}`}>
+                Practitioner
+              </span>
+              <span className="text-[11px] text-muted-foreground">Providing care</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {userType && (
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          {userType === 'practitioner' && (
+            <div className="rounded-lg border border-primary/10 bg-primary/5 px-3.5 py-2.5 flex items-start gap-2.5">
+              <ShieldCheck className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                After signing up, you'll complete a professional verification step before accessing practitioner features.
+              </p>
+            </div>
+          )}
+          <div className="space-y-2">
+            <Label htmlFor="signup-fullname">Full name</Label>
+            <Input id="signup-fullname" type="text" placeholder="Your full name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="signup-email">Email address</Label>
+            <Input id="signup-email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="signup-password">Password</Label>
+            <PasswordInput
+              id="signup-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={8}
+              show={showPassword}
+              onToggle={() => setShowPassword(!showPassword)}
+            />
+            <PasswordStrength password={password} />
+          </div>
+          <Button type="submit" className="w-full" size="lg" disabled={loading || password.length < 8}>
+            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
+            Create Account
+          </Button>
+        </div>
+      )}
+
+      <p className="text-center text-sm text-muted-foreground">
+        Already have an account?{' '}
+        <button type="button" onClick={() => setAuthMode('signin')} className="text-primary font-medium hover:underline">
+          Sign in
+        </button>
+      </p>
+    </form>
+  );
+
+  const getTitle = () => {
+    if (isRecoveryMode) return 'Reset Password';
+    if (showResetForm) return 'Reset Password';
+    if (verificationState !== 'none') return '';
+    return '';
+  };
+
+  const getDescription = () => {
+    if (isRecoveryMode) return 'Enter your new password below';
+    if (showResetForm) return '';
+    if (verificationState !== 'none') return '';
+    return '';
+  };
+
+  const showHeader = isRecoveryMode || (verificationState === 'none' && !showResetForm);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <SEO title="Sign In" path="/practitioner/auth" noindex />
-      <div className="w-full max-w-lg space-y-4">
+      <div className="w-full max-w-md space-y-4">
         <Link
           to="/"
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -407,151 +715,44 @@ const AuthPage = () => {
           <ArrowLeft className="h-4 w-4" />
           Back to home
         </Link>
-      <Card className="w-full">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">
-            {isRecoveryMode ? 'Reset Password' : showResetForm ? 'Reset Password' : verificationState === 'none' ? 'groundpath' : 'Finish your signup'}
-          </CardTitle>
-          <CardDescription>
-            {isRecoveryMode
-              ? 'Enter your new password below'
-              : showResetForm
-              ? 'Enter your email to receive a password reset link'
-              : verificationState === 'none'
-              ? 'Sign in or create an account to get started'
-              : 'A smoother, verified signup flow.'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isRecoveryMode ? (
-            <form onSubmit={handleUpdatePassword} className="space-y-4">
-              <div className="flex justify-center mb-4">
-                <div className="bg-primary/10 p-4 rounded-full">
-                  <CheckCircle2 className="h-10 w-10 text-primary" />
-                </div>
-              </div>
-              <div className="text-center space-y-2 mb-4">
-                <h2 className="text-xl font-bold text-foreground">Set a New Password</h2>
-                <p className="text-sm text-muted-foreground">Choose a strong password for your account.</p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="new-password">New Password</Label>
-                <Input id="new-password" type="password" placeholder="••••••••" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input id="confirm-password" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} />
-              </div>
-              <Button type="submit" className="w-full" disabled={recoveryLoading}>
-                {recoveryLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Update Password
-              </Button>
-            </form>
-          ) : showResetForm ? (
-            <form onSubmit={handlePasswordReset} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="reset-email">Email</Label>
-                <Input id="reset-email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-              </div>
-              <Button type="submit" className="w-full" disabled={resetLoading}>
-                {resetLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Send Reset Link
-              </Button>
-              <Button type="button" variant="ghost" className="w-full text-muted-foreground" onClick={() => setShowResetForm(false)}>
-                Back to Sign In
-              </Button>
-            </form>
-          ) : verificationState !== 'none' ? (
-            renderVerificationContent()
-          ) : (
-            <Tabs value={authMode} onValueChange={(v) => setAuthMode(v as 'signin' | 'signup')}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="signin" className="space-y-4">
-                <form onSubmit={handleSignIn} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Sign In
-                  </Button>
-                  <Button type="button" variant="link" className="w-full text-sm text-muted-foreground" onClick={() => setShowResetForm(true)}>
-                    Forgot your password?
-                  </Button>
-                </form>
-              </TabsContent>
-
-              <TabsContent value="signup" className="space-y-4">
-                <form onSubmit={handleSignUp} className="space-y-5">
-                  <div className="space-y-3">
-                    <Label className="text-sm font-semibold">I am a...</Label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setUserType('user')}
-                        className={`flex flex-col items-center gap-2 rounded-2xl border-2 p-4 transition-all ${
-                          userType === 'user'
-                            ? 'border-primary bg-primary/5 shadow-md'
-                            : 'border-border hover:border-muted-foreground/30'
-                        }`}
-                      >
-                        <User className={`h-7 w-7 ${userType === 'user' ? 'text-primary' : 'text-muted-foreground'}`} />
-                        <span className={`text-sm font-medium ${userType === 'user' ? 'text-primary' : 'text-foreground'}`}>
-                          Client
-                        </span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setUserType('practitioner')}
-                        className={`flex flex-col items-center gap-2 rounded-2xl border-2 p-4 transition-all ${
-                          userType === 'practitioner'
-                            ? 'border-primary bg-primary/5 shadow-md'
-                            : 'border-border hover:border-muted-foreground/30'
-                        }`}
-                      >
-                        <Stethoscope className={`h-7 w-7 ${userType === 'practitioner' ? 'text-primary' : 'text-muted-foreground'}`} />
-                        <span className={`text-sm font-medium ${userType === 'practitioner' ? 'text-primary' : 'text-foreground'}`}>
-                          Practitioner
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {userType && (
-                    <>
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-fullname">Full Name</Label>
-                        <Input id="signup-fullname" type="text" placeholder="Your full name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-email">Email</Label>
-                        <Input id="signup-email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-password">Password</Label>
-                        <Input id="signup-password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
-                      </div>
-                      <Button type="submit" className="w-full" disabled={loading}>
-                        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Create Account
-                      </Button>
-                    </>
-                  )}
-                </form>
-              </TabsContent>
-            </Tabs>
+        <Card className="w-full shadow-sm border-border/60">
+          {showHeader && (
+            <CardHeader className="space-y-1 text-center pb-2">
+              <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+                {isRecoveryMode ? 'Reset Password' : 'groundpath'}
+              </CardTitle>
+              <CardDescription className="text-sm">
+                {isRecoveryMode
+                  ? 'Enter your new password below'
+                  : authMode === 'signin'
+                    ? 'Welcome back. Sign in to continue.'
+                    : 'Create your account to get started.'}
+              </CardDescription>
+            </CardHeader>
           )}
-        </CardContent>
-      </Card>
+          {!showHeader && verificationState === 'none' && !showResetForm && (
+            <div className="pt-6" />
+          )}
+          <CardContent className={showHeader ? 'pt-4' : 'pt-6'}>
+            {isRecoveryMode ? (
+              renderRecoveryForm()
+            ) : showResetForm ? (
+              renderResetForm()
+            ) : verificationState !== 'none' ? (
+              renderVerificationContent()
+            ) : authMode === 'signin' ? (
+              renderSignIn()
+            ) : (
+              renderSignUp()
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Trust footer */}
+        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+          <Lock className="h-3 w-3" />
+          <span>Secured with end-to-end encryption</span>
+        </div>
       </div>
     </div>
   );
