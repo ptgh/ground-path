@@ -46,6 +46,7 @@ const PractitionerApprovals = () => {
     setUpdating(userId);
     const { error } = await supabase
       .from('profiles')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .update({ directory_approved: approved } as any)
       .eq('user_id', userId);
 

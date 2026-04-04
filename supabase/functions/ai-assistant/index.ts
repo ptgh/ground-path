@@ -241,7 +241,7 @@ serve(async (req) => {
       },
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error in ai-assistant function:', error);
     
     return new Response(JSON.stringify({ 

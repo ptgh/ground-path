@@ -247,7 +247,7 @@ export const AIAssistant = () => {
       };
 
       streamCharacter();
-    } catch (error: any) {
+    } catch (error) {
       console.error('AI Assistant error:', error);
       toast({
         title: "AI Assistant Error",

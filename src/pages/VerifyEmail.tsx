@@ -88,7 +88,7 @@ const VerifyEmail = () => {
         title: 'Verification email sent',
         description: 'Please check your inbox for the latest confirmation link.',
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: 'Failed to resend',
         description: error.message || 'Please try again later.',

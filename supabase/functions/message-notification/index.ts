@@ -166,7 +166,7 @@ serve(async (req: Request): Promise<Response> => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error in message-notification:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,

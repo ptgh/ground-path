@@ -3,8 +3,8 @@ import { useLocation } from 'react-router-dom';
 
 declare global {
   interface Window {
-    dataLayer: any[];
-    gtag: (...args: any[]) => void;
+    dataLayer: unknown[];
+    gtag: (...args: unknown[]) => void;
   }
 }
 
@@ -19,7 +19,7 @@ const loadGA = () => {
   document.head.appendChild(script);
 
   window.dataLayer = window.dataLayer || [];
-  function gtag(...args: any[]) {
+  function gtag(...args: unknown[]) {
     window.dataLayer.push(args);
   }
   gtag('js', new Date());

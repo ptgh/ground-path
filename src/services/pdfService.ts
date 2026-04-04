@@ -5,6 +5,7 @@ export interface PDFFormData {
   formType: string;
   patientName: string;
   date: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   formData: Record<string, any>;
   score?: number;
   interpretation?: string;

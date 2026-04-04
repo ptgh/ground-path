@@ -372,6 +372,7 @@ const Resources = () => {
     </div>
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ResourceCard = ({ resource }: { resource: any }) => (
     <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02] border-border flex flex-col h-full">
       <CardHeader className="flex-shrink-0">

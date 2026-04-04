@@ -30,16 +30,16 @@ interface Profile {
   preferred_contact_method?: string;
   specializations?: string[];
   qualifications?: string[];
-  supervisor_details?: any;
-  emergency_contact?: any;
-  halaxy_integration?: any;
+  supervisor_details?: unknown;
+  emergency_contact?: unknown;
+  halaxy_integration?: unknown;
   user_type?: string;
   verification_status?: string;
   verification_method?: string;
   professional_verified?: boolean;
   organisation?: string;
-  linkedin_verified_data?: any;
-  notification_preferences?: any;
+  linkedin_verified_data?: unknown;
+  notification_preferences?: unknown;
 }
 
 interface UserRole {

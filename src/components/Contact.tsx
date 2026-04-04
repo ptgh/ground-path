@@ -61,10 +61,10 @@ const Contact = () => {
       if (!contactFormMutation.error) {
         setFormData({ name: '', email: '', subject: '', message: '' });
       }
-    } catch (error: any) {
+    } catch (error) {
       if (error.errors) {
         const newErrors: Record<string, string> = {};
-        error.errors.forEach((err: any) => {
+        error.errors.forEach((err) => {
           const field = err.path[0];
           newErrors[field] = err.message;
         });

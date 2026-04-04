@@ -218,7 +218,7 @@ serve(async (req) => {
       status: 200,
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error in weekly newsletter function:', error);
     return new Response(
       JSON.stringify({ 

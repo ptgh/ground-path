@@ -33,6 +33,7 @@ export const NotificationPreferencesCard = ({ userId, currentPrefs }: Notificati
 
       const { error } = await supabase
         .from('profiles')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .update({ notification_preferences: merged } as any)
         .eq('user_id', userId);
       if (error) throw error;

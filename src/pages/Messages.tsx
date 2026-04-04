@@ -51,6 +51,7 @@ const Messages = () => {
       const found = conversations.find(c => c.id === openId);
       if (found) setSelected(found);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, user, conversations.length]);
 
   const openConversationWith = async (practitionerId: string) => {

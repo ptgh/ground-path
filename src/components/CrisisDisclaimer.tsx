@@ -16,7 +16,7 @@ const CrisisDisclaimer = () => {
     setDismissed(true);
     try {
       localStorage.setItem(DISMISSED_KEY, 'true');
-    } catch {}
+    } catch { /* ignore localStorage errors */ }
   };
 
   if (dismissed) return null;

@@ -348,7 +348,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error in client-ai-assistant function:', error);
     
     return new Response(JSON.stringify({ 

@@ -43,7 +43,7 @@ export const contactFormSchema = z.object({
   name: z.string()
     .min(2, 'Name must be at least 2 characters')
     .max(100, 'Name must not exceed 100 characters')
-    .regex(/^[a-zA-Z\s\-'\.]+$/, 'Name contains invalid characters')
+    .regex(/^[a-zA-Z\s\-'.]+$/, 'Name contains invalid characters')
     .transform(sanitizeHtml),
   email: z.string()
     .email('Please enter a valid email address')
@@ -72,7 +72,7 @@ export const mailingListSchema = z.object({
     .refine(val => !val || (val.length >= 1 && val.length <= 100), {
       message: 'Name must be between 1 and 100 characters'
     })
-    .refine(val => !val || /^[a-zA-Z\s\-'\.]+$/.test(val), {
+    .refine(val => !val || /^[a-zA-Z\s\-'.]+$/.test(val), {
       message: 'Name contains invalid characters'
     }),
   source: z.string().default('website'),

@@ -106,7 +106,7 @@ const Article = () => {
           
           setRelatedArticles(related || []);
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error fetching article:', err);
         setError('Article not found');
       } finally {

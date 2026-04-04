@@ -365,7 +365,7 @@ const AuthPage = () => {
         description: 'Please use the latest email in your inbox to complete signup.',
       });
       setResendCooldown(60);
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: 'Failed to resend',
         description: error.message || 'Please try again in a moment.',

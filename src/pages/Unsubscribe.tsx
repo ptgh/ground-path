@@ -18,24 +18,23 @@ const UnsubscribePage = () => {
     if (email && !token) {
       setStatus('success'); // Show manual unsubscribe form
     } else if (email && token) {
-      handleTokenUnsubscribe();
+      (async () => {
+        try {
+          await mailingListService.unsubscribe(email);
+          setStatus('success');
+        } catch (error) {
+          const msg = (error as Error).message ?? '';
+          if (msg.includes('already unsubscribed')) {
+            setStatus('already_unsubscribed');
+          } else {
+            setStatus('error');
+          }
+        }
+      })();
     } else {
       setStatus('error');
     }
   }, [email, token]);
-
-  const handleTokenUnsubscribe = async () => {
-    try {
-      await mailingListService.unsubscribe(email!);
-      setStatus('success');
-    } catch (error: any) {
-      if (error.message.includes('already unsubscribed')) {
-        setStatus('already_unsubscribed');
-      } else {
-        setStatus('error');
-      }
-    }
-  };
 
   const handleManualUnsubscribe = async () => {
     if (!email) return;
@@ -44,8 +43,9 @@ const UnsubscribePage = () => {
     try {
       await mailingListService.unsubscribe(email);
       setStatus('success');
-    } catch (error: any) {
-      if (error.message.includes('already unsubscribed')) {
+    } catch (error) {
+      const msg = (error as Error).message ?? '';
+      if (msg.includes('already unsubscribed')) {
         setStatus('already_unsubscribed');
       } else {
         setStatus('error');

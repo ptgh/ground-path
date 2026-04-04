@@ -99,7 +99,7 @@ export const ArticleManager = () => {
 
       if (error) throw error;
       setArticles(data || []);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error loading articles:', error);
       toast.error('Failed to load articles');
     } finally {
@@ -189,7 +189,7 @@ export const ArticleManager = () => {
 
       setIsDialogOpen(false);
       loadArticles();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error saving article:', error);
       toast.error(error.message || 'Failed to save article');
     } finally {
@@ -207,7 +207,7 @@ export const ArticleManager = () => {
       if (error) throw error;
       toast.success('Article deleted successfully');
       loadArticles();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error deleting article:', error);
       toast.error('Failed to delete article');
     }
@@ -227,7 +227,7 @@ export const ArticleManager = () => {
       if (error) throw error;
       toast.success(`Article ${newStatus === 'published' ? 'published' : 'unpublished'} successfully`);
       loadArticles();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error updating article status:', error);
       toast.error('Failed to update article status');
     }
