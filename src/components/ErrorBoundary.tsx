@@ -36,6 +36,14 @@ class ErrorBoundary extends Component<Props, State> {
             <Button onClick={() => window.location.reload()}>
               Refresh Page
             </Button>
+            <div>
+              <a
+                href="/"
+                className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+              >
+                Back to home
+              </a>
+            </div>
           </div>
         </div>
       );
