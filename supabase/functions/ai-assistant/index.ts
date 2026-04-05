@@ -245,7 +245,7 @@ serve(async (req) => {
     console.error('Error in ai-assistant function:', error);
     
     return new Response(JSON.stringify({ 
-      error: error.message || 'An unexpected error occurred',
+      error: (error instanceof Error ? error.message : null) || 'An unexpected error occurred',
       details: 'Please try again or contact support if the issue persists.'
     }), {
       status: 500,
