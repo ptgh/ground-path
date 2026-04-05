@@ -80,7 +80,7 @@ const NewsletterTest = ({ isOpen, onClose }: NewsletterTestProps) => {
       
       setTestEmail('');
       onClose();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error sending test newsletter:', error);
       toast({
         title: "Failed to send newsletter",

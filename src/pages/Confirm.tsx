@@ -12,25 +12,25 @@ const ConfirmPage = () => {
   const token = searchParams.get('token');
 
   useEffect(() => {
-    if (token) {
-      handleConfirmation();
-    } else {
+    if (!token) {
       setStatus('error');
+      return;
     }
+    (async () => {
+      try {
+        await mailingListService.confirmSubscription(token);
+        setStatus('success');
+      } catch (error) {
+        const msg = (error as Error).message ?? '';
+        if (msg.includes('already confirmed') || msg.includes('not found')) {
+          setStatus('already_confirmed');
+        } else {
+          setStatus('error');
+        }
+      }
+    })();
   }, [token]);
 
-  const handleConfirmation = async () => {
-    try {
-      await mailingListService.confirmSubscription(token!);
-      setStatus('success');
-    } catch (error: any) {
-      if (error.message.includes('already confirmed') || error.message.includes('not found')) {
-        setStatus('already_confirmed');
-      } else {
-        setStatus('error');
-      }
-    }
-  };
 
   const renderContent = () => {
     switch (status) {

@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 const AUTO_SAVE_INTERVAL = 30000; // 30 seconds
 
-export function useFormDraft<T extends Record<string, any>>(
+export function useFormDraft<T extends Record<string, unknown>>(
   formType: string,
   initialData: T
 ) {

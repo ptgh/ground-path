@@ -69,12 +69,12 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
         setErrors({});
       }, 2000);
       
-    } catch (error: any) {
+    } catch (error) {
       console.error('Subscription validation error:', error);
       
       if (error.errors) {
         const newErrors: Record<string, string> = {};
-        error.errors.forEach((err: any) => {
+        error.errors.forEach((err) => {
           console.error('Field validation error:', err);
           const field = err.path[0];
           newErrors[field] = err.message;

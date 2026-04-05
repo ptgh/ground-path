@@ -2,6 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface FormDraft {
   formType: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   formData: Record<string, any>;
   lastSaved: string;
 }
@@ -16,6 +17,7 @@ export const formDraftService = {
   },
 
   // Save draft to localStorage
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   saveDraftToCache(formType: string, formData: Record<string, any>): void {
     const key = this.getDraftKey(formType);
     const draft: FormDraft = {
@@ -77,6 +79,7 @@ export const formDraftService = {
   // Save draft to database
   async saveDraftToDatabase(
     formType: string, 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     formData: Record<string, any>,
     clientId?: string
   ): Promise<string | null> {
@@ -103,6 +106,7 @@ export const formDraftService = {
   // Update existing draft in database
   async updateDraftInDatabase(
     draftId: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     formData: Record<string, any>
   ): Promise<void> {
     const { error } = await supabase
@@ -119,6 +123,7 @@ export const formDraftService = {
   // Complete a draft (change status from draft to completed)
   async completeDraft(
     draftId: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     formData: Record<string, any>,
     score?: number,
     interpretation?: string
@@ -140,6 +145,7 @@ export const formDraftService = {
   // Save as completed directly
   async saveAsCompleted(
     formType: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     formData: Record<string, any>,
     clientId?: string,
     score?: number,
@@ -168,6 +174,7 @@ export const formDraftService = {
   },
 
   // Get user's drafts
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getUserDrafts(): Promise<any[]> {
     const { data, error } = await supabase
       .from('form_submissions')

@@ -55,7 +55,7 @@ const AvatarUpload = ({ size = 'md', onUploadComplete }: AvatarUploadProps) => {
       await updateProfile({ avatar_url: avatarUrl });
       toast({ title: 'Photo updated', description: 'Your profile photo has been updated.' });
       onUploadComplete?.(avatarUrl);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Avatar upload error:', error);
       toast({ title: 'Upload failed', description: error.message || 'Could not upload photo.', variant: 'destructive' });
     } finally {
@@ -74,7 +74,7 @@ const AvatarUpload = ({ size = 'md', onUploadComplete }: AvatarUploadProps) => {
       }
       await updateProfile({ avatar_url: null });
       toast({ title: 'Photo removed' });
-    } catch (error: any) {
+    } catch (error) {
       toast({ title: 'Error', description: 'Could not remove photo.', variant: 'destructive' });
     } finally {
       setUploading(false);

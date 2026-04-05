@@ -71,7 +71,7 @@ export const VoiceRecorder = ({ onRecorded, disabled }: VoiceRecorderProps) => {
       intervalRef.current = setInterval(() => {
         setDuration(Math.floor((Date.now() - startTimeRef.current) / 1000));
       }, 500);
-    } catch (err: any) {
+    } catch (err) {
       if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
         toast.error('Microphone access was denied. Please allow microphone access in your browser settings and try again.');
       } else if (err?.name === 'NotFoundError') {

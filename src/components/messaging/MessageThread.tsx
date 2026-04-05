@@ -30,6 +30,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
   const [showHalaxyLink, setShowHalaxyLink] = useState(false);
   const [linkedHalaxy, setLinkedHalaxy] = useState(conversation.linked_halaxy_client_id || '');
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [failedMessages, setFailedMessages] = useState<Map<string, { text: string; options?: any }>>(new Map());
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -102,6 +103,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
     });
 
     return () => { channel.unsubscribe(); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversation.id]);
 
   useEffect(() => { scrollToBottom(); }, [messages, othersTyping]);
@@ -208,7 +210,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
         attachmentName: attachment.name,
         attachmentSize: attachment.size,
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Upload error:', error);
       toast.error(error?.message || 'Failed to upload file. Please try again.');
     } finally {
@@ -229,7 +231,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
         attachmentName: voiceNote.name,
         attachmentSize: voiceNote.size,
       });
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error?.message || 'Failed to send voice note. Please try again.');
     } finally {
       setUploading(false);
@@ -258,7 +260,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
       await messagingService.deleteMessage(messageId);
       setMessages(prev => prev.filter(m => m.id !== messageId));
       toast.success('Message deleted');
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error?.message || 'Failed to delete message');
     } finally {
       setDeletingId(null);

@@ -121,7 +121,7 @@ export const ClientAIAssistant = () => {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        return parsed.map((m: any) => ({
+        return parsed.map((m) => ({
           ...m,
           timestamp: new Date(m.timestamp)
         }));
@@ -488,7 +488,7 @@ export const ClientAIAssistant = () => {
       };
 
       streamCharacter();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Client AI Assistant error:', error);
       toast({
         title: "Unable to respond",

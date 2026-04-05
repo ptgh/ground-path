@@ -5,6 +5,7 @@ export interface Note {
   user_id: string;
   title: string;
   content?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   conversation_data?: Record<string, any>;
   created_at: string;
   updated_at: string;

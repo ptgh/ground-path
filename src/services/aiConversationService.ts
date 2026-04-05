@@ -91,6 +91,7 @@ export const aiConversationService = {
     return (data || []).map(note => ({
       id: note.id,
       title: note.title,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       messages: (note.conversation_data as any)?.messages || [],
       createdAt: note.created_at || '',
       updatedAt: note.updated_at || ''
@@ -110,6 +111,7 @@ export const aiConversationService = {
     return {
       id: data.id,
       title: data.title,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       messages: (data.conversation_data as any)?.messages || [],
       createdAt: data.created_at || '',
       updatedAt: data.updated_at || ''

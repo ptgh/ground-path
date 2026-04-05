@@ -66,7 +66,7 @@ const detectCountryFromTimezone = (): Country => {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     if (tz.startsWith("Australia/")) return "AU";
     if (tz.startsWith("Europe/London") || tz === "GB") return "UK";
-  } catch {}
+  } catch { /* ignore timezone detection failure */ }
   return "OTHER";
 };
 
@@ -88,6 +88,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
   const userInitiatedEndRef = useRef(false);
   const keepaliveRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const greetingReceivedRef = useRef(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const convRef = useRef<any>(null);
   const contextSentRef = useRef(false);
   const countryRef = useRef<HTMLDivElement>(null);
@@ -139,6 +140,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
         }
       }
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onMessage: (message: any) => {
       if (message?.type === "user_transcript") {
         const transcript = message?.user_transcription_event?.user_transcript;
@@ -155,12 +157,12 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
             if (!conv) return;
             try {
               conv.sendContextualUpdate(counsellorContextRef.current);
-            } catch {}
+            } catch { /* ignore non-critical API call failure */ }
             setTimeout(() => {
               if (!mountedRef.current) return;
               try {
                 conv.sendUserMessage(`*Now introduce yourself as ${selectedCounsellor?.name} from groundpath, a supportive counselling service.*`);
-              } catch {}
+              } catch { /* ignore non-critical API call failure */ }
             }, 1500);
           }, 3000);
         }
@@ -175,6 +177,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
         sessionStartedRef.current = false;
       }
     },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 
   convRef.current = conversation;
@@ -183,7 +186,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
     if (voiceState === "connected" && !contextSentRef.current) {
       contextSentRef.current = true;
       keepaliveRef.current = setInterval(() => {
-        try { conversation.sendUserActivity(); } catch {}
+        try { conversation.sendUserActivity(); } catch { /* ignore keepalive failure */ }
       }, KEEPALIVE_INTERVAL_MS);
     }
   }, [voiceState, conversation]);
@@ -240,7 +243,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
           setVoiceState("error");
           setErrorMessage("Connection timeout. Please check your network and try again.");
           sessionStartedRef.current = false;
-          try { conversation.endSession(); } catch {}
+          try { conversation.endSession(); } catch { /* ignore cleanup error */ }
         }
       }, CONNECTION_TIMEOUT_MS);
 
@@ -248,17 +251,19 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
       
       // Try WebRTC first, fall back to WebSocket if it fails
       try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (conversation.startSession as any)({
           agentId: selectedCounsellor.agentId,
         });
-      } catch (webrtcErr: any) {
+      } catch (webrtcErr) {
         console.warn("[VoiceSession] Default connection failed, trying websocket:", webrtcErr?.message);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (conversation.startSession as any)({
           agentId: selectedCounsellor.agentId,
           connectionType: "websocket",
         });
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("[VoiceSession] Connection error:", err);
       if (mountedRef.current) {
         clearConnectionTimeout();
@@ -278,7 +283,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
     userInitiatedEndRef.current = true;
     clearConnectionTimeout();
     clearKeepalive();
-    try { await conversation.endSession(); } catch {}
+    try { await conversation.endSession(); } catch { /* ignore cleanup error */ }
     onClose();
   }, [conversation, onClose, clearConnectionTimeout, clearKeepalive]);
 

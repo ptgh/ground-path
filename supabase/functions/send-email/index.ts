@@ -15,6 +15,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceRoleKey!);
 interface EmailRequest {
   type: 'contact_form' | 'mailing_list_confirmation' | 'newsletter';
   to: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
 }
 
@@ -73,7 +74,7 @@ const handler = async (req: Request): Promise<Response> => {
         `;
         break;
       
-      case 'mailing_list_confirmation':
+      case 'mailing_list_confirmation': {
         subject = 'Confirm your subscription - groundpath professional resources';
         
         const unsubscribeUrl = `https://groundpath.com.au/unsubscribe?email=${encodeURIComponent(to)}`;
@@ -86,6 +87,7 @@ const handler = async (req: Request): Promise<Response> => {
           })
         );
         break;
+      }
       
       default:
         throw new Error('Invalid email type');
@@ -122,7 +124,7 @@ const handler = async (req: Request): Promise<Response> => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error in send-email function:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),

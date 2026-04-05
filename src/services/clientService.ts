@@ -8,6 +8,7 @@ export interface Client {
   date_of_birth?: string;
   contact_phone?: string;
   contact_email?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   emergency_contact?: Record<string, any>;
   presenting_concerns?: string;
   intake_date?: string;
@@ -22,6 +23,7 @@ export interface FormSubmission {
   client_id: string | null;
   practitioner_id: string;
   form_type: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form_data: Record<string, any>;
   score?: number | null;
   interpretation?: string | null;

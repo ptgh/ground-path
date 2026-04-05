@@ -41,6 +41,11 @@ import { NotificationPreferencesCard } from './dashboard/NotificationPreferences
 import { notesService, Note } from '@/services/notesService';
 import { ClientMessagesPanel } from './messaging/ClientMessagesPanel';
 import { gsap } from 'gsap';
+interface HalaxyIntegration {
+  profile_url?: string | null;
+  verified?: boolean;
+}
+
 
 const Dashboard = () => {
   const { user, profile, roles, loading: authLoading } = useAuth();
@@ -268,10 +273,10 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-              {(profile?.halaxy_integration as any)?.profile_url && (
+              {(profile?.halaxy_integration as HalaxyIntegration)?.profile_url && (
                 <div className="hidden lg:block">
                   <a 
-                    href={(profile.halaxy_integration as any).profile_url}
+                    href={(profile.halaxy_integration as HalaxyIntegration).profile_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block"
@@ -432,18 +437,18 @@ const Dashboard = () => {
                          </Button>
                        </ProfessionalProfileModal>
                       <div className="flex items-center gap-2">
-                          {(profile?.halaxy_integration as any)?.verified && (profile?.halaxy_integration as any)?.profile_url ? (
+                          {(profile?.halaxy_integration as HalaxyIntegration)?.verified && (profile?.halaxy_integration as HalaxyIntegration)?.profile_url ? (
                             <>
                               <Button
                                 variant="outline"
-                                onClick={() => window.open((profile.halaxy_integration as any).profile_url, '_blank')}
+                                onClick={() => window.open((profile.halaxy_integration as HalaxyIntegration).profile_url, '_blank')}
                                 className="dashboard-cta flex-1 border-sage-200 text-sage-700 hover:bg-sage-50"
                                 size="sm"
                               >
                                 Halaxy Profile
                               </Button>
                               <a 
-                                href={(profile.halaxy_integration as any).profile_url}
+                                href={(profile.halaxy_integration as HalaxyIntegration).profile_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex-shrink-0"
@@ -683,10 +688,10 @@ const Dashboard = () => {
                       <ProfessionalProfileModal>
                         <Button className="dashboard-cta bg-sage-600 hover:bg-sage-700 text-white">Update Professional Profile</Button>
                       </ProfessionalProfileModal>
-                       {(profile?.halaxy_integration as any)?.verified && (profile?.halaxy_integration as any)?.profile_url ? (
+                       {(profile?.halaxy_integration as HalaxyIntegration)?.verified && (profile?.halaxy_integration as HalaxyIntegration)?.profile_url ? (
                          <Button
                            variant="outline"
-                           onClick={() => window.open((profile.halaxy_integration as any).profile_url, '_blank')}
+                           onClick={() => window.open((profile.halaxy_integration as HalaxyIntegration).profile_url, '_blank')}
                            className="dashboard-cta w-full border-sage-200 text-sage-700 hover:bg-sage-50"
                          >
                            Halaxy Profile

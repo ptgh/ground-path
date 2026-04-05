@@ -114,7 +114,7 @@ export const messagingService = {
     );
     const uniqueIds = [...new Set(otherIds)];
 
-    let profileMap: Record<string, { display_name: string | null; avatar_url: string | null }> = {};
+    const profileMap: Record<string, { display_name: string | null; avatar_url: string | null }> = {};
     if (uniqueIds.length > 0) {
       const { data: profiles } = await supabase
         .from('profiles')
@@ -175,7 +175,7 @@ export const messagingService = {
     if (error) throw error;
 
     const senderIds = [...new Set((data || []).map(m => m.sender_id))];
-    let nameMap: Record<string, string> = {};
+    const nameMap: Record<string, string> = {};
     if (senderIds.length > 0) {
       const { data: profiles } = await supabase
         .from('profiles')
@@ -228,6 +228,7 @@ export const messagingService = {
         resource_url: options?.resourceUrl || null,
         resource_title: options?.resourceTitle || null,
         resource_description: options?.resourceDescription || null,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
       .select()
       .single();
@@ -379,6 +380,7 @@ export const messagingService = {
     // so status progresses correctly: sent → delivered → read
     await supabase
       .from('client_messages')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .update({ is_read: true, read_at: now, delivered_at: now } as any)
       .eq('conversation_id', conversationId)
       .eq('receiver_id', userData.user.id)
@@ -392,6 +394,7 @@ export const messagingService = {
     const now = new Date().toISOString();
     await supabase
       .from('client_messages')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .update({ delivered_at: now } as any)
       .eq('conversation_id', conversationId)
       .eq('receiver_id', userData.user.id)
@@ -412,6 +415,7 @@ export const messagingService = {
     return count || 0;
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async sendEmailNotification(conversationId: string, recipientId: string, sender: any): Promise<void> {
     const { data: senderProfile } = await supabase
       .from('profiles')
@@ -436,6 +440,7 @@ export const messagingService = {
     if (error) throw error;
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subscribeToMessages(conversationId: string, callback: (message: any) => void) {
     return supabase
       .channel(`messages:${conversationId}`)
@@ -460,6 +465,7 @@ export const messagingService = {
       .subscribe();
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subscribeToConversations(userId: string, callback: (payload: any) => void) {
     return supabase
       .channel(`conversations:${userId}`)

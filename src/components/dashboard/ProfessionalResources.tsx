@@ -238,6 +238,7 @@ const ProfessionalResources = () => {
 
   const resources = country === 'AU' ? auResources : ukResources;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ResourceCard = ({ resource }: { resource: any }) => (
     <Card className="hover:shadow-md transition-all duration-200 border-border">
       <CardContent className="p-4">

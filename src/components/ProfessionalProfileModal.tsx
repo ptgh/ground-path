@@ -13,6 +13,11 @@ import { useToast } from '@/hooks/use-toast';
 import { Settings, User, Shield, Briefcase, Heart, Plus, X, Linkedin, CheckCircle2, ExternalLink, Loader2, Copy, ShieldAlert, Pencil, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import AvatarUpload from './AvatarUpload';
+interface HalaxyIntegration {
+  profile_url?: string | null;
+  verified?: boolean;
+}
+
 
 interface ProfessionalProfileModalProps {
   children: React.ReactNode;
@@ -225,7 +230,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
       setAddingRegistration(false);
       setEditingRegId(null);
       toast({ title: 'Registration saved', description: `${bodyName} registration saved successfully.` });
-    } catch (err: any) {
+    } catch (err) {
       toast({ title: 'Save failed', description: err.message || 'Could not save registration.', variant: 'destructive' });
     } finally {
       setRegSaving(false);
@@ -283,7 +288,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         linkedin_profile: profile.linkedin_profile || '',
         preferred_contact_method: profile.preferred_contact_method || 'email',
         bio: profile.bio || '',
-        halaxy_profile_url: (profile.halaxy_integration as any)?.profile_url || ''
+        halaxy_profile_url: (profile.halaxy_integration as HalaxyIntegration)?.profile_url || ''
       };
       setFormData(loadedData);
       setLastSavedFormData({
@@ -309,7 +314,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         specializations,
         qualifications,
         insurance_expiry: formData.insurance_expiry || null,
-        halaxy_integration: { ...((profile?.halaxy_integration as any) || {}), profile_url: halaxy_profile_url || null }
+        halaxy_integration: { ...((profile?.halaxy_integration as HalaxyIntegration) || {}), profile_url: halaxy_profile_url || null }
       };
 
       await updateProfile(updates);
@@ -326,7 +331,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
       });
       
       // Stay on the current tab — don't close the modal
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Update failed",
         description: error.message || "Failed to update profile. Please try again.",
@@ -504,7 +509,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="halaxy_profile_url">Halaxy Profile</Label>
-                    {(profile?.halaxy_integration as any)?.verified ? (
+                    {(profile?.halaxy_integration as HalaxyIntegration)?.verified ? (
                       <div className="flex items-center justify-between gap-2 p-2 rounded-md border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950 mb-2">
                         <div className="flex items-center gap-2">
                           <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
@@ -518,7 +523,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                           onClick={async () => {
                             await updateProfile({
                               halaxy_integration: {
-                                ...((profile?.halaxy_integration as any) || {}),
+                                ...((profile?.halaxy_integration as HalaxyIntegration) || {}),
                                 verified: false,
                                 verified_at: null,
                               },
@@ -549,7 +554,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                           <Copy className="h-3.5 w-3.5" />
                         </Button>
                       )}
-                      {!(profile?.halaxy_integration as any)?.verified && (
+                      {!(profile?.halaxy_integration as HalaxyIntegration)?.verified && (
                         <Button
                           type="button"
                           variant="outline"
@@ -566,7 +571,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                               if (data?.verified) {
                                 await updateProfile({
                                   halaxy_integration: {
-                                    ...((profile?.halaxy_integration as any) || {}),
+                                    ...((profile?.halaxy_integration as HalaxyIntegration) || {}),
                                     profile_url: formData.halaxy_profile_url.trim(),
                                     verified: true,
                                     verified_at: data.verified_at,
@@ -576,7 +581,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                               } else {
                                 toast({ title: 'Verification failed', description: data?.error || 'Could not confirm the Halaxy profile page. Please check the URL.', variant: 'destructive' });
                               }
-                            } catch (err: any) {
+                            } catch (err) {
                               toast({ title: 'Verification error', description: err.message || 'Could not verify URL.', variant: 'destructive' });
                             } finally {
                               setHalaxyVerifying(false);

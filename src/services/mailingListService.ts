@@ -8,6 +8,7 @@ export interface MailingListSubscriber {
   subscription_date?: string;
   confirmation_token?: string;
   source: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   preferences?: Record<string, any>;
 }
 

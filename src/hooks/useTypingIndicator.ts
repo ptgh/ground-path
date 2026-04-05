@@ -22,6 +22,7 @@ export function useTypingIndicator(conversationId: string, userId: string | unde
         const typingUsers: string[] = [];
         for (const key of Object.keys(state)) {
           if (key !== userId) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const presences = state[key] as any[];
             if (presences.some(p => p.typing)) {
               typingUsers.push(key);
