@@ -80,10 +80,10 @@ async function checkLink(url: string): Promise<{ status: number | null; error: s
     clearTimeout(timeoutId);
     return { status: response.status, error: null };
   } catch (error) {
-    if (error.name === 'AbortError') {
+    if (error instanceof Error && error.name === 'AbortError') {
       return { status: null, error: 'Timeout after 10 seconds' };
     }
-    return { status: null, error: error.message || 'Unknown error' };
+    return { status: null, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
 

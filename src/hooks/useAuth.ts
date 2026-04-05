@@ -157,7 +157,8 @@ export const useAuth = () => {
 
     const { error } = await supabase
       .from('profiles')
-      .update(updates)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .update(updates as any)
       .eq('user_id', user.id);
 
     if (error) throw error;
