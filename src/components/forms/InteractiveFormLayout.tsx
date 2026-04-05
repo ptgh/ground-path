@@ -2,7 +2,8 @@ import { ReactNode, useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Download, Printer, Save, Clock, Check } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, Download, Printer, Save, Clock, Check, Loader2, Shield } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import gsap from 'gsap';
@@ -45,26 +46,21 @@ const InteractiveFormLayout = ({
   const headerRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Subtle entrance animation
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
-    
     if (headerRef.current) {
       tl.fromTo(headerRef.current, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4 });
     }
     if (formRef.current) {
       tl.fromTo(formRef.current, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.2');
     }
-
     return () => { tl.kill(); };
   }, []);
 
-  // Show draft prompt if there's a draft
   useEffect(() => {
     if (hasDraft && onRestoreDraft && onDiscardDraft) {
       setShowDraftPrompt(true);
@@ -72,16 +68,12 @@ const InteractiveFormLayout = ({
   }, [hasDraft, onRestoreDraft, onDiscardDraft]);
 
   const handleRestoreDraft = () => {
-    if (onRestoreDraft) {
-      onRestoreDraft();
-    }
+    onRestoreDraft?.();
     setShowDraftPrompt(false);
   };
 
   const handleDiscardDraft = () => {
-    if (onDiscardDraft) {
-      onDiscardDraft();
-    }
+    onDiscardDraft?.();
     setShowDraftPrompt(false);
   };
 
@@ -93,21 +85,23 @@ const InteractiveFormLayout = ({
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Draft Restore Prompt */}
           {showDraftPrompt && (
-            <Card className="mb-6 border-primary/50 bg-primary/5">
+            <Card className="mb-6 border-primary/30 bg-primary/[0.03] shadow-sm">
               <CardContent className="p-4">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-5 w-5 text-primary" />
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-full bg-primary/10 p-2 mt-0.5">
+                      <Clock className="h-4 w-4 text-primary" />
+                    </div>
                     <div>
-                      <p className="font-medium text-foreground">You have an unsaved draft</p>
-                      <p className="text-sm text-muted-foreground">Would you like to restore your previous work?</p>
+                      <p className="font-medium text-sm text-foreground">Unsaved draft found</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Would you like to continue where you left off?</p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={handleDiscardDraft}>
+                  <div className="flex gap-2 self-end sm:self-auto">
+                    <Button variant="ghost" size="sm" onClick={handleDiscardDraft} className="text-xs">
                       Discard
                     </Button>
-                    <Button size="sm" onClick={handleRestoreDraft}>
+                    <Button size="sm" onClick={handleRestoreDraft} className="text-xs">
                       Restore Draft
                     </Button>
                   </div>
@@ -117,34 +111,34 @@ const InteractiveFormLayout = ({
           )}
 
           {/* Header Section */}
-          <div ref={headerRef} className="mb-8 opacity-0">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
+          <div ref={headerRef} className="mb-6 opacity-0">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={() => navigate('/practitioner/forms')}
-                className="gap-2 self-start"
+                className="gap-1.5 self-start text-muted-foreground hover:text-foreground"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft className="h-3.5 w-3.5" />
                 Back to Forms
               </Button>
               
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-2">
                 {/* Auto-save indicator */}
                 {lastSaved && (
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground mr-2">
+                  <Badge variant="outline" className="gap-1 font-normal text-xs h-7 border-border/50">
                     {isSaving ? (
                       <>
-                        <Clock className="h-3 w-3 animate-spin" />
-                        <span>Saving...</span>
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Saving…
                       </>
                     ) : (
                       <>
-                        <Check className="h-3 w-3 text-green-600" />
-                        <span>Saved {lastSaved}</span>
+                        <Check className="h-3 w-3 text-primary" />
+                        Saved {lastSaved}
                       </>
                     )}
-                  </div>
+                  </Badge>
                 )}
                 
                 {onSaveDraft && (
@@ -152,48 +146,49 @@ const InteractiveFormLayout = ({
                     variant="outline" 
                     size="sm" 
                     onClick={onSaveDraft} 
-                    className="min-w-[80px]"
                     disabled={isSaving}
+                    className="gap-1.5 h-8"
                   >
-                    <Save className="h-4 w-4 mr-1 sm:mr-2" />
+                    <Save className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Save Draft</span>
                   </Button>
                 )}
                 {onSave && (
-                  <Button variant="outline" size="sm" onClick={onSave} className="min-w-[80px]">
-                    <Save className="h-4 w-4 mr-1 sm:mr-2" />
+                  <Button variant="outline" size="sm" onClick={onSave} className="gap-1.5 h-8">
+                    <Save className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Save</span>
                   </Button>
                 )}
                 {onPrint && (
-                  <Button variant="outline" size="sm" onClick={onPrint} className="min-w-[80px]">
-                    <Printer className="h-4 w-4 mr-1 sm:mr-2" />
+                  <Button variant="ghost" size="sm" onClick={onPrint} className="gap-1.5 h-8">
+                    <Printer className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Print</span>
                   </Button>
                 )}
                 {onDownload && (
-                  <Button variant="outline" size="sm" onClick={onDownload} className="min-w-[80px]">
-                    <Download className="h-4 w-4 mr-1 sm:mr-2" />
+                  <Button variant="ghost" size="sm" onClick={onDownload} className="gap-1.5 h-8">
+                    <Download className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">PDF</span>
                   </Button>
                 )}
               </div>
             </div>
             
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">{title}</h1>
-            <p className="text-muted-foreground text-base sm:text-lg mb-4">{description}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">{title}</h1>
+            <p className="text-muted-foreground text-sm sm:text-base mt-1.5 max-w-2xl">{description}</p>
             
             {source && (
-              <div className="text-sm text-muted-foreground border-l-2 border-primary/30 pl-4">
-                <span className="font-medium">Source:</span> {source}
+              <div className="flex items-center gap-1.5 mt-3 text-xs text-muted-foreground">
+                <Shield className="h-3 w-3" />
+                <span>{source}</span>
                 {sourceUrl && (
                   <a 
                     href={sourceUrl} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline ml-1"
+                    className="text-primary hover:underline"
                   >
-                    (View Original)
+                    View source →
                   </a>
                 )}
               </div>
@@ -202,7 +197,7 @@ const InteractiveFormLayout = ({
 
           {/* Form Content */}
           <div ref={formRef} className="opacity-0">
-            <Card className="shadow-sm border-border/60">
+            <Card className="shadow-sm border-border/50">
               <CardContent className="p-4 sm:p-6 lg:p-8">
                 {children}
               </CardContent>
