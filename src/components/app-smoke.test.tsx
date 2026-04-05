@@ -38,6 +38,7 @@ vi.mock('@/integrations/supabase/client', () => ({
     channel: vi.fn().mockReturnValue({
       on: vi.fn().mockReturnThis(),
       subscribe: vi.fn().mockReturnThis(),
+      unsubscribe: vi.fn(),
     }),
     removeChannel: vi.fn(),
   },
@@ -107,6 +108,68 @@ describe('App startup smoke tests', () => {
       // The page renders a recognisable sign-in element (email input or heading)
       const emailInput = document.querySelector('input[type="email"]');
       expect(emailInput).not.toBeNull();
+    });
+  });
+
+  describe('route: /dashboard', () => {
+    it('does not crash when the user is not authenticated', async () => {
+      // beforeEach already sets user: null — the guard redirects rather than rendering the dashboard
+      const { default: AuthenticatedRoute } = await import('@/components/AuthenticatedRoute');
+      const { default: ClientDashboard } = await import('@/pages/ClientDashboard');
+      renderWithProviders(
+        <AuthenticatedRoute><ClientDashboard /></AuthenticatedRoute>,
+        '/dashboard',
+      );
+      expect(document.body.innerHTML).not.toBe('');
+    });
+
+    it('renders the client dashboard without crashing when authenticated', async () => {
+      mockUseAuth.mockReturnValue({
+        user: { id: 'user-1', email: 'test@example.com' },
+        loading: false,
+        profileLoading: false,
+        profile: null,
+        roles: [],
+      } as unknown as AuthMock);
+
+      const { default: AuthenticatedRoute } = await import('@/components/AuthenticatedRoute');
+      const { default: ClientDashboard } = await import('@/pages/ClientDashboard');
+      renderWithProviders(
+        <AuthenticatedRoute><ClientDashboard /></AuthenticatedRoute>,
+        '/dashboard',
+      );
+      expect(document.body.innerHTML).not.toBe('');
+    });
+  });
+
+  describe('route: /practitioner/dashboard', () => {
+    it('redirects to /practitioner/auth when the user is not authenticated', async () => {
+      // beforeEach already sets user: null — the guard redirects rather than rendering the dashboard
+      const { default: VerifiedPractitionerRoute } = await import('@/components/VerifiedPractitionerRoute');
+      const { default: Dashboard } = await import('@/components/Dashboard');
+      renderWithProviders(
+        <VerifiedPractitionerRoute><Dashboard /></VerifiedPractitionerRoute>,
+        '/practitioner/dashboard',
+      );
+      expect(document.body.innerHTML).not.toBe('');
+    });
+
+    it('renders the practitioner dashboard without crashing when verified', async () => {
+      mockUseAuth.mockReturnValue({
+        user: { id: 'user-1', email: 'test@example.com' },
+        loading: false,
+        profileLoading: false,
+        profile: { user_type: 'practitioner', verification_status: 'verified' },
+        roles: [],
+      } as unknown as AuthMock);
+
+      const { default: VerifiedPractitionerRoute } = await import('@/components/VerifiedPractitionerRoute');
+      const { default: Dashboard } = await import('@/components/Dashboard');
+      renderWithProviders(
+        <VerifiedPractitionerRoute><Dashboard /></VerifiedPractitionerRoute>,
+        '/practitioner/dashboard',
+      );
+      expect(document.body.innerHTML).not.toBe('');
     });
   });
 });
