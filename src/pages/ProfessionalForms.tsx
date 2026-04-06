@@ -544,22 +544,19 @@ const ProfessionalForms = () => {
 
           {/* Categories Overview */}
           {selectedCategory === 'all' && (
-            <div className="mt-12">
-              <h2 className="text-2xl font-bold mb-6">Form Categories</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="mt-10">
+              <h2 className="text-lg font-semibold text-foreground mb-4">Browse by Category</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 {formCategories.map(category => (
                    <Card 
                     key={category.id} 
-                    className="cursor-pointer hover:shadow-lg transition-all duration-200 group border-primary/20 hover:border-primary/40"
+                    className="cursor-pointer hover:shadow-md hover:border-sage-300 transition-all duration-200 group border-border/60"
                     onClick={() => setSelectedCategory(category.id)}
                   >
-                    <CardHeader className="text-center pb-3">
-                      <category.icon className="h-10 w-10 mx-auto mb-2 text-primary group-hover:scale-110 transition-transform duration-200" />
-                      <CardTitle className="text-base leading-tight">{category.title}</CardTitle>
-                      <CardDescription className="text-xs leading-relaxed">{category.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="pt-0 text-center">
-                      <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
+                    <CardContent className="p-4 text-center space-y-2">
+                      <category.icon className="h-7 w-7 mx-auto text-sage-600 group-hover:scale-110 transition-transform duration-200" />
+                      <p className="text-sm font-medium text-foreground leading-tight">{category.title}</p>
+                      <Badge variant="secondary" className="text-[10px] bg-sage-100 text-sage-700">
                         {category.forms.length} forms
                       </Badge>
                     </CardContent>
@@ -570,24 +567,22 @@ const ProfessionalForms = () => {
           )}
 
           {/* Help Section */}
-          <Card className="mt-8 bg-primary/5 border-primary/20">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="rounded-full bg-primary/10 p-3">
-                  <FileText className="h-6 w-6 text-primary" />
+          <Card className="mt-8 border-sage-200 bg-sage-50/50">
+            <CardContent className="p-5">
+              <div className="flex items-start gap-3">
+                <div className="rounded-full bg-sage-100 p-2.5 shrink-0">
+                  <FileText className="h-5 w-5 text-sage-700" />
                 </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Need Help with Forms?</h3>
-                  <p className="text-muted-foreground mb-4">
-                    All forms are designed to meet professional standards and regulatory requirements. 
-                    If you need assistance completing any form or have questions about requirements, 
-                    please contact your supervisor or professional body.
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold text-foreground">Need help with forms?</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    All forms meet professional standards and regulatory requirements. Contact your supervisor or professional body for guidance.
                   </p>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => navigate('/#contact')}>
+                  <div className="flex gap-2 pt-1">
+                    <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => navigate('/#contact')}>
                       Contact Support
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => window.open('https://www.aasw.asn.au/practitioner-resources/practice-standards', '_blank')}>
+                    <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => window.open('https://www.aasw.asn.au/practitioner-resources/practice-standards', '_blank')}>
                       View Guidelines
                     </Button>
                   </div>
