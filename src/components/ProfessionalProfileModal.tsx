@@ -16,6 +16,7 @@ import AvatarUpload from './AvatarUpload';
 interface HalaxyIntegration {
   profile_url?: string | null;
   verified?: boolean;
+  session_mode?: 'halaxy' | 'native_beta';
 }
 
 
