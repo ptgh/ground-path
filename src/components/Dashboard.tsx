@@ -48,7 +48,15 @@ import { gsap } from 'gsap';
 interface HalaxyIntegration {
   profile_url?: string | null;
   verified?: boolean;
+  session_mode?: 'halaxy' | 'native_beta';
 }
+
+type SessionMode = 'halaxy' | 'native_beta';
+
+const getSessionMode = (profile: { halaxy_integration?: unknown } | null): SessionMode => {
+  const integration = profile?.halaxy_integration as HalaxyIntegration | undefined;
+  return integration?.session_mode || 'halaxy';
+};
 
 /* ─── Stat card for the overview ─── */
 const StatCard = ({ label, value, icon: Icon }: { label: string; value: string | number; icon: React.ElementType }) => (
