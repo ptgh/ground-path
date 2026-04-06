@@ -8,8 +8,8 @@ const differentiators = [
   },
   {
     icon: ShieldCheck,
-    title: 'AASW-Registered Social Worker',
-    description: 'Qualified AASW-registered social worker delivering evidence-based mental health support across Australia.',
+    title: 'AASW Registered Social Worker',
+    description: 'Qualified AASW registered social worker delivering evidence-based mental health support across Australia.',
   },
   {
     icon: CalendarClock,

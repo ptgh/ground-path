@@ -34,35 +34,35 @@ const Services = () => {
   const services = [
     {
       name: "Mental Health Support",
-      format: "Online via Microsoft Teams",
+      format: "Online via Halaxy Telehealth",
       rate: "$100",
-      description: "Social Worker providing professional support via secure Microsoft Teams video calls"
+      description: "Social Worker providing professional support via secure Halaxy Telehealth video calls"
     },
     {
       name: "Psychosocial Recovery Coaching",
-      format: "Online via Microsoft Teams",
+      format: "Online via Halaxy Telehealth",
       rate: "$100",
       description: "NDIS-funded support for psychosocial recovery and daily living skills — delivered online",
       ndis: true
     },
     {
       name: "Accredited Mental Health Social Worker (AMHSW)",
-      format: "Online via Microsoft Teams",
+      format: "Online via Halaxy Telehealth",
       rate: "$100",
       description: "AMHSW registration currently in progress — service coming soon",
       comingSoon: true
     },
     {
       name: "Counselling Support",
-      format: "Online via Microsoft Teams",
+      format: "Online via Halaxy Telehealth",
       rate: "$100",
-      description: "Professional counselling sessions delivered by qualified social workers — ACA registration currently in progress"
+      description: "Professional counselling sessions delivered by qualified social workers — ACA Registered S89326"
     },
     {
       name: "In-Person Support",
       format: "Perth, WA",
       rate: "$100",
-      description: "Face-to-face sessions coming soon — currently all sessions are conducted online via Microsoft Teams",
+      description: "Face-to-face sessions coming soon — currently all sessions are conducted online via Halaxy Telehealth",
       comingSoon: true
     }
   ];

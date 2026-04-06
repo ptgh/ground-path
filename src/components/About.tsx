@@ -222,7 +222,7 @@ const About = () => {
                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
                   <div className="text-lg font-light text-sage-600">Qualifications</div>
                   <div className="text-gray-600 text-xs">Academic & Professional</div>
-                  <div className="text-xs text-gray-500 text-center">BCom, MSW, GradCert Counselling (in progress)</div>
+                  <div className="text-xs text-gray-500 text-center">MSW, Graduate Certificate in Counselling</div>
                 </div>
               </button>
             </div>
@@ -300,10 +300,6 @@ const About = () => {
             <h4 className="font-medium text-gray-900">Completed Qualifications</h4>
             <ul className="list-disc pl-5 space-y-1">
               <li><span className="font-medium text-gray-900">Master of Social Work (MSW)</span> — Advanced professional qualification in social work practice</li>
-              <li><span className="font-medium text-gray-900">Bachelor of Commerce (BCom)</span> — Foundation in business and organisational understanding</li>
-            </ul>
-            <h4 className="font-medium text-gray-900">In Progress</h4>
-            <ul className="list-disc pl-5 space-y-1">
               <li><span className="font-medium text-gray-900">Graduate Certificate in Counselling</span> — Expanding therapeutic skills and counselling competency</li>
             </ul>
             <p className="leading-relaxed">This combination of qualifications ensures a well-rounded, evidence-based approach to mental health and social work practice.</p>

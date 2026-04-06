@@ -102,7 +102,7 @@ const Contact = () => {
           </h2>
           <div className="fade-in w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
           <p className="fade-in text-lg text-gray-600 max-w-2xl mx-auto">
-            All sessions are currently conducted online via Microsoft Teams. Book below or contact us with any questions.
+            All sessions are currently conducted online via Halaxy Telehealth. Book below or contact us with any questions.
           </p>
           <div className="fade-in flex justify-center mt-6">
             <a 
@@ -118,7 +118,7 @@ const Contact = () => {
                 loading="lazy"
                 decoding="async"
               />
-              <span className="text-sm font-medium">Book Online via Microsoft Teams</span>
+              <span className="text-sm font-medium">Book Online via Halaxy Telehealth</span>
             </a>
           </div>
         </div>
@@ -165,7 +165,7 @@ const Contact = () => {
                    <div>
                      <div className="font-medium text-gray-900">Service Delivery</div>
                      <div className="text-gray-600">
-                       All sessions online via Microsoft Teams<br />
+                       All sessions online via Halaxy Telehealth<br />
                        In-person sessions coming soon (Perth, WA)
                      </div>
                    </div>
@@ -177,7 +177,7 @@ const Contact = () => {
             <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
               <h4 className="font-medium text-gray-900 mb-4">Book an Online Session</h4>
               <p className="text-gray-600 mb-4">
-                All sessions are via Microsoft Teams. Book a time that suits you and receive your meeting link automatically.
+                All sessions are via Halaxy Telehealth. Book a time that suits you and receive your meeting link automatically.
               </p>
 
               {HALAXY_EMBED_URL ? (
