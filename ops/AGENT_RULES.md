@@ -105,7 +105,18 @@ Every agent action must produce a log entry with:
 - `outcome` (`success`, `blocked`, `escalated`)
 - `notes` (free text for escalations)
 
-Logs must be retained for a minimum of **7 years** in line with applicable health records legislation (NSW Health Records Act, Privacy Act 1988).
+Logs must be retained for a minimum of **7 years**. Groundpath operates nationally; applicable legislation varies by state/territory and record type. Key frameworks include:
+
+| Framework | Scope |
+|---|---|
+| Privacy Act 1988 (Cth) + Australian Privacy Principles | All personal information — national |
+| My Health Records Act 2012 (Cth) | My Health Record data |
+| Health Records Act 2001 (VIC) | VIC health information |
+| Health Records and Information Privacy Act 2002 (NSW) | NSW health information |
+| Health Ombudsman Act 2013 (QLD) | QLD health records |
+| Other state/territory equivalents | As applicable |
+
+> ⚠️ Confirm the correct retention period with legal counsel for your specific record types and the jurisdiction(s) where users are located. Do not rely solely on this table.
 
 ---
 
