@@ -177,7 +177,7 @@ const Contact = () => {
             <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
               <h4 className="font-medium text-gray-900 mb-4">Book an Online Session</h4>
               <p className="text-gray-600 mb-4">
-                All sessions are via Microsoft Teams. Book a time that suits you and receive your meeting link automatically.
+                All sessions are via Halaxy Telehealth. Book a time that suits you and receive your meeting link automatically.
               </p>
 
               {HALAXY_EMBED_URL ? (
