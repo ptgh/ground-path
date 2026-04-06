@@ -29,7 +29,8 @@ import {
   CheckCircle2,
   ShieldAlert,
   StickyNote,
-  ClipboardList
+  ClipboardList,
+  Video
 } from 'lucide-react';
 import { MessageSquare } from 'lucide-react';
 import Header from './Header';
@@ -48,7 +49,15 @@ import { gsap } from 'gsap';
 interface HalaxyIntegration {
   profile_url?: string | null;
   verified?: boolean;
+  session_mode?: 'halaxy' | 'native_beta';
 }
+
+type SessionMode = 'halaxy' | 'native_beta';
+
+const getSessionMode = (profile: { halaxy_integration?: unknown } | null): SessionMode => {
+  const integration = profile?.halaxy_integration as HalaxyIntegration | undefined;
+  return integration?.session_mode || 'halaxy';
+};
 
 /* ─── Stat card for the overview ─── */
 const StatCard = ({ label, value, icon: Icon }: { label: string; value: string | number; icon: React.ElementType }) => (
@@ -79,7 +88,7 @@ const CardSkeleton = () => (
 );
 
 const Dashboard = () => {
-  const { user, profile, roles, loading: authLoading } = useAuth();
+  const { user, profile, roles, loading: authLoading, updateProfile } = useAuth();
   const unreadCount = useUnreadMessages();
   const navigate = useNavigate();
   const location = useLocation();
@@ -492,11 +501,17 @@ const Dashboard = () => {
                       {[
                         { label: 'Profession', value: formatProfession(profile?.profession) },
                         { label: 'License Number', value: profile?.license_number || 'Not provided' },
+                        { label: 'Session Mode', value: getSessionMode(profile) === 'native_beta' ? 'Native Beta (Teams)' : 'Halaxy Booking + Telehealth' },
                         { label: 'Active Since', value: new Date(user.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }) },
                       ].map(item => (
                         <div key={item.label} className="flex items-center justify-between text-sm">
                           <span className="text-muted-foreground">{item.label}</span>
-                          <span className="font-medium text-foreground">{item.value}</span>
+                          <span className="font-medium text-foreground flex items-center gap-1.5">
+                            {item.value}
+                            {item.label === 'Session Mode' && getSessionMode(profile) === 'native_beta' && (
+                              <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-amber-300 text-amber-700 bg-amber-50">Beta</Badge>
+                            )}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -771,6 +786,75 @@ const Dashboard = () => {
               </Card>
 
               <NotificationPreferencesCard userId={user.id} currentPrefs={profile?.notification_preferences} />
+
+              {/* Session Mode — admin only */}
+              {isAdmin && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <Video className="h-4 w-4 text-sage-600" />
+                      Session Mode
+                    </CardTitle>
+                    <CardDescription>
+                      Choose how your sessions are delivered to clients.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {(['halaxy', 'native_beta'] as const).map((mode) => {
+                      const currentMode = getSessionMode(profile);
+                      const isSelected = currentMode === mode;
+                      return (
+                        <button
+                          key={mode}
+                          type="button"
+                          className={`w-full text-left p-4 rounded-lg border-2 transition-colors ${
+                            isSelected
+                              ? 'border-sage-500 bg-sage-50 dark:bg-sage-950'
+                              : 'border-border hover:border-sage-200'
+                          }`}
+                          onClick={async () => {
+                            if (isSelected) return;
+                            try {
+                              await updateProfile({
+                                halaxy_integration: {
+                                  ...((profile?.halaxy_integration as HalaxyIntegration) || {}),
+                                  session_mode: mode,
+                                },
+                              });
+                              toast.success(`Session mode updated to ${mode === 'halaxy' ? 'Halaxy' : 'Native Beta'}`);
+                            } catch {
+                              toast.error('Failed to update session mode');
+                            }
+                          }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${
+                              isSelected ? 'border-sage-600' : 'border-muted-foreground/40'
+                            }`}>
+                              {isSelected && <div className="h-2 w-2 rounded-full bg-sage-600" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-foreground">
+                                  {mode === 'halaxy' ? 'Halaxy (Production)' : 'Groundpath Native'}
+                                </span>
+                                {mode === 'native_beta' && (
+                                  <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-amber-300 text-amber-700 bg-amber-50">Beta</Badge>
+                                )}
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {mode === 'halaxy'
+                                  ? 'Halaxy booking & Halaxy Telehealth. Live production pathway.'
+                                  : 'Teams-based sessions. Internal testing only.'}
+                              </p>
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
           </Tabs>
         </div>

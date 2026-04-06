@@ -9,17 +9,17 @@ const steps = [
   {
     icon: CalendarCheck,
     title: 'Book Online',
-    description: 'Choose a time that suits you through our Halaxy booking system. Available appointments are shown in real-time.',
+    description: 'Choose a time that suits you through our secure Halaxy booking system. Available appointments are shown in real-time.',
   },
   {
     icon: MessageSquare,
     title: 'Receive Confirmation',
-    description: 'You\'ll receive a confirmation email with your session details and a secure Microsoft Teams meeting link.',
+    description: 'You\'ll receive a confirmation email with your session details and a secure telehealth session link.',
   },
   {
     icon: Video,
-    title: 'Join via Microsoft Teams',
-    description: 'At your scheduled time, click the Teams link to join your session. No Teams account required — it works in your browser.',
+    title: 'Join via Halaxy Telehealth',
+    description: 'At your scheduled time, click the telehealth link to join your session. No additional software required — it works in your browser.',
   },
   {
     icon: ShieldCheck,
@@ -56,16 +56,16 @@ const HowSessionsWork = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-20 bg-white">
+    <section ref={sectionRef} className="py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-14">
-          <h2 className="text-3xl sm:text-4xl font-light text-gray-900 mb-4">
+          <h2 className="text-3xl sm:text-4xl font-light text-foreground mb-4">
             How Sessions Work
           </h2>
-          <div className="w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            All sessions are currently conducted online via Microsoft Teams — simple, secure, and accessible from anywhere.
+          <div className="w-20 h-1 bg-primary mx-auto mb-6"></div>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            All sessions are currently conducted online via Halaxy Telehealth — simple, secure, and accessible from anywhere.
           </p>
         </div>
 
@@ -74,16 +74,16 @@ const HowSessionsWork = () => {
           {steps.map((step, index) => (
             <div
               key={step.title}
-              className="session-step bg-gray-50 rounded-xl p-6 text-center hover:shadow-md transition-shadow duration-300 border border-gray-100"
+              className="session-step bg-card rounded-xl p-6 text-center hover:shadow-md transition-shadow duration-300 border border-border/50"
             >
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-sage-100 text-sage-600 mb-4">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-4">
                 <step.icon className="h-6 w-6" />
               </div>
-              <div className="text-xs font-medium text-sage-600 uppercase tracking-wider mb-2">
+              <div className="text-xs font-medium text-primary uppercase tracking-wider mb-2">
                 Step {index + 1}
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">{step.title}</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">{step.description}</p>
+              <h3 className="text-lg font-medium text-foreground mb-2">{step.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
             </div>
           ))}
         </div>
