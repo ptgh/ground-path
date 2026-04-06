@@ -118,7 +118,7 @@ const Contact = () => {
                 loading="lazy"
                 decoding="async"
               />
-              <span className="text-sm font-medium">Book Online via Microsoft Teams</span>
+              <span className="text-sm font-medium">Book Online via Halaxy Telehealth</span>
             </a>
           </div>
         </div>
