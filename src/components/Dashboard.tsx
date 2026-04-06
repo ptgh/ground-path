@@ -29,7 +29,8 @@ import {
   CheckCircle2,
   ShieldAlert,
   StickyNote,
-  ClipboardList
+  ClipboardList,
+  Video
 } from 'lucide-react';
 import { MessageSquare } from 'lucide-react';
 import Header from './Header';
