@@ -99,23 +99,26 @@ const Hero = () => {
 
         {/* Professional Credentials */}
         <div className="fade-in mt-12 sm:mt-16 text-center">
-          <div className="inline-flex flex-col lg:flex-row items-center lg:space-x-4 space-y-2 lg:space-y-0 bg-muted px-4 sm:px-6 py-3 sm:py-4 rounded-lg max-w-4xl mx-auto">
+          <div className="inline-flex flex-col lg:flex-row items-start lg:items-center lg:space-x-4 space-y-1.5 lg:space-y-0 bg-muted px-6 sm:px-6 py-3 sm:py-4 rounded-lg max-w-4xl mx-auto">
             <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80 font-medium">
-              <span className="inline-block h-2 w-2 rounded-full bg-primary" />
+              <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-primary" />
               AASW Member
             </span>
             <span className="text-border hidden lg:inline">•</span>
             <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80 font-medium">
-              <span className="inline-block h-2 w-2 rounded-full bg-primary" />
+              <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-primary" />
               NDIS Services
             </span>
             <span className="text-border hidden lg:inline">•</span>
             <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80 font-medium">
-              <span className="inline-block h-2 w-2 rounded-full bg-primary" />
+              <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-primary" />
               ACA Registered
             </span>
             <span className="text-border hidden lg:inline">•</span>
-            <span className="text-xs sm:text-sm text-muted-foreground font-medium">AMHSW <span className="italic">(registration in progress)</span></span>
+            <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground font-medium">
+              <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-muted-foreground/40" />
+              AMHSW <span className="italic">(registration in progress)</span>
+            </span>
           </div>
           <p className="mt-3 text-xs text-muted-foreground font-medium tracking-wide">
             Qualified &amp; Accredited — Not an Algorithm
