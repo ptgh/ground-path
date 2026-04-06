@@ -52,8 +52,8 @@ interface HalaxyIntegration {
 
 /* ─── Stat card for the overview ─── */
 const StatCard = ({ label, value, icon: Icon }: { label: string; value: string | number; icon: React.ElementType }) => (
-  <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-sage-100 text-sage-700">
+  <div className="flex items-center gap-3 rounded-lg border border-border/60 bg-card p-4">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sage-100 text-sage-700">
       <Icon className="h-5 w-5" />
     </div>
     <div className="min-w-0">
