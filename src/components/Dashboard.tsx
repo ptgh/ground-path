@@ -88,7 +88,7 @@ const CardSkeleton = () => (
 );
 
 const Dashboard = () => {
-  const { user, profile, roles, loading: authLoading } = useAuth();
+  const { user, profile, roles, loading: authLoading, updateProfile } = useAuth();
   const unreadCount = useUnreadMessages();
   const navigate = useNavigate();
   const location = useLocation();
