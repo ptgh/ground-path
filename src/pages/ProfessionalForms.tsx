@@ -467,35 +467,31 @@ const ProfessionalForms = () => {
           </div>
 
           {/* Forms Grid */}
-          <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {getFilteredForms().map(form => {
               const FormTypeIcon = getFormTypeIcon(form.formType);
               const typeBadge = getFormTypeBadge(form.formType);
               
               return (
-                <Card key={form.id} className="form-card group hover:shadow-lg transition-all duration-200 flex flex-col opacity-0">
-                  <CardHeader className="pb-3 flex-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <FormTypeIcon className="h-5 w-5 text-primary" />
+                <Card key={form.id} className="form-card group hover:shadow-md hover:border-sage-300 transition-all duration-200 flex flex-col opacity-0 border-border/60">
+                  <CardHeader className="pb-2 flex-1">
+                    <div className="flex items-start justify-between mb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <FormTypeIcon className="h-4 w-4 text-sage-600" />
                         {form.required && (
-                          <Star className="h-4 w-4 text-amber-500" />
+                          <Star className="h-3.5 w-3.5 text-amber-500" />
                         )}
                       </div>
-                      <Badge variant={typeBadge.variant}>{typeBadge.label}</Badge>
+                      <Badge variant={typeBadge.variant} className="text-[10px] h-5">{typeBadge.label}</Badge>
                     </div>
-                    <CardTitle className="text-lg leading-tight">{form.title}</CardTitle>
-                    <CardDescription className="text-sm leading-relaxed">{form.description}</CardDescription>
+                    <CardTitle className="text-base leading-snug">{form.title}</CardTitle>
+                    <CardDescription className="text-xs leading-relaxed">{form.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <div className="space-y-3">
-                      <div className="text-xs text-muted-foreground">
-                        Last updated: {new Date(form.lastUpdated).toLocaleDateString()}
-                      </div>
-                      
+                    <div className="space-y-2.5">
                       {form.source && (
-                        <div className="text-xs text-muted-foreground border-l-2 border-muted pl-2">
-                          <span className="font-medium">Source:</span> {form.source}
+                        <div className="text-[11px] text-muted-foreground border-l-2 border-sage-200 pl-2 leading-relaxed">
+                          {form.source}
                           {form.sourceUrl && (
                             <a 
                               href={form.sourceUrl} 
@@ -503,40 +499,42 @@ const ProfessionalForms = () => {
                               rel="noopener noreferrer"
                               className="text-primary hover:underline ml-1"
                             >
-                              (View Original)
+                              →
                             </a>
                           )}
                         </div>
                       )}
                       
-                       <div className="grid grid-cols-3 gap-2">
-                        <Button 
-                          size="sm" 
-                          onClick={() => handleFormAction(form, 'view')}
-                          className="col-span-2 bg-primary hover:bg-primary/90 text-primary-foreground"
-                        >
-                          <Eye className="h-4 w-4 mr-2" />
-                          View
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleFormAction(form, 'download')}
-                          className="px-2 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground"
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      
+                      {/* Primary: Fill/Open */}
                       <Button 
                         size="sm" 
-                        variant={form.formType === 'interactive' ? 'secondary' : 'outline'}
                         onClick={() => handleFormAction(form, 'fill')}
-                        className={`w-full ${form.formType === 'interactive' ? 'bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground' : 'border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground'}`}
+                        className="w-full gap-1.5"
                       >
-                        <ClipboardCheck className="h-4 w-4 mr-2" />
+                        <ClipboardCheck className="h-3.5 w-3.5" />
                         {form.formType === 'interactive' ? 'Fill Interactive Form' : 'Open Form'}
                       </Button>
+
+                      {/* Secondary row */}
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleFormAction(form, 'view')}
+                          className="flex-1 gap-1.5 text-xs h-8"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          Details
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          onClick={() => handleFormAction(form, 'download')}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
