@@ -76,6 +76,11 @@ const AuthCompletionRouter = () => {
       return;
     }
 
+    // Skip recovery links — let AuthPage handle PASSWORD_RECOVERY event
+    if (location.hash.includes('type=recovery')) {
+      return;
+    }
+
     const hasAuthHash =
       location.hash.includes('access_token') ||
       location.hash.includes('refresh_token') ||
