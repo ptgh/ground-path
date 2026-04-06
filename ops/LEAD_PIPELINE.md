@@ -18,19 +18,19 @@ Awareness → Interested → Qualified → Onboarding → Active → Churned
 
 | Source | Description | Owner |
 |---|---|---|
-| AASW member outreach | Targeted emails to social workers | `[Name]` |
-| Psychology / allied health networks | LinkedIn, word-of-mouth | `[Name]` |
-| CPD partnerships | Referrals from CPD providers | `[Name]` |
-| Conference presence | AASW, ACWA, MHPN events | `[Name]` |
-| Content marketing | Blog / resources on groundpath.com.au | `[Name]` |
+| AASW member outreach | Targeted emails to social workers | Paul Habermann |
+| Psychology / allied health networks | LinkedIn, word-of-mouth | Paul Habermann |
+| CPD partnerships | Referrals from CPD providers | Paul Habermann |
+| Conference presence | AASW, ACWA, MHPN events | Paul Habermann |
+| Content marketing | Blog / resources on groundpath.com.au | Paul Habermann |
 
 ### Active Practitioner Leads
 
+> Pipeline is being initiated. Add leads here as outreach begins.
+
 | Name / Org | Discipline | Stage | Last Contact | Next Action | Notes |
 |---|---|---|---|---|---|
-| `[Name]` | `[e.g., Social Worker]` | `[Stage]` | `[Date]` | `[Action]` | |
-| `[Name]` | | | | | |
-| `[Name]` | | | | | |
+| NOT YET TRACKED | | | | | |
 
 ### Practitioner Onboarding Checklist
 
@@ -49,7 +49,7 @@ For each practitioner moving from **Qualified → Onboarding**:
 
 | Week | New leads | Qualified | Onboarding | Activated | Churned |
 |---|---|---|---|---|---|
-| `[YYYY-MM-DD]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| NEEDS LIVE DATA | | | | | |
 
 ---
 
@@ -59,18 +59,19 @@ For each practitioner moving from **Qualified → Onboarding**:
 
 | Source | Description | Owner |
 |---|---|---|
-| Organic search (SEO) | groundpath.com.au | `[Name]` |
-| NDIS provider referrals | Partner organisations | `[Name]` |
-| GP / mental health plans | Referral pathways | `[Name]` |
-| Social media | Instagram, LinkedIn | `[Name]` |
-| Word of mouth | Practitioner referrals | `[Name]` |
+| Organic search (SEO) | groundpath.com.au | Paul Habermann |
+| NDIS provider referrals | Partner organisations | Paul Habermann |
+| GP / mental health plans | Referral pathways | Paul Habermann |
+| Social media | Instagram, LinkedIn | Paul Habermann |
+| Word of mouth | Practitioner referrals | Paul Habermann |
 
 ### Active Client Leads / Partnerships
 
+> Pipeline is being initiated. Add leads and partner organisations here as outreach begins.
+
 | Organisation | Type | Stage | Last Contact | Next Action | Notes |
 |---|---|---|---|---|---|
-| `[Org name]` | `[e.g., NDIS provider]` | `[Stage]` | `[Date]` | `[Action]` | |
-| `[Org name]` | | | | | |
+| NOT YET TRACKED | | | | | |
 
 ### Client Activation Checklist
 
@@ -86,7 +87,7 @@ For each client completing sign-up:
 
 | Week | New registrations | First session | 30-day retained | Churned |
 |---|---|---|---|---|
-| `[YYYY-MM-DD]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| NEEDS LIVE DATA | | | | |
 
 ---
 
@@ -96,8 +97,7 @@ For each client completing sign-up:
 
 | Partner | Type | Stage | Commercial terms | Legal reviewed | Owner |
 |---|---|---|---|---|---|
-| `[Org]` | `[e.g., NDIS provider]` | `[Stage]` | `[$X / referral]` | ☐ | `[Name]` |
-| `[Org]` | | | | ☐ | |
+| NOT YET TRACKED | | | | ☐ | Paul Habermann |
 
 ---
 
@@ -105,10 +105,10 @@ For each client completing sign-up:
 
 | Metric | Target | Actual (this week) |
 |---|---|---|
-| Practitioner applications → activated | ≥ 60 % | `[ ]` |
-| Client sign-up → first session | ≥ 40 % | `[ ]` |
-| Practitioner retention (90-day) | ≥ 70 % | `[ ]` |
+| Practitioner applications → activated | ≥ 60 % | NEEDS LIVE DATA |
+| Client sign-up → first session | ≥ 40 % | NEEDS LIVE DATA |
+| Practitioner retention (90-day) | ≥ 70 % | NEEDS LIVE DATA |
 
 ---
 
-_Last updated: `[YYYY-MM-DD]` by `[Name]`_
+_Last updated: `[YYYY-MM-DD]` by Paul Habermann_
