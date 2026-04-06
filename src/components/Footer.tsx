@@ -61,7 +61,7 @@ const Footer = () => {
             </p>
             <div className="bg-white rounded-lg p-2 inline-block">
               <QRCodeSVG
-                value="https://ground-path.lovable.app"
+                value="https://groundpath.com.au"
                 size={80}
                 bgColor="#ffffff"
                 fgColor="#1a1a1a"
