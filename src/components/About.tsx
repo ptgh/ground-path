@@ -222,7 +222,7 @@ const About = () => {
                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
                   <div className="text-lg font-light text-sage-600">Qualifications</div>
                   <div className="text-gray-600 text-xs">Academic & Professional</div>
-                  <div className="text-xs text-gray-500 text-center">BCom, MSW, GradCert Counselling (in progress)</div>
+                  <div className="text-xs text-gray-500 text-center">MSW, Graduate Certificate in Counselling</div>
                 </div>
               </button>
             </div>
