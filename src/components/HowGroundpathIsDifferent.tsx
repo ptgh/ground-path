@@ -9,7 +9,7 @@ const differentiators = [
   {
     icon: ShieldCheck,
     title: 'AASW & ACA Registered',
-    description: 'Qualified social worker and counsellor delivering evidence-based mental health support across Australia.',
+    description: 'Qualified social workers and counsellors delivering evidence-based mental health support across Australia.',
   },
   {
     icon: CalendarClock,
