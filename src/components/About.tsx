@@ -281,7 +281,7 @@ const About = () => {
         <CredentialModal title="ACA — Australian Counselling Association" onClose={() => setIsACAOpen(false)}>
           <div className="space-y-4 text-sm text-gray-600">
             <p className="leading-relaxed">The Australian Counselling Association (ACA) is the largest national professional body for counsellors and psychotherapists in Australia.</p>
-            <p className="leading-relaxed">ACA registration is currently in progress for groundpath practitioners. This registration will provide additional professional recognition and enable clients to access private health insurance rebates where applicable.</p>
+            <p className="leading-relaxed">Groundpath practitioners are registered with the ACA (Registration Number: S89326). This registration provides professional recognition and enables clients to access private health insurance rebates where applicable.</p>
             <h4 className="font-medium text-gray-900">ACA Membership includes:</h4>
             <ul className="list-disc pl-5 space-y-1">
               <li>Professional recognition as a qualified counsellor</li>

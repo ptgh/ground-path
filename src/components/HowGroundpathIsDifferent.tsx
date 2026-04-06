@@ -19,7 +19,7 @@ const differentiators = [
   {
     icon: MonitorSmartphone,
     title: 'Flexible Delivery',
-    description: 'Telehealth via Microsoft Teams with in-person options — whatever suits you best.',
+    description: 'Telehealth via Halaxy Telehealth with in-person options — whatever suits you best.',
   },
 ];
 
