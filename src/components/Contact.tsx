@@ -102,7 +102,7 @@ const Contact = () => {
           </h2>
           <div className="fade-in w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
           <p className="fade-in text-lg text-gray-600 max-w-2xl mx-auto">
-            All sessions are currently conducted online via Microsoft Teams. Book below or contact us with any questions.
+            All sessions are currently conducted online via Halaxy Telehealth. Book below or contact us with any questions.
           </p>
           <div className="fade-in flex justify-center mt-6">
             <a 
