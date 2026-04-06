@@ -8,8 +8,8 @@ const differentiators = [
   },
   {
     icon: ShieldCheck,
-    title: 'Dual-Registered Social Worker',
-    description: 'Australian AASW-registered social worker with UK Social Work England credentials.',
+    title: 'AASW-Registered Social Worker',
+    description: 'Qualified AASW-registered social worker delivering evidence-based mental health support across Australia.',
   },
   {
     icon: CalendarClock,
@@ -19,7 +19,7 @@ const differentiators = [
   {
     icon: MonitorSmartphone,
     title: 'Flexible Delivery',
-    description: 'Telehealth via Microsoft Teams with in-person options — whatever suits you best.',
+    description: 'Telehealth via Halaxy Telehealth with in-person options — whatever suits you best.',
   },
 ];
 

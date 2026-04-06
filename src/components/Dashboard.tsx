@@ -855,6 +855,30 @@ const Dashboard = () => {
                   </CardContent>
                 </Card>
               )}
+
+              {/* UK/International toggle — admin only, display-only for now */}
+              {isAdmin && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <Globe className="h-4 w-4 text-sage-600" />
+                      International Registrations
+                    </CardTitle>
+                    <CardDescription>
+                      Enable UK and international practitioner registrations. Currently Australia-only.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-border/60 bg-muted/30">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Enable UK/International</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">SWE, BASW, and other international bodies</p>
+                      </div>
+                      <Badge variant="outline" className="text-xs border-muted-foreground/30 text-muted-foreground">Coming Soon</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
           </Tabs>
         </div>
