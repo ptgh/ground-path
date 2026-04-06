@@ -28,8 +28,8 @@ const HowGroundpathIsDifferent = () => {
     <section className="py-20 bg-background">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-foreground mb-3">
-            How Groundpath is Different
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">
+            Groundpath is Different
           </h2>
           <div className="w-16 h-1 bg-primary mx-auto mb-4 rounded-full" />
           <p className="text-muted-foreground max-w-xl mx-auto">
