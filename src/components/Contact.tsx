@@ -165,7 +165,7 @@ const Contact = () => {
                    <div>
                      <div className="font-medium text-gray-900">Service Delivery</div>
                      <div className="text-gray-600">
-                       All sessions online via Microsoft Teams<br />
+                       All sessions online via Halaxy Telehealth<br />
                        In-person sessions coming soon (Perth, WA)
                      </div>
                    </div>
