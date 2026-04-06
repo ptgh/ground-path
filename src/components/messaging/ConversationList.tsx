@@ -76,13 +76,13 @@ export const ConversationList = ({ conversations, selectedId, onSelect, loading 
                   key={conversation.id}
                   onClick={() => onSelect(conversation)}
                   className={`w-full text-left p-3 hover:bg-accent/50 transition-colors ${
-                    isSelected ? 'bg-sage-50 dark:bg-sage-900/20 border-l-2 border-sage-600' : ''
+                    isSelected ? 'bg-primary/5 dark:bg-primary/10 border-l-2 border-primary' : ''
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     <Avatar className="h-10 w-10 flex-shrink-0">
                       <AvatarImage src={conversation.other_party_avatar} />
-                      <AvatarFallback className="text-xs bg-sage-100 text-sage-700">
+                      <AvatarFallback className="text-xs bg-primary/10 text-primary">
                         {(conversation.other_party_name || '?')[0]?.toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
@@ -100,7 +100,7 @@ export const ConversationList = ({ conversations, selectedId, onSelect, loading 
                           {conversation.last_message_text || 'Start a conversation'}
                         </p>
                         {unread > 0 && (
-                          <Badge className="ml-2 h-5 min-w-[20px] flex items-center justify-center text-[10px] bg-sage-600 hover:bg-sage-600 text-white">
+                          <Badge className="ml-2 h-5 min-w-[20px] flex items-center justify-center text-[10px] bg-primary hover:bg-primary text-primary-foreground">
                             {unread}
                           </Badge>
                         )}

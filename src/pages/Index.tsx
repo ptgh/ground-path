@@ -76,7 +76,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <SEO path="/" />
       <CrisisDisclaimer />
       <Header />
@@ -111,7 +111,7 @@ const Index = () => {
         <div className="fixed bottom-20 right-4">
           <Button
             onClick={() => setShowNewsletterTest(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
             size="sm"
           >
             Test Newsletter
