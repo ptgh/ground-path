@@ -51,13 +51,13 @@ const Hero = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-4xl mx-auto">
           {/* Main Headline */}
-          <h1 className="fade-in text-4xl sm:text-5xl lg:text-6xl font-light text-gray-900 mb-6 leading-tight">
+          <h1 className="fade-in text-4xl sm:text-5xl lg:text-6xl font-light text-foreground mb-6 leading-tight">
             Support Grounded in{' '}
-            <span className="text-sage-600 font-normal">Care</span>
+            <span className="text-primary font-normal">Care</span>
           </h1>
           
           {/* Subheading */}
-          <p className="fade-in text-xl sm:text-2xl text-gray-600 mb-12 font-light leading-relaxed">
+          <p className="fade-in text-xl sm:text-2xl text-muted-foreground mb-12 font-light leading-relaxed">
             Social Work, Counselling & Mental Health Support — Online & In-Person
           </p>
 
