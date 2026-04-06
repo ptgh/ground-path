@@ -541,6 +541,14 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                         <span className="text-xs text-amber-700 dark:text-amber-300 font-medium">Unverified</span>
                       </div>
                     )}
+                    <div className="flex items-center gap-2 p-2 rounded-md border border-border bg-muted/30 mb-2">
+                      <span className="text-xs text-muted-foreground">Session mode:</span>
+                      <span className="text-xs font-medium text-foreground">
+                        {(profile?.halaxy_integration as HalaxyIntegration)?.session_mode === 'native_beta'
+                          ? 'Groundpath Native Beta (Teams)'
+                          : 'Halaxy Booking + Telehealth'}
+                      </span>
+                    </div>
                     <div className="flex gap-1">
                       <Input
                         id="halaxy_profile_url"
