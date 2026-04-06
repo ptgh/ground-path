@@ -59,11 +59,11 @@ const SWEModal = ({ isOpen, onClose }: SWEModalProps) => {
         ref={contentRef}
         className="relative bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden border border-white/20"
       >
-        <div className="flex items-center justify-between p-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-sm">
+        <div className="flex items-start justify-between p-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-sm">
           <h2 className="text-2xl font-light text-gray-900">Social Work England Registration</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100/50 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100/50 rounded-lg transition-colors shrink-0 mt-0.5"
           >
             <X className="h-5 w-5 text-gray-500" />
           </button>
