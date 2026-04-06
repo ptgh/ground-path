@@ -4,7 +4,7 @@
 
 ---
 
-## Review Date: `[YYYY-MM-DD]`  Attendees: `[Names]`
+## Review Date: `[YYYY-MM-DD]`  Attendees: Paul Habermann
 
 ---
 
@@ -40,7 +40,9 @@ _Pull from FOUNDER_DASHBOARD.md before this meeting._
 | Client sign-ups | `[ ]` | `[ ]` | ↑ / → / ↓ |
 | Active sessions | `[ ]` | `[ ]` | ↑ / → / ↓ |
 | Verified practitioners | `[ ]` | `[ ]` | ↑ / → / ↓ |
-| MRR (if applicable) | `$[ ]` | `$[ ]` | ↑ / → / ↓ |
+| MRR | NOT ACTIVE | NOT ACTIVE | — |
+
+> ℹ️ Stripe is not yet active. MRR will be tracked once billing is configured.
 
 ---
 
@@ -121,4 +123,4 @@ _Pull from LEAD_PIPELINE.md._
 
 ---
 
-_Review completed by: `[Name]`  Date: `[YYYY-MM-DD]`_
+_Review completed by: Paul Habermann  Date: `[YYYY-MM-DD]`_

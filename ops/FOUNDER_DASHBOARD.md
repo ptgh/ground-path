@@ -1,6 +1,6 @@
 # Founder Dashboard
 
-> **How to use:** Review this dashboard at the start of each week (Monday morning). Update every placeholder with live data from Supabase, Stripe, and any active marketing channels. Use it as your single source of truth before the Weekly Business Review.
+> **How to use:** Review this dashboard at the start of each week (Monday morning). Update every placeholder with live data from Supabase and any active marketing channels. Use it as your single source of truth before the Weekly Business Review.
 
 ---
 
@@ -43,14 +43,16 @@
 
 ---
 
-## 4. Revenue (if applicable)
+## 4. Revenue
 
 | Metric | Last Week | This Week | Δ |
 |---|---|---|---|
-| MRR | `$[ ]` | `$[ ]` | `[ ]` |
-| New paying accounts | `[ ]` | `[ ]` | `[ ]` |
-| Churn | `[ ]` | `[ ]` | `[ ]` |
-| NDIS-linked sessions | `[ ]` | `[ ]` | `[ ]` |
+| MRR | NOT ACTIVE | NOT ACTIVE | — |
+| New paying accounts | NOT ACTIVE | NOT ACTIVE | — |
+| Churn | NOT ACTIVE | NOT ACTIVE | — |
+| NDIS-linked sessions | NEEDS LIVE DATA | NEEDS LIVE DATA | `[ ]` |
+
+> ℹ️ Stripe is not yet active on the account. Revenue metrics will be populated once billing is configured.
 
 ---
 
@@ -67,9 +69,10 @@
 
 ## 6. Top Priorities This Week
 
-- [ ] `[Priority 1]`
-- [ ] `[Priority 2]`
-- [ ] `[Priority 3]`
+- [ ] Platform stability — monitor errors, uptime, and edge function health
+- [ ] Practitioner onboarding — progress any pending applications through verification and activation
+- [ ] Lead generation — initiate or advance practitioner and client outreach
+- [ ] Support readiness — ensure support channels are staffed and SOP is being followed
 
 ---
 
@@ -85,4 +88,4 @@
 
 ---
 
-_Last updated: `[YYYY-MM-DD]` by `[Name]`_
+_Last updated: `[YYYY-MM-DD]` by Paul Habermann_

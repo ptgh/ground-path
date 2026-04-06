@@ -37,7 +37,7 @@ These rules apply to:
 - Responding substantively to a dispute about a practitioner's credentials or scope of practice
 - Creating, modifying, or deleting practitioner records in Supabase
 
-**Required action:** Queue the item for manual review. Notify `practitioners@groundpath.com.au`. Do not take database action.
+**Required action:** Queue the item for manual review. Notify `connect@groundpath.com.au`. Do not take database action.
 
 ### 2.3 Legal & Compliance
 
@@ -138,10 +138,10 @@ An agent must never:
 
 | Review cycle | Owner | Last reviewed |
 |---|---|---|
-| Quarterly | Founder | `[YYYY-MM-DD]` |
-| After any safeguarding incident | Founder + clinical lead | `[YYYY-MM-DD]` |
+| Quarterly | Paul Habermann | `[YYYY-MM-DD]` |
+| After any safeguarding incident | Paul Habermann + clinical lead | `[YYYY-MM-DD]` |
 | After any significant platform change | Engineering lead | `[YYYY-MM-DD]` |
 
 ---
 
-_Last updated: `[YYYY-MM-DD]` by `[Name]`_
+_Last updated: `[YYYY-MM-DD]` by Paul Habermann_

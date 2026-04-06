@@ -8,8 +8,8 @@
 
 | Channel | Tool | Response SLA |
 |---|---|---|
-| In-app contact form | Email → `support@groundpath.com.au` | 1 business day |
-| Practitioner onboarding queries | Email → `practitioners@groundpath.com.au` | 1 business day |
+| In-app contact form | Email → `connect@groundpath.com.au` | 1 business day |
+| Practitioner onboarding queries | Email → `connect@groundpath.com.au` | 1 business day |
 | Urgent / crisis referrals | Phone + email escalation | Same day |
 
 ---
@@ -65,8 +65,7 @@ Groundpath Support
 **Escalation steps:**
 1. **Do not** reply to the user with any substantive content yet.
 2. Flag the ticket as `[SAFEGUARDING]` in your support tool.
-3. Notify the designated reviewer immediately: `[reviewer-name@groundpath.com.au]` / phone: `[+61 XXX XXX XXX]`.
-   > ⚠️ **Before going live, replace the bracketed placeholders above with the actual reviewer name, email address, and phone number. Missing contact details could delay a safeguarding response — verify these details are current each quarter.**
+3. Notify Paul Habermann immediately: `connect@groundpath.com.au` / phone: `+61410883659`.
 4. Reviewer assesses within **2 hours** (business hours) or **4 hours** (out of hours).
 5. Reviewer decides: internal response, referral to external service, mandatory notification, or no further action.
 6. Document the decision and rationale in the ticket before closing.
@@ -125,4 +124,4 @@ Fill in during the Weekly Business Review:
 
 ---
 
-_Last updated: `[YYYY-MM-DD]` by `[Name]`_
+_Last updated: `[YYYY-MM-DD]` by Paul Habermann_
