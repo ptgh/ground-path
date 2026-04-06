@@ -82,7 +82,7 @@ export const ConversationList = ({ conversations, selectedId, onSelect, loading 
                   <div className="flex items-start gap-3">
                     <Avatar className="h-10 w-10 flex-shrink-0">
                       <AvatarImage src={conversation.other_party_avatar} />
-                      <AvatarFallback className="text-xs bg-sage-100 text-sage-700">
+                      <AvatarFallback className="text-xs bg-primary/10 text-primary">
                         {(conversation.other_party_name || '?')[0]?.toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
