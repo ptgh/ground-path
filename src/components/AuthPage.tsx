@@ -715,13 +715,13 @@ const AuthPage = () => {
           <ArrowLeft className="h-4 w-4" />
           Back to home
         </Link>
-        <Card className="w-full shadow-sm border-border/60">
+        <Card className="w-full shadow-sm border-border/50">
           {showHeader && (
-            <CardHeader className="space-y-1 text-center pb-2">
-              <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+            <CardHeader className="space-y-1.5 text-center pb-2">
+              <CardTitle className="text-2xl font-semibold tracking-tight text-foreground">
                 {isRecoveryMode ? 'Reset Password' : 'groundpath'}
               </CardTitle>
-              <CardDescription className="text-sm">
+              <CardDescription className="text-sm leading-relaxed">
                 {isRecoveryMode
                   ? 'Enter your new password below'
                   : authMode === 'signin'

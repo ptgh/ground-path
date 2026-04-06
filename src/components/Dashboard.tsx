@@ -297,7 +297,7 @@ const Dashboard = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="text-center sm:text-left">
-                  <h1 className="text-xl sm:text-2xl font-semibold text-foreground leading-tight">{getWelcomeMessage()}</h1>
+                  <h1 className="text-xl sm:text-2xl font-semibold text-foreground leading-tight tracking-tight">{getWelcomeMessage()}</h1>
                   <p className="text-muted-foreground text-sm mt-0.5">
                     {profile?.display_name || user.email}
                   </p>

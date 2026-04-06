@@ -214,7 +214,7 @@ const PractitionerVerify = () => {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <h1 className="text-xl font-semibold text-foreground">Complete practitioner verification</h1>
+                  <h1 className="text-xl font-semibold text-foreground tracking-tight">Complete practitioner verification</h1>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     Choose one verification method to unlock practitioner features.
                   </p>
