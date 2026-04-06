@@ -100,7 +100,7 @@ export const ConversationList = ({ conversations, selectedId, onSelect, loading 
                           {conversation.last_message_text || 'Start a conversation'}
                         </p>
                         {unread > 0 && (
-                          <Badge className="ml-2 h-5 min-w-[20px] flex items-center justify-center text-[10px] bg-sage-600 hover:bg-sage-600 text-white">
+                          <Badge className="ml-2 h-5 min-w-[20px] flex items-center justify-center text-[10px] bg-primary hover:bg-primary text-primary-foreground">
                             {unread}
                           </Badge>
                         )}
