@@ -204,8 +204,8 @@ const PractitionerVerify = () => {
       <Header />
       <main className="flex-1 flex items-center justify-center p-4 pt-24 pb-12">
         <div className="w-full max-w-lg space-y-4">
-          <Card className="w-full shadow-sm border-border/60">
-            <CardContent className="pt-8 pb-8 space-y-6">
+            <Card className="w-full shadow-sm border-border/50">
+             <CardContent className="pt-8 pb-8 space-y-6">
               {/* Header */}
               <div className="text-center space-y-3">
                 <div className="flex justify-center">
