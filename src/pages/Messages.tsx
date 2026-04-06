@@ -71,13 +71,13 @@ const Messages = () => {
       <Header />
       <main className="flex-1 pt-[73px]">
         <div className="max-w-6xl mx-auto h-[calc(100vh-73px)]">
-          <div className="flex h-full border-x border-border">
+          <div className="flex h-full border-x border-border/60">
             {/* Sidebar */}
-            <div className={`w-full md:w-80 border-r border-border flex-shrink-0 flex flex-col ${
+            <div className={`w-full md:w-80 border-r border-border/60 flex-shrink-0 flex flex-col ${
               selected ? 'hidden md:flex' : 'flex'
             }`}>
-              <div className="p-3 border-b border-border">
-                <h2 className="text-sm font-semibold flex items-center gap-2">
+              <div className="p-3.5 border-b border-border/60">
+                <h2 className="text-sm font-semibold flex items-center gap-2 text-foreground">
                   <MessageSquare className="h-4 w-4 text-sage-600" />
                   Messages
                 </h2>
