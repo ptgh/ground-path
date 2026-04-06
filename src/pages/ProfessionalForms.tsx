@@ -421,35 +421,33 @@ const ProfessionalForms = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header Section */}
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-4">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => navigate('/practitioner/dashboard')}
-                  className="gap-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Back to Dashboard
-                </Button>
-              </div>
+            <div className="mb-4">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => navigate('/practitioner/dashboard')}
+                className="gap-1.5 text-muted-foreground hover:text-foreground -ml-2"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Back to Dashboard
+              </Button>
             </div>
-            <div className="flex items-center gap-3 mb-2">
-              <FileText className="h-8 w-8 text-primary" />
-              <h1 className="text-3xl font-bold text-foreground">Professional Forms</h1>
+            <div className="space-y-1.5">
+              <h1 className="text-2xl sm:text-3xl font-semibold text-foreground tracking-tight">Professional Forms</h1>
+              <p className="text-muted-foreground text-sm sm:text-base max-w-xl">
+                Access validated clinical tools, templates, and documentation for professional practice.
+              </p>
             </div>
-            <p className="text-muted-foreground text-lg">
-              Access specialized forms and templates for professional practice
-            </p>
           </div>
 
           {/* Category Filter */}
           <div className="mb-6">
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               <Button
                 variant={selectedCategory === 'all' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setSelectedCategory('all')}
+                className="h-8 text-xs"
               >
                 All Forms
               </Button>
@@ -459,9 +457,9 @@ const ProfessionalForms = () => {
                   variant={selectedCategory === category.id ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setSelectedCategory(category.id)}
-                  className="gap-2"
+                  className="gap-1.5 h-8 text-xs"
                 >
-                  <category.icon className="h-4 w-4" />
+                  <category.icon className="h-3.5 w-3.5" />
                   {category.title}
                 </Button>
               ))}
@@ -469,35 +467,31 @@ const ProfessionalForms = () => {
           </div>
 
           {/* Forms Grid */}
-          <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {getFilteredForms().map(form => {
               const FormTypeIcon = getFormTypeIcon(form.formType);
               const typeBadge = getFormTypeBadge(form.formType);
               
               return (
-                <Card key={form.id} className="form-card group hover:shadow-lg transition-all duration-200 flex flex-col opacity-0">
-                  <CardHeader className="pb-3 flex-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <FormTypeIcon className="h-5 w-5 text-primary" />
+                <Card key={form.id} className="form-card group hover:shadow-md hover:border-sage-300 transition-all duration-200 flex flex-col opacity-0 border-border/60">
+                  <CardHeader className="pb-2 flex-1">
+                    <div className="flex items-start justify-between mb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <FormTypeIcon className="h-4 w-4 text-sage-600" />
                         {form.required && (
-                          <Star className="h-4 w-4 text-amber-500" />
+                          <Star className="h-3.5 w-3.5 text-amber-500" />
                         )}
                       </div>
-                      <Badge variant={typeBadge.variant}>{typeBadge.label}</Badge>
+                      <Badge variant={typeBadge.variant} className="text-[10px] h-5">{typeBadge.label}</Badge>
                     </div>
-                    <CardTitle className="text-lg leading-tight">{form.title}</CardTitle>
-                    <CardDescription className="text-sm leading-relaxed">{form.description}</CardDescription>
+                    <CardTitle className="text-base leading-snug">{form.title}</CardTitle>
+                    <CardDescription className="text-xs leading-relaxed">{form.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <div className="space-y-3">
-                      <div className="text-xs text-muted-foreground">
-                        Last updated: {new Date(form.lastUpdated).toLocaleDateString()}
-                      </div>
-                      
+                    <div className="space-y-2.5">
                       {form.source && (
-                        <div className="text-xs text-muted-foreground border-l-2 border-muted pl-2">
-                          <span className="font-medium">Source:</span> {form.source}
+                        <div className="text-[11px] text-muted-foreground border-l-2 border-sage-200 pl-2 leading-relaxed">
+                          {form.source}
                           {form.sourceUrl && (
                             <a 
                               href={form.sourceUrl} 
@@ -505,40 +499,42 @@ const ProfessionalForms = () => {
                               rel="noopener noreferrer"
                               className="text-primary hover:underline ml-1"
                             >
-                              (View Original)
+                              →
                             </a>
                           )}
                         </div>
                       )}
                       
-                       <div className="grid grid-cols-3 gap-2">
-                        <Button 
-                          size="sm" 
-                          onClick={() => handleFormAction(form, 'view')}
-                          className="col-span-2 bg-primary hover:bg-primary/90 text-primary-foreground"
-                        >
-                          <Eye className="h-4 w-4 mr-2" />
-                          View
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleFormAction(form, 'download')}
-                          className="px-2 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground"
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      
+                      {/* Primary: Fill/Open */}
                       <Button 
                         size="sm" 
-                        variant={form.formType === 'interactive' ? 'secondary' : 'outline'}
                         onClick={() => handleFormAction(form, 'fill')}
-                        className={`w-full ${form.formType === 'interactive' ? 'bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground' : 'border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground'}`}
+                        className="w-full gap-1.5"
                       >
-                        <ClipboardCheck className="h-4 w-4 mr-2" />
+                        <ClipboardCheck className="h-3.5 w-3.5" />
                         {form.formType === 'interactive' ? 'Fill Interactive Form' : 'Open Form'}
                       </Button>
+
+                      {/* Secondary row */}
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleFormAction(form, 'view')}
+                          className="flex-1 gap-1.5 text-xs h-8"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          Details
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          onClick={() => handleFormAction(form, 'download')}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -548,22 +544,19 @@ const ProfessionalForms = () => {
 
           {/* Categories Overview */}
           {selectedCategory === 'all' && (
-            <div className="mt-12">
-              <h2 className="text-2xl font-bold mb-6">Form Categories</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="mt-10">
+              <h2 className="text-lg font-semibold text-foreground mb-4">Browse by Category</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 {formCategories.map(category => (
                    <Card 
                     key={category.id} 
-                    className="cursor-pointer hover:shadow-lg transition-all duration-200 group border-primary/20 hover:border-primary/40"
+                    className="cursor-pointer hover:shadow-md hover:border-sage-300 transition-all duration-200 group border-border/60"
                     onClick={() => setSelectedCategory(category.id)}
                   >
-                    <CardHeader className="text-center pb-3">
-                      <category.icon className="h-10 w-10 mx-auto mb-2 text-primary group-hover:scale-110 transition-transform duration-200" />
-                      <CardTitle className="text-base leading-tight">{category.title}</CardTitle>
-                      <CardDescription className="text-xs leading-relaxed">{category.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="pt-0 text-center">
-                      <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
+                    <CardContent className="p-4 text-center space-y-2">
+                      <category.icon className="h-7 w-7 mx-auto text-sage-600 group-hover:scale-110 transition-transform duration-200" />
+                      <p className="text-sm font-medium text-foreground leading-tight">{category.title}</p>
+                      <Badge variant="secondary" className="text-[10px] bg-sage-100 text-sage-700">
                         {category.forms.length} forms
                       </Badge>
                     </CardContent>
@@ -574,24 +567,22 @@ const ProfessionalForms = () => {
           )}
 
           {/* Help Section */}
-          <Card className="mt-8 bg-primary/5 border-primary/20">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="rounded-full bg-primary/10 p-3">
-                  <FileText className="h-6 w-6 text-primary" />
+          <Card className="mt-8 border-sage-200 bg-sage-50/50">
+            <CardContent className="p-5">
+              <div className="flex items-start gap-3">
+                <div className="rounded-full bg-sage-100 p-2.5 shrink-0">
+                  <FileText className="h-5 w-5 text-sage-700" />
                 </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Need Help with Forms?</h3>
-                  <p className="text-muted-foreground mb-4">
-                    All forms are designed to meet professional standards and regulatory requirements. 
-                    If you need assistance completing any form or have questions about requirements, 
-                    please contact your supervisor or professional body.
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold text-foreground">Need help with forms?</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    All forms meet professional standards and regulatory requirements. Contact your supervisor or professional body for guidance.
                   </p>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => navigate('/#contact')}>
+                  <div className="flex gap-2 pt-1">
+                    <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => navigate('/#contact')}>
                       Contact Support
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => window.open('https://www.aasw.asn.au/practitioner-resources/practice-standards', '_blank')}>
+                    <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => window.open('https://www.aasw.asn.au/practitioner-resources/practice-standards', '_blank')}>
                       View Guidelines
                     </Button>
                   </div>

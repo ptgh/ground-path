@@ -30,8 +30,16 @@ export const ConversationList = ({ conversations, selectedId, onSelect, loading 
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin h-6 w-6 border-2 border-sage-600 border-t-transparent rounded-full" />
+      <div className="p-3 space-y-3">
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className="flex items-start gap-3 animate-pulse">
+            <div className="h-10 w-10 rounded-full bg-muted shrink-0" />
+            <div className="flex-1 space-y-2 pt-1">
+              <div className="h-3.5 w-24 rounded bg-muted" />
+              <div className="h-3 w-36 rounded bg-muted/70" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
