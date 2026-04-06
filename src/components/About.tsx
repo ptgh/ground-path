@@ -96,10 +96,10 @@ const About = () => {
               <div className="space-y-5">
                 <div>
                   <h3 className="text-xl font-medium text-gray-900 mb-3">
-                    Qualified & Experienced Social Work
+                    Qualified & Experienced Social Workers and Counsellors
                   </h3>
                   <p className="text-gray-600 leading-relaxed text-sm">
-                    At groundpath, we provide person-centred, evidence-based support grounded in the AASW Code of Ethics and best-practice standards.
+                    At groundpath, we provide person-centred, evidence-based support grounded in the AASW and ACA Code of Ethics and Practice.
                   </p>
                 </div>
 
