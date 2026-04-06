@@ -76,7 +76,7 @@ export const ConversationList = ({ conversations, selectedId, onSelect, loading 
                   key={conversation.id}
                   onClick={() => onSelect(conversation)}
                   className={`w-full text-left p-3 hover:bg-accent/50 transition-colors ${
-                    isSelected ? 'bg-sage-50 dark:bg-sage-900/20 border-l-2 border-sage-600' : ''
+                    isSelected ? 'bg-primary/5 dark:bg-primary/10 border-l-2 border-primary' : ''
                   }`}
                 >
                   <div className="flex items-start gap-3">
