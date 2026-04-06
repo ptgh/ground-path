@@ -102,24 +102,36 @@ const Messages = () => {
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center text-center p-8 overflow-y-auto">
                   {!loading && conversations.length === 0 ? (
-                    <>
-                      <MessageSquare className="h-12 w-12 text-muted-foreground/30 mb-4" />
-                      <h3 className="text-lg font-medium text-foreground">Start a conversation</h3>
-                      <p className="text-sm text-muted-foreground mt-1 mb-6">
-                        Choose a practitioner below to send your first message
-                      </p>
-                      <div className="w-full max-w-2xl text-left">
+                    <div className="max-w-md space-y-5">
+                      <div className="flex justify-center">
+                        <div className="rounded-full bg-sage-100 p-4">
+                          <MessageSquare className="h-8 w-8 text-sage-600" />
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <h3 className="text-lg font-semibold text-foreground">Start a conversation</h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          Choose a practitioner below to send your first secure message
+                        </p>
+                      </div>
+                      <div className="w-full max-w-2xl text-left mx-auto">
                         <PractitionerList />
                       </div>
-                    </>
+                    </div>
                   ) : (
-                    <>
-                      <MessageSquare className="h-12 w-12 text-muted-foreground/30 mb-4" />
-                      <h3 className="text-lg font-medium text-muted-foreground">Select a conversation</h3>
-                      <p className="text-sm text-muted-foreground/70 mt-1">
-                        Choose a conversation from the list to start messaging
-                      </p>
-                    </>
+                    <div className="space-y-4">
+                      <div className="flex justify-center">
+                        <div className="rounded-full bg-muted p-4">
+                          <MessageSquare className="h-8 w-8 text-muted-foreground/50" />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-base font-medium text-muted-foreground">Select a conversation</h3>
+                        <p className="text-sm text-muted-foreground/70">
+                          Choose from the list to start messaging
+                        </p>
+                      </div>
+                    </div>
                   )}
                 </div>
               )}
