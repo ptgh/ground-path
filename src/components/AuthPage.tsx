@@ -46,6 +46,48 @@ const PasswordStrength = ({ password }: { password: string }) => {
   );
 };
 
+const PasswordInput = ({
+  id,
+  value,
+  onChange,
+  placeholder = '••••••••',
+  showToggle = true,
+  show,
+  onToggle,
+  ...props
+}: {
+  id: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+  showToggle?: boolean;
+  show?: boolean;
+  onToggle?: () => void;
+} & React.InputHTMLAttributes<HTMLInputElement>) => (
+  <div className="relative">
+    <Input
+      id={id}
+      type={show ? 'text' : 'password'}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      className="pr-10"
+      {...props}
+    />
+    {showToggle && value && (
+      <button
+        type="button"
+        onClick={onToggle}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+        tabIndex={-1}
+        aria-label={show ? 'Hide password' : 'Show password'}
+      >
+        {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+    )}
+  </div>
+);
+
 const AuthPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
