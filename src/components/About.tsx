@@ -39,7 +39,7 @@ const CredentialModal = ({ title, onClose, children }: CredentialModalProps) => 
     <div ref={modalRef} className="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
       <div ref={backdropRef} className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={handleClose} />
       <div ref={contentRef} className="relative bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden border border-white/20">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-sm">
+        <div className="flex items-start justify-between p-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-sm">
           <h2 className="text-2xl font-light text-gray-900">{title}</h2>
           <button onClick={handleClose} className="p-2 hover:bg-gray-100/50 rounded-lg transition-colors">
             <X className="h-5 w-5 text-gray-500" />
