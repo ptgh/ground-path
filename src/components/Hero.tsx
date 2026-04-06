@@ -99,7 +99,7 @@ const Hero = () => {
 
         {/* Professional Credentials */}
         <div className="fade-in mt-12 sm:mt-16 text-center">
-          <div className="inline-flex flex-col lg:flex-row items-start lg:items-center lg:space-x-4 space-y-1.5 lg:space-y-0 bg-muted px-6 sm:px-6 py-3 sm:py-4 rounded-lg max-w-4xl mx-auto">
+          <div className="inline-flex flex-col lg:flex-row items-start lg:items-center lg:space-x-4 space-y-1.5 lg:space-y-0 bg-muted px-6 sm:px-6 py-3 sm:py-4 rounded-lg w-full max-w-2xl mx-auto">
             <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80 font-medium">
               <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-primary" />
               AASW Member
