@@ -421,35 +421,33 @@ const ProfessionalForms = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header Section */}
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-4">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => navigate('/practitioner/dashboard')}
-                  className="gap-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Back to Dashboard
-                </Button>
-              </div>
+            <div className="mb-4">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => navigate('/practitioner/dashboard')}
+                className="gap-1.5 text-muted-foreground hover:text-foreground -ml-2"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Back to Dashboard
+              </Button>
             </div>
-            <div className="flex items-center gap-3 mb-2">
-              <FileText className="h-8 w-8 text-primary" />
-              <h1 className="text-3xl font-bold text-foreground">Professional Forms</h1>
+            <div className="space-y-1.5">
+              <h1 className="text-2xl sm:text-3xl font-semibold text-foreground tracking-tight">Professional Forms</h1>
+              <p className="text-muted-foreground text-sm sm:text-base max-w-xl">
+                Access validated clinical tools, templates, and documentation for professional practice.
+              </p>
             </div>
-            <p className="text-muted-foreground text-lg">
-              Access specialized forms and templates for professional practice
-            </p>
           </div>
 
           {/* Category Filter */}
           <div className="mb-6">
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               <Button
                 variant={selectedCategory === 'all' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setSelectedCategory('all')}
+                className="h-8 text-xs"
               >
                 All Forms
               </Button>
@@ -459,9 +457,9 @@ const ProfessionalForms = () => {
                   variant={selectedCategory === category.id ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setSelectedCategory(category.id)}
-                  className="gap-2"
+                  className="gap-1.5 h-8 text-xs"
                 >
-                  <category.icon className="h-4 w-4" />
+                  <category.icon className="h-3.5 w-3.5" />
                   {category.title}
                 </Button>
               ))}
