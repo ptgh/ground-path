@@ -77,7 +77,7 @@ const Hero = () => {
             </button>
             <button 
               onClick={() => scrollToSection('about')}
-              className="hero-cta bg-sage-600 text-white px-4 sm:px-6 py-3 rounded-lg hover:bg-sage-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-full sm:w-auto min-w-[140px]"
+              className="hero-cta bg-primary text-primary-foreground px-4 sm:px-6 py-3.5 rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-full sm:w-auto min-w-[140px]"
             >
               About
             </button>
