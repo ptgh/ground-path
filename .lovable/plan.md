@@ -1,83 +1,82 @@
 
 
-# Plan: Fix Build Errors + Dual Session Pathway Architecture
+# Plan: Australia-Focus, QR Code Update, SWE Removal from Public, ACA Registration
 
-## Part 1 — Fix Build Errors (immediate)
+## Summary
 
-The build errors are caused by Deno not resolving `npm:@react-email/components@0.0.22` during type-checking of `send-email/index.ts` and `weekly-newsletter/index.ts`. These functions already use `npm:` specifiers correctly for Deno Deploy, but the local Deno checker needs a `deno.json` with `nodeModulesDir: "auto"` or explicit imports listed.
-
-**Fix**: Add a root-level `supabase/functions/deno.json` that enables auto node_modules resolution, matching what `auth-email-hook/deno.json` already does but at the shared level.
-
-**File**: `supabase/functions/deno.json`
-```json
-{
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "npm:react@18.3.1",
-    "types": ["npm:@types/react@18.3.1"]
-  },
-  "nodeModulesDir": "auto"
-}
-```
+Make Groundpath Australia-specific for public-facing content. Remove SWE/UK "dual registered" references from public pages. Keep SWE/UK content in code but hide it behind admin control for future re-enablement. Update QR code URL. Add ACA registration number S89326. Adjust AI system prompts to be Australia-focused.
 
 ---
 
-## Part 2 — Dual Session Pathway Architecture
+## Changes
 
-### Concept
+### 1. QR Code URL — `src/components/Footer.tsx`
+- Change QRCodeSVG `value` from `"https://ground-path.lovable.app"` to `"https://groundpath.com.au"`
 
-Introduce a `session_mode` concept on practitioner profiles:
-- **`halaxy`** (default) — current production path: Halaxy booking + Halaxy Telehealth
-- **`native_beta`** — internal test path: Teams-based sessions, admin-only visibility
+### 2. Footer — Remove SWE from bottom bar — `src/components/Footer.tsx`
+- Remove the `• SWE Registered` link from the bottom bar (line 111)
+- Keep: `© 2026 groundpath. All rights reserved. • ABN: 98 434 283 298 • AASW Member`
 
-No database migration needed — store session mode in the existing `halaxy_integration` JSONB field as `session_mode: "halaxy" | "native_beta"`.
+### 3. Hero credentials — Remove SWE — `src/components/Hero.tsx`
+- Remove the "SWE Registered" badge and its separator from the credentials bar (lines 107-112)
+- Update ACA line: remove "(registration in progress)" — replace with "ACA Registered" with a green dot (since now registered)
 
-### Changes by file
+### 4. HowGroundpathIsDifferent — Replace dual-registered card — `src/components/HowGroundpathIsDifferent.tsx`
+- Change "Dual-Registered Social Worker" title to "AASW-Registered Social Worker"
+- Change description to: "Qualified AASW-registered social worker delivering evidence-based mental health support across Australia."
+- Change "Telehealth via Microsoft Teams" to "Telehealth via Halaxy Telehealth" in the Flexible Delivery card
 
-#### 1. `src/components/HowSessionsWork.tsx`
-- Update step descriptions to be pathway-aware
-- Remove hardcoded "Microsoft Teams" references from the Halaxy pathway
-- Change step 3 to say "Join via Halaxy Telehealth" (production-facing text)
-- Keep step descriptions generic and professional
+### 5. About page — Hide SWE and UK & AUS cards — `src/components/About.tsx`
+- Remove (or hide) the SWE button/card (lines 170-179) and the "UK & AUS" dual-country card (lines 192-201) from the public credential grid
+- Keep the SWE modal and CountriesModal components in code (just don't render the trigger buttons)
+- Update ACA card: change from "Registration in progress" to "Registered — S89326"
 
-#### 2. `src/components/Dashboard.tsx` — Settings tab
-- Add a "Session Mode" card in the Settings tab (visible only to admin users)
-- Two radio-style options:
-  - **Halaxy (Production)** — "Halaxy booking & Halaxy Telehealth. Live production pathway."
-  - **Groundpath Native Beta** — "Teams-based sessions. Internal testing only." with a `Beta` badge
-- Save selection to `halaxy_integration.session_mode` via existing `updateProfile`
-- Non-admin practitioners see only the Halaxy pathway (no toggle)
+### 6. AI Assistant system prompt — `supabase/functions/ai-assistant/index.ts`
+- Update the system prompt to be Australia-focused:
+  - Change "AASW Code of Ethics" references to remain (already AU)
+  - Remove references to SWE or UK practice standards
+  - Add ACA (Australian Counselling Association) to the expertise areas
+  - Keep NDIS content as-is
 
-#### 3. `src/components/Dashboard.tsx` — Overview tab
-- Show a small "Session Mode" indicator in the Professional Summary card
-- Display "Halaxy Booking + Telehealth" or "Native Beta (Teams)" based on mode
+### 7. Client AI Assistant — `src/components/ClientAIAssistant.tsx`
+- Keep AU/UK/Global country selector (for crisis resources — this is a safety feature, not a branding feature)
+- No changes needed here — the country selector helps international visitors find crisis resources
 
-#### 4. `src/components/ProfessionalProfileModal.tsx`
-- In the Halaxy integration section, add a read-only label showing current session mode
-- Keep Halaxy URL verification unchanged
+### 8. Voice Counselling Session — `src/components/VoiceCounsellingSession.tsx`
+- Same as above — keep AU/UK/Global for crisis resource safety. No changes.
 
-#### 5. `src/components/booking/HalaxyEmbed.tsx`
-- No changes — this remains the production booking widget
+### 9. Professional Profile Modal — `src/components/ProfessionalProfileModal.tsx`
+- Keep the SWE section in the registration form (it's behind `registration_country === 'UK' || 'BOTH'`)
+- No changes needed — practitioners can still set their country to UK/BOTH in their profile if admin enables it later
 
-#### 6. `src/components/PractitionerCard.tsx`
-- No changes for now — "Book Session" continues to link to Halaxy for all public-facing cards
-- Native Beta booking UI will be added in a future iteration
+### 10. Dashboard — Admin toggle concept (future) — `src/components/Dashboard.tsx`
+- Add a simple admin-only toggle in Settings: "Enable UK/International registrations" (boolean)
+- For now, this is display-only / informational — it doesn't gate anything yet but establishes the pattern for later
 
-#### 7. `src/components/Contact.tsx`
-- No changes — Halaxy embed stays as the public booking interface
+### 11. Professional Resources — `src/components/dashboard/ProfessionalResources.tsx`
+- Keep UK resources in the list (practitioners may still reference them)
+- No changes — this is a practitioner-facing tool, not public
 
-### What this does NOT change
-- No new database tables or migrations
+### 12. Add ACA registration number to profile — Database insert
+- Use the Supabase insert tool to add an ACA registration entry for ptgh@mac.com's user_id in the `practitioner_registrations` table with `body_name: 'ACA'`, `registration_number: 'S89326'`
+
+---
+
+## What does NOT change
 - No routing changes
 - No auth logic changes
-- No billing, subscription, or payout logic
-- No changes to the Halaxy embed or booking flow
-- No public exposure of Native Beta to clients
+- No backend/database schema changes
+- No scoring logic changes
+- Voice counselling and client AI keep AU/UK/Global for crisis safety
+- SWE modal, CountriesModal stay in codebase (just hidden from public nav)
+- Professional resources for UK stay available to practitioners
 
-### Technical details
-
-- Session mode stored as: `profile.halaxy_integration.session_mode` (`"halaxy"` | `"native_beta"`)
-- Default value: `"halaxy"` (fallback when field is missing)
-- Admin-only toggle prevents accidental mode switches
-- The `HowSessionsWork` section on the landing page will reference "Halaxy Telehealth" instead of "Microsoft Teams" since this is the live production pathway clients see
+## Files modified
+- `src/components/Footer.tsx`
+- `src/components/Hero.tsx`
+- `src/components/HowGroundpathIsDifferent.tsx`
+- `src/components/About.tsx`
+- `src/components/Dashboard.tsx`
+- `supabase/functions/ai-assistant/index.ts`
+- Database: insert ACA registration for ptgh@mac.com
 
