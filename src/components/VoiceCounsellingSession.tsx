@@ -43,10 +43,11 @@ const COUNSELLORS: CounsellorPersona[] = [
   },
 ];
 
+// Countries kept for future admin toggle - currently AU only
 const COUNTRIES: { value: Country; label: string }[] = [
   { value: "AU", label: "Australia" },
-  { value: "UK", label: "UK" },
-  { value: "OTHER", label: "Global" },
+  // { value: "UK", label: "UK" },
+  // { value: "OTHER", label: "Global" },
 ];
 
 const CONNECTION_TIMEOUT_MS = 15_000;
