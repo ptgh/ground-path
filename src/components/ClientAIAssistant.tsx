@@ -510,21 +510,11 @@ export const ClientAIAssistant = () => {
     }
   };
 
-  const quickQuestions = country === 'AU' ? [
+  const quickQuestions = [
     "What services does groundpath offer?",
     "How can I access NDIS support?",
     "How do I book a counselling session?",
     "What mental health resources are available?"
-  ] : country === 'UK' ? [
-    "What services does groundpath offer?",
-    "How do I access NHS mental health support?",
-    "How do I book a counselling session?",
-    "What mental health resources are available?"
-  ] : [
-    "What services does groundpath offer?",
-    "How do I book a counselling session?",
-    "What mental health resources are available?",
-    "How can I find local support?"
   ];
 
   // Animations
