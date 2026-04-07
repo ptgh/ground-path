@@ -270,10 +270,11 @@ export const ClientAIAssistant = () => {
     }
   }, [messages]);
 
+  // selectCountry kept for future admin toggle
   const selectCountry = (selectedCountry: Country) => {
-    setCountry(selectedCountry);
-    setShowCountryPrompt(false);
-    setMessages([getInitialMessage(selectedCountry)]);
+    // Country switching disabled - AU only for now
+    void selectedCountry;
+    setMessages([getInitialMessage('AU')]);
   };
 
   const clearConversation = () => {
