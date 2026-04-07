@@ -579,7 +579,7 @@ const ProfessionalForms = () => {
                     All forms meet professional standards and regulatory requirements. Contact your supervisor or professional body for guidance.
                   </p>
                   <div className="flex gap-2 pt-1">
-                    <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => navigate('/#contact')}>
+                     <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => navigate('/#contact')}>
                       Contact Support
                     </Button>
                     <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => window.open('https://www.aasw.asn.au/practitioner-resources/practice-standards', '_blank')}>
