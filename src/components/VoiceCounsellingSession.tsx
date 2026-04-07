@@ -43,10 +43,11 @@ const COUNSELLORS: CounsellorPersona[] = [
   },
 ];
 
+// Countries kept for future admin toggle - currently AU only
 const COUNTRIES: { value: Country; label: string }[] = [
   { value: "AU", label: "Australia" },
-  { value: "UK", label: "UK" },
-  { value: "OTHER", label: "Global" },
+  // { value: "UK", label: "UK" },
+  // { value: "OTHER", label: "Global" },
 ];
 
 const CONNECTION_TIMEOUT_MS = 15_000;
@@ -73,7 +74,7 @@ const detectCountryFromTimezone = (): Country => {
 const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSessionProps) => {
   const [voiceState, setVoiceState] = useState<VoiceState>("setup");
   const [selectedCounsellor, setSelectedCounsellor] = useState<CounsellorPersona | null>(null);
-  const [country, setCountry] = useState<Country>(initialCountry || detectCountryFromTimezone);
+  const [country, setCountry] = useState<Country>("AU");
   const [countryOpen, setCountryOpen] = useState(false);
   const [lastTranscript, setLastTranscript] = useState("");
   const [lastReply, setLastReply] = useState("");
@@ -377,33 +378,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
               This is AI-powered support, not a replacement for professional therapy.
             </p>
 
-            {/* Country Selector - larger touch targets */}
-            <div className="relative mb-6" ref={countryRef}>
-              <button
-                onClick={(e) => { e.stopPropagation(); setCountryOpen(!countryOpen); }}
-                className="mx-auto flex items-center gap-2.5 bg-background border border-border rounded-xl px-5 py-3 text-sm text-foreground hover:bg-muted/50 active:bg-muted transition-colors shadow-sm"
-              >
-                <Globe className="w-4 h-4 text-muted-foreground" />
-                <span>{selectedCountry.label}</span>
-                <svg className={`w-4 h-4 text-muted-foreground transition-transform ${countryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-              </button>
-              {countryOpen && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-20 min-w-[200px]">
-                  {COUNTRIES.map((c) => (
-                    <button
-                      key={c.value}
-                      onClick={(e) => { e.stopPropagation(); setCountry(c.value); setCountryOpen(false); }}
-                      className={`w-full flex items-center gap-3 px-5 py-3.5 text-sm hover:bg-muted/50 active:bg-muted transition-colors ${
-                        country === c.value ? "bg-primary/5 text-primary font-medium" : "text-foreground"
-                      }`}
-                    >
-                      <span>{c.label}</span>
-                      {country === c.value && <CheckCircle2 className="w-4 h-4 text-primary ml-auto" />}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* Country selector hidden - AU only for now. Restore COUNTRIES array to re-enable */}
 
             {/* Counsellor Cards */}
             <div className="grid grid-cols-2 gap-4 mb-6">
