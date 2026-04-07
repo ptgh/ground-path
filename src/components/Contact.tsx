@@ -343,13 +343,14 @@ const Contact = () => {
             </form>
           </div>
         </div>
-      </div>
+        </div>
+      </section>
 
       <MailingListModal 
         isOpen={isMailingListOpen} 
         onClose={() => setIsMailingListOpen(false)} 
       />
-    </section>
+    </>
   );
 };
 
