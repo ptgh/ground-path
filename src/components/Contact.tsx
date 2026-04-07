@@ -93,93 +93,39 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-20 bg-gray-50 scroll-mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="fade-in text-3xl sm:text-4xl font-light text-gray-900 mb-4">
-            Get in Touch
-          </h2>
-          <div className="fade-in w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
-          <p className="fade-in text-lg text-gray-600 max-w-2xl mx-auto">
-            All sessions are currently conducted online via Halaxy Telehealth. Book below or contact us with any questions.
-          </p>
-          <div className="fade-in flex justify-center mt-6">
-            <a 
-              href="https://www.halaxy.com/profile/groundpath/location/1353667"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sage-600 hover:text-sage-700 transition-colors"
-            >
-              <img 
-                src="https://cdn.halaxy.com/h/images/logo.png" 
-                alt="Halaxy booking system logo"
-                className="h-6 w-auto"
-                loading="lazy"
-                decoding="async"
-              />
-              <span className="text-sm font-medium">Book Online via Halaxy Telehealth</span>
-            </a>
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-2 gap-12 items-start">
-          {/* Contact Information */}
-          <div className="fade-in flex flex-col">
-            <div className="flex-1">
-              <h3 className="text-xl font-medium text-gray-900 mb-6">Contact Information</h3>
-              
-              <div className="space-y-6 mb-8">
-                <div className="flex items-center space-x-4">
-                  <Mail className="h-5 w-5 text-sage-600" />
-                  <div>
-                    <div className="font-medium text-gray-900">Email</div>
-                    <a href="mailto:connect@groundpath.com.au" className="text-sage-600 hover:text-sage-700">
-                      connect@groundpath.com.au
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-4">
-                  <Phone className="h-5 w-5 text-sage-600" />
-                  <div>
-                    <div className="font-medium text-gray-900">Phone</div>
-                    <a href="tel:+61410883659" className="text-sage-600 hover:text-sage-700">
-                      +61 410 883 659
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-4">
-                  <Linkedin className="h-5 w-5 text-sage-600" />
-                  <div>
-                    <div className="font-medium text-gray-900">LinkedIn</div>
-                    <a href="https://www.linkedin.com/company/groundpath" target="_blank" rel="noopener noreferrer" className="text-sage-600 hover:text-sage-700">
-                      groundpath
-                    </a>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-4">
-                  <div className="h-5 w-5 text-sage-600 mt-0.5">📍</div>
-                   <div>
-                     <div className="font-medium text-gray-900">Service Delivery</div>
-                     <div className="text-gray-600">
-                       All sessions online via Halaxy Telehealth<br />
-                       In-person sessions coming soon (Perth, WA)
-                     </div>
-                   </div>
-                </div>
-              </div>
+    <>
+      {/* Booking Section */}
+      <section id="booking" className="py-20 bg-gray-50 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="fade-in text-3xl sm:text-4xl font-light text-gray-900 mb-4">
+              Book a Session
+            </h2>
+            <div className="fade-in w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
+            <p className="fade-in text-lg text-gray-600 max-w-2xl mx-auto">
+              All sessions are currently conducted online via Halaxy Telehealth. Book a time that suits you and receive your meeting link automatically.
+            </p>
+            <div className="fade-in flex justify-center mt-6">
+              <a 
+                href="https://www.halaxy.com/profile/groundpath/location/1353667"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sage-600 hover:text-sage-700 transition-colors"
+              >
+                <img 
+                  src="https://cdn.halaxy.com/h/images/logo.png" 
+                  alt="Halaxy booking system logo"
+                  className="h-6 w-auto"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span className="text-sm font-medium">Book Online via Halaxy Telehealth</span>
+              </a>
             </div>
+          </div>
 
-            {/* Booking Information */}
+          <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
-              <h4 className="font-medium text-gray-900 mb-4">Book an Online Session</h4>
-              <p className="text-gray-600 mb-4">
-                All sessions are via Halaxy Telehealth. Book a time that suits you and receive your meeting link automatically.
-              </p>
-
               {HALAXY_EMBED_URL ? (
                 <div className="mb-4">
                   <HalaxyEmbed embedUrl={HALAXY_EMBED_URL} fallbackUrl={HALAXY_EXTERNAL_URL} />
@@ -241,6 +187,72 @@ const Contact = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-20 bg-background scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="fade-in text-3xl sm:text-4xl font-light text-gray-900 mb-4">
+              Get in Touch
+            </h2>
+            <div className="fade-in w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
+            <p className="fade-in text-lg text-gray-600 max-w-2xl mx-auto">
+              Have a question? Send us a message and we'll get back to you.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            {/* Contact Information */}
+            <div className="fade-in flex flex-col">
+              <div className="flex-1">
+                <h3 className="text-xl font-medium text-gray-900 mb-6">Contact Information</h3>
+                
+                <div className="space-y-6 mb-8">
+                  <div className="flex items-center space-x-4">
+                    <Mail className="h-5 w-5 text-sage-600" />
+                    <div>
+                      <div className="font-medium text-gray-900">Email</div>
+                      <a href="mailto:connect@groundpath.com.au" className="text-sage-600 hover:text-sage-700">
+                        connect@groundpath.com.au
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-4">
+                    <Phone className="h-5 w-5 text-sage-600" />
+                    <div>
+                      <div className="font-medium text-gray-900">Phone</div>
+                      <a href="tel:+61410883659" className="text-sage-600 hover:text-sage-700">
+                        +61 410 883 659
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-4">
+                    <Linkedin className="h-5 w-5 text-sage-600" />
+                    <div>
+                      <div className="font-medium text-gray-900">LinkedIn</div>
+                      <a href="https://www.linkedin.com/company/groundpath" target="_blank" rel="noopener noreferrer" className="text-sage-600 hover:text-sage-700">
+                        groundpath
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-4">
+                    <div className="h-5 w-5 text-sage-600 mt-0.5">📍</div>
+                     <div>
+                       <div className="font-medium text-gray-900">Service Delivery</div>
+                       <div className="text-gray-600">
+                         All sessions online via Halaxy Telehealth<br />
+                         In-person sessions coming soon (Perth, WA)
+                       </div>
+                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
           {/* Contact Form */}
           <div className="fade-in">
