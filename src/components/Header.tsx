@@ -299,7 +299,7 @@ const Header = () => {
               <>
                 <Button
                   variant="outline"
-                  onClick={() => scrollToSection('contact')}
+                  onClick={() => scrollToSection('booking')}
                   className="border-primary/40 text-primary-foreground bg-primary hover:bg-primary/90 px-5 py-2 rounded-lg font-medium text-sm"
                 >
                   Book a Session
@@ -390,7 +390,7 @@ const Header = () => {
                   )}
                   <div className="border-t border-gray-700 my-2" />
                   <Button
-                    onClick={() => { scrollToSection('contact'); setIsMenuOpen(false); }}
+                    onClick={() => { scrollToSection('booking'); setIsMenuOpen(false); }}
                     className="bg-primary text-primary-foreground hover:bg-primary/90 w-full mb-2"
                   >
                     Book a Session

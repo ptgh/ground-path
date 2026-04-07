@@ -64,7 +64,7 @@ const Hero = () => {
           {/* CTA Buttons */}
           <div ref={ctaButtonsRef} className="fade-in flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center items-center max-w-2xl mx-auto">
             <button 
-              onClick={() => scrollToSection('contact')}
+              onClick={() => scrollToSection('booking')}
               className="hero-cta bg-primary text-primary-foreground px-4 sm:px-6 py-3.5 rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-full sm:w-auto min-w-[140px]"
             >
               Book a Session
