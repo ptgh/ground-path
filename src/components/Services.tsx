@@ -87,10 +87,10 @@ const Services = () => {
             const isBookable = !service.comingSoon;
             const CardTag = isBookable ? 'a' : 'div';
             const cardProps = isBookable ? {
-              href: "#contact",
+              href: "#booking",
               onClick: (e: React.MouseEvent) => {
                 e.preventDefault();
-                scrollToSectionWithOffset('contact', 96);
+                scrollToSectionWithOffset('booking', 96);
               },
             } : {};
             return (
