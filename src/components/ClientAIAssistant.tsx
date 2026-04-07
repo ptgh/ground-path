@@ -797,41 +797,7 @@ export const ClientAIAssistant = () => {
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
-                {/* Country dropdown matching voice chat style */}
-                <div className="relative" ref={countryDropdownRef}>
-                  <button
-                    onClick={() => setCountryOpen(!countryOpen)}
-                    className="flex items-center gap-1.5 bg-primary/5 border border-primary/20 rounded-full px-3 py-1.5 text-xs text-foreground hover:bg-primary/10 transition-colors"
-                  >
-                    <span className="font-medium">{country === 'AU' ? 'AU' : country === 'UK' ? 'UK' : 'Global'}</span>
-                    <svg className={`w-3 h-3 text-muted-foreground transition-transform ${countryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                  </button>
-                  {countryOpen && (
-                    <div className="absolute top-full right-0 mt-1.5 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50 min-w-[180px]">
-                      {([
-                        { value: 'AU' as Country, label: 'Australia' },
-                        { value: 'UK' as Country, label: 'United Kingdom' },
-                        { value: 'OTHER' as Country, label: 'Global' },
-                      ]).map((c) => (
-                        <button
-                          key={c.value}
-                          onClick={() => {
-                            setCountry(c.value);
-                            localStorage.setItem(COUNTRY_KEY, c.value);
-                            setMessages([getInitialMessage(c.value)]);
-                            setCountryOpen(false);
-                          }}
-                          className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-primary/5 transition-colors ${
-                            country === c.value ? "bg-primary/10 text-primary font-medium" : "text-foreground"
-                          }`}
-                        >
-                          <span>{c.label}</span>
-                          {country === c.value && <CheckCircle2 className="w-4 h-4 text-primary ml-auto" />}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                {/* Country fixed to AU - admin can re-enable dropdown */}
               </div>
             </DialogTitle>
             <p className="text-xs text-muted-foreground mt-1">

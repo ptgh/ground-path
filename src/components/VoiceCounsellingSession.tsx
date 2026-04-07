@@ -74,7 +74,7 @@ const detectCountryFromTimezone = (): Country => {
 const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSessionProps) => {
   const [voiceState, setVoiceState] = useState<VoiceState>("setup");
   const [selectedCounsellor, setSelectedCounsellor] = useState<CounsellorPersona | null>(null);
-  const [country, setCountry] = useState<Country>(initialCountry || detectCountryFromTimezone);
+  const [country, setCountry] = useState<Country>("AU");
   const [countryOpen, setCountryOpen] = useState(false);
   const [lastTranscript, setLastTranscript] = useState("");
   const [lastReply, setLastReply] = useState("");
