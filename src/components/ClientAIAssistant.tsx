@@ -106,13 +106,8 @@ const renderMessageWithLinks = (text: string): React.ReactNode => {
 
 export const ClientAIAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [country, setCountry] = useState<Country>(() => {
-    const stored = localStorage.getItem(COUNTRY_KEY);
-    return (stored as Country) || 'AU';
-  });
-  const [showCountryPrompt, setShowCountryPrompt] = useState(() => {
-    return !localStorage.getItem(COUNTRY_KEY);
-  });
+  const [country] = useState<Country>('AU');
+  const [showCountryPrompt] = useState(false);
   const [isSessionMode, setIsSessionMode] = useState(() => {
     return localStorage.getItem(SESSION_MODE_KEY) === 'true';
   });
