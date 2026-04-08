@@ -367,9 +367,9 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
   if (voiceState === "setup") {
     return createPortal(
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" onClick={onClose}>
-        <div className="relative max-w-md w-full bg-card border-2 border-border rounded-2xl shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="relative max-w-md w-[calc(100%-2rem)] max-h-[90vh] h-[700px] bg-card border-2 border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
 
-          <div className="p-6 pt-8 text-center">
+          <div className="p-6 pt-8 text-center flex-1 flex flex-col justify-center">
             <h2 className="text-2xl font-semibold text-foreground mb-2">AI Counselling Session</h2>
             <p className="text-muted-foreground text-sm mb-1">
               Choose your counsellor and start a free, confidential voice session.
