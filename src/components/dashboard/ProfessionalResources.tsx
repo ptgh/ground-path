@@ -282,27 +282,7 @@ const ProfessionalResources = () => {
               Standards, CPD, and clinical resources for practitioners
             </CardDescription>
           </div>
-          {/* Country Selector */}
-          <div className="flex rounded-lg border border-border p-0.5 bg-muted">
-            <Button
-              variant={country === 'AU' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setCountry('AU')}
-              className={country === 'AU' ? 'bg-sage-600 text-white hover:bg-sage-700 h-7' : 'h-7'}
-            >
-              <Globe className="h-3 w-3 mr-1" />
-              AU
-            </Button>
-            <Button
-              variant={country === 'UK' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setCountry('UK')}
-              className={country === 'UK' ? 'bg-sage-600 text-white hover:bg-sage-700 h-7' : 'h-7'}
-            >
-              <Globe className="h-3 w-3 mr-1" />
-              UK
-            </Button>
-          </div>
+          {/* Country selector removed — AU only for now. UK resources preserved for future admin toggle. */}
         </div>
       </CardHeader>
       <CardContent>
