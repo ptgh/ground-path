@@ -437,29 +437,7 @@ const Resources = () => {
             </p>
           </div>
 
-          {/* Country Selector */}
-          <div className="flex justify-center mb-8">
-            <div className="inline-flex rounded-lg border border-border p-1 bg-muted">
-              <Button
-                variant={country === 'AU' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setCountry('AU')}
-                className={country === 'AU' ? 'bg-sage-600 text-white hover:bg-sage-700' : ''}
-              >
-                <Globe className="h-4 w-4 mr-2" />
-                Australia
-              </Button>
-              <Button
-                variant={country === 'UK' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setCountry('UK')}
-                className={country === 'UK' ? 'bg-sage-600 text-white hover:bg-sage-700' : ''}
-              >
-                <Globe className="h-4 w-4 mr-2" />
-                United Kingdom
-              </Button>
-            </div>
-          </div>
+          {/* Country selector removed — AU only for now. UK resources preserved in code for future admin toggle. */}
 
           {/* Search Bar */}
           <div className="mb-8 max-w-md mx-auto">
