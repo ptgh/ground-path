@@ -59,7 +59,7 @@ describe('ErrorBoundary', () => {
     expect(screen.getByRole('button', { name: /refresh page/i })).toBeTruthy();
   });
 
-  it('shows a Back to home link in the fallback UI', () => {
+  it('shows a Back to groundpath link in the fallback UI', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
 
     render(
@@ -68,7 +68,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    const link = screen.getByRole('link', { name: /back to home/i });
+    const link = screen.getByRole('link', { name: /back to groundpath/i });
     expect(link).toBeTruthy();
     expect(link.getAttribute('href')).toBe('/');
   });
