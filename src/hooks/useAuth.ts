@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext, createContext, useCallback } from 'react';
+import type { ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -48,7 +49,26 @@ interface UserRole {
   role: 'admin' | 'moderator' | 'user' | 'social_worker' | 'mental_health_professional';
 }
 
-export const useAuth = () => {
+interface AuthContextValue {
+  user: User | null;
+  session: Session | null;
+  profile: Profile | null;
+  roles: UserRole[];
+  loading: boolean;
+  profileLoading: boolean;
+  signOut: () => Promise<void>;
+  updateProfile: (updates: Partial<Profile>) => Promise<void>;
+  hasRole: (role: string) => boolean;
+  isAdmin: () => boolean;
+  isModerator: () => boolean;
+  isSocialWorker: () => boolean;
+  isMentalHealthProfessional: () => boolean;
+  refetchProfile: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -56,7 +76,7 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
   const [profileLoading, setProfileLoading] = useState(true);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = useCallback(async (userId: string) => {
     try {
       setProfileLoading(true);
       const { data: profileData } = await supabase
@@ -77,18 +97,16 @@ export const useAuth = () => {
     } finally {
       setProfileLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     let mounted = true;
     let initialized = false;
 
-    // Set up auth state listener FIRST to avoid missing events
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (!mounted) return;
         
-        // Reset auth state cleanly on sign out or token expiry
         if (initialized && event === 'SIGNED_OUT') {
           setSession(null);
           setUser(null);
@@ -104,7 +122,6 @@ export const useAuth = () => {
         setLoading(false);
         initialized = true;
         
-        // Defer profile fetching without timers to prevent deadlocks
         if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
           queueMicrotask(() => {
             if (mounted) {
@@ -119,7 +136,6 @@ export const useAuth = () => {
       }
     );
 
-    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return;
       setSession(session);
@@ -142,17 +158,17 @@ export const useAuth = () => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [fetchProfile]);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Error signing out:', error);
       throw error;
     }
-  };
+  }, []);
 
-  const updateProfile = async (updates: Partial<Profile>) => {
+  const updateProfile = useCallback(async (updates: Partial<Profile>) => {
     if (!user) throw new Error('No user logged in');
 
     const { error } = await supabase
@@ -162,21 +178,23 @@ export const useAuth = () => {
       .eq('user_id', user.id);
 
     if (error) throw error;
-
-    // Refetch profile
     await fetchProfile(user.id);
-  };
+  }, [user, fetchProfile]);
 
-  const hasRole = (role: string) => {
+  const hasRole = useCallback((role: string) => {
     return roles.some(r => r.role === role);
-  };
+  }, [roles]);
 
-  const isAdmin = () => hasRole('admin');
-  const isModerator = () => hasRole('moderator') || hasRole('admin');
-  const isSocialWorker = () => hasRole('social_worker');
-  const isMentalHealthProfessional = () => hasRole('mental_health_professional');
+  const isAdmin = useCallback(() => hasRole('admin'), [hasRole]);
+  const isModerator = useCallback(() => hasRole('moderator') || hasRole('admin'), [hasRole]);
+  const isSocialWorker = useCallback(() => hasRole('social_worker'), [hasRole]);
+  const isMentalHealthProfessional = useCallback(() => hasRole('mental_health_professional'), [hasRole]);
 
-  return {
+  const refetchProfile = useCallback(() => {
+    return user ? fetchProfile(user.id) : Promise.resolve();
+  }, [user, fetchProfile]);
+
+  const value: AuthContextValue = {
     user,
     session,
     profile,
@@ -190,6 +208,20 @@ export const useAuth = () => {
     isModerator,
     isSocialWorker,
     isMentalHealthProfessional,
-    refetchProfile: () => user ? fetchProfile(user.id) : Promise.resolve(),
+    refetchProfile,
   };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
