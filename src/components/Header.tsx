@@ -184,6 +184,7 @@ const MobileAuthIndicator = () => {
 };
 
 const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
