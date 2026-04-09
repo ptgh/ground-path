@@ -152,8 +152,38 @@ const NavUnreadBadge = ({ count }: { count: number }) => {
     </span>
   );
 };
+// Mobile auth indicator - shows avatar + role in header bar
+const MobileAuthIndicator = () => {
+  const { profile, roles } = useAuth();
+  const navigate = useNavigate();
 
-const Header = () => {
+  const isAdmin = roles.some(r => r.role === 'admin');
+  const isPractitioner = profile?.user_type === 'practitioner' || roles.some(r => r.role === 'social_worker' || r.role === 'mental_health_professional');
+
+  const roleLabel = isAdmin ? 'Admin' : isPractitioner ? 'Practitioner' : '';
+
+  return (
+    <button
+      onClick={() => {
+        const dashPath = profile?.user_type === 'practitioner' ? '/practitioner/dashboard' : '/dashboard';
+        navigate(dashPath);
+      }}
+      className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-white/10 transition-colors"
+    >
+      <Avatar className="h-7 w-7">
+        <AvatarImage src={profile?.avatar_url} />
+        <AvatarFallback className="bg-emerald-600 text-white text-[10px] font-semibold">
+          {profile?.display_name?.charAt(0)?.toUpperCase() || <User className="h-3.5 w-3.5" />}
+        </AvatarFallback>
+      </Avatar>
+      {roleLabel && (
+        <span className="text-[10px] font-medium text-emerald-400">{roleLabel}</span>
+      )}
+    </button>
+  );
+};
+
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
