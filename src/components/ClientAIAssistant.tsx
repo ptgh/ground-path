@@ -145,38 +145,22 @@ export const ClientAIAssistant = () => {
   const sessionTimerRef = useRef<NodeJS.Timeout | null>(null);
   const stopStreamingRef = useRef(false);
 
-  const getInitialMessage = (selectedCountry: Country): Message => ({
+  const getInitialMessage = (): Message => ({
     id: '1',
     role: 'assistant',
-    content: `Hello! I'm groundpath's Support Assistant. I'm here to help you find the right mental health and social work support${selectedCountry === 'AU' ? ' in Australia' : selectedCountry === 'UK' ? ' in the UK' : ''}.\n\nI can answer questions about:\n• Our counselling and therapy services\n• Mental health resources and information\n• ${selectedCountry === 'AU' ? 'NDIS support and navigation' : selectedCountry === 'UK' ? 'NHS mental health services' : 'Finding local mental health services'}\n• Finding the right professional support\n\nPlease note: I provide information and guidance, not clinical advice. For personalised treatment, please consult a qualified professional.\n\nHow can I help you today?`,
+    content: `Hello! I'm groundpath's Support Assistant. I'm here to help you find the right mental health and social work support in Australia.\n\nI can answer questions about:\n• Our counselling and therapy services\n• Mental health resources and information\n• NDIS support and navigation\n• Finding the right professional support\n\nPlease note: I provide information and guidance, not clinical advice. For personalised treatment, please consult a qualified professional.\n\nHow can I help you today?`,
     timestamp: new Date()
   });
 
-  // Crisis resources by country
+  // Crisis resources - Australian only (UK/international held for future admin toggle)
   const getCrisisResources = useCallback(() => {
-    if (country === 'AU') {
-      return {
-        primary: { name: 'Lifeline Australia', number: '13 11 14' },
-        secondary: { name: 'Beyond Blue', number: '1300 22 4636' },
-        emergency: '000',
-        text: 'Crisis Text Line: Text 0477 131 114'
-      };
-    }
-    if (country === 'UK') {
-      return {
-        primary: { name: 'Samaritans', number: '116 123' },
-        secondary: { name: 'Mind', number: '0300 123 3393' },
-        emergency: '999',
-        text: 'Crisis Text Line: Text SHOUT to 85258'
-      };
-    }
     return {
-      primary: { name: 'Crisis Line', number: '112' },
-      secondary: { name: 'Local Services', number: '' },
-      emergency: '112',
-      text: 'Contact your local emergency services'
+      primary: { name: 'Lifeline Australia', number: '13 11 14' },
+      secondary: { name: 'Beyond Blue', number: '1300 22 4636' },
+      emergency: '000',
+      text: 'Crisis Text Line: Text 0477 131 114'
     };
-  }, [country]);
+  }, []);
 
   // Session timeout logic
   const startSessionTimer = useCallback(() => {
@@ -271,14 +255,13 @@ export const ClientAIAssistant = () => {
   }, [messages]);
 
   // selectCountry kept for future admin toggle
-  const selectCountry = (selectedCountry: Country) => {
+  const selectCountry = (_selectedCountry: Country) => {
     // Country switching disabled - AU only for now
-    void selectedCountry;
-    setMessages([getInitialMessage('AU')]);
+    setMessages([getInitialMessage()]);
   };
 
   const clearConversation = () => {
-    setMessages([getInitialMessage(country)]);
+    setMessages([getInitialMessage()]);
     setIsSessionMode(false);
     setShowCounsellingPrompt(false);
     setShowCrisisBanner(false);
