@@ -2,10 +2,12 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { scrollToSectionWithOffset } from '@/lib/utils';
+import { useBookingMode } from '@/hooks/useBookingMode';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Services = () => {
+  const { mode: bookingMode } = useBookingMode();
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,30 +33,31 @@ const Services = () => {
       card.addEventListener('mouseleave', leave);
     });
   }, []);
+  const videoLabel = bookingMode === 'native_beta' ? 'Online via Secure Video' : 'Online via Halaxy Telehealth';
   const services = [
     {
       name: "Mental Health Support",
-      format: "Online via Halaxy Telehealth",
+      format: videoLabel,
       rate: "$100",
-      description: "Social Worker providing professional support via secure Halaxy Telehealth video calls"
+      description: `Social Worker providing professional support via secure ${bookingMode === 'native_beta' ? 'video' : 'Halaxy Telehealth video'} calls`
     },
     {
       name: "Psychosocial Recovery Coaching",
-      format: "Online via Halaxy Telehealth",
+      format: videoLabel,
       rate: "$100",
       description: "NDIS-funded support for psychosocial recovery and daily living skills — delivered online",
       ndis: true
     },
     {
       name: "Accredited Mental Health Social Worker (AMHSW)",
-      format: "Online via Halaxy Telehealth",
+      format: videoLabel,
       rate: "$100",
       description: "AMHSW registration currently in progress — service coming soon",
       comingSoon: true
     },
     {
       name: "Counselling Support",
-      format: "Online via Halaxy Telehealth",
+      format: videoLabel,
       rate: "$100",
       description: "Professional counselling sessions delivered by qualified social workers — ACA Registered"
     },
@@ -62,7 +65,7 @@ const Services = () => {
       name: "In-Person Support",
       format: "Perth, WA",
       rate: "$100",
-      description: "Face-to-face sessions coming soon — currently all sessions are conducted online via Halaxy Telehealth",
+      description: `Face-to-face sessions coming soon — currently all sessions are conducted online via ${bookingMode === 'native_beta' ? 'secure video' : 'Halaxy Telehealth'}`,
       comingSoon: true
     }
   ];
