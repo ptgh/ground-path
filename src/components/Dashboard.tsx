@@ -331,7 +331,7 @@ const Dashboard = () => {
 
           {/* ─── Tabs ─── */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className={`grid w-full h-auto p-1 gap-0.5 ${isAdmin ? 'grid-cols-4 lg:grid-cols-10' : (isAdmin || getSessionMode(profile) === 'native_beta') ? 'grid-cols-4 lg:grid-cols-8' : 'grid-cols-4 lg:grid-cols-7'}`}>
+            <TabsList className={`grid w-full h-auto p-1 gap-0.5 ${isAdmin ? 'grid-cols-4 lg:grid-cols-10' : getSessionMode(profile) === 'native_beta' ? 'grid-cols-4 lg:grid-cols-8' : 'grid-cols-4 lg:grid-cols-7'}`}>
               <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Overview</TabsTrigger>
               {(isAdmin || getSessionMode(profile) === 'native_beta') && (
                 <TabsTrigger value="booking" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
