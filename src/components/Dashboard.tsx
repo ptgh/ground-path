@@ -246,7 +246,7 @@ const Dashboard = () => {
     { title: 'Create Note', description: 'Document client interactions', icon: PlusCircle, action: () => handleNoteModal() },
     { title: 'View Resources', description: 'Access professional resources', icon: BookOpen, action: () => setActiveTab('resources') },
     { title: 'Professional Forms', description: 'Access specialized forms', icon: FileText, action: () => navigate('/practitioner/forms') },
-    { title: 'Schedule Session', description: 'Book client appointments', icon: Calendar, action: () => console.log('Schedule') }
+    { title: 'Schedule Session', description: 'Book client appointments', icon: Calendar, action: () => { if (isAdmin || getSessionMode(profile) === 'native_beta') { setActiveTab('booking'); } else { console.log('Schedule'); } } }
   ];
 
   /* ─── Form categories for better scanning ─── */
