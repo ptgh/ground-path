@@ -45,7 +45,7 @@ import { AIAssistant } from "./components/AIAssistant";
 import { ClientAIAssistant } from "./components/ClientAIAssistant";
 import GoogleAnalytics from "./components/GoogleAnalytics";
 import ClientDashboard from "./pages/ClientDashboard";
-import { useAuth } from "./hooks/useAuth";
+import { useAuth, AuthProvider } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
 
