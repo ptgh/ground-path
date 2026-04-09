@@ -301,7 +301,7 @@ const Header = () => {
                 {isLoggedIn && (
                   <>
                     <button
-                      onClick={() => navigate('/dashboard')}
+                      onClick={() => navigate(profile?.user_type === 'practitioner' ? '/practitioner/dashboard' : '/dashboard')}
                       className="relative text-gray-300 hover:text-white transition-colors font-medium px-3 py-2 rounded-md hover:bg-white/5 text-sm flex items-center gap-1.5"
                     >
                       <LayoutDashboard className="h-4 w-4" />
@@ -401,7 +401,7 @@ const Header = () => {
                   {isLoggedIn && (
                     <>
                       <button
-                        onClick={() => { navigate('/dashboard'); setIsMenuOpen(false); }}
+                        onClick={() => { navigate(profile?.user_type === 'practitioner' ? '/practitioner/dashboard' : '/dashboard'); setIsMenuOpen(false); }}
                         className="flex items-center gap-2 text-left text-gray-300 hover:text-white transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-white/5 text-sm"
                       >
                         <LayoutDashboard className="h-4 w-4" />
