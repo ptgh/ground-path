@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      booking_requests: {
+        Row: {
+          client_user_id: string
+          created_at: string
+          duration_minutes: number
+          id: string
+          notes: string | null
+          practitioner_id: string
+          practitioner_notes: string | null
+          requested_date: string
+          requested_end_time: string
+          requested_start_time: string
+          session_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          client_user_id: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          practitioner_id: string
+          practitioner_notes?: string | null
+          requested_date: string
+          requested_end_time: string
+          requested_start_time: string
+          session_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          client_user_id?: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          practitioner_id?: string
+          practitioner_notes?: string | null
+          requested_date?: string
+          requested_end_time?: string
+          requested_start_time?: string
+          session_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       client_messages: {
         Row: {
           attachment_name: string | null
@@ -423,6 +471,42 @@ export type Database = {
           title?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      practitioner_availability: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          end_time: string
+          id: string
+          is_recurring: boolean
+          practitioner_id: string
+          specific_date: string | null
+          start_time: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          end_time: string
+          id?: string
+          is_recurring?: boolean
+          practitioner_id: string
+          specific_date?: string | null
+          start_time: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          is_recurring?: boolean
+          practitioner_id?: string
+          specific_date?: string | null
+          start_time?: string
+          updated_at?: string
         }
         Relationships: []
       }
