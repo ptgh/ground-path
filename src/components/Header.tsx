@@ -23,9 +23,9 @@ const AuthAwareSection = () => {
     const isAdmin = roles.some(r => r.role === 'admin');
     const isPractitioner = profile?.user_type === 'practitioner' || roles.some(r => r.role === 'social_worker' || r.role === 'mental_health_professional');
     
-    if (isAdmin) return { label: 'Administrator', className: 'bg-emerald-800 text-emerald-50' };
-    if (isPractitioner) return { label: 'Practitioner', className: 'bg-emerald-600/20 text-emerald-700' };
-    return { label: 'Client', className: 'bg-emerald-100 text-emerald-600' };
+    if (isAdmin) return { label: 'Admin', className: 'bg-emerald-800 text-emerald-50', short: 'Admin' };
+    if (isPractitioner) return { label: 'Practitioner', className: 'bg-emerald-600/20 text-emerald-700', short: 'Practitioner' };
+    return { label: 'Client', className: 'bg-emerald-100 text-emerald-600', short: '' };
   };
 
   const roleBadge = getRoleBadge();
@@ -53,7 +53,7 @@ const AuthAwareSection = () => {
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
               <AvatarImage src={profile?.avatar_url} />
-          <AvatarFallback className="bg-primary/20 text-primary text-xs font-medium">
+          <AvatarFallback className="bg-emerald-600 text-white text-xs font-medium">
                 {profile?.display_name?.charAt(0)?.toUpperCase() || <User className="h-4 w-4" />}
               </AvatarFallback>
             </Avatar>
@@ -150,6 +150,36 @@ const NavUnreadBadge = ({ count }: { count: number }) => {
     <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
       {count > 99 ? '99+' : count}
     </span>
+  );
+};
+// Mobile auth indicator - shows avatar + role in header bar
+const MobileAuthIndicator = () => {
+  const { profile, roles } = useAuth();
+  const navigate = useNavigate();
+
+  const isAdmin = roles.some(r => r.role === 'admin');
+  const isPractitioner = profile?.user_type === 'practitioner' || roles.some(r => r.role === 'social_worker' || r.role === 'mental_health_professional');
+
+  const roleLabel = isAdmin ? 'Admin' : isPractitioner ? 'Practitioner' : '';
+
+  return (
+    <button
+      onClick={() => {
+        const dashPath = profile?.user_type === 'practitioner' ? '/practitioner/dashboard' : '/dashboard';
+        navigate(dashPath);
+      }}
+      className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-white/10 transition-colors"
+    >
+      <Avatar className="h-7 w-7">
+        <AvatarImage src={profile?.avatar_url} />
+        <AvatarFallback className="bg-emerald-600 text-white text-[10px] font-semibold">
+          {profile?.display_name?.charAt(0)?.toUpperCase() || <User className="h-3.5 w-3.5" />}
+        </AvatarFallback>
+      </Avatar>
+      {roleLabel && (
+        <span className="text-[10px] font-medium text-emerald-400">{roleLabel}</span>
+      )}
+    </button>
   );
 };
 
@@ -309,13 +339,16 @@ const Header = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-gray-300 hover:text-white"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+          {/* Mobile: user indicator + menu button */}
+          <div className="md:hidden flex items-center gap-2">
+            {isLoggedIn && <MobileAuthIndicator />}
+            <button
+              className="p-2 text-gray-300 hover:text-white"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
