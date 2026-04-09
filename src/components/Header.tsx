@@ -51,18 +51,9 @@ const AuthAwareSection = () => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
-            {profile?.avatar_url ? (
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={profile.avatar_url} />
-                <AvatarFallback className="bg-primary/20 text-primary text-xs font-medium">
-                  <User className="h-4 w-4" />
-                </AvatarFallback>
-              </Avatar>
-            ) : (
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20">
-                <User className="h-4 w-4 text-primary" />
-              </div>
-            )}
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20">
+              <User className="h-4 w-4 text-primary" />
+            </div>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -187,18 +178,9 @@ const MobileAuthIndicator = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-white/10 transition-colors">
-          {profile?.avatar_url ? (
-            <Avatar className="h-7 w-7">
-              <AvatarImage src={profile.avatar_url} />
-              <AvatarFallback className="bg-primary/20 text-primary text-[10px] font-semibold">
-                <User className="h-3.5 w-3.5" />
-              </AvatarFallback>
-            </Avatar>
-          ) : (
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/20">
-              <User className="h-4 w-4 text-primary" />
-            </div>
-          )}
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/20">
+            <User className="h-4 w-4 text-primary" />
+          </div>
           {roleLabel && (
             <span className="text-[10px] font-medium text-emerald-400">{roleLabel}</span>
           )}
