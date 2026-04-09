@@ -325,23 +325,6 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-              {(profile?.halaxy_integration as HalaxyIntegration)?.profile_url && (
-                <div className="hidden lg:block">
-                  <a 
-                    href={(profile.halaxy_integration as HalaxyIntegration).profile_url!}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img 
-                      src="https://cdn.halaxy.com/h/images/logo.png" 
-                      alt="Book with Halaxy"
-                      className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </a>
-                </div>
-              )}
             </div>
           </div>
 
@@ -516,45 +499,11 @@ const Dashboard = () => {
                       ))}
                     </div>
                     <Separator />
-                    <div className="space-y-2">
-                      <ProfessionalProfileModal>
-                        <Button variant="outline" className="dashboard-cta w-full border-sage-200 text-sage-700 hover:bg-sage-50" size="sm">
-                          Update Professional Info
-                        </Button>
-                      </ProfessionalProfileModal>
-                      <div className="flex items-center gap-2">
-                        {(profile?.halaxy_integration as HalaxyIntegration)?.verified && (profile?.halaxy_integration as HalaxyIntegration)?.profile_url ? (
-                          <>
-                            <Button
-                              variant="outline"
-                              onClick={() => window.open((profile.halaxy_integration as HalaxyIntegration).profile_url!, '_blank')}
-                              className="dashboard-cta flex-1 border-sage-200 text-sage-700 hover:bg-sage-50"
-                              size="sm"
-                            >
-                              Halaxy Profile
-                            </Button>
-                            <a 
-                              href={(profile.halaxy_integration as HalaxyIntegration).profile_url!}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex-shrink-0"
-                            >
-                              <img 
-                                src="https://cdn.halaxy.com/h/images/logo.png" 
-                                alt="Halaxy booking system"
-                                className="h-8 w-auto"
-                                loading="lazy"
-                                decoding="async"
-                              />
-                            </a>
-                          </>
-                        ) : (
-                          <ProfessionalProfileModal>
-                            <span className="text-xs text-muted-foreground cursor-pointer hover:underline">Verify your Halaxy URL in Professional Profile settings</span>
-                          </ProfessionalProfileModal>
-                        )}
-                      </div>
-                    </div>
+                    <ProfessionalProfileModal>
+                      <Button variant="outline" className="dashboard-cta w-full border-sage-200 text-sage-700 hover:bg-sage-50" size="sm">
+                        Update Professional Info
+                      </Button>
+                    </ProfessionalProfileModal>
                   </CardContent>
                 </Card>
               </div>
@@ -766,21 +715,6 @@ const Dashboard = () => {
                     <ProfessionalProfileModal>
                       <Button className="dashboard-cta bg-sage-600 hover:bg-sage-700 text-white">Update Professional Profile</Button>
                     </ProfessionalProfileModal>
-                    {(profile?.halaxy_integration as HalaxyIntegration)?.verified && (profile?.halaxy_integration as HalaxyIntegration)?.profile_url ? (
-                      <Button
-                        variant="outline"
-                        onClick={() => window.open((profile.halaxy_integration as HalaxyIntegration).profile_url!, '_blank')}
-                        className="dashboard-cta border-sage-200 text-sage-700 hover:bg-sage-50"
-                      >
-                        Halaxy Profile
-                      </Button>
-                    ) : (
-                      <ProfessionalProfileModal>
-                        <Button variant="outline" className="dashboard-cta border-sage-200 text-sage-700 hover:bg-sage-50">
-                          Verify Halaxy Profile
-                        </Button>
-                      </ProfessionalProfileModal>
-                    )}
                   </div>
                 </CardContent>
               </Card>
