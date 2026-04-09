@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,27 +18,35 @@ import {
   Video,
   CheckCircle2,
   Loader2,
+  Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 /* ─── Types ─── */
 interface AvailabilitySlot {
   id: string;
-  day: number; // 0=Mon .. 6=Sun
+  day: number;
   startHour: number;
   startMin: number;
   endHour: number;
   endMin: number;
 }
 
-interface Session {
+interface BookingRequest {
   id: string;
-  clientName: string;
-  date: Date;
-  duration: number;
-  status: 'confirmed' | 'pending' | 'completed' | 'cancelled';
-  type: 'video' | 'in-person';
+  client_user_id: string;
+  requested_date: string;
+  requested_start_time: string;
+  requested_end_time: string;
+  duration_minutes: number;
+  status: string;
+  session_type: string;
+  notes: string | null;
+  created_at: string;
+  client_name?: string;
 }
 
 interface AvailabilitySettings {
@@ -52,21 +60,7 @@ interface AvailabilitySettings {
 type BookingView = 'calendar' | 'sessions' | 'settings';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const HOURS = Array.from({ length: 11 }, (_, i) => i + 8); // 8am-6pm
-
-/* ─── Sample data ─── */
-const SAMPLE_AVAILABILITY: AvailabilitySlot[] = [
-  { id: '1', day: 0, startHour: 9, startMin: 0, endHour: 12, endMin: 0 },
-  { id: '2', day: 0, startHour: 13, startMin: 0, endHour: 17, endMin: 0 },
-  { id: '3', day: 1, startHour: 10, startMin: 0, endHour: 16, endMin: 0 },
-  { id: '4', day: 2, startHour: 9, startMin: 0, endHour: 13, endMin: 0 },
-  { id: '5', day: 3, startHour: 9, startMin: 0, endHour: 17, endMin: 0 },
-  { id: '6', day: 4, startHour: 10, startMin: 0, endHour: 14, endMin: 0 },
-];
-
-const SAMPLE_SESSIONS: Session[] = [
-  { id: '1', clientName: 'Sample Client', date: new Date(), duration: 50, status: 'confirmed', type: 'video' },
-];
+const HOURS = Array.from({ length: 11 }, (_, i) => i + 8);
 
 const DEFAULT_SETTINGS: AvailabilitySettings = {
   workingDays: [true, true, true, true, true, false, false],
@@ -76,29 +70,71 @@ const DEFAULT_SETTINGS: AvailabilitySettings = {
   bufferMinutes: 10,
 };
 
-/* ─── Status badge helper ─── */
-const statusStyle = (s: Session['status']) => {
+const statusStyle = (s: string) => {
   switch (s) {
     case 'confirmed': return 'bg-sage-100 text-sage-800';
     case 'pending': return 'bg-amber-50 text-amber-700 border-amber-200';
     case 'completed': return 'bg-muted text-muted-foreground';
     case 'cancelled': return 'bg-destructive/10 text-destructive';
+    default: return '';
   }
+};
+
+const parseTime = (t: string) => {
+  const [h, m] = t.split(':').map(Number);
+  return { h, m };
 };
 
 /* ═══════════════════════════════════════════ */
 const NativeBooking = () => {
+  const { user } = useAuth();
   const [view, setView] = useState<BookingView>('calendar');
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
-  const [availability] = useState<AvailabilitySlot[]>(SAMPLE_AVAILABILITY);
-  const [sessions] = useState<Session[]>(SAMPLE_SESSIONS);
+  const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
+  const [bookings, setBookings] = useState<BookingRequest[]>([]);
+  const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState<AvailabilitySettings>(DEFAULT_SETTINGS);
   const [showAddSlot, setShowAddSlot] = useState(false);
-
-  /* ─── Add-slot form state ─── */
   const [newSlotDay, setNewSlotDay] = useState('0');
   const [newSlotStart, setNewSlotStart] = useState('9');
   const [newSlotEnd, setNewSlotEnd] = useState('12');
+
+  // Fetch availability and bookings
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      setLoading(true);
+      const [avRes, bkRes] = await Promise.all([
+        supabase
+          .from('practitioner_availability')
+          .select('*')
+          .eq('practitioner_id', user.id),
+        supabase
+          .from('booking_requests')
+          .select('*')
+          .eq('practitioner_id', user.id)
+          .order('requested_date', { ascending: true }),
+      ]);
+
+      if (avRes.data) {
+        setAvailability(avRes.data.map(row => ({
+          id: row.id,
+          day: row.day_of_week,
+          startHour: parseTime(row.start_time).h,
+          startMin: parseTime(row.start_time).m,
+          endHour: parseTime(row.end_time).h,
+          endMin: parseTime(row.end_time).m,
+        })));
+      }
+
+      if (bkRes.data) {
+        setBookings(bkRes.data);
+      }
+
+      setLoading(false);
+    };
+    load();
+  }, [user]);
 
   const prevWeek = () => setWeekStart(prev => addDays(prev, -7));
   const nextWeek = () => setWeekStart(prev => addDays(prev, 7));
@@ -109,7 +145,73 @@ const NativeBooking = () => {
 
   const isSlotBooked = (day: number, hour: number) => {
     const date = addDays(weekStart, day);
-    return sessions.some(s => isSameDay(s.date, date) && s.date.getHours() === hour && s.status !== 'cancelled');
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return bookings.some(b =>
+      b.requested_date === dateStr &&
+      parseTime(b.requested_start_time).h === hour &&
+      b.status !== 'cancelled'
+    );
+  };
+
+  const handleAddSlot = async () => {
+    if (!user) return;
+    const startH = Number(newSlotStart);
+    const endH = Number(newSlotEnd);
+    if (endH <= startH) {
+      toast.error('End time must be after start time');
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('practitioner_availability')
+      .insert({
+        practitioner_id: user.id,
+        day_of_week: Number(newSlotDay),
+        start_time: `${String(startH).padStart(2, '0')}:00`,
+        end_time: `${String(endH).padStart(2, '0')}:00`,
+        is_recurring: true,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      toast.error('Failed to add availability');
+      return;
+    }
+    if (data) {
+      setAvailability(prev => [...prev, {
+        id: data.id,
+        day: data.day_of_week,
+        startHour: parseTime(data.start_time).h,
+        startMin: parseTime(data.start_time).m,
+        endHour: parseTime(data.end_time).h,
+        endMin: parseTime(data.end_time).m,
+      }]);
+      toast.success('Availability slot added');
+      setShowAddSlot(false);
+    }
+  };
+
+  const handleDeleteSlot = async (id: string) => {
+    const { error } = await supabase
+      .from('practitioner_availability')
+      .delete()
+      .eq('id', id);
+    if (!error) {
+      setAvailability(prev => prev.filter(s => s.id !== id));
+      toast.success('Availability removed');
+    }
+  };
+
+  const handleUpdateBookingStatus = async (id: string, status: string) => {
+    const { error } = await supabase
+      .from('booking_requests')
+      .update({ status })
+      .eq('id', id);
+    if (!error) {
+      setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
+      toast.success(`Booking ${status}`);
+    }
   };
 
   const handleSaveSettings = () => {
@@ -122,13 +224,21 @@ const NativeBooking = () => {
     { key: 'settings', label: 'Availability', icon: Settings },
   ];
 
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5">
       {/* Beta banner */}
       <Alert className="border-amber-200 bg-amber-50/60">
         <AlertTriangle className="h-4 w-4 text-amber-600" />
         <AlertDescription className="text-amber-800 text-sm">
-          <span className="font-semibold">Early Beta</span> — This is the foundation of Groundpath's native booking system. Data is not yet persisted to the database.
+          <span className="font-semibold">Early Beta</span> — Groundpath's native booking system. Availability and booking requests are now saved to the database.
         </AlertDescription>
       </Alert>
 
@@ -164,9 +274,7 @@ const NativeBooking = () => {
                 <Button variant="outline" size="icon" className="h-8 w-8" onClick={prevWeek}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="sm" onClick={today} className="text-xs">
-                  Today
-                </Button>
+                <Button variant="ghost" size="sm" onClick={today} className="text-xs">Today</Button>
                 <Button variant="outline" size="icon" className="h-8 w-8" onClick={nextWeek}>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -180,17 +288,14 @@ const NativeBooking = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {/* Legend */}
             <div className="flex items-center gap-4 mb-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-sage-200" /> Available</span>
               <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-sage-500" /> Booked</span>
               <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-muted" /> Unavailable</span>
             </div>
 
-            {/* Grid */}
             <div className="overflow-x-auto -mx-2 px-2">
               <div className="min-w-[560px]">
-                {/* Day headers */}
                 <div className="grid grid-cols-[60px_repeat(7,1fr)] gap-px mb-1">
                   <div />
                   {DAYS.map((day, i) => {
@@ -204,8 +309,6 @@ const NativeBooking = () => {
                     );
                   })}
                 </div>
-
-                {/* Time slots */}
                 <div className="grid grid-cols-[60px_repeat(7,1fr)] gap-px">
                   {HOURS.map(hour => (
                     <>
@@ -236,7 +339,21 @@ const NativeBooking = () => {
 
             <Separator className="my-4" />
 
-            {/* Add availability */}
+            {/* Existing slots list */}
+            {availability.length > 0 && (
+              <div className="space-y-2 mb-4">
+                <h4 className="text-xs font-medium text-muted-foreground">Your Availability Slots</h4>
+                {availability.map(slot => (
+                  <div key={slot.id} className="flex items-center justify-between p-2 rounded-lg border border-border text-sm">
+                    <span>{DAYS[slot.day]} {slot.startHour > 12 ? `${slot.startHour-12}pm` : `${slot.startHour}am`} – {slot.endHour > 12 ? `${slot.endHour-12}pm` : `${slot.endHour}am`}</span>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => handleDeleteSlot(slot.id)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {showAddSlot ? (
               <div className="flex flex-wrap items-end gap-3 p-3 rounded-lg border border-border bg-muted/30">
                 <div className="space-y-1">
@@ -267,9 +384,7 @@ const NativeBooking = () => {
                   </Select>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" className="bg-sage-600 hover:bg-sage-700 text-white" onClick={() => { toast.info('Availability slot added (local only)'); setShowAddSlot(false); }}>
-                    Add
-                  </Button>
+                  <Button size="sm" className="bg-sage-600 hover:bg-sage-700 text-white" onClick={handleAddSlot}>Add</Button>
                   <Button size="sm" variant="ghost" onClick={() => setShowAddSlot(false)}>Cancel</Button>
                 </div>
               </div>
@@ -289,52 +404,54 @@ const NativeBooking = () => {
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Users className="h-4 w-4 text-sage-600" />
-                Sessions
+                Booking Requests
               </CardTitle>
-              <Button size="sm" disabled className="opacity-50 text-xs">
-                <Plus className="h-3.5 w-3.5 mr-1" /> New Session
-                <Badge variant="outline" className="ml-1.5 text-[9px] px-1 py-0">Soon</Badge>
-              </Button>
             </div>
           </CardHeader>
           <CardContent>
-            {sessions.length > 0 ? (
+            {bookings.length > 0 ? (
               <div className="space-y-3">
-                {sessions.map(session => (
-                  <div key={session.id} className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-sage-300 transition-colors">
+                {bookings.map(booking => (
+                  <div key={booking.id} className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-sage-300 transition-colors">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage-100">
-                      {session.type === 'video' ? (
-                        <Video className="h-4 w-4 text-sage-700" />
-                      ) : (
-                        <Users className="h-4 w-4 text-sage-700" />
-                      )}
+                      <Video className="h-4 w-4 text-sage-700" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{session.clientName}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {format(session.date, 'EEE d MMM, h:mma')} · {session.duration} min
+                      <p className="text-sm font-medium truncate">
+                        {format(new Date(booking.requested_date), 'EEE d MMM yyyy')}
                       </p>
+                      <p className="text-xs text-muted-foreground">
+                        {booking.requested_start_time.slice(0, 5)} – {booking.requested_end_time.slice(0, 5)} · {booking.duration_minutes} min
+                      </p>
+                      {booking.notes && (
+                        <p className="text-xs text-muted-foreground/70 mt-0.5 truncate">{booking.notes}</p>
+                      )}
                     </div>
-                    <Badge variant="outline" className={`text-[10px] ${statusStyle(session.status)}`}>
-                      {session.status.charAt(0).toUpperCase() + session.status.slice(1)}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className={`text-[10px] ${statusStyle(booking.status)}`}>
+                        {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                      </Badge>
+                      {booking.status === 'pending' && (
+                        <div className="flex gap-1">
+                          <Button size="sm" variant="outline" className="h-7 text-xs text-sage-700 border-sage-300" onClick={() => handleUpdateBookingStatus(booking.id, 'confirmed')}>
+                            Confirm
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive" onClick={() => handleUpdateBookingStatus(booking.id, 'cancelled')}>
+                            Decline
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-12">
                 <Calendar className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
-                <p className="text-sm font-medium text-muted-foreground">No sessions yet</p>
-                <p className="text-xs text-muted-foreground/70 mt-1">Share your booking link to get started.</p>
+                <p className="text-sm font-medium text-muted-foreground">No booking requests yet</p>
+                <p className="text-xs text-muted-foreground/70 mt-1">Set your availability — clients will see open slots on the booking page.</p>
               </div>
             )}
-
-            <Separator className="my-4" />
-
-            <div className="text-xs text-muted-foreground/70 flex items-center gap-1.5">
-              <Clock className="h-3 w-3" />
-              Session management features (create, reschedule, cancel) coming in next release.
-            </div>
           </CardContent>
         </Card>
       )}
@@ -352,7 +469,6 @@ const NativeBooking = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Working Days */}
             <div className="space-y-3">
               <h4 className="text-sm font-medium">Working Days</h4>
               <div className="grid grid-cols-7 gap-2">
@@ -374,7 +490,6 @@ const NativeBooking = () => {
 
             <Separator />
 
-            {/* Working Hours */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-sm font-medium">Start Time</label>
@@ -406,7 +521,6 @@ const NativeBooking = () => {
 
             <Separator />
 
-            {/* Session Preferences */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-sm font-medium">Session Duration</label>
@@ -459,9 +573,9 @@ const NativeBooking = () => {
           <div className="space-y-3">
             {[
               { step: 1, label: 'Enable Groundpath Native Beta', done: true },
-              { step: 2, label: 'Set working days and hours', done: false },
-              { step: 3, label: 'Add first availability blocks', done: false },
-              { step: 4, label: 'Test client-facing booking flow', done: false },
+              { step: 2, label: 'Set working days and hours', done: availability.length > 0 },
+              { step: 3, label: 'Add first availability blocks', done: availability.length > 0 },
+              { step: 4, label: 'Test client-facing booking flow', done: bookings.length > 0 },
               { step: 5, label: 'Connect Microsoft calendar & video (coming soon)', done: false },
             ].map(item => (
               <div key={item.step} className="flex items-center gap-3">
