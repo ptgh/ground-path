@@ -1,35 +1,44 @@
 
 
-## Understanding
+## Native Booking & Calendar System -- v1 Foundation
 
-You want exactly two places to show the blue circle (or uploaded avatar photo):
-1. The big profile avatar on the Dashboard page itself
-2. The practitioner's profile photo on the main public-facing practitioner card
+### Summary
+Add a "Booking" tab to the practitioner dashboard with a calendar/availability view, sessions list, and availability settings. UI-first with local state -- no database changes yet. Halaxy flow untouched.
 
-Every other icon — the **header bar indicator** (MobileAuthIndicator) and the **bottom of the mobile menu** (AuthAwareSection) — must show the **green person icon** (`bg-primary/20` circle with green `User` icon), never the blue dot.
+### New file: `src/components/dashboard/NativeBooking.tsx`
 
-Currently the code in both `MobileAuthIndicator` and `AuthAwareSection` checks `profile?.avatar_url` and shows the avatar image if present. The problem is: when the profile has an avatar URL, it renders the Avatar component with a blue-tinted fallback — and even when it works, it shows the photo instead of the green icon you want in the header.
+Single component with three internal sub-views toggled by buttons:
 
-## Plan
+**1. Calendar (default view)**
+- Week view grid showing Mon-Sun with hourly time slots (8am-6pm)
+- Placeholder availability blocks shown as sage-colored cells
+- "Add Availability" button opens inline form (day picker, start/end time)
+- Availability stored in local state with sample data
 
-### File: `src/components/Header.tsx`
+**2. Sessions**
+- List of upcoming sessions (empty state initially)
+- Session cards: client name, date/time, duration, status badge (confirmed/pending/completed)
+- Empty state with Calendar icon: "No sessions yet"
 
-**1. MobileAuthIndicator trigger (lines 190-201)** — Remove the avatar_url check entirely. Always render the green person icon:
-```tsx
-<div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/20">
-  <User className="h-4 w-4 text-primary" />
-</div>
-```
+**3. Availability Settings**
+- Working days toggles (Mon-Fri on by default)
+- Start/end time selectors
+- Session duration dropdown (30/45/50/60 min)
+- Buffer time dropdown (0/5/10/15 min)
+- Save button shows toast: "Settings saved locally -- database sync coming soon"
 
-**2. AuthAwareSection trigger (lines 53-65)** — Same change. Remove the avatar/photo branch, always show the green person icon:
-```tsx
-<div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20">
-  <User className="h-4 w-4 text-primary" />
-</div>
-```
+**Beta banner** across all views: amber Alert component reading "Early Beta -- This is the foundation of Groundpath's native booking system. Data is not yet persisted."
 
-### What stays the same
-- Dashboard.tsx big avatar (line 302-307) — keeps showing the blue/sage avatar with photo or initial fallback
-- PractitionerCard — keeps showing the practitioner's uploaded photo
-- Dropdown menu content (profile card inside the dropdown) — unchanged
-- Role labels,
+### Modified file: `src/components/Dashboard.tsx`
+
+1. Import `NativeBooking` component
+2. Add "Booking" tab trigger after Overview, visible when `isAdmin || getSessionMode(profile) === 'native_beta'`
+3. Add `TabsContent value="booking"` rendering `<NativeBooking />`
+4. Update grid-cols count in TabsList to accommodate the new tab
+5. Update "Schedule Session" quick action to switch to booking tab when in native_beta mode
+
+### Design approach
+- Follows existing dashboard patterns: Card/CardHeader/CardContent, sage color palette, StatCard style, Separator between sections
+- Responsive: stacked on mobile, grid on desktop
+- All state is local (useState) -- ready to swap for Supabase queries later
+- No new routes, no new database tables, no changes to Halaxy embed
