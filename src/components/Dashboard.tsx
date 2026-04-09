@@ -44,6 +44,7 @@ import PractitionerApprovals from './dashboard/PractitionerApprovals';
 import { NotificationPreferencesCard } from './dashboard/NotificationPreferencesCard';
 import { notesService, Note } from '@/services/notesService';
 import { ClientMessagesPanel } from './messaging/ClientMessagesPanel';
+import NativeBooking from './dashboard/NativeBooking';
 import { gsap } from 'gsap';
 
 interface HalaxyIntegration {
@@ -245,7 +246,7 @@ const Dashboard = () => {
     { title: 'Create Note', description: 'Document client interactions', icon: PlusCircle, action: () => handleNoteModal() },
     { title: 'View Resources', description: 'Access professional resources', icon: BookOpen, action: () => setActiveTab('resources') },
     { title: 'Professional Forms', description: 'Access specialized forms', icon: FileText, action: () => navigate('/practitioner/forms') },
-    { title: 'Schedule Session', description: 'Book client appointments', icon: Calendar, action: () => console.log('Schedule') }
+    { title: 'Schedule Session', description: 'Book client appointments', icon: Calendar, action: () => { if (isAdmin || getSessionMode(profile) === 'native_beta') { setActiveTab('booking'); } else { console.log('Schedule'); } } }
   ];
 
   /* ─── Form categories for better scanning ─── */
@@ -330,8 +331,14 @@ const Dashboard = () => {
 
           {/* ─── Tabs ─── */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className={`grid w-full h-auto p-1 gap-0.5 ${isAdmin ? 'grid-cols-4 lg:grid-cols-9' : 'grid-cols-4 lg:grid-cols-7'}`}>
+            <TabsList className={`grid w-full h-auto p-1 gap-0.5 ${isAdmin ? 'grid-cols-4 lg:grid-cols-10' : getSessionMode(profile) === 'native_beta' ? 'grid-cols-4 lg:grid-cols-8' : 'grid-cols-4 lg:grid-cols-7'}`}>
               <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Overview</TabsTrigger>
+              {(isAdmin || getSessionMode(profile) === 'native_beta') && (
+                <TabsTrigger value="booking" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+                  <Calendar className="h-3 w-3 mr-1 hidden sm:inline" />
+                  Booking
+                </TabsTrigger>
+              )}
               <TabsTrigger value="messages" className="relative text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
                 <MessageSquare className="h-3 w-3 mr-1 hidden sm:inline" />
                 Messages
@@ -365,6 +372,13 @@ const Dashboard = () => {
               )}
               <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Settings</TabsTrigger>
             </TabsList>
+
+            {/* ═══ Booking Tab ═══ */}
+            {(isAdmin || getSessionMode(profile) === 'native_beta') && (
+              <TabsContent value="booking" className="space-y-6">
+                <NativeBooking />
+              </TabsContent>
+            )}
 
             {/* ═══ Overview Tab ═══ */}
             <TabsContent value="overview" className="space-y-6">
