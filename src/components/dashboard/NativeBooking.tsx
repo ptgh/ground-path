@@ -443,6 +443,41 @@ const NativeBooking = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* ═══ Setup Roadmap ═══ */}
+      <Card className="border-dashed border-border/70">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <CheckCircle2 className="h-4 w-4 text-sage-600" />
+            Next Setup Steps
+          </CardTitle>
+          <CardDescription className="text-xs">
+            Your roadmap for getting the native booking system fully operational.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {[
+              { step: 1, label: 'Enable Groundpath Native Beta', done: true },
+              { step: 2, label: 'Set working days and hours', done: false },
+              { step: 3, label: 'Add first availability blocks', done: false },
+              { step: 4, label: 'Test client-facing booking flow', done: false },
+              { step: 5, label: 'Connect Microsoft calendar & video (coming soon)', done: false },
+            ].map(item => (
+              <div key={item.step} className="flex items-center gap-3">
+                <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-medium ${
+                  item.done ? 'bg-sage-600 text-white' : 'bg-muted text-muted-foreground'
+                }`}>
+                  {item.done ? '✓' : item.step}
+                </div>
+                <span className={`text-sm ${item.done ? 'text-foreground line-through opacity-60' : 'text-foreground'}`}>
+                  {item.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
