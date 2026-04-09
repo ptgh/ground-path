@@ -373,6 +373,13 @@ const Dashboard = () => {
               <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Settings</TabsTrigger>
             </TabsList>
 
+            {/* ═══ Booking Tab ═══ */}
+            {(isAdmin || getSessionMode(profile) === 'native_beta') && (
+              <TabsContent value="booking" className="space-y-6">
+                <NativeBooking />
+              </TabsContent>
+            )}
+
             {/* ═══ Overview Tab ═══ */}
             <TabsContent value="overview" className="space-y-6">
               {/* Stats row */}
