@@ -187,7 +187,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const unreadCount = useUnreadMessages();
 
   const shouldShowAuth = location.pathname.includes('/practitioner/');
