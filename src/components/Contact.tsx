@@ -7,12 +7,14 @@ import { contactFormSchema, checkRateLimit } from '@/lib/validation';
 import { useToast } from '@/hooks/use-toast';
 import MailingListModal from './MailingListModal';
 import HalaxyEmbed from './booking/HalaxyEmbed';
+import NativeBookingPanel from './booking/NativeBookingPanel';
 import { scrollToSectionWithOffset } from '@/lib/utils';
+import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
 
 const HALAXY_EMBED_URL = import.meta.env.VITE_HALAXY_EMBED_URL as string | undefined;
-const HALAXY_EXTERNAL_URL = 'https://www.halaxy.com/profile/groundpath/location/1353667';
 
 const Contact = () => {
+  const { mode: bookingMode } = useBookingMode();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -103,30 +105,36 @@ const Contact = () => {
             </h2>
             <div className="fade-in w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
             <p className="fade-in text-lg text-gray-600 max-w-2xl mx-auto">
-              All sessions are currently conducted online via Halaxy Telehealth. Book a time that suits you and receive your meeting link automatically.
+              {bookingMode === 'native_beta'
+                ? 'Select an available time to request a session. Our native booking system is in early beta.'
+                : 'All sessions are currently conducted online via Halaxy Telehealth. Book a time that suits you and receive your meeting link automatically.'}
             </p>
-            <div className="fade-in flex justify-center mt-6">
-              <a 
-                href="https://www.halaxy.com/profile/groundpath/location/1353667"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sage-600 hover:text-sage-700 transition-colors"
-              >
-                <img 
-                  src="https://cdn.halaxy.com/h/images/logo.png" 
-                  alt="Halaxy booking system logo"
-                  className="h-6 w-auto"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <span className="text-sm font-medium">Book Online via Halaxy Telehealth</span>
-              </a>
-            </div>
+            {bookingMode === 'halaxy' && (
+              <div className="fade-in flex justify-center mt-6">
+                <a 
+                  href={HALAXY_EXTERNAL_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sage-600 hover:text-sage-700 transition-colors"
+                >
+                  <img 
+                    src="https://cdn.halaxy.com/h/images/logo.png" 
+                    alt="Halaxy booking system logo"
+                    className="h-6 w-auto"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span className="text-sm font-medium">Book Online via Halaxy Telehealth</span>
+                </a>
+              </div>
+            )}
           </div>
 
           <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
-              {HALAXY_EMBED_URL ? (
+              {bookingMode === 'native_beta' ? (
+                <NativeBookingPanel />
+              ) : HALAXY_EMBED_URL ? (
                 <div className="mb-4">
                   <HalaxyEmbed embedUrl={HALAXY_EMBED_URL} fallbackUrl={HALAXY_EXTERNAL_URL} />
                 </div>
@@ -245,7 +253,9 @@ const Contact = () => {
                      <div>
                        <div className="font-medium text-gray-900">Service Delivery</div>
                        <div className="text-gray-600">
-                         All sessions online via Halaxy Telehealth<br />
+                         {bookingMode === 'native_beta'
+                           ? 'All sessions online via secure video'
+                           : 'All sessions online via Halaxy Telehealth'}<br />
                          In-person sessions coming soon (Perth, WA)
                        </div>
                      </div>
