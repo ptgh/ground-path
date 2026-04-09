@@ -23,9 +23,9 @@ const AuthAwareSection = () => {
     const isAdmin = roles.some(r => r.role === 'admin');
     const isPractitioner = profile?.user_type === 'practitioner' || roles.some(r => r.role === 'social_worker' || r.role === 'mental_health_professional');
     
-    if (isAdmin) return { label: 'Administrator', className: 'bg-emerald-800 text-emerald-50' };
-    if (isPractitioner) return { label: 'Practitioner', className: 'bg-emerald-600/20 text-emerald-700' };
-    return { label: 'Client', className: 'bg-emerald-100 text-emerald-600' };
+    if (isAdmin) return { label: 'Admin', className: 'bg-emerald-800 text-emerald-50', short: 'Admin' };
+    if (isPractitioner) return { label: 'Practitioner', className: 'bg-emerald-600/20 text-emerald-700', short: 'Practitioner' };
+    return { label: 'Client', className: 'bg-emerald-100 text-emerald-600', short: '' };
   };
 
   const roleBadge = getRoleBadge();
@@ -53,7 +53,7 @@ const AuthAwareSection = () => {
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
               <AvatarImage src={profile?.avatar_url} />
-          <AvatarFallback className="bg-primary/20 text-primary text-xs font-medium">
+          <AvatarFallback className="bg-emerald-600 text-white text-xs font-medium">
                 {profile?.display_name?.charAt(0)?.toUpperCase() || <User className="h-4 w-4" />}
               </AvatarFallback>
             </Avatar>
@@ -309,13 +309,16 @@ const Header = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-gray-300 hover:text-white"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+          {/* Mobile: user indicator + menu button */}
+          <div className="md:hidden flex items-center gap-2">
+            {isLoggedIn && <MobileAuthIndicator />}
+            <button
+              className="p-2 text-gray-300 hover:text-white"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
