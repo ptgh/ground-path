@@ -8,10 +8,13 @@ import Footer from '@/components/Footer';
 import { ClientMessagesPanel } from '@/components/messaging/ClientMessagesPanel';
 import AvatarUpload from '@/components/AvatarUpload';
 import SEO from '@/components/SEO';
+import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
+import { scrollToSectionWithOffset } from '@/lib/utils';
 
 const ClientDashboard = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
+  const { mode: bookingMode } = useBookingMode();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -70,7 +73,14 @@ const ClientDashboard = () => {
             <Button
               variant="outline"
               className="h-auto py-4 flex flex-col items-center gap-2"
-              onClick={() => window.open('https://www.halaxy.com/profile/groundpath/location/1353667', '_blank')}
+              onClick={() => {
+                if (bookingMode === 'native_beta') {
+                  navigate('/');
+                  setTimeout(() => scrollToSectionWithOffset('booking', 96), 300);
+                } else {
+                  window.open(HALAXY_EXTERNAL_URL, '_blank');
+                }
+              }}
             >
               <User className="h-5 w-5" />
               <span className="text-xs">Book Session</span>

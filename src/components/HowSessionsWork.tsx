@@ -2,10 +2,12 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CalendarCheck, Video, MessageSquare, ShieldCheck } from 'lucide-react';
+import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
+import { scrollToSectionWithOffset } from '@/lib/utils';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const steps = [
+const halaxySteps = [
   {
     icon: CalendarCheck,
     title: 'Book Online',
@@ -28,7 +30,32 @@ const steps = [
   },
 ];
 
+const nativeSteps = [
+  {
+    icon: CalendarCheck,
+    title: 'Choose a Time',
+    description: 'Browse available appointment times directly on Groundpath and select the slot that works best for you.',
+  },
+  {
+    icon: MessageSquare,
+    title: 'Request Confirmed',
+    description: 'You\'ll receive a confirmation with your session details and a secure video meeting link.',
+  },
+  {
+    icon: Video,
+    title: 'Join via Secure Video',
+    description: 'At your scheduled time, join your session through a secure video link — no additional software required.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Secure & Confidential',
+    description: 'All sessions are encrypted and conducted in a private, secure environment meeting Australian privacy standards.',
+  },
+];
+
 const HowSessionsWork = () => {
+  const { mode: bookingMode } = useBookingMode();
+  const steps = bookingMode === 'native_beta' ? nativeSteps : halaxySteps;
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -65,7 +92,9 @@ const HowSessionsWork = () => {
           </h2>
           <div className="w-20 h-1 bg-primary mx-auto mb-6"></div>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            All sessions are currently conducted online via Halaxy Telehealth — simple, secure, and accessible from anywhere.
+            {bookingMode === 'native_beta'
+              ? 'All sessions are conducted online via secure video — simple, safe, and accessible from anywhere.'
+              : 'All sessions are currently conducted online via Halaxy Telehealth — simple, secure, and accessible from anywhere.'}
           </p>
         </div>
 
@@ -90,15 +119,25 @@ const HowSessionsWork = () => {
 
         {/* CTA */}
         <div className="text-center mt-10">
-          <a
-            href="https://www.halaxy.com/profile/groundpath/location/1353667"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-lg"
-          >
-            <CalendarCheck className="h-4 w-4" />
-            Book an Online Session
-          </a>
+          {bookingMode === 'native_beta' ? (
+            <button
+              onClick={() => scrollToSectionWithOffset('booking', 96)}
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-lg"
+            >
+              <CalendarCheck className="h-4 w-4" />
+              Book an Online Session
+            </button>
+          ) : (
+            <a
+              href={HALAXY_EXTERNAL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-lg"
+            >
+              <CalendarCheck className="h-4 w-4" />
+              Book an Online Session
+            </a>
+          )}
         </div>
       </div>
     </section>
