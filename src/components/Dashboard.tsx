@@ -44,6 +44,7 @@ import PractitionerApprovals from './dashboard/PractitionerApprovals';
 import { NotificationPreferencesCard } from './dashboard/NotificationPreferencesCard';
 import { notesService, Note } from '@/services/notesService';
 import { ClientMessagesPanel } from './messaging/ClientMessagesPanel';
+import NativeBooking from './dashboard/NativeBooking';
 import { gsap } from 'gsap';
 
 interface HalaxyIntegration {
