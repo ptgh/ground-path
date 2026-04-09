@@ -152,34 +152,75 @@ const NavUnreadBadge = ({ count }: { count: number }) => {
     </span>
   );
 };
-// Mobile auth indicator - shows avatar + role in header bar
+// Mobile auth indicator - dropdown with profile card, dashboard & sign out
 const MobileAuthIndicator = () => {
-  const { profile, roles } = useAuth();
+  const { user, profile, roles, signOut } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const isAdmin = roles.some(r => r.role === 'admin');
   const isPractitioner = profile?.user_type === 'practitioner' || roles.some(r => r.role === 'social_worker' || r.role === 'mental_health_professional');
 
   const roleLabel = isAdmin ? 'Admin' : isPractitioner ? 'Practitioner' : '';
+  const roleBadgeClass = isAdmin
+    ? 'bg-emerald-800 text-emerald-50'
+    : isPractitioner
+      ? 'bg-emerald-600/20 text-emerald-700'
+      : 'bg-emerald-100 text-emerald-600';
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({ title: "Signed out successfully", description: "You have been signed out." });
+    } catch {
+      toast({ title: "Error signing out", description: "Please try again.", variant: "destructive" });
+    }
+  };
 
   return (
-    <button
-      onClick={() => {
-        const dashPath = profile?.user_type === 'practitioner' ? '/practitioner/dashboard' : '/dashboard';
-        navigate(dashPath);
-      }}
-      className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-white/10 transition-colors"
-    >
-      <Avatar className="h-7 w-7">
-        <AvatarImage src={profile?.avatar_url} />
-        <AvatarFallback className="bg-emerald-600 text-white text-[10px] font-semibold">
-          {profile?.display_name?.charAt(0)?.toUpperCase() || <User className="h-3.5 w-3.5" />}
-        </AvatarFallback>
-      </Avatar>
-      {roleLabel && (
-        <span className="text-[10px] font-medium text-emerald-400">{roleLabel}</span>
-      )}
-    </button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-white/10 transition-colors">
+          <Avatar className="h-7 w-7">
+            <AvatarImage src={profile?.avatar_url} />
+            <AvatarFallback className="bg-emerald-600 text-white text-[10px] font-semibold">
+              {profile?.display_name?.charAt(0)?.toUpperCase() || <User className="h-3.5 w-3.5" />}
+            </AvatarFallback>
+          </Avatar>
+          {roleLabel && (
+            <span className="text-[10px] font-medium text-emerald-400">{roleLabel}</span>
+          )}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuItem className="font-normal cursor-default" onSelect={(e) => e.preventDefault()}>
+          <div className="flex flex-col space-y-1.5">
+            <p className="text-sm font-medium leading-none">
+              {profile?.display_name || user?.email}
+            </p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {user?.email}
+            </p>
+            {roleLabel && (
+              <span className={`inline-flex w-fit items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${roleBadgeClass}`}>
+                {roleLabel || 'Client'}
+              </span>
+            )}
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => {
+          const dashPath = profile?.user_type === 'practitioner' ? '/practitioner/dashboard' : '/dashboard';
+          navigate(dashPath);
+        }}>
+          <LayoutDashboard className="mr-2 h-4 w-4" />
+          <span>Dashboard</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSignOut}>
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Sign out</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
