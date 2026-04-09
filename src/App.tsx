@@ -147,47 +147,49 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <AuthCompletionRouter />
-          <GoogleAnalytics />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/resources" element={<Resources />} />
-            <Route path="/article/:slug" element={<Article />} />
-            <Route path="/voice-session" element={<VoiceSessionPage />} />
-            <Route path="/confirm" element={<ConfirmPage />} />
-            <Route path="/unsubscribe" element={<UnsubscribePage />} />
-            <Route path="/verify-email" element={<Navigate to="/practitioner/auth" replace />} />
-            <Route path="/professional-forms" element={<VerifiedPractitionerRoute><ProfessionalForms /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms" element={<VerifiedPractitionerRoute><ProfessionalForms /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/verify" element={<ProtectedRoute><PractitionerVerify /></ProtectedRoute>} />
-            <Route path="/practitioner/forms/phq-9/fill" element={<VerifiedPractitionerRoute><PHQ9Form /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/gad-7/fill" element={<VerifiedPractitionerRoute><GAD7Form /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/dass-21/fill" element={<VerifiedPractitionerRoute><DASS21Form /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/mental-status-exam/fill" element={<VerifiedPractitionerRoute><MSEForm /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/suicide-risk-assessment/fill" element={<VerifiedPractitionerRoute><SuicideRiskForm /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/treatment-plan/fill" element={<VerifiedPractitionerRoute><TreatmentPlanForm /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/client-intake/fill" element={<VerifiedPractitionerRoute><ClientIntakeForm /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/gaf-scale/fill" element={<VerifiedPractitionerRoute><GAFForm /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/safety-planning/fill" element={<VerifiedPractitionerRoute><SafetyPlanForm /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/crisis-intervention/fill" element={<VerifiedPractitionerRoute><CrisisInterventionForm /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/cpd-log/fill" element={<VerifiedPractitionerRoute><CPDLogForm /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/incident-report/fill" element={<VerifiedPractitionerRoute><IncidentReportForm /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/progress-notes/fill" element={<VerifiedPractitionerRoute><ProgressNotesForm /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/case-review/fill" element={<VerifiedPractitionerRoute><CaseReviewForm /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/supervision-record/fill" element={<VerifiedPractitionerRoute><SupervisionRecordForm /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/reflective-practice/fill" element={<VerifiedPractitionerRoute><ReflectivePracticeForm /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/forms/k10/fill" element={<VerifiedPractitionerRoute><BDIForm /></VerifiedPractitionerRoute>} />
-            <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
-            <Route path="/practitioner/auth" element={<AuthPage />} />
-            <Route path="/practitioner/auth/callback" element={<AuthCallback />} />
-            <Route path="/auth/callback" element={<LinkedInCallback />} />
-            <Route path="/practitioner/dashboard" element={<VerifiedPractitionerRoute><Dashboard /></VerifiedPractitionerRoute>} />
-            <Route path="/practitioner/messages" element={<VerifiedPractitionerRoute><Messages /></VerifiedPractitionerRoute>} />
-            <Route path="/messages" element={<AuthenticatedRoute><Messages /></AuthenticatedRoute>} />
-            <Route path="/dashboard" element={<AuthenticatedRoute><ClientDashboard /></AuthenticatedRoute>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <AIAssistantRouter />
+          <AuthProvider>
+            <AuthCompletionRouter />
+            <GoogleAnalytics />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/resources" element={<Resources />} />
+              <Route path="/article/:slug" element={<Article />} />
+              <Route path="/voice-session" element={<VoiceSessionPage />} />
+              <Route path="/confirm" element={<ConfirmPage />} />
+              <Route path="/unsubscribe" element={<UnsubscribePage />} />
+              <Route path="/verify-email" element={<Navigate to="/practitioner/auth" replace />} />
+              <Route path="/professional-forms" element={<VerifiedPractitionerRoute><ProfessionalForms /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms" element={<VerifiedPractitionerRoute><ProfessionalForms /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/verify" element={<ProtectedRoute><PractitionerVerify /></ProtectedRoute>} />
+              <Route path="/practitioner/forms/phq-9/fill" element={<VerifiedPractitionerRoute><PHQ9Form /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/gad-7/fill" element={<VerifiedPractitionerRoute><GAD7Form /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/dass-21/fill" element={<VerifiedPractitionerRoute><DASS21Form /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/mental-status-exam/fill" element={<VerifiedPractitionerRoute><MSEForm /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/suicide-risk-assessment/fill" element={<VerifiedPractitionerRoute><SuicideRiskForm /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/treatment-plan/fill" element={<VerifiedPractitionerRoute><TreatmentPlanForm /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/client-intake/fill" element={<VerifiedPractitionerRoute><ClientIntakeForm /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/gaf-scale/fill" element={<VerifiedPractitionerRoute><GAFForm /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/safety-planning/fill" element={<VerifiedPractitionerRoute><SafetyPlanForm /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/crisis-intervention/fill" element={<VerifiedPractitionerRoute><CrisisInterventionForm /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/cpd-log/fill" element={<VerifiedPractitionerRoute><CPDLogForm /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/incident-report/fill" element={<VerifiedPractitionerRoute><IncidentReportForm /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/progress-notes/fill" element={<VerifiedPractitionerRoute><ProgressNotesForm /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/case-review/fill" element={<VerifiedPractitionerRoute><CaseReviewForm /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/supervision-record/fill" element={<VerifiedPractitionerRoute><SupervisionRecordForm /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/reflective-practice/fill" element={<VerifiedPractitionerRoute><ReflectivePracticeForm /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/forms/k10/fill" element={<VerifiedPractitionerRoute><BDIForm /></VerifiedPractitionerRoute>} />
+              <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
+              <Route path="/practitioner/auth" element={<AuthPage />} />
+              <Route path="/practitioner/auth/callback" element={<AuthCallback />} />
+              <Route path="/auth/callback" element={<LinkedInCallback />} />
+              <Route path="/practitioner/dashboard" element={<VerifiedPractitionerRoute><Dashboard /></VerifiedPractitionerRoute>} />
+              <Route path="/practitioner/messages" element={<VerifiedPractitionerRoute><Messages /></VerifiedPractitionerRoute>} />
+              <Route path="/messages" element={<AuthenticatedRoute><Messages /></AuthenticatedRoute>} />
+              <Route path="/dashboard" element={<AuthenticatedRoute><ClientDashboard /></AuthenticatedRoute>} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <AIAssistantRouter />
+          </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
