@@ -1,29 +1,41 @@
 
-I know what needs correcting.
 
-1. What went wrong
-- The chat card and voice card are not sharing one true modal shell.
-- `ClientAIAssistant.tsx` uses `DialogContent`, while `VoiceCounsellingSession.tsx` uses its own custom portal container.
-- The last change resized the voice setup card as well, so both cards drifted away from the original AI voice card you wanted to preserve.
+## Problem Analysis
 
-2. What I would change
-- Use the original AI voice setup card as the source of truth.
-- Restore the voice setup modal in `VoiceCounsellingSession.tsx` to the original proportions/spacings from your reference.
-- Then update the chat modal in `ClientAIAssistant.tsx` to match that exact outer shell: width, max width, height/max height, radius, border, padding and overflow behavior.
-- Leave the live in-call voice screen alone; only the voice setup card should be the reference.
+I explored the routing, Header, Dashboard, and ClientDashboard files. Here is what is happening and what needs to change.
 
-3. Files involved
-- `src/components/VoiceCounsellingSession.tsx`
-  - adjust only the `voiceState === "setup"` modal wrapper
-  - remove the forced sizing that made the original voice card drift
-- `src/components/ClientAIAssistant.tsx`
-  - replace its independent modal sizing with the same shell as the restored voice card
-  - keep the existing chat content/header/actions intact
-- `src/components/ui/dialog.tsx`
-  - only touch this if the shared Radix dialog defaults are fighting the exact size match
+### Issue 1: Dashboard link goes to wrong page for practitioners/admins
 
-4. Rules I would follow
-- No redesign
-- Chat changes to match voice, not the other way around
-- Preserve current controls and layout inside each card
-- Make the outer box identical first, then keep internal
+The Header navigation on public pages (home, resources, etc.) has a "Dashboard" link that always routes to `/dashboard` — which renders the **ClientDashboard** (a simple client view with just messages, voice support, resources, and book session). Meanwhile, tapping the mobile auth indicator (the Admin icon) correctly routes practitioners to `/practitioner/dashboard` (the full practitioner dashboard with tabs, forms, notes, settings, etc.).
+
+**Root cause**: Lines 303-309 and 403-408 in Header.tsx hardcode `/dashboard` for logged-in users on public pages, regardless of their role.
+
+**Fix**: Update all "Dashboard" nav links in Header.tsx to check `profile?.user_type === 'practitioner'` and route to `/practitioner/dashboard` for practitioners/admins, `/dashboard` for clients. This matches what MobileAuthIndicator already does.
+
+### Issue 2: Remove separate "Verify Halaxy Profile" button
+
+The Settings tab in Dashboard.tsx (line 769-783) shows two buttons: "Update Professional Profile" and "Verify Halaxy Profile". Both open the same ProfessionalProfileModal. The Halaxy verification is already inside the Professional Profile modal, so the separate button is redundant.
+
+Similarly, the Overview tab (lines 525-556) has a standalone Halaxy section.
+
+**Fix**:
+- Settings tab: Remove the "Verify Halaxy Profile" / "Halaxy Profile" button entirely. Keep only "Update Professional Profile".
+- Overview tab: Remove the separate Halaxy link/verify prompt. Keep the "Update Professional Info" button which already opens ProfessionalProfileModal where Halaxy management lives.
+
+### Files to change
+
+1. **`src/components/Header.tsx`**
+   - Desktop public nav "Dashboard" link (line ~305): route based on user type
+   - Mobile public nav "Dashboard" link (line ~404): route based on user type
+
+2. **`src/components/Dashboard.tsx`**
+   - Settings tab (lines 765-783): Remove the Halaxy button row, keep only "Update Professional Profile"
+   - Overview Professional Summary (lines 519-557): Remove standalone Halaxy section, keep "Update Professional Info"
+   - Welcome header (lines 328-344): Remove Halaxy logo link (desktop top-right)
+
+### What stays the same
+- ClientDashboard stays for actual client users (user_type !== 'practitioner')
+- ProfessionalProfileModal continues to handle Halaxy verification internally
+- Session Mode card in Settings (admin-only) stays unchanged
+- All tab structure, forms, notes, and approvals remain as-is
+
