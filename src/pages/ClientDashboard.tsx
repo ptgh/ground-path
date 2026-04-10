@@ -10,6 +10,7 @@ import AvatarUpload from '@/components/AvatarUpload';
 import SEO from '@/components/SEO';
 import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
 import { scrollToSectionWithOffset } from '@/lib/utils';
+import MyBookings from '@/components/booking/MyBookings';
 
 const ClientDashboard = () => {
   const { user, profile } = useAuth();
@@ -86,6 +87,9 @@ const ClientDashboard = () => {
               <span className="text-xs">Book Session</span>
             </Button>
           </div>
+
+          {/* My Bookings */}
+          <MyBookings />
 
           {/* Messages */}
           <Card>

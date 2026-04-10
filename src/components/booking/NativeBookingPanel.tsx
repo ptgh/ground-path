@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Calendar, Clock, Video, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
+import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -115,6 +116,15 @@ const NativeBookingPanel = () => {
       toast.error('Failed to submit booking request');
       return;
     }
+
+    // Send email notification to practitioner (best-effort)
+    supabase.functions.invoke('booking-notification', {
+      body: {
+        practitionerId: slotData.practitioner_id,
+        requestedDate: format(requestedDate, 'EEE, d MMM yyyy'),
+        requestedTime: `${formatTime(slot.start_time)} – ${formatTime(slot.end_time)}`,
+      },
+    }).catch(err => console.error('Booking notification error:', err));
 
     toast.success('Booking request submitted! Your practitioner will confirm shortly.');
     setSelectedSlot(null);
