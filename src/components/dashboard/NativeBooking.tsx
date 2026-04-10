@@ -99,12 +99,12 @@ const NativeBooking = () => {
   const [newSlotStart, setNewSlotStart] = useState('9');
   const [newSlotEnd, setNewSlotEnd] = useState('12');
 
-  // Fetch availability and bookings
+  // Fetch availability, bookings, and settings from profile
   useEffect(() => {
     if (!user) return;
     const load = async () => {
       setLoading(true);
-      const [avRes, bkRes] = await Promise.all([
+      const [avRes, bkRes, profileRes] = await Promise.all([
         supabase
           .from('practitioner_availability')
           .select('*')
@@ -114,6 +114,11 @@ const NativeBooking = () => {
           .select('*')
           .eq('practitioner_id', user.id)
           .order('requested_date', { ascending: true }),
+        supabase
+          .from('profiles')
+          .select('halaxy_integration')
+          .eq('user_id', user.id)
+          .single(),
       ]);
 
       if (avRes.data) {
@@ -129,6 +134,21 @@ const NativeBooking = () => {
 
       if (bkRes.data) {
         setBookings(bkRes.data);
+      }
+
+      // Load persisted settings from profile
+      if (profileRes.data?.halaxy_integration) {
+        const integration = profileRes.data.halaxy_integration as Record<string, unknown>;
+        const saved = integration.availability_settings as Record<string, unknown> | undefined;
+        if (saved) {
+          setSettings({
+            workingDays: (saved.workingDays as boolean[]) ?? DEFAULT_SETTINGS.workingDays,
+            startHour: (saved.startHour as number) ?? DEFAULT_SETTINGS.startHour,
+            endHour: (saved.endHour as number) ?? DEFAULT_SETTINGS.endHour,
+            sessionDuration: (saved.sessionDuration as number) ?? DEFAULT_SETTINGS.sessionDuration,
+            bufferMinutes: (saved.bufferMinutes as number) ?? DEFAULT_SETTINGS.bufferMinutes,
+          });
+        }
       }
 
       setLoading(false);
@@ -214,8 +234,82 @@ const NativeBooking = () => {
     }
   };
 
-  const handleSaveSettings = () => {
-    toast.success('Settings saved locally — database sync coming soon');
+  const [savingSettings, setSavingSettings] = useState(false);
+
+  const handleSaveSettings = async () => {
+    if (!user) return;
+    setSavingSettings(true);
+
+    try {
+      // 1. Persist settings to profile JSONB
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('halaxy_integration')
+        .eq('user_id', user.id)
+        .single();
+
+      const existing = (profileData?.halaxy_integration as Record<string, unknown>) ?? {};
+      const { error: profileErr } = await supabase
+        .from('profiles')
+        .update({
+          halaxy_integration: {
+            ...existing,
+            availability_settings: {
+              workingDays: settings.workingDays,
+              startHour: settings.startHour,
+              endHour: settings.endHour,
+              sessionDuration: settings.sessionDuration,
+              bufferMinutes: settings.bufferMinutes,
+            },
+          } as unknown as Record<string, never>,
+        })
+        .eq('user_id', user.id);
+
+      if (profileErr) throw profileErr;
+
+      // 2. Sync availability table: delete old, create from working days
+      await supabase
+        .from('practitioner_availability')
+        .delete()
+        .eq('practitioner_id', user.id);
+
+      const slotsToInsert = settings.workingDays
+        .map((active, dayIdx) => active ? {
+          practitioner_id: user.id,
+          day_of_week: dayIdx,
+          start_time: `${String(settings.startHour).padStart(2, '0')}:00`,
+          end_time: `${String(settings.endHour).padStart(2, '0')}:00`,
+          is_recurring: true,
+        } : null)
+        .filter(Boolean);
+
+      if (slotsToInsert.length > 0) {
+        const { data: newSlots, error: slotErr } = await supabase
+          .from('practitioner_availability')
+          .insert(slotsToInsert)
+          .select();
+        if (slotErr) throw slotErr;
+
+        if (newSlots) {
+          setAvailability(newSlots.map(row => ({
+            id: row.id,
+            day: row.day_of_week,
+            startHour: parseTime(row.start_time).h,
+            startMin: parseTime(row.start_time).m,
+            endHour: parseTime(row.end_time).h,
+            endMin: parseTime(row.end_time).m,
+          })));
+        }
+      } else {
+        setAvailability([]);
+      }
+
+      toast.success('Settings saved and availability synced');
+    } catch {
+      toast.error('Failed to save settings');
+    } finally {
+      setSavingSettings(false);
+    }
   };
 
   const viewButtons: { key: BookingView; label: string; icon: React.ElementType }[] = [
@@ -550,9 +644,9 @@ const NativeBooking = () => {
 
             <Separator />
 
-            <Button onClick={handleSaveSettings} className="bg-sage-600 hover:bg-sage-700 text-white">
-              <CheckCircle2 className="h-4 w-4 mr-1.5" />
-              Save Settings
+            <Button onClick={handleSaveSettings} disabled={savingSettings} className="bg-sage-600 hover:bg-sage-700 text-white">
+              {savingSettings ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <CheckCircle2 className="h-4 w-4 mr-1.5" />}
+              {savingSettings ? 'Saving…' : 'Save Settings'}
             </Button>
           </CardContent>
         </Card>
