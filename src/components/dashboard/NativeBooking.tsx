@@ -174,6 +174,128 @@ const NativeBooking = () => {
     );
   };
 
+  const getBookingForSlot = (day: number, hour: number) => {
+    const date = addDays(weekStart, day);
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return bookings.find(b =>
+      b.requested_date === dateStr &&
+      parseTime(b.requested_start_time).h === hour &&
+      b.status !== 'cancelled'
+    ) ?? null;
+  };
+
+  const handleToggleAvailability = async (dayIdx: number, hour: number, currentlyAvailable: boolean) => {
+    if (!user) return;
+    if (currentlyAvailable) {
+      // Block: need to split the slot containing this hour
+      const slot = availability.find(s => s.day === dayIdx && hour >= s.startHour && hour < s.endHour);
+      if (!slot) return;
+
+      // Delete the original slot
+      await supabase.from('practitioner_availability').delete().eq('id', slot.id);
+
+      const newSlots: typeof availability = [];
+      const inserts: { practitioner_id: string; day_of_week: number; start_time: string; end_time: string; is_recurring: boolean }[] = [];
+
+      // Create slot before the blocked hour if applicable
+      if (slot.startHour < hour) {
+        inserts.push({
+          practitioner_id: user.id,
+          day_of_week: dayIdx,
+          start_time: `${String(slot.startHour).padStart(2, '0')}:00`,
+          end_time: `${String(hour).padStart(2, '0')}:00`,
+          is_recurring: true,
+        });
+      }
+      // Create slot after the blocked hour if applicable
+      if (hour + 1 < slot.endHour) {
+        inserts.push({
+          practitioner_id: user.id,
+          day_of_week: dayIdx,
+          start_time: `${String(hour + 1).padStart(2, '0')}:00`,
+          end_time: `${String(slot.endHour).padStart(2, '0')}:00`,
+          is_recurring: true,
+        });
+      }
+
+      let insertedSlots: typeof availability = [];
+      if (inserts.length > 0) {
+        const { data } = await supabase.from('practitioner_availability').insert(inserts).select();
+        if (data) {
+          insertedSlots = data.map(row => ({
+            id: row.id,
+            day: row.day_of_week,
+            startHour: parseTime(row.start_time).h,
+            startMin: parseTime(row.start_time).m,
+            endHour: parseTime(row.end_time).h,
+            endMin: parseTime(row.end_time).m,
+          }));
+        }
+      }
+
+      setAvailability(prev => [...prev.filter(s => s.id !== slot.id), ...insertedSlots]);
+      toast.success(`${formatHourLabel(hour)} blocked on ${DAYS[dayIdx]}`);
+    } else {
+      // Make available: check if we can extend an adjacent slot or create a new one
+      const adjacentBefore = availability.find(s => s.day === dayIdx && s.endHour === hour);
+      const adjacentAfter = availability.find(s => s.day === dayIdx && s.startHour === hour + 1);
+
+      if (adjacentBefore && adjacentAfter) {
+        // Merge: delete both, create one spanning slot
+        await Promise.all([
+          supabase.from('practitioner_availability').delete().eq('id', adjacentBefore.id),
+          supabase.from('practitioner_availability').delete().eq('id', adjacentAfter.id),
+        ]);
+        const { data } = await supabase.from('practitioner_availability').insert({
+          practitioner_id: user.id,
+          day_of_week: dayIdx,
+          start_time: `${String(adjacentBefore.startHour).padStart(2, '0')}:00`,
+          end_time: `${String(adjacentAfter.endHour).padStart(2, '0')}:00`,
+          is_recurring: true,
+        }).select().single();
+        if (data) {
+          setAvailability(prev => [
+            ...prev.filter(s => s.id !== adjacentBefore.id && s.id !== adjacentAfter.id),
+            { id: data.id, day: data.day_of_week, startHour: parseTime(data.start_time).h, startMin: 0, endHour: parseTime(data.end_time).h, endMin: 0 },
+          ]);
+        }
+      } else if (adjacentBefore) {
+        // Extend end of preceding slot
+        const newEnd = hour + 1;
+        await supabase.from('practitioner_availability').update({
+          end_time: `${String(newEnd).padStart(2, '0')}:00`,
+        }).eq('id', adjacentBefore.id);
+        setAvailability(prev => prev.map(s => s.id === adjacentBefore.id ? { ...s, endHour: newEnd } : s));
+      } else if (adjacentAfter) {
+        // Extend start of following slot
+        await supabase.from('practitioner_availability').update({
+          start_time: `${String(hour).padStart(2, '0')}:00`,
+        }).eq('id', adjacentAfter.id);
+        setAvailability(prev => prev.map(s => s.id === adjacentAfter.id ? { ...s, startHour: hour } : s));
+      } else {
+        // Create standalone 1-hour slot
+        const { data } = await supabase.from('practitioner_availability').insert({
+          practitioner_id: user.id,
+          day_of_week: dayIdx,
+          start_time: `${String(hour).padStart(2, '0')}:00`,
+          end_time: `${String(hour + 1).padStart(2, '0')}:00`,
+          is_recurring: true,
+        }).select().single();
+        if (data) {
+          setAvailability(prev => [...prev, {
+            id: data.id, day: data.day_of_week,
+            startHour: parseTime(data.start_time).h, startMin: 0,
+            endHour: parseTime(data.end_time).h, endMin: 0,
+          }]);
+        }
+      }
+      toast.success(`${formatHourLabel(hour)} opened on ${DAYS[dayIdx]}`);
+    }
+  };
+
+  const formatHourLabel = (h: number) =>
+    h > 12 ? `${h - 12}pm` : h === 12 ? '12pm' : `${h}am`;
+
   const handleAddSlot = async () => {
     if (!user) return;
     const startH = Number(newSlotStart);
