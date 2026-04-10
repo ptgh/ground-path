@@ -644,9 +644,9 @@ const NativeBooking = () => {
 
             <Separator />
 
-            <Button onClick={handleSaveSettings} className="bg-sage-600 hover:bg-sage-700 text-white">
-              <CheckCircle2 className="h-4 w-4 mr-1.5" />
-              Save Settings
+            <Button onClick={handleSaveSettings} disabled={savingSettings} className="bg-sage-600 hover:bg-sage-700 text-white">
+              {savingSettings ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <CheckCircle2 className="h-4 w-4 mr-1.5" />}
+              {savingSettings ? 'Saving…' : 'Save Settings'}
             </Button>
           </CardContent>
         </Card>
