@@ -254,8 +254,14 @@ const NativeBooking = () => {
         .update({
           halaxy_integration: {
             ...existing,
-            availability_settings: settings,
-          },
+            availability_settings: {
+              workingDays: settings.workingDays,
+              startHour: settings.startHour,
+              endHour: settings.endHour,
+              sessionDuration: settings.sessionDuration,
+              bufferMinutes: settings.bufferMinutes,
+            },
+          } as unknown as Record<string, never>,
         })
         .eq('user_id', user.id);
 
