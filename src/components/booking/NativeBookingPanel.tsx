@@ -118,7 +118,6 @@ const NativeBookingPanel = () => {
     }
 
     // Send email notification to practitioner (best-effort)
-    const requestedDate = new Date(dateStr + 'T00:00:00');
     supabase.functions.invoke('booking-notification', {
       body: {
         practitionerId: slotData.practitioner_id,
