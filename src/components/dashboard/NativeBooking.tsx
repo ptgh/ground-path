@@ -99,12 +99,12 @@ const NativeBooking = () => {
   const [newSlotStart, setNewSlotStart] = useState('9');
   const [newSlotEnd, setNewSlotEnd] = useState('12');
 
-  // Fetch availability and bookings
+  // Fetch availability, bookings, and settings from profile
   useEffect(() => {
     if (!user) return;
     const load = async () => {
       setLoading(true);
-      const [avRes, bkRes] = await Promise.all([
+      const [avRes, bkRes, profileRes] = await Promise.all([
         supabase
           .from('practitioner_availability')
           .select('*')
@@ -114,6 +114,11 @@ const NativeBooking = () => {
           .select('*')
           .eq('practitioner_id', user.id)
           .order('requested_date', { ascending: true }),
+        supabase
+          .from('profiles')
+          .select('halaxy_integration')
+          .eq('user_id', user.id)
+          .single(),
       ]);
 
       if (avRes.data) {
@@ -129,6 +134,21 @@ const NativeBooking = () => {
 
       if (bkRes.data) {
         setBookings(bkRes.data);
+      }
+
+      // Load persisted settings from profile
+      if (profileRes.data?.halaxy_integration) {
+        const integration = profileRes.data.halaxy_integration as Record<string, unknown>;
+        const saved = integration.availability_settings as Record<string, unknown> | undefined;
+        if (saved) {
+          setSettings({
+            workingDays: (saved.workingDays as boolean[]) ?? DEFAULT_SETTINGS.workingDays,
+            startHour: (saved.startHour as number) ?? DEFAULT_SETTINGS.startHour,
+            endHour: (saved.endHour as number) ?? DEFAULT_SETTINGS.endHour,
+            sessionDuration: (saved.sessionDuration as number) ?? DEFAULT_SETTINGS.sessionDuration,
+            bufferMinutes: (saved.bufferMinutes as number) ?? DEFAULT_SETTINGS.bufferMinutes,
+          });
+        }
       }
 
       setLoading(false);
