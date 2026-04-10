@@ -535,17 +535,29 @@ const NativeBooking = () => {
                       {DAYS.map((_, dayIdx) => {
                         const booked = isSlotBooked(dayIdx, hour);
                         const available = isSlotAvailable(dayIdx, hour);
+                        const booking = getBookingForSlot(dayIdx, hour);
                         return (
-                          <div
+                          <CalendarTilePopover
                             key={`${dayIdx}-${hour}`}
-                            className={`h-7 rounded-sm border transition-colors ${
-                              booked
-                                ? 'bg-sage-500 border-sage-600'
-                                : available
-                                  ? 'bg-sage-100 border-sage-200 hover:bg-sage-200 cursor-pointer'
-                                  : 'bg-muted/40 border-border/40'
-                            }`}
-                          />
+                            weekStart={weekStart}
+                            dayIdx={dayIdx}
+                            hour={hour}
+                            isAvailable={available}
+                            booking={booking}
+                            onToggleAvailability={handleToggleAvailability}
+                            onConfirmBooking={(id) => handleUpdateBookingStatus(id, 'confirmed')}
+                            onDeclineBooking={(id) => handleUpdateBookingStatus(id, 'cancelled')}
+                          >
+                            <button
+                              className={`h-7 w-full rounded-sm border transition-colors ${
+                                booked
+                                  ? 'bg-sage-500 border-sage-600 hover:bg-sage-600'
+                                  : available
+                                    ? 'bg-sage-100 border-sage-200 hover:bg-sage-200'
+                                    : 'bg-muted/40 border-border/40 hover:bg-muted/60'
+                              }`}
+                            />
+                          </CalendarTilePopover>
                         );
                       })}
                     </>
