@@ -20,6 +20,7 @@ import {
   Loader2,
   Trash2,
 } from 'lucide-react';
+import CalendarTilePopover from '@/components/booking/CalendarTilePopover';
 import { toast } from 'sonner';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
