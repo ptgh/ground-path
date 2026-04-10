@@ -234,8 +234,76 @@ const NativeBooking = () => {
     }
   };
 
-  const handleSaveSettings = () => {
-    toast.success('Settings saved locally — database sync coming soon');
+  const [savingSettings, setSavingSettings] = useState(false);
+
+  const handleSaveSettings = async () => {
+    if (!user) return;
+    setSavingSettings(true);
+
+    try {
+      // 1. Persist settings to profile JSONB
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('halaxy_integration')
+        .eq('user_id', user.id)
+        .single();
+
+      const existing = (profileData?.halaxy_integration as Record<string, unknown>) ?? {};
+      const { error: profileErr } = await supabase
+        .from('profiles')
+        .update({
+          halaxy_integration: {
+            ...existing,
+            availability_settings: settings,
+          },
+        })
+        .eq('user_id', user.id);
+
+      if (profileErr) throw profileErr;
+
+      // 2. Sync availability table: delete old, create from working days
+      await supabase
+        .from('practitioner_availability')
+        .delete()
+        .eq('practitioner_id', user.id);
+
+      const slotsToInsert = settings.workingDays
+        .map((active, dayIdx) => active ? {
+          practitioner_id: user.id,
+          day_of_week: dayIdx,
+          start_time: `${String(settings.startHour).padStart(2, '0')}:00`,
+          end_time: `${String(settings.endHour).padStart(2, '0')}:00`,
+          is_recurring: true,
+        } : null)
+        .filter(Boolean);
+
+      if (slotsToInsert.length > 0) {
+        const { data: newSlots, error: slotErr } = await supabase
+          .from('practitioner_availability')
+          .insert(slotsToInsert)
+          .select();
+        if (slotErr) throw slotErr;
+
+        if (newSlots) {
+          setAvailability(newSlots.map(row => ({
+            id: row.id,
+            day: row.day_of_week,
+            startHour: parseTime(row.start_time).h,
+            startMin: parseTime(row.start_time).m,
+            endHour: parseTime(row.end_time).h,
+            endMin: parseTime(row.end_time).m,
+          })));
+        }
+      } else {
+        setAvailability([]);
+      }
+
+      toast.success('Settings saved and availability synced');
+    } catch {
+      toast.error('Failed to save settings');
+    } finally {
+      setSavingSettings(false);
+    }
   };
 
   const viewButtons: { key: BookingView; label: string; icon: React.ElementType }[] = [
