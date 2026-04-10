@@ -354,6 +354,11 @@ const NativeBooking = () => {
     if (!error) {
       setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
       toast.success(`Booking ${status}`);
+
+      // Notify client of status change (best-effort)
+      supabase.functions.invoke('booking-notification', {
+        body: { type: 'status_change', bookingId: id, newStatus: status },
+      }).catch(err => console.error('Status notification error:', err));
     }
   };
 

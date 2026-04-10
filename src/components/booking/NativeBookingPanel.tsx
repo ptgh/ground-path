@@ -98,6 +98,22 @@ const NativeBookingPanel = () => {
     requestedDate.setDate(today.getDate() + daysUntil);
     const dateStr = requestedDate.toISOString().split('T')[0];
 
+    // Double-booking prevention: check for existing confirmed/pending bookings
+    const { data: existing } = await supabase
+      .from('booking_requests')
+      .select('id')
+      .eq('practitioner_id', slotData.practitioner_id)
+      .eq('requested_date', dateStr)
+      .eq('requested_start_time', slot.start_time)
+      .in('status', ['pending', 'confirmed'])
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      toast.error('This time slot already has a booking. Please choose another.');
+      setSubmitting(false);
+      return;
+    }
+
     const { error } = await supabase
       .from('booking_requests')
       .insert({

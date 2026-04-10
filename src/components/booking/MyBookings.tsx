@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Clock, Loader2, Video } from 'lucide-react';
+import { Calendar, Clock, Loader2, Video, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 interface Booking {
   id: string;
@@ -39,6 +41,7 @@ const MyBookings = () => {
   const { user } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -73,7 +76,6 @@ const MyBookings = () => {
 
     load();
 
-    // Subscribe to realtime updates
     const channel = supabase
       .channel('my-bookings')
       .on('postgres_changes', {
@@ -87,6 +89,22 @@ const MyBookings = () => {
     return () => { supabase.removeChannel(channel); };
   }, [user]);
 
+  const handleCancel = async (id: string) => {
+    setCancellingId(id);
+    const { error } = await supabase
+      .from('booking_requests')
+      .update({ status: 'cancelled' })
+      .eq('id', id);
+
+    if (error) {
+      toast.error('Failed to cancel booking');
+    } else {
+      setBookings(prev => prev.map(b => b.id === id ? { ...b, status: 'cancelled' } : b));
+      toast.success('Booking request cancelled');
+    }
+    setCancellingId(null);
+  };
+
   const today = new Date().toISOString().split('T')[0];
   const pending = bookings.filter(b => b.status === 'pending');
   const confirmed = bookings.filter(b => b.status === 'confirmed' && b.requested_date >= today);
@@ -96,6 +114,8 @@ const MyBookings = () => {
 
   const BookingCard = ({ booking }: { booking: Booking }) => {
     const cfg = statusConfig[booking.status] || statusConfig.pending;
+    const canCancel = booking.status === 'pending';
+
     return (
       <div className="flex items-start gap-3 p-3 rounded-lg border border-border bg-card">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
@@ -123,6 +143,22 @@ const MyBookings = () => {
             <p className="text-xs text-muted-foreground italic mt-1">
               Note: {booking.practitioner_notes}
             </p>
+          )}
+          {canCancel && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 px-2 text-[11px] text-destructive hover:text-destructive mt-1"
+              disabled={cancellingId === booking.id}
+              onClick={() => handleCancel(booking.id)}
+            >
+              {cancellingId === booking.id ? (
+                <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+              ) : (
+                <X className="h-3 w-3 mr-1" />
+              )}
+              Cancel Request
+            </Button>
           )}
         </div>
       </div>
