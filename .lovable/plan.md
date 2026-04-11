@@ -1,41 +1,57 @@
 
 
-## Next Steps: Per-Day Hour Customization + Client Notification on Status Change from Dashboard
+## Issues Identified & Plan
 
-Based on the current state, the outlined next steps that remain are:
+### Problems Found
 
-1. **Per-day hour customization** -- let practitioners set different start/end times for each working day
-2. **Trigger client status-change notifications from the practitioner dashboard** -- the edge function exists but the `NativeBooking.tsx` status update handler needs to actually call it
-3. **CalendarTilePopover client name resolution** -- currently shows "Client session" instead of the actual client name
+1. **Booking slots show full day range (9 AM - 5 PM) instead of individual time slots** -- `NativeBookingPanel` displays raw availability blocks rather than splitting them into bookable slots based on session duration (e.g., 50 min slots).
+
+2. **No practitioner selection before booking** -- The booking panel assumes a single practitioner. User wants to select a practitioner first, then see a calendar.
+
+3. **No dedicated booking page** -- Currently embedded inline on the home page. Needs its own route for a proper experience with GSAP animations.
+
+4. **Teams meeting link fails (403 Forbidden)** -- Edge function logs show `Teams API error: 403`. The Microsoft Teams connector only supports scopes: `Team.ReadBasic.All, Channel.ReadBasic.All, ChannelMessage.Send, User.Read`. **`OnlineMeetings.ReadWrite` and `Calendars.ReadWrite` are NOT available** in this connector's scope catalog. The Teams connector gateway cannot create meetings or sync calendars -- it only supports channel messaging and team/channel reads.
+
+5. **Email "Review Request" links to wrong page** -- `booking-notification` function links to `https://groundpath.com.au/dashboard` (client dashboard) instead of `https://groundpath.com.au/practitioner/dashboard` with the Booking tab active.
+
+6. **Microsoft Calendar not included** -- The Teams connector does not support Outlook calendar scopes. A separate Microsoft Outlook connector would be needed, but even then, the connector accesses the developer's mailbox, not individual practitioner mailboxes. Per-practitioner calendar sync would require a custom OAuth flow.
+
+---
 
 ### Plan
 
-#### 1. Per-day hour customization (Settings view)
+#### Step 1: Create dedicated `/book` page with practitioner selection
+- New route `/book` and page `src/pages/Book.tsx`
+- Lists practitioners with GSAP entrance animations
+- Clicking a practitioner reveals a date-picker calendar (react-day-picker) with GSAP slide-in
+- Calendar highlights days with availability; selecting a date shows individual time slots broken by session duration
+- "Book" buttons on the home page and `PractitionerCard` navigate to `/book` (or `/book?practitioner=<id>` to pre-select)
 
-**File**: `src/components/dashboard/NativeBooking.tsx`
+#### Step 2: Fix time slot display in booking flow
+- Instead of showing "9:00 AM - 5:00 PM" as one block, split availability into individual bookable slots: 9:00-9:50, 10:00-10:50, etc. using the practitioner's `sessionDuration` and `bufferMinutes` from their settings
+- Grey out slots that already have pending/confirmed bookings
 
-- Change `AvailabilitySettings` so `startHour` and `endHour` become per-day arrays: `daySettings: { startHour: number; endHour: number }[]` (7 entries, one per day)
-- Update the Settings UI: when a working day is toggled on, show start/end selectors for that specific day
-- Update `handleSaveSettings` to generate availability slots with per-day hours
-- Update DEFAULT_SETTINGS accordingly
-- Update hydration from `halaxy_integration` to read the new shape
+#### Step 3: Fix email notification links
+- Change `handleNewRequest` link from `/dashboard` to `/practitioner/dashboard` 
+- Append a query param or hash so the page auto-scrolls to the Booking tab on load
 
-#### 2. Trigger client notification on confirm/decline
+#### Step 4: Remove Teams meeting link button (not supported)
+- The connector gateway does not support `OnlineMeetings.ReadWrite` -- remove the "Teams Link" button and `create-teams-meeting` edge function to avoid user confusion
+- Update the "Next Setup Steps" roadmap text to reflect that Microsoft video integration is not yet available through this connector
+- Update the footer text in `NativeBookingPanel` from "Microsoft Teams integration coming soon" to a general "secure video" message
 
-**File**: `src/components/dashboard/NativeBooking.tsx`
-
-- In the existing `handleUpdateBookingStatus` function (or equivalent), after the status update succeeds, invoke the `booking-notification` edge function with `{ type: 'status_change', bookingId, newStatus }`
-- The edge function already handles `status_change` -- just need the client-side call
-
-#### 3. Show client name in CalendarTilePopover
-
-**File**: `src/components/booking/CalendarTilePopover.tsx` + `NativeBooking.tsx`
-
-- When fetching bookings in `NativeBooking.tsx`, also fetch client profiles to get display names and attach `client_name` to the booking objects
-- Pass client name through to CalendarTilePopover and display it instead of generic "Client session"
+#### Step 5: Clean up home page booking section
+- Replace the inline `NativeBookingPanel` on the home page with a CTA card that links to `/book`
+- Keep it simple: "Book a Session" card with a button that navigates to the new page
 
 ### Technical details
 
-- Settings shape change: `{ workingDays: boolean[], daySettings: { startHour: number, endHour: number }[] }` replaces flat `startHour`/`endHour`
-- Backward compatible: if old shape detected (flat hours), convert to per-day on load
-- No database schema changes needed -- all stored in `halaxy_integration` JSONB and existing `pract
+- New file: `src/pages/Book.tsx` -- standalone page with Header, practitioner list, animated calendar, and slot picker
+- Modified: `src/App.tsx` -- add `/book` route
+- Modified: `src/components/PractitionerCard.tsx` -- "Book" button navigates to `/book?practitioner=<id>`
+- Modified: `supabase/functions/booking-notification/index.ts` -- fix URL from `/dashboard` to `/practitioner/dashboard`
+- Modified: `src/components/dashboard/NativeBooking.tsx` -- remove Teams Link button and `handleCreateTeamsMeeting`
+- Deleted: `supabase/functions/create-teams-meeting/index.ts`
+- The date-picker calendar uses the existing `react-day-picker` component already in the project
+- Slot generation logic: for each availability block, generate slots at `sessionDuration + bufferMinutes` intervals
+
