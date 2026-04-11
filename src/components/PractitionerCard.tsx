@@ -8,7 +8,6 @@ import { MessageCircle, Calendar, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
-import { scrollToSectionWithOffset } from '@/lib/utils';
 import { gsap } from 'gsap';
 
 interface Practitioner {
