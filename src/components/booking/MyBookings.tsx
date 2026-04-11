@@ -101,6 +101,11 @@ const MyBookings = () => {
     } else {
       setBookings(prev => prev.map(b => b.id === id ? { ...b, status: 'cancelled' } : b));
       toast.success('Booking request cancelled');
+
+      // Notify practitioner of cancellation (best-effort)
+      supabase.functions.invoke('booking-notification', {
+        body: { type: 'client_cancellation', bookingId: id },
+      }).catch(err => console.error('Cancellation notification error:', err));
     }
     setCancellingId(null);
   };
