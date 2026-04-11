@@ -228,7 +228,7 @@ const NativeBookingPanel = () => {
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
             <Video className="h-3.5 w-3.5" />
-            <span>Sessions conducted via secure video — Microsoft Teams integration coming soon.</span>
+            <span>Sessions conducted via secure video call.</span>
           </div>
         </CardContent>
       </Card>
