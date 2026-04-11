@@ -868,10 +868,13 @@ const NativeBooking = () => {
 
             <Separator />
 
-            <Button onClick={handleSaveSettings} disabled={savingSettings} className="bg-sage-600 hover:bg-sage-700 text-white">
+            <Button onClick={handleSaveSettings} disabled={savingSettings || hasValidationErrors} className="bg-sage-600 hover:bg-sage-700 text-white">
               {savingSettings ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <CheckCircle2 className="h-4 w-4 mr-1.5" />}
               {savingSettings ? 'Saving…' : 'Save Settings'}
             </Button>
+            {hasValidationErrors && (
+              <p className="text-xs text-destructive mt-1">Fix time range errors above before saving.</p>
+            )}
           </CardContent>
         </Card>
       )}
