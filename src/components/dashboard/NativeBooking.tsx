@@ -19,6 +19,7 @@ import {
   CheckCircle2,
   Loader2,
   Trash2,
+  Copy,
 } from 'lucide-react';
 import CalendarTilePopover from '@/components/booking/CalendarTilePopover';
 import { toast } from 'sonner';
@@ -481,6 +482,25 @@ const NativeBooking = () => {
       daySettings: prev.daySettings.map((ds, i) => i === dayIdx ? { ...ds, [field]: value } : ds),
     }));
   };
+
+  const applyToAllDays = (sourceDayIdx: number) => {
+    const source = settings.daySettings[sourceDayIdx];
+    setSettings(prev => ({
+      ...prev,
+      daySettings: prev.daySettings.map((ds, i) =>
+        prev.workingDays[i] ? { ...source } : ds
+      ),
+    }));
+    toast.success(`Applied ${DAYS[sourceDayIdx]}'s hours to all working days`);
+  };
+
+  // Validation: check all active days have valid hour ranges
+  const invalidDays = settings.workingDays
+    .map((active, i) => active && settings.daySettings[i].endHour <= settings.daySettings[i].startHour ? i : -1)
+    .filter(i => i !== -1);
+  const hasValidationErrors = invalidDays.length > 0;
+
+  const pendingCount = bookings.filter(b => b.status === 'pending').length;
 
   const viewButtons: { key: BookingView; label: string; icon: React.ElementType }[] = [
     { key: 'calendar', label: 'Calendar', icon: Calendar },
