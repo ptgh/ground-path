@@ -767,6 +767,35 @@ const NativeBooking = () => {
                           </Button>
                         </div>
                       )}
+                      {booking.status === 'confirmed' && !booking.practitioner_notes?.includes('Teams Meeting') && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs text-sage-700 border-sage-300"
+                          disabled={creatingMeeting === booking.id}
+                          onClick={() => handleCreateTeamsMeeting(booking.id)}
+                        >
+                          {creatingMeeting === booking.id ? (
+                            <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          ) : (
+                            <Video className="h-3 w-3 mr-1" />
+                          )}
+                          Teams Link
+                        </Button>
+                      )}
+                      {booking.practitioner_notes?.includes('Teams Meeting') && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs text-sage-700 border-sage-300"
+                          onClick={() => {
+                            const url = booking.practitioner_notes?.replace('Teams Meeting: ', '');
+                            if (url) window.open(url, '_blank');
+                          }}
+                        >
+                          <Video className="h-3 w-3 mr-1" /> Join
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
