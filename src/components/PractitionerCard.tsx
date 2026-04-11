@@ -8,7 +8,6 @@ import { MessageCircle, Calendar, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
-import { scrollToSectionWithOffset } from '@/lib/utils';
 import { gsap } from 'gsap';
 
 interface Practitioner {
@@ -100,7 +99,7 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
             className="flex-1 gap-1.5"
             onClick={() => {
               if (bookingMode === 'native_beta') {
-                scrollToSectionWithOffset('booking', 96);
+                navigate(`/book?practitioner=${practitioner.user_id}`);
               } else {
                 window.open(HALAXY_EXTERNAL_URL, '_blank');
               }
