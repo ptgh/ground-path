@@ -47,6 +47,7 @@ interface BookingRequest {
   status: string;
   session_type: string;
   notes: string | null;
+  practitioner_notes: string | null;
   created_at: string;
   client_name?: string;
 }
