@@ -14,6 +14,7 @@ interface BookingInfo {
   session_type: string;
   notes: string | null;
   client_user_id: string;
+  client_name?: string;
 }
 
 interface CalendarTilePopoverProps {
@@ -83,7 +84,7 @@ const CalendarTilePopover = ({
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <User className="h-3 w-3" />
-                  Client session
+                  {booking.client_name || 'Client session'}
                 </div>
                 {booking.notes && (
                   <p className="text-[11px] text-muted-foreground/70 pt-0.5">{booking.notes}</p>
