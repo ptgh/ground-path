@@ -399,6 +399,31 @@ const NativeBooking = () => {
     }
   };
 
+  const [creatingMeeting, setCreatingMeeting] = useState<string | null>(null);
+
+  const handleCreateTeamsMeeting = async (bookingId: string) => {
+    setCreatingMeeting(bookingId);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-teams-meeting', {
+        body: { bookingId },
+      });
+      if (error) throw error;
+      if (data?.joinUrl) {
+        setBookings(prev => prev.map(b =>
+          b.id === bookingId ? { ...b, practitioner_notes: `Teams Meeting: ${data.joinUrl}` } : b
+        ));
+        toast.success('Teams meeting link created!');
+      } else {
+        toast.error(data?.error || 'Failed to create meeting');
+      }
+    } catch (err) {
+      console.error('Teams meeting error:', err);
+      toast.error('Failed to create Teams meeting link');
+    } finally {
+      setCreatingMeeting(null);
+    }
+  };
+
   const [savingSettings, setSavingSettings] = useState(false);
 
   const handleSaveSettings = async () => {
