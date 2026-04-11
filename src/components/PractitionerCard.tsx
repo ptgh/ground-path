@@ -100,7 +100,7 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
             className="flex-1 gap-1.5"
             onClick={() => {
               if (bookingMode === 'native_beta') {
-                scrollToSectionWithOffset('booking', 96);
+                navigate(`/book?practitioner=${practitioner.user_id}`);
               } else {
                 window.open(HALAXY_EXTERNAL_URL, '_blank');
               }

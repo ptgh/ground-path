@@ -111,7 +111,7 @@ async function handleNewRequest(
           📹 <strong>Type:</strong> Video session (50 min)
         </p>
       </div>`,
-      'https://groundpath.com.au/dashboard',
+      'https://groundpath.com.au/practitioner/dashboard?tab=booking',
       'Review Request',
       'You can confirm or decline this request from your Groundpath dashboard.',
     ),
@@ -242,7 +242,7 @@ async function handleClientCancellation(
       <p style="font-size: 13px; color: #6b7280; text-align: center; margin: 0 0 24px 0;">
         This time slot is now available for other bookings.
       </p>`,
-      'https://groundpath.com.au/dashboard',
+      'https://groundpath.com.au/practitioner/dashboard?tab=booking',
       'View Dashboard',
     ),
   );
