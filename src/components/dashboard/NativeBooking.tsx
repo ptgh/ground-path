@@ -47,6 +47,7 @@ interface BookingRequest {
   status: string;
   session_type: string;
   notes: string | null;
+  practitioner_notes: string | null;
   created_at: string;
   client_name?: string;
 }
@@ -399,6 +400,31 @@ const NativeBooking = () => {
     }
   };
 
+  const [creatingMeeting, setCreatingMeeting] = useState<string | null>(null);
+
+  const handleCreateTeamsMeeting = async (bookingId: string) => {
+    setCreatingMeeting(bookingId);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-teams-meeting', {
+        body: { bookingId },
+      });
+      if (error) throw error;
+      if (data?.joinUrl) {
+        setBookings(prev => prev.map(b =>
+          b.id === bookingId ? { ...b, practitioner_notes: `Teams Meeting: ${data.joinUrl}` } : b
+        ));
+        toast.success('Teams meeting link created!');
+      } else {
+        toast.error(data?.error || 'Failed to create meeting');
+      }
+    } catch (err) {
+      console.error('Teams meeting error:', err);
+      toast.error('Failed to create Teams meeting link');
+    } finally {
+      setCreatingMeeting(null);
+    }
+  };
+
   const [savingSettings, setSavingSettings] = useState(false);
 
   const handleSaveSettings = async () => {
@@ -741,6 +767,35 @@ const NativeBooking = () => {
                             Decline
                           </Button>
                         </div>
+                      )}
+                      {booking.status === 'confirmed' && !booking.practitioner_notes?.includes('Teams Meeting') && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs text-sage-700 border-sage-300"
+                          disabled={creatingMeeting === booking.id}
+                          onClick={() => handleCreateTeamsMeeting(booking.id)}
+                        >
+                          {creatingMeeting === booking.id ? (
+                            <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          ) : (
+                            <Video className="h-3 w-3 mr-1" />
+                          )}
+                          Teams Link
+                        </Button>
+                      )}
+                      {booking.practitioner_notes?.includes('Teams Meeting') && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs text-sage-700 border-sage-300"
+                          onClick={() => {
+                            const url = booking.practitioner_notes?.replace('Teams Meeting: ', '');
+                            if (url) window.open(url, '_blank');
+                          }}
+                        >
+                          <Video className="h-3 w-3 mr-1" /> Join
+                        </Button>
                       )}
                     </div>
                   </div>
