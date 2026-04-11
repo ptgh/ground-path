@@ -84,7 +84,7 @@ const CalendarTilePopover = ({
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <User className="h-3 w-3" />
-                  Client session
+                  {booking.client_name || 'Client session'}
                 </div>
                 {booking.notes && (
                   <p className="text-[11px] text-muted-foreground/70 pt-0.5">{booking.notes}</p>
