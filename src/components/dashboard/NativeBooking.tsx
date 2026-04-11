@@ -50,10 +50,14 @@ interface BookingRequest {
   client_name?: string;
 }
 
-interface AvailabilitySettings {
-  workingDays: boolean[];
+interface DaySetting {
   startHour: number;
   endHour: number;
+}
+
+interface AvailabilitySettings {
+  workingDays: boolean[];
+  daySettings: DaySetting[];
   sessionDuration: number;
   bufferMinutes: number;
 }
@@ -63,10 +67,11 @@ type BookingView = 'calendar' | 'sessions' | 'settings';
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const HOURS = Array.from({ length: 11 }, (_, i) => i + 8);
 
+const DEFAULT_DAY_SETTING: DaySetting = { startHour: 9, endHour: 17 };
+
 const DEFAULT_SETTINGS: AvailabilitySettings = {
   workingDays: [true, true, true, true, true, false, false],
-  startHour: 9,
-  endHour: 17,
+  daySettings: Array(7).fill(null).map(() => ({ ...DEFAULT_DAY_SETTING })),
   sessionDuration: 50,
   bufferMinutes: 10,
 };
@@ -86,6 +91,36 @@ const parseTime = (t: string) => {
   return { h, m };
 };
 
+/** Migrate old flat startHour/endHour settings to per-day shape */
+const migrateSettings = (saved: Record<string, unknown>): AvailabilitySettings => {
+  const workingDays = (saved.workingDays as boolean[]) ?? DEFAULT_SETTINGS.workingDays;
+  const sessionDuration = (saved.sessionDuration as number) ?? DEFAULT_SETTINGS.sessionDuration;
+  const bufferMinutes = (saved.bufferMinutes as number) ?? DEFAULT_SETTINGS.bufferMinutes;
+
+  // New shape already present
+  if (Array.isArray(saved.daySettings)) {
+    return {
+      workingDays,
+      daySettings: (saved.daySettings as DaySetting[]).map(ds => ({
+        startHour: ds?.startHour ?? DEFAULT_DAY_SETTING.startHour,
+        endHour: ds?.endHour ?? DEFAULT_DAY_SETTING.endHour,
+      })),
+      sessionDuration,
+      bufferMinutes,
+    };
+  }
+
+  // Old flat shape — convert
+  const startHour = (saved.startHour as number) ?? DEFAULT_DAY_SETTING.startHour;
+  const endHour = (saved.endHour as number) ?? DEFAULT_DAY_SETTING.endHour;
+  return {
+    workingDays,
+    daySettings: Array(7).fill(null).map(() => ({ startHour, endHour })),
+    sessionDuration,
+    bufferMinutes,
+  };
+};
+
 /* ═══════════════════════════════════════════ */
 const NativeBooking = () => {
   const { user } = useAuth();
@@ -100,7 +135,7 @@ const NativeBooking = () => {
   const [newSlotStart, setNewSlotStart] = useState('9');
   const [newSlotEnd, setNewSlotEnd] = useState('12');
 
-  // Fetch availability, bookings, and settings from profile
+  // Fetch availability, bookings, settings, and client names
   useEffect(() => {
     if (!user) return;
     const load = async () => {
@@ -133,8 +168,25 @@ const NativeBooking = () => {
         })));
       }
 
-      if (bkRes.data) {
-        setBookings(bkRes.data);
+      // Resolve client names for bookings
+      if (bkRes.data && bkRes.data.length > 0) {
+        const clientIds = [...new Set(bkRes.data.map(b => b.client_user_id))];
+        const { data: clientProfiles } = await supabase
+          .from('profiles')
+          .select('user_id, display_name')
+          .in('user_id', clientIds);
+
+        const nameMap = new Map<string, string>();
+        clientProfiles?.forEach(p => {
+          if (p.display_name) nameMap.set(p.user_id, p.display_name);
+        });
+
+        setBookings(bkRes.data.map(b => ({
+          ...b,
+          client_name: nameMap.get(b.client_user_id) || undefined,
+        })));
+      } else {
+        setBookings([]);
       }
 
       // Load persisted settings from profile
@@ -142,13 +194,7 @@ const NativeBooking = () => {
         const integration = profileRes.data.halaxy_integration as Record<string, unknown>;
         const saved = integration.availability_settings as Record<string, unknown> | undefined;
         if (saved) {
-          setSettings({
-            workingDays: (saved.workingDays as boolean[]) ?? DEFAULT_SETTINGS.workingDays,
-            startHour: (saved.startHour as number) ?? DEFAULT_SETTINGS.startHour,
-            endHour: (saved.endHour as number) ?? DEFAULT_SETTINGS.endHour,
-            sessionDuration: (saved.sessionDuration as number) ?? DEFAULT_SETTINGS.sessionDuration,
-            bufferMinutes: (saved.bufferMinutes as number) ?? DEFAULT_SETTINGS.bufferMinutes,
-          });
+          setSettings(migrateSettings(saved));
         }
       }
 
@@ -187,17 +233,13 @@ const NativeBooking = () => {
   const handleToggleAvailability = async (dayIdx: number, hour: number, currentlyAvailable: boolean) => {
     if (!user) return;
     if (currentlyAvailable) {
-      // Block: need to split the slot containing this hour
       const slot = availability.find(s => s.day === dayIdx && hour >= s.startHour && hour < s.endHour);
       if (!slot) return;
 
-      // Delete the original slot
       await supabase.from('practitioner_availability').delete().eq('id', slot.id);
 
-      const newSlots: typeof availability = [];
       const inserts: { practitioner_id: string; day_of_week: number; start_time: string; end_time: string; is_recurring: boolean }[] = [];
 
-      // Create slot before the blocked hour if applicable
       if (slot.startHour < hour) {
         inserts.push({
           practitioner_id: user.id,
@@ -207,7 +249,6 @@ const NativeBooking = () => {
           is_recurring: true,
         });
       }
-      // Create slot after the blocked hour if applicable
       if (hour + 1 < slot.endHour) {
         inserts.push({
           practitioner_id: user.id,
@@ -236,12 +277,10 @@ const NativeBooking = () => {
       setAvailability(prev => [...prev.filter(s => s.id !== slot.id), ...insertedSlots]);
       toast.success(`${formatHourLabel(hour)} blocked on ${DAYS[dayIdx]}`);
     } else {
-      // Make available: check if we can extend an adjacent slot or create a new one
       const adjacentBefore = availability.find(s => s.day === dayIdx && s.endHour === hour);
       const adjacentAfter = availability.find(s => s.day === dayIdx && s.startHour === hour + 1);
 
       if (adjacentBefore && adjacentAfter) {
-        // Merge: delete both, create one spanning slot
         await Promise.all([
           supabase.from('practitioner_availability').delete().eq('id', adjacentBefore.id),
           supabase.from('practitioner_availability').delete().eq('id', adjacentAfter.id),
@@ -260,20 +299,17 @@ const NativeBooking = () => {
           ]);
         }
       } else if (adjacentBefore) {
-        // Extend end of preceding slot
         const newEnd = hour + 1;
         await supabase.from('practitioner_availability').update({
           end_time: `${String(newEnd).padStart(2, '0')}:00`,
         }).eq('id', adjacentBefore.id);
         setAvailability(prev => prev.map(s => s.id === adjacentBefore.id ? { ...s, endHour: newEnd } : s));
       } else if (adjacentAfter) {
-        // Extend start of following slot
         await supabase.from('practitioner_availability').update({
           start_time: `${String(hour).padStart(2, '0')}:00`,
         }).eq('id', adjacentAfter.id);
         setAvailability(prev => prev.map(s => s.id === adjacentAfter.id ? { ...s, startHour: hour } : s));
       } else {
-        // Create standalone 1-hour slot
         const { data } = await supabase.from('practitioner_availability').insert({
           practitioner_id: user.id,
           day_of_week: dayIdx,
@@ -384,8 +420,7 @@ const NativeBooking = () => {
             ...existing,
             availability_settings: {
               workingDays: settings.workingDays,
-              startHour: settings.startHour,
-              endHour: settings.endHour,
+              daySettings: settings.daySettings,
               sessionDuration: settings.sessionDuration,
               bufferMinutes: settings.bufferMinutes,
             },
@@ -395,7 +430,7 @@ const NativeBooking = () => {
 
       if (profileErr) throw profileErr;
 
-      // 2. Sync availability table: delete old, create from working days
+      // 2. Sync availability table: delete old, create from per-day settings
       await supabase
         .from('practitioner_availability')
         .delete()
@@ -405,8 +440,8 @@ const NativeBooking = () => {
         .map((active, dayIdx) => active ? {
           practitioner_id: user.id,
           day_of_week: dayIdx,
-          start_time: `${String(settings.startHour).padStart(2, '0')}:00`,
-          end_time: `${String(settings.endHour).padStart(2, '0')}:00`,
+          start_time: `${String(settings.daySettings[dayIdx].startHour).padStart(2, '0')}:00`,
+          end_time: `${String(settings.daySettings[dayIdx].endHour).padStart(2, '0')}:00`,
           is_recurring: true,
         } : null)
         .filter(Boolean);
@@ -438,6 +473,13 @@ const NativeBooking = () => {
     } finally {
       setSavingSettings(false);
     }
+  };
+
+  const updateDaySetting = (dayIdx: number, field: keyof DaySetting, value: number) => {
+    setSettings(prev => ({
+      ...prev,
+      daySettings: prev.daySettings.map((ds, i) => i === dayIdx ? { ...ds, [field]: value } : ds),
+    }));
   };
 
   const viewButtons: { key: BookingView; label: string; icon: React.ElementType }[] = [
@@ -652,7 +694,7 @@ const NativeBooking = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">
-                        {format(new Date(booking.requested_date), 'EEE d MMM yyyy')}
+                        {booking.client_name || 'Client'} — {format(new Date(booking.requested_date), 'EEE d MMM yyyy')}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {booking.requested_start_time.slice(0, 5)} – {booking.requested_end_time.slice(0, 5)} · {booking.duration_minutes} min
@@ -699,16 +741,15 @@ const NativeBooking = () => {
               Availability Settings
             </CardTitle>
             <CardDescription className="text-xs">
-              Configure your default working hours and session preferences.
+              Configure your working hours per day and session preferences.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium">Working Days</h4>
-              <div className="grid grid-cols-7 gap-2">
+            <div className="space-y-4">
+              <h4 className="text-sm font-medium">Working Days & Hours</h4>
+              <div className="space-y-3">
                 {DAYS.map((day, i) => (
-                  <div key={day} className="flex flex-col items-center gap-1.5">
-                    <span className="text-xs text-muted-foreground">{day}</span>
+                  <div key={day} className="flex items-center gap-3 p-2.5 rounded-lg border border-border">
                     <Switch
                       checked={settings.workingDays[i]}
                       onCheckedChange={(checked) => {
@@ -717,39 +758,45 @@ const NativeBooking = () => {
                         setSettings(prev => ({ ...prev, workingDays: updated }));
                       }}
                     />
+                    <span className={`text-sm font-medium w-10 ${settings.workingDays[i] ? 'text-foreground' : 'text-muted-foreground'}`}>
+                      {day}
+                    </span>
+                    {settings.workingDays[i] && (
+                      <div className="flex items-center gap-2 ml-auto">
+                        <Select
+                          value={String(settings.daySettings[i].startHour)}
+                          onValueChange={v => updateDaySetting(i, 'startHour', Number(v))}
+                        >
+                          <SelectTrigger className="w-[100px] h-8 text-xs"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: 12 }, (_, j) => j + 6).map(h => (
+                              <SelectItem key={h} value={String(h)}>
+                                {h > 12 ? `${h-12}:00 PM` : h === 12 ? '12:00 PM' : `${h}:00 AM`}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <span className="text-xs text-muted-foreground">to</span>
+                        <Select
+                          value={String(settings.daySettings[i].endHour)}
+                          onValueChange={v => updateDaySetting(i, 'endHour', Number(v))}
+                        >
+                          <SelectTrigger className="w-[100px] h-8 text-xs"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: 12 }, (_, j) => j + 12).map(h => (
+                              <SelectItem key={h} value={String(h)}>
+                                {h > 12 ? `${h-12}:00 PM` : '12:00 PM'}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                    {!settings.workingDays[i] && (
+                      <span className="text-xs text-muted-foreground ml-auto">Off</span>
+                    )}
                   </div>
                 ))}
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium">Start Time</label>
-                <Select value={String(settings.startHour)} onValueChange={v => setSettings(prev => ({ ...prev, startHour: Number(v) }))}>
-                  <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {Array.from({ length: 12 }, (_, i) => i + 6).map(h => (
-                      <SelectItem key={h} value={String(h)}>
-                        {h > 12 ? `${h-12}:00 PM` : h === 12 ? '12:00 PM' : `${h}:00 AM`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium">End Time</label>
-                <Select value={String(settings.endHour)} onValueChange={v => setSettings(prev => ({ ...prev, endHour: Number(v) }))}>
-                  <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {Array.from({ length: 12 }, (_, i) => i + 12).map(h => (
-                      <SelectItem key={h} value={String(h)}>
-                        {h > 12 ? `${h-12}:00 PM` : '12:00 PM'}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
             </div>
 

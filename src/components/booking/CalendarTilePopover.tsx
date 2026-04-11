@@ -14,6 +14,7 @@ interface BookingInfo {
   session_type: string;
   notes: string | null;
   client_user_id: string;
+  client_name?: string;
 }
 
 interface CalendarTilePopoverProps {
