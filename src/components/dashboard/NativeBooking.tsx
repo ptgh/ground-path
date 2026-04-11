@@ -538,6 +538,11 @@ const NativeBooking = () => {
           >
             <v.icon className="h-3.5 w-3.5 mr-1.5" />
             {v.label}
+            {v.key === 'sessions' && pendingCount > 0 && (
+              <Badge className="ml-1.5 h-4 min-w-4 px-1 text-[10px] bg-amber-500 text-white border-0">
+                {pendingCount}
+              </Badge>
+            )}
           </Button>
         ))}
         <Badge variant="outline" className="ml-auto text-[10px] border-amber-300 text-amber-700 bg-amber-50">
@@ -801,7 +806,7 @@ const NativeBooking = () => {
                           value={String(settings.daySettings[i].endHour)}
                           onValueChange={v => updateDaySetting(i, 'endHour', Number(v))}
                         >
-                          <SelectTrigger className="w-[100px] h-8 text-xs"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className={`w-[100px] h-8 text-xs ${invalidDays.includes(i) ? 'border-destructive' : ''}`}><SelectValue /></SelectTrigger>
                           <SelectContent>
                             {Array.from({ length: 12 }, (_, j) => j + 12).map(h => (
                               <SelectItem key={h} value={String(h)}>
@@ -810,10 +815,22 @@ const NativeBooking = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 shrink-0 text-muted-foreground hover:text-sage-700"
+                          title="Apply to all working days"
+                          onClick={() => applyToAllDays(i)}
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                        </Button>
                       </div>
                     )}
                     {!settings.workingDays[i] && (
                       <span className="text-xs text-muted-foreground ml-auto">Off</span>
+                    )}
+                    {invalidDays.includes(i) && (
+                      <p className="text-[11px] text-destructive w-full pl-14">End time must be after start time</p>
                     )}
                   </div>
                 ))}
