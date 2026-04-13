@@ -269,6 +269,32 @@ function buildEmailHtml(title: string, body: string, ctaUrl?: string, ctaLabel?:
     </div>`;
 }
 
+/* ─── Teams notification helper ─── */
+
+async function sendTeamsNotification(payload: {
+  type: 'new_request' | 'confirmed' | 'declined' | 'cancelled';
+  clientName: string;
+  practitionerName: string;
+  date: string;
+  time: string;
+}): Promise<void> {
+  try {
+    const teamsUrl = `${supabaseUrl}/functions/v1/teams-booking-notify`;
+    const res = await fetch(teamsUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseServiceRoleKey}`,
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    console.log('Teams notify result:', JSON.stringify(data));
+  } catch (err) {
+    console.error('Teams notify error (non-blocking):', err);
+  }
+}
+
 /* ─── Main handler ─── */
 
 serve(async (req: Request): Promise<Response> => {
@@ -308,14 +334,38 @@ serve(async (req: Request): Promise<Response> => {
       });
     }
 
+    let emailResponse: Response;
     switch (notificationType) {
       case 'status_change':
-        return await handleStatusChange(supabase, body, callerUserId);
+        emailResponse = await handleStatusChange(supabase, body, callerUserId);
+        break;
       case 'client_cancellation':
-        return await handleClientCancellation(supabase, body, callerUserId);
+        emailResponse = await handleClientCancellation(supabase, body, callerUserId);
+        break;
       default:
-        return await handleNewRequest(supabase, body, callerUserId);
+        emailResponse = await handleNewRequest(supabase, body, callerUserId);
+        break;
     }
+
+    // Fire-and-forget Teams channel notification
+    const teamsType = notificationType === 'status_change'
+      ? (body.newStatus === 'confirmed' ? 'confirmed' : 'declined')
+      : notificationType === 'client_cancellation' ? 'cancelled' : 'new_request';
+
+    // Resolve names for Teams message
+    const { data: callerProfile } = await supabase
+      .from('profiles').select('display_name').eq('user_id', callerUserId).single();
+    const callerName = callerProfile?.display_name || 'Unknown';
+
+    sendTeamsNotification({
+      type: teamsType as 'new_request' | 'confirmed' | 'declined' | 'cancelled',
+      clientName: notificationType === 'status_change' ? 'Client' : callerName,
+      practitionerName: notificationType === 'status_change' ? callerName : 'Practitioner',
+      date: body.requestedDate || 'N/A',
+      time: body.requestedTime || 'N/A',
+    });
+
+    return emailResponse;
   } catch (error) {
     console.error('Error in booking-notification:', error);
     return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }), {

@@ -18,11 +18,14 @@ import NewsletterTest from '../components/NewsletterTest';
 import { Button } from '@/components/ui/button';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useNavigate } from 'react-router-dom';
+import { CalendarCheck } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Index = () => {
   const [showNewsletterTest, setShowNewsletterTest] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Initialize GSAP animations with better targeting
@@ -98,6 +101,16 @@ const Index = () => {
               </p>
             </div>
             <PractitionerList />
+            {/* Book a Session CTA */}
+            <div className="text-center mt-10">
+              <button
+                onClick={() => navigate('/book')}
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-lg text-base"
+              >
+                <CalendarCheck className="h-5 w-5" />
+                Book an Online Session
+              </button>
+            </div>
           </div>
         </section>
         <Newsletter />

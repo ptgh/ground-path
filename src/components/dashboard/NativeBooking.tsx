@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
 import {
   Calendar,
   Clock,
@@ -20,6 +21,7 @@ import {
   Loader2,
   Trash2,
   Copy,
+  Link,
 } from 'lucide-react';
 import CalendarTilePopover from '@/components/booking/CalendarTilePopover';
 import { toast } from 'sonner';
@@ -121,6 +123,41 @@ const migrateSettings = (saved: Record<string, unknown>): AvailabilitySettings =
     sessionDuration,
     bufferMinutes,
   };
+};
+
+/* ─── Meeting Link Input ─── */
+const MeetingLinkInput = ({ bookingId, existingNotes }: { bookingId: string; existingNotes: string | null }) => {
+  const [link, setLink] = useState(existingNotes || '');
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    const { error } = await supabase
+      .from('booking_requests')
+      .update({ practitioner_notes: link })
+      .eq('id', bookingId);
+    setSaving(false);
+    if (error) {
+      toast.error('Failed to save meeting link');
+    } else {
+      toast.success('Meeting link saved');
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-1.5 mt-1">
+      <Input
+        value={link}
+        onChange={e => setLink(e.target.value)}
+        placeholder="Paste video link…"
+        className="h-7 text-xs w-44"
+      />
+      <Button size="sm" variant="outline" className="h-7 text-xs px-2" onClick={handleSave} disabled={saving}>
+        <Link className="h-3 w-3 mr-1" />
+        {saving ? '…' : 'Save'}
+      </Button>
+    </div>
+  );
 };
 
 /* ═══════════════════════════════════════════ */
@@ -730,19 +767,24 @@ const NativeBooking = () => {
                         <p className="text-xs text-muted-foreground/70 mt-0.5 truncate">{booking.notes}</p>
                       )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={`text-[10px] ${statusStyle(booking.status)}`}>
-                        {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                      </Badge>
-                      {booking.status === 'pending' && (
-                        <div className="flex gap-1">
-                          <Button size="sm" variant="outline" className="h-7 text-xs text-sage-700 border-sage-300" onClick={() => handleUpdateBookingStatus(booking.id, 'confirmed')}>
-                            Confirm
-                          </Button>
-                          <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive" onClick={() => handleUpdateBookingStatus(booking.id, 'cancelled')}>
-                            Decline
-                          </Button>
-                        </div>
+                     <div className="flex flex-col items-end gap-1.5">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className={`text-[10px] ${statusStyle(booking.status)}`}>
+                          {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                        </Badge>
+                        {booking.status === 'pending' && (
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline" className="h-7 text-xs text-sage-700 border-sage-300" onClick={() => handleUpdateBookingStatus(booking.id, 'confirmed')}>
+                              Confirm
+                            </Button>
+                            <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive" onClick={() => handleUpdateBookingStatus(booking.id, 'cancelled')}>
+                              Decline
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                      {booking.status === 'confirmed' && (
+                        <MeetingLinkInput bookingId={booking.id} existingNotes={booking.practitioner_notes} />
                       )}
                     </div>
                   </div>
@@ -899,7 +941,7 @@ const NativeBooking = () => {
               { step: 2, label: 'Set working days and hours', done: availability.length > 0 },
               { step: 3, label: 'Add first availability blocks', done: availability.length > 0 },
               { step: 4, label: 'Test client-facing booking flow', done: bookings.length > 0 },
-              { step: 5, label: 'Secure video integration (coming soon)', done: false },
+              { step: 5, label: 'Add video meeting links to confirmed sessions', done: false },
             ].map(item => (
               <div key={item.step} className="flex items-center gap-3">
                 <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-medium ${
