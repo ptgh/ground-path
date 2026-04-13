@@ -1,57 +1,49 @@
 
 
-## Issues Identified & Plan
+## Next Steps Plan
 
-### Problems Found
+### What's been completed
+- Dedicated `/book` page with practitioner selection and GSAP animations
+- Discrete time slot generation (session duration + buffer)
+- Teams Link button removed (unsupported scopes)
+- Booking notification email fix (practitioner dashboard link)
 
-1. **Booking slots show full day range (9 AM - 5 PM) instead of individual time slots** -- `NativeBookingPanel` displays raw availability blocks rather than splitting them into bookable slots based on session duration (e.g., 50 min slots).
+### Remaining work
 
-2. **No practitioner selection before booking** -- The booking panel assumes a single practitioner. User wants to select a practitioner first, then see a calendar.
+#### Step 1: Use Teams connector for booking notifications via channel messages
+Since the Teams connector supports `ChannelMessage.Send`, we can post booking notifications to a Teams channel when new requests come in, bookings are confirmed, or cancelled.
 
-3. **No dedicated booking page** -- Currently embedded inline on the home page. Needs its own route for a proper experience with GSAP animations.
+- Create edge function `teams-booking-notify/index.ts` that posts formatted messages to a configured Teams channel via the connector gateway
+- Call it from the existing `booking-notification` edge function as an additional notification channel
+- Message includes client name, date, time, and a link to the practitioner dashboard
 
-4. **Teams meeting link fails (403 Forbidden)** -- Edge function logs show `Teams API error: 403`. The Microsoft Teams connector only supports scopes: `Team.ReadBasic.All, Channel.ReadBasic.All, ChannelMessage.Send, User.Read`. **`OnlineMeetings.ReadWrite` and `Calendars.ReadWrite` are NOT available** in this connector's scope catalog. The Teams connector gateway cannot create meetings or sync calendars -- it only supports channel messaging and team/channel reads.
+#### Step 2: Fix remaining booking flow issues
+- Verify the `/book` page slot generation works with real availability data
+- Ensure the email notification link points to `/practitioner/dashboard?tab=booking`
+- Test the calendar only appears after practitioner selection
 
-5. **Email "Review Request" links to wrong page** -- `booking-notification` function links to `https://groundpath.com.au/dashboard` (client dashboard) instead of `https://groundpath.com.au/practitioner/dashboard` with the Booking tab active.
+#### Step 3: Homepage booking CTA cleanup
+- Replace inline `NativeBookingPanel` on the homepage with a simple "Book a Session" CTA card linking to `/book`
+- Update `HowSessionsWork` CTA to navigate to `/book` in native_beta mode
 
-6. **Microsoft Calendar not included** -- The Teams connector does not support Outlook calendar scopes. A separate Microsoft Outlook connector would be needed, but even then, the connector accesses the developer's mailbox, not individual practitioner mailboxes. Per-practitioner calendar sync would require a custom OAuth flow.
-
----
-
-### Plan
-
-#### Step 1: Create dedicated `/book` page with practitioner selection
-- New route `/book` and page `src/pages/Book.tsx`
-- Lists practitioners with GSAP entrance animations
-- Clicking a practitioner reveals a date-picker calendar (react-day-picker) with GSAP slide-in
-- Calendar highlights days with availability; selecting a date shows individual time slots broken by session duration
-- "Book" buttons on the home page and `PractitionerCard` navigate to `/book` (or `/book?practitioner=<id>` to pre-select)
-
-#### Step 2: Fix time slot display in booking flow
-- Instead of showing "9:00 AM - 5:00 PM" as one block, split availability into individual bookable slots: 9:00-9:50, 10:00-10:50, etc. using the practitioner's `sessionDuration` and `bufferMinutes` from their settings
-- Grey out slots that already have pending/confirmed bookings
-
-#### Step 3: Fix email notification links
-- Change `handleNewRequest` link from `/dashboard` to `/practitioner/dashboard` 
-- Append a query param or hash so the page auto-scrolls to the Booking tab on load
-
-#### Step 4: Remove Teams meeting link button (not supported)
-- The connector gateway does not support `OnlineMeetings.ReadWrite` -- remove the "Teams Link" button and `create-teams-meeting` edge function to avoid user confusion
-- Update the "Next Setup Steps" roadmap text to reflect that Microsoft video integration is not yet available through this connector
-- Update the footer text in `NativeBookingPanel` from "Microsoft Teams integration coming soon" to a general "secure video" message
-
-#### Step 5: Clean up home page booking section
-- Replace the inline `NativeBookingPanel` on the home page with a CTA card that links to `/book`
-- Keep it simple: "Book a Session" card with a button that navigates to the new page
+#### Step 4: Document Microsoft integration limitations
+- Add a note in the practitioner dashboard settings explaining that video meeting links must be manually added for now
+- Future: custom Microsoft Entra app registration would unlock `OnlineMeetings.ReadWrite` and `Calendars.ReadWrite` for full automation
 
 ### Technical details
 
-- New file: `src/pages/Book.tsx` -- standalone page with Header, practitioner list, animated calendar, and slot picker
-- Modified: `src/App.tsx` -- add `/book` route
-- Modified: `src/components/PractitionerCard.tsx` -- "Book" button navigates to `/book?practitioner=<id>`
-- Modified: `supabase/functions/booking-notification/index.ts` -- fix URL from `/dashboard` to `/practitioner/dashboard`
-- Modified: `src/components/dashboard/NativeBooking.tsx` -- remove Teams Link button and `handleCreateTeamsMeeting`
-- Deleted: `supabase/functions/create-teams-meeting/index.ts`
-- The date-picker calendar uses the existing `react-day-picker` component already in the project
-- Slot generation logic: for each availability block, generate slots at `sessionDuration + bufferMinutes` intervals
+- **New file**: `supabase/functions/teams-booking-notify/index.ts` — uses `MICROSOFT_TEAMS_API_KEY` + `LOVABLE_API_KEY` to post to Teams channel via gateway (`https://connector-gateway.lovable.dev/microsoft_teams/teams/{teamId}/channels/{channelId}/messages`)
+- **Modified**: `supabase/functions/booking-notification/index.ts` — call `teams-booking-notify` after sending email
+- **Modified**: `src/components/HowSessionsWork.tsx` — CTA navigates to `/book` instead of scrolling to inline panel
+- **Modified**: `src/pages/Index.tsx` — replace inline booking panel with CTA card
+- **Modified**: `src/components/dashboard/NativeBooking.tsx` — add "Paste meeting link" input field for practitioners to manually add video links to confirmed bookings
+
+### Microsoft integration scope summary
+
+| Feature | Required Scope | Available? | Status |
+|---------|---------------|------------|--------|
+| Channel notifications | `ChannelMessage.Send` | Yes | Can implement now |
+| Chat messages | `Chat.ReadWrite` | Yes (add scope) | Can implement |
+| Create meetings | `OnlineMeetings.ReadWrite` | No | Requires custom OAuth |
+| Calendar sync | `Calendars.ReadWrite` | No | Requires custom OAuth |
 
