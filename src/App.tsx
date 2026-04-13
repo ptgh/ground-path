@@ -46,6 +46,7 @@ import { ClientAIAssistant } from "./components/ClientAIAssistant";
 import GoogleAnalytics from "./components/GoogleAnalytics";
 import ClientDashboard from "./pages/ClientDashboard";
 import Book from "./pages/Book";
+import BookPractitioner from "./pages/BookPractitioner";
 import { useAuth, AuthProvider } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
@@ -154,6 +155,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/book" element={<Book />} />
+              <Route path="/book/:practitionerId" element={<BookPractitioner />} />
               <Route path="/resources" element={<Resources />} />
               <Route path="/article/:slug" element={<Article />} />
               <Route path="/voice-session" element={<VoiceSessionPage />} />
