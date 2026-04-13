@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CalendarCheck, Video, MessageSquare, ShieldCheck } from 'lucide-react';
 import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
-import { scrollToSectionWithOffset } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -57,6 +57,7 @@ const HowSessionsWork = () => {
   const { mode: bookingMode } = useBookingMode();
   const steps = bookingMode === 'native_beta' ? nativeSteps : halaxySteps;
   const sectionRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -121,7 +122,7 @@ const HowSessionsWork = () => {
         <div className="text-center mt-10">
           {bookingMode === 'native_beta' ? (
             <button
-              onClick={() => scrollToSectionWithOffset('booking', 96)}
+              onClick={() => navigate('/book')}
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-lg"
             >
               <CalendarCheck className="h-4 w-4" />

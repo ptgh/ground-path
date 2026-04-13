@@ -730,19 +730,24 @@ const NativeBooking = () => {
                         <p className="text-xs text-muted-foreground/70 mt-0.5 truncate">{booking.notes}</p>
                       )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={`text-[10px] ${statusStyle(booking.status)}`}>
-                        {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                      </Badge>
-                      {booking.status === 'pending' && (
-                        <div className="flex gap-1">
-                          <Button size="sm" variant="outline" className="h-7 text-xs text-sage-700 border-sage-300" onClick={() => handleUpdateBookingStatus(booking.id, 'confirmed')}>
-                            Confirm
-                          </Button>
-                          <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive" onClick={() => handleUpdateBookingStatus(booking.id, 'cancelled')}>
-                            Decline
-                          </Button>
-                        </div>
+                     <div className="flex flex-col items-end gap-1.5">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className={`text-[10px] ${statusStyle(booking.status)}`}>
+                          {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                        </Badge>
+                        {booking.status === 'pending' && (
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline" className="h-7 text-xs text-sage-700 border-sage-300" onClick={() => handleUpdateBookingStatus(booking.id, 'confirmed')}>
+                              Confirm
+                            </Button>
+                            <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive" onClick={() => handleUpdateBookingStatus(booking.id, 'cancelled')}>
+                              Decline
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                      {booking.status === 'confirmed' && (
+                        <MeetingLinkInput bookingId={booking.id} existingNotes={booking.practitioner_notes} />
                       )}
                     </div>
                   </div>
