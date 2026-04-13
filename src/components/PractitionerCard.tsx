@@ -99,7 +99,7 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
             className="flex-1 gap-1.5"
             onClick={() => {
               if (bookingMode === 'native_beta') {
-                navigate(`/book?practitioner=${practitioner.user_id}`);
+                navigate(`/book/${practitioner.user_id}`);
               } else {
                 window.open(HALAXY_EXTERNAL_URL, '_blank');
               }
