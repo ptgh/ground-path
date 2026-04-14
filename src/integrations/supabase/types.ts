@@ -16,11 +16,26 @@ export type Database = {
     Tables: {
       booking_requests: {
         Row: {
+          calendar_provider: string | null
+          calendar_sync_status: string | null
           client_user_id: string
           created_at: string
           duration_minutes: number
+          external_calendar_event_id: string | null
+          external_meeting_id: string | null
           id: string
+          last_calendar_sync_at: string | null
+          lobby_policy: string | null
+          meeting_access_policy: string | null
+          meeting_created_at: string | null
+          meeting_last_attempt_at: string | null
+          meeting_last_error: string | null
+          meeting_provider: string | null
+          meeting_retry_count: number | null
+          meeting_status: string | null
+          meeting_url: string | null
           notes: string | null
+          organizer_email: string | null
           practitioner_id: string
           practitioner_notes: string | null
           requested_date: string
@@ -31,11 +46,26 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          calendar_provider?: string | null
+          calendar_sync_status?: string | null
           client_user_id: string
           created_at?: string
           duration_minutes?: number
+          external_calendar_event_id?: string | null
+          external_meeting_id?: string | null
           id?: string
+          last_calendar_sync_at?: string | null
+          lobby_policy?: string | null
+          meeting_access_policy?: string | null
+          meeting_created_at?: string | null
+          meeting_last_attempt_at?: string | null
+          meeting_last_error?: string | null
+          meeting_provider?: string | null
+          meeting_retry_count?: number | null
+          meeting_status?: string | null
+          meeting_url?: string | null
           notes?: string | null
+          organizer_email?: string | null
           practitioner_id: string
           practitioner_notes?: string | null
           requested_date: string
@@ -46,11 +76,26 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          calendar_provider?: string | null
+          calendar_sync_status?: string | null
           client_user_id?: string
           created_at?: string
           duration_minutes?: number
+          external_calendar_event_id?: string | null
+          external_meeting_id?: string | null
           id?: string
+          last_calendar_sync_at?: string | null
+          lobby_policy?: string | null
+          meeting_access_policy?: string | null
+          meeting_created_at?: string | null
+          meeting_last_attempt_at?: string | null
+          meeting_last_error?: string | null
+          meeting_provider?: string | null
+          meeting_retry_count?: number | null
+          meeting_status?: string | null
+          meeting_url?: string | null
           notes?: string | null
+          organizer_email?: string | null
           practitioner_id?: string
           practitioner_notes?: string | null
           requested_date?: string
@@ -471,6 +516,66 @@ export type Database = {
           title?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      org_microsoft_integration: {
+        Row: {
+          calendar_enabled: boolean
+          config_version: number
+          connected_at: string | null
+          connection_status: string
+          created_at: string
+          disconnected_at: string | null
+          id: string
+          integration_mode: string
+          last_sync_at: string | null
+          organizer_email: string | null
+          provider: string
+          scopes: string[] | null
+          service_identity_reference: string | null
+          teams_enabled: boolean
+          tenant_id: string | null
+          token_metadata: Json | null
+          updated_at: string
+        }
+        Insert: {
+          calendar_enabled?: boolean
+          config_version?: number
+          connected_at?: string | null
+          connection_status?: string
+          created_at?: string
+          disconnected_at?: string | null
+          id?: string
+          integration_mode?: string
+          last_sync_at?: string | null
+          organizer_email?: string | null
+          provider?: string
+          scopes?: string[] | null
+          service_identity_reference?: string | null
+          teams_enabled?: boolean
+          tenant_id?: string | null
+          token_metadata?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          calendar_enabled?: boolean
+          config_version?: number
+          connected_at?: string | null
+          connection_status?: string
+          created_at?: string
+          disconnected_at?: string | null
+          id?: string
+          integration_mode?: string
+          last_sync_at?: string | null
+          organizer_email?: string | null
+          provider?: string
+          scopes?: string[] | null
+          service_identity_reference?: string | null
+          teams_enabled?: boolean
+          tenant_id?: string | null
+          token_metadata?: Json | null
+          updated_at?: string
         }
         Relationships: []
       }
