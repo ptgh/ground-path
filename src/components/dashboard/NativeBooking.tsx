@@ -135,8 +135,8 @@ const migrateSettings = (saved: Record<string, unknown>): AvailabilitySettings =
 type MeetingStatusType = 'none' | 'pending' | 'created' | 'failed' | 'skipped';
 
 const MeetingStatusBadge = ({ booking }: { booking: BookingRequest }) => {
-  const meetingStatus = (booking as Record<string, unknown>).meeting_status as MeetingStatusType | undefined;
-  const meetingUrl = (booking as Record<string, unknown>).meeting_url as string | undefined;
+  const meetingStatus = booking.meeting_status as MeetingStatusType | undefined;
+  const meetingUrl = booking.meeting_url;
 
   if (meetingStatus === 'created' && meetingUrl) {
     return (
@@ -179,8 +179,8 @@ const MeetingStatusBadge = ({ booking }: { booking: BookingRequest }) => {
 };
 
 const MeetingActions = ({ booking, onRetry }: { booking: BookingRequest; onRetry: (id: string) => void }) => {
-  const meetingStatus = (booking as Record<string, unknown>).meeting_status as MeetingStatusType | undefined;
-  const meetingUrl = (booking as Record<string, unknown>).meeting_url as string | undefined;
+  const meetingStatus = booking.meeting_status as MeetingStatusType | undefined;
+  const meetingUrl = booking.meeting_url;
 
   return (
     <div className="flex flex-col items-end gap-1">

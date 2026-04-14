@@ -122,8 +122,8 @@ const MyBookings = () => {
   const BookingCard = ({ booking }: { booking: Booking }) => {
     const cfg = statusConfig[booking.status] || statusConfig.pending;
     const canCancel = booking.status === 'pending';
-    const meetingUrl = (booking as Record<string, unknown>).meeting_url as string | undefined;
-    const meetingStatus = (booking as Record<string, unknown>).meeting_status as string | undefined;
+    const meetingUrl = booking.meeting_url;
+    const meetingStatus = booking.meeting_status;
     const isConfirmedWithMeeting = booking.status === 'confirmed' && meetingUrl && meetingStatus === 'created';
     const isMeetingPending = booking.status === 'confirmed' && meetingStatus && meetingStatus !== 'created' && meetingStatus !== 'none';
 
