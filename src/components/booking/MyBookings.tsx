@@ -120,6 +120,10 @@ const MyBookings = () => {
   const BookingCard = ({ booking }: { booking: Booking }) => {
     const cfg = statusConfig[booking.status] || statusConfig.pending;
     const canCancel = booking.status === 'pending';
+    const meetingUrl = (booking as Record<string, unknown>).meeting_url as string | undefined;
+    const meetingStatus = (booking as Record<string, unknown>).meeting_status as string | undefined;
+    const isConfirmedWithMeeting = booking.status === 'confirmed' && meetingUrl && meetingStatus === 'created';
+    const isMeetingPending = booking.status === 'confirmed' && meetingStatus && meetingStatus !== 'created' && meetingStatus !== 'none';
 
     return (
       <div className="flex items-start gap-3 p-3 rounded-lg border border-border bg-card">
@@ -147,6 +151,23 @@ const MyBookings = () => {
           {booking.practitioner_notes && (
             <p className="text-xs text-muted-foreground italic mt-1">
               Note: {booking.practitioner_notes}
+            </p>
+          )}
+          {isConfirmedWithMeeting && (
+            <a
+              href={meetingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 mt-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors"
+            >
+              <Video className="h-3.5 w-3.5" />
+              Join Session
+            </a>
+          )}
+          {isMeetingPending && (
+            <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              Meeting setup in progress — details will appear here shortly
             </p>
           )}
           {canCancel && (

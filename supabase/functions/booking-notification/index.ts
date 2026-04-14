@@ -157,8 +157,19 @@ async function handleStatusChange(
   const statusColor = isConfirmed ? '#4a7c4f' : '#dc2626';
   const statusEmoji = isConfirmed ? '✅' : '❌';
   const extraMessage = isConfirmed
-    ? 'Your session is confirmed. Video link details will be provided closer to the date.'
+    ? (booking.meeting_url
+        ? `Your session is confirmed. <a href="${booking.meeting_url}" style="color: #4a7c4f; font-weight: 600;">Join your Teams meeting here</a>.`
+        : 'Your session is confirmed and meeting details will follow shortly.')
     : 'If you\'d like to reschedule, please submit a new booking request.';
+
+  // Build meeting join block for confirmed bookings with meeting URL
+  const meetingBlock = (isConfirmed && booking.meeting_url)
+    ? `<div style="text-align: center; margin: 16px 0;">
+        <a href="${booking.meeting_url}" style="display: inline-block; background-color: #5b5fc7; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 6px; font-size: 14px; font-weight: 500;">
+          📹 Join Teams Meeting
+        </a>
+      </div>`
+    : '';
 
   return await sendEmail(
     clientUser.email,
@@ -174,6 +185,7 @@ async function handleStatusChange(
           📹 <strong>Type:</strong> Video session (${booking.duration_minutes} min)
         </p>
       </div>
+      ${meetingBlock}
       <p style="font-size: 13px; color: #6b7280; text-align: center; margin: 0 0 24px 0;">
         ${extraMessage}
       </p>`,
