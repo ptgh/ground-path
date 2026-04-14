@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Input } from '@/components/ui/input';
+
 import {
   Calendar,
   Clock,
@@ -21,7 +21,6 @@ import {
   Loader2,
   Trash2,
   Copy,
-  Link,
 } from 'lucide-react';
 import CalendarTilePopover from '@/components/booking/CalendarTilePopover';
 import { toast } from 'sonner';
@@ -52,6 +51,12 @@ interface BookingRequest {
   practitioner_notes: string | null;
   created_at: string;
   client_name?: string;
+  meeting_url?: string | null;
+  meeting_status?: string | null;
+  meeting_provider?: string | null;
+  meeting_last_error?: string | null;
+  meeting_retry_count?: number | null;
+  organizer_email?: string | null;
 }
 
 interface DaySetting {
@@ -125,37 +130,70 @@ const migrateSettings = (saved: Record<string, unknown>): AvailabilitySettings =
   };
 };
 
-/* ─── Meeting Link Input ─── */
-const MeetingLinkInput = ({ bookingId, existingNotes }: { bookingId: string; existingNotes: string | null }) => {
-  const [link, setLink] = useState(existingNotes || '');
-  const [saving, setSaving] = useState(false);
+/* ─── Meeting Status Display (replaces manual link input for native flow) ─── */
+type MeetingStatusType = 'none' | 'pending' | 'created' | 'failed' | 'skipped';
 
-  const handleSave = async () => {
-    setSaving(true);
-    const { error } = await supabase
-      .from('booking_requests')
-      .update({ practitioner_notes: link })
-      .eq('id', bookingId);
-    setSaving(false);
-    if (error) {
-      toast.error('Failed to save meeting link');
-    } else {
-      toast.success('Meeting link saved');
-    }
-  };
+const MeetingStatusBadge = ({ booking }: { booking: BookingRequest }) => {
+  const meetingStatus = booking.meeting_status as MeetingStatusType | undefined;
+  const meetingUrl = booking.meeting_url;
+
+  if (meetingStatus === 'created' && meetingUrl) {
+    return (
+      <div className="flex items-center gap-1.5 mt-1">
+        <Badge variant="outline" className="text-[10px] bg-sage-50 text-sage-700 border-sage-200">
+          <Video className="h-3 w-3 mr-1" /> Meeting Ready
+        </Badge>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-6 px-2 text-[10px]"
+          onClick={() => {
+            navigator.clipboard.writeText(meetingUrl);
+            toast.success('Join link copied');
+          }}
+        >
+          <Copy className="h-3 w-3 mr-1" /> Copy Link
+        </Button>
+      </div>
+    );
+  }
+
+  if (meetingStatus === 'pending') {
+    return (
+      <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-700 border-amber-200 mt-1">
+        <Loader2 className="h-3 w-3 mr-1 animate-spin" /> Meeting Setup Pending
+      </Badge>
+    );
+  }
+
+  if (meetingStatus === 'failed' || meetingStatus === 'skipped') {
+    return (
+      <Badge variant="outline" className="text-[10px] bg-destructive/10 text-destructive border-destructive/20 mt-1">
+        <AlertTriangle className="h-3 w-3 mr-1" /> Meeting Setup Pending
+      </Badge>
+    );
+  }
+
+  return null;
+};
+
+const MeetingActions = ({ booking, onRetry }: { booking: BookingRequest; onRetry: (id: string) => void }) => {
+  const meetingStatus = booking.meeting_status as MeetingStatusType | undefined;
+  const meetingUrl = booking.meeting_url;
 
   return (
-    <div className="flex items-center gap-1.5 mt-1">
-      <Input
-        value={link}
-        onChange={e => setLink(e.target.value)}
-        placeholder="Paste video link…"
-        className="h-7 text-xs w-44"
-      />
-      <Button size="sm" variant="outline" className="h-7 text-xs px-2" onClick={handleSave} disabled={saving}>
-        <Link className="h-3 w-3 mr-1" />
-        {saving ? '…' : 'Save'}
-      </Button>
+    <div className="flex flex-col items-end gap-1">
+      <MeetingStatusBadge booking={booking} />
+      {meetingStatus !== 'created' && booking.status === 'confirmed' && (
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-6 px-2 text-[10px] text-sage-700 border-sage-300"
+          onClick={() => onRetry(booking.id)}
+        >
+          <Video className="h-3 w-3 mr-1" /> Create Meeting
+        </Button>
+      )}
     </div>
   );
 };
@@ -434,6 +472,45 @@ const NativeBooking = () => {
       supabase.functions.invoke('booking-notification', {
         body: { type: 'status_change', bookingId: id, newStatus: status },
       }).catch(err => console.error('Status notification error:', err));
+
+      // Auto-create Teams meeting on confirmation (native flow)
+      if (status === 'confirmed') {
+        handleCreateMeeting(id);
+      }
+    }
+  };
+
+  const [creatingMeetingId, setCreatingMeetingId] = useState<string | null>(null);
+
+  const handleCreateMeeting = async (bookingId: string) => {
+    setCreatingMeetingId(bookingId);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-org-booking-meeting', {
+        body: { bookingId },
+      });
+
+      if (error) {
+        toast.error('Meeting creation failed');
+        console.error('Meeting creation error:', error);
+      } else if (data?.meeting_status === 'created' || data?.already_exists) {
+        toast.success('Teams meeting created');
+        setBookings(prev => prev.map(b =>
+          b.id === bookingId ? { ...b, ...data } : b
+        ));
+      } else {
+        // Pending or skipped — not an error for the practitioner
+        toast.info(data?.reason || 'Meeting setup pending — will be created when Microsoft is connected');
+      }
+
+      // Optionally trigger calendar sync
+      supabase.functions.invoke('sync-org-booking-calendar', {
+        body: { bookingId, action: 'create' },
+      }).catch(err => console.error('Calendar sync error:', err));
+    } catch (err) {
+      console.error('Meeting creation error:', err);
+      toast.error('Meeting creation failed');
+    } finally {
+      setCreatingMeetingId(null);
     }
   };
 
@@ -784,7 +861,7 @@ const NativeBooking = () => {
                         )}
                       </div>
                       {booking.status === 'confirmed' && (
-                        <MeetingLinkInput bookingId={booking.id} existingNotes={booking.practitioner_notes} />
+                        <MeetingActions booking={booking} onRetry={handleCreateMeeting} />
                       )}
                     </div>
                   </div>
@@ -941,7 +1018,7 @@ const NativeBooking = () => {
               { step: 2, label: 'Set working days and hours', done: availability.length > 0 },
               { step: 3, label: 'Add first availability blocks', done: availability.length > 0 },
               { step: 4, label: 'Test client-facing booking flow', done: bookings.length > 0 },
-              { step: 5, label: 'Add video meeting links to confirmed sessions', done: false },
+              { step: 5, label: 'Teams meetings auto-created on confirmation', done: bookings.some(b => b.meeting_status === 'created') },
             ].map(item => (
               <div key={item.step} className="flex items-center gap-3">
                 <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-medium ${
