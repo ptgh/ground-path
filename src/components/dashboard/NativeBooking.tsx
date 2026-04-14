@@ -1019,7 +1019,7 @@ const NativeBooking = () => {
               { step: 2, label: 'Set working days and hours', done: availability.length > 0 },
               { step: 3, label: 'Add first availability blocks', done: availability.length > 0 },
               { step: 4, label: 'Test client-facing booking flow', done: bookings.length > 0 },
-              { step: 5, label: 'Teams meetings auto-created on confirmation', done: bookings.some(b => (b as Record<string, unknown>).meeting_status === 'created') },
+              { step: 5, label: 'Teams meetings auto-created on confirmation', done: bookings.some(b => b.meeting_status === 'created') },
             ].map(item => (
               <div key={item.step} className="flex items-center gap-3">
                 <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-medium ${
