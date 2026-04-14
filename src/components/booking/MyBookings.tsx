@@ -22,6 +22,8 @@ interface Booking {
   practitioner_notes: string | null;
   created_at: string;
   practitioner_name?: string;
+  meeting_url?: string | null;
+  meeting_status?: string | null;
 }
 
 const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }> = {

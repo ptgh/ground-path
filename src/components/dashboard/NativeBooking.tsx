@@ -52,6 +52,12 @@ interface BookingRequest {
   practitioner_notes: string | null;
   created_at: string;
   client_name?: string;
+  meeting_url?: string | null;
+  meeting_status?: string | null;
+  meeting_provider?: string | null;
+  meeting_last_error?: string | null;
+  meeting_retry_count?: number | null;
+  organizer_email?: string | null;
 }
 
 interface DaySetting {
