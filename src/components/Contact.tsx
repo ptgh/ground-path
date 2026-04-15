@@ -7,7 +7,7 @@ import { contactFormSchema, checkRateLimit } from '@/lib/validation';
 import { useToast } from '@/hooks/use-toast';
 import MailingListModal from './MailingListModal';
 import HalaxyEmbed from './booking/HalaxyEmbed';
-import { useNavigate } from 'react-router-dom';
+
 import { scrollToSectionWithOffset } from '@/lib/utils';
 import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
 
