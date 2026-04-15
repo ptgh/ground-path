@@ -135,7 +135,12 @@ const Contact = () => {
               {bookingMode === 'native_beta' ? (
                 <div className="text-center py-4">
                   <p className="text-sm text-muted-foreground mb-3">Book a session through our native booking system.</p>
-                  <BookSessionButton />
+                  <button
+                    onClick={() => window.location.href = '/book'}
+                    className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                  >
+                    Book a Session
+                  </button>
                 </div>
               ) : HALAXY_EMBED_URL ? (
                 <div className="mb-4">
