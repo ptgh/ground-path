@@ -12,17 +12,30 @@ const corsHeaders = {
  * Creates or updates a Microsoft calendar event for a Groundpath booking
  * using the organisation's central Microsoft 365 environment.
  *
- * Triggered on:
- *  - Booking confirmation (create event)
- *  - Booking reschedule (update event)
- *  - Booking cancellation (cancel/delete event)
- *
- * Production flow (TODO — requires Microsoft Entra app with Calendars.ReadWrite):
- *  1. Load org Microsoft integration
- *  2. Load booking details
- *  3. POST/PATCH/DELETE https://graph.microsoft.com/v1.0/users/{organizer}/calendar/events
- *  4. Persist external_calendar_event_id, calendar_sync_status to booking_requests
+ * Uses client_credentials flow with Calendars.ReadWrite application permission.
  */
+
+async function getAccessToken(tenantId: string, clientId: string, clientSecret: string): Promise<string> {
+  const tokenResponse = await fetch(
+    `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        grant_type: 'client_credentials',
+        scope: 'https://graph.microsoft.com/.default',
+      }),
+    },
+  );
+  if (!tokenResponse.ok) {
+    throw new Error(`Token request failed: ${tokenResponse.status}`);
+  }
+  const tokens = await tokenResponse.json();
+  return tokens.access_token as string;
+}
+
 serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -95,45 +108,119 @@ serve(async (req: Request): Promise<Response> => {
       });
     }
 
-    // TODO: Production Microsoft Graph calendar operations
-    //
-    // const accessToken = (integration.token_metadata as Record<string, unknown>).access_token;
-    // const baseUrl = `https://graph.microsoft.com/v1.0/users/${integration.organizer_email}/calendar/events`;
-    //
-    // if (action === 'create') {
-    //   const response = await fetch(baseUrl, {
-    //     method: 'POST',
-    //     headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({
-    //       subject: `Groundpath Session — ${practitionerName}`,
-    //       start: { dateTime: startDatetime, timeZone: 'Australia/Sydney' },
-    //       end: { dateTime: endDatetime, timeZone: 'Australia/Sydney' },
-    //       isOnlineMeeting: true,
-    //       onlineMeetingProvider: 'teamsForBusiness',
-    //     }),
-    //   });
-    //   const event = await response.json();
-    //   // Update booking with calendar event ID
-    // }
-    //
-    // if (action === 'cancel' && booking.external_calendar_event_id) {
-    //   await fetch(`${baseUrl}/${booking.external_calendar_event_id}`, {
-    //     method: 'DELETE',
-    //     headers: { 'Authorization': `Bearer ${accessToken}` },
-    //   });
-    // }
+    const tenantId = Deno.env.get('MICROSOFT_TENANT_ID');
+    const clientId = Deno.env.get('MICROSOFT_CLIENT_ID');
+    const clientSecret = Deno.env.get('MICROSOFT_CLIENT_SECRET');
 
-    // Placeholder response
-    await supabase.from('booking_requests').update({
-      calendar_provider: 'microsoft',
-      calendar_sync_status: 'pending',
-      last_calendar_sync_at: new Date().toISOString(),
-    }).eq('id', bookingId);
+    if (!tenantId || !clientId || !clientSecret) {
+      return new Response(JSON.stringify({
+        success: false,
+        calendar_sync_status: 'skipped',
+        reason: 'Microsoft credentials not configured',
+      }), {
+        status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    let accessToken: string;
+    try {
+      accessToken = await getAccessToken(tenantId, clientId, clientSecret);
+    } catch {
+      return new Response(JSON.stringify({
+        success: false,
+        calendar_sync_status: 'failed',
+        reason: 'Failed to obtain access token',
+      }), {
+        status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const baseUrl = `https://graph.microsoft.com/v1.0/users/${integration.organizer_email}/calendar/events`;
+    const practitionerRes = await supabase.from('profiles').select('display_name').eq('user_id', booking.practitioner_id).single();
+    const practitionerName = practitionerRes.data?.display_name || 'Practitioner';
+
+    if (action === 'create') {
+      const response = await fetch(baseUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          subject: `Groundpath Session — ${practitionerName}`,
+          start: {
+            dateTime: `${booking.requested_date}T${booking.requested_start_time}:00`,
+            timeZone: 'Australia/Sydney',
+          },
+          end: {
+            dateTime: `${booking.requested_date}T${booking.requested_end_time}:00`,
+            timeZone: 'Australia/Sydney',
+          },
+          isOnlineMeeting: !!booking.meeting_url,
+          body: {
+            contentType: 'text',
+            content: `Groundpath session with ${practitionerName}. ${booking.meeting_url ? `Join: ${booking.meeting_url}` : ''}`,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error('Calendar event creation failed:', response.status, errText);
+        await supabase.from('booking_requests').update({
+          calendar_sync_status: 'failed',
+          last_calendar_sync_at: new Date().toISOString(),
+        }).eq('id', bookingId);
+
+        return new Response(JSON.stringify({
+          success: false,
+          calendar_sync_status: 'failed',
+          reason: `Graph API ${response.status}`,
+        }), {
+          status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const event = await response.json();
+      await supabase.from('booking_requests').update({
+        external_calendar_event_id: event.id,
+        calendar_provider: 'microsoft',
+        calendar_sync_status: 'synced',
+        last_calendar_sync_at: new Date().toISOString(),
+      }).eq('id', bookingId);
+
+      return new Response(JSON.stringify({
+        success: true,
+        calendar_sync_status: 'synced',
+        external_calendar_event_id: event.id,
+      }), {
+        status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (action === 'cancel' && booking.external_calendar_event_id) {
+      await fetch(`${baseUrl}/${booking.external_calendar_event_id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${accessToken}` },
+      });
+
+      await supabase.from('booking_requests').update({
+        calendar_sync_status: 'cancelled',
+        last_calendar_sync_at: new Date().toISOString(),
+      }).eq('id', bookingId);
+
+      return new Response(JSON.stringify({
+        success: true,
+        calendar_sync_status: 'cancelled',
+      }), {
+        status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     return new Response(JSON.stringify({
       success: true,
-      calendar_sync_status: 'pending',
-      message: `Calendar ${action} placeholder — implement with real Microsoft Graph credentials`,
+      calendar_sync_status: 'no_action',
+      message: `No calendar action needed for action: ${action}`,
     }), {
       status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

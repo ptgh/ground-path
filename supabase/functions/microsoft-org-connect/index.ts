@@ -10,15 +10,16 @@ const corsHeaders = {
  * microsoft-org-connect
  *
  * Initiates or completes the Groundpath org-level Microsoft 365 connection.
- * In production, this would:
- *   1. Accept an OAuth authorization code from the Microsoft Entra admin consent flow
- *   2. Exchange it for access + refresh tokens via Microsoft Graph
- *   3. Store encrypted token metadata in org_microsoft_integration
- *   4. Validate the tenant and organizer email
+ * Uses client_credentials flow (application permissions) — no user login needed.
  *
- * Currently scaffolded with placeholder logic — real Graph OAuth exchange
- * must be completed when Groundpath registers a custom Entra app with
- * OnlineMeetings.ReadWrite and Calendars.ReadWrite scopes.
+ * Required Entra app permissions (Application type):
+ *   - OnlineMeetings.ReadWrite.All
+ *   - Calendars.ReadWrite
+ *
+ * Required secrets:
+ *   - MICROSOFT_TENANT_ID
+ *   - MICROSOFT_CLIENT_ID
+ *   - MICROSOFT_CLIENT_SECRET
  */
 serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
@@ -43,7 +44,6 @@ serve(async (req: Request): Promise<Response> => {
     }
     const userId = claimsData.claims.sub as string;
 
-    // Check admin role
     const { data: roleData } = await supabase
       .from('user_roles')
       .select('role')
@@ -57,39 +57,100 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     const body = await req.json();
-    const { tenant_id, organizer_email } = body;
+    const { organizer_email } = body;
 
-    if (!tenant_id || !organizer_email) {
-      return new Response(JSON.stringify({ error: 'tenant_id and organizer_email are required' }), {
+    if (!organizer_email) {
+      return new Response(JSON.stringify({ error: 'organizer_email is required' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // TODO: Production Microsoft Graph OAuth exchange
-    // 1. Use body.authorization_code to call:
-    //    POST https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token
-    //    with client_id, client_secret, code, redirect_uri, grant_type=authorization_code
-    // 2. Validate response, extract access_token + refresh_token
-    // 3. Call GET https://graph.microsoft.com/v1.0/me to verify organizer identity
-    // 4. Store encrypted tokens in token_metadata
-    //
-    // For now, we create/update the integration record in 'pending_validation' state.
-    // The connection_status will be 'connected' only when real OAuth is completed.
+    // Load Microsoft credentials from secrets
+    const tenantId = Deno.env.get('MICROSOFT_TENANT_ID');
+    const clientId = Deno.env.get('MICROSOFT_CLIENT_ID');
+    const clientSecret = Deno.env.get('MICROSOFT_CLIENT_SECRET');
+
+    if (!tenantId || !clientId || !clientSecret) {
+      return new Response(JSON.stringify({
+        error: 'Microsoft credentials not configured',
+        detail: 'MICROSOFT_TENANT_ID, MICROSOFT_CLIENT_ID, and MICROSOFT_CLIENT_SECRET must be set as Edge Function secrets.',
+      }), {
+        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Perform client_credentials OAuth token exchange
+    const tokenResponse = await fetch(
+      `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_id: clientId,
+          client_secret: clientSecret,
+          grant_type: 'client_credentials',
+          scope: 'https://graph.microsoft.com/.default',
+        }),
+      },
+    );
+
+    if (!tokenResponse.ok) {
+      const errText = await tokenResponse.text();
+      console.error('Microsoft token exchange failed:', tokenResponse.status, errText);
+      return new Response(JSON.stringify({
+        error: 'Microsoft token exchange failed',
+        detail: `Status ${tokenResponse.status}: ${errText}`,
+        connection_status: 'failed',
+      }), {
+        status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const tokens = await tokenResponse.json();
+    const accessToken = tokens.access_token as string;
+    const expiresIn = tokens.expires_in as number; // seconds
+
+    // Validate the token by checking if we can resolve the organizer user
+    const meResponse = await fetch(
+      `https://graph.microsoft.com/v1.0/users/${organizer_email}`,
+      {
+        headers: { 'Authorization': `Bearer ${accessToken}` },
+      },
+    );
+
+    if (!meResponse.ok) {
+      const errText = await meResponse.text();
+      console.error('Failed to validate organizer:', meResponse.status, errText);
+      return new Response(JSON.stringify({
+        error: 'Failed to validate organizer_email in Microsoft tenant',
+        detail: errText,
+        connection_status: 'failed',
+      }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const organizerData = await meResponse.json();
+    const now = new Date().toISOString();
+    const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
 
     const integrationRecord = {
       provider: 'microsoft',
       integration_mode: 'org_managed',
-      tenant_id,
+      tenant_id: tenantId,
       organizer_email,
+      service_identity_reference: organizerData.id || null,
       teams_enabled: true,
-      calendar_enabled: false,
-      connection_status: 'pending_validation',
-      connected_at: null,
-      scopes: ['OnlineMeetings.ReadWrite', 'Calendars.ReadWrite'],
+      calendar_enabled: true,
+      connection_status: 'connected',
+      connected_at: now,
+      disconnected_at: null,
+      scopes: ['OnlineMeetings.ReadWrite.All', 'Calendars.ReadWrite'],
       config_version: 1,
       token_metadata: {
-        note: 'Real OAuth tokens must be stored here after Microsoft Entra app registration',
-        placeholder: true,
+        access_token: accessToken,
+        expires_at: expiresAt,
+        token_type: tokens.token_type || 'Bearer',
       },
     };
 
@@ -115,8 +176,10 @@ serve(async (req: Request): Promise<Response> => {
 
     return new Response(JSON.stringify({
       success: true,
-      connection_status: 'pending_validation',
-      message: 'Microsoft integration record created. Complete OAuth flow to activate.',
+      connection_status: 'connected',
+      organizer_email,
+      organizer_display_name: organizerData.displayName || null,
+      message: 'Microsoft 365 integration connected successfully.',
     }), {
       status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

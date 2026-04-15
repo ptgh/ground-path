@@ -9,15 +9,9 @@ const corsHeaders = {
 /**
  * microsoft-org-refresh
  *
- * Refreshes the Groundpath org-level Microsoft 365 OAuth tokens.
- * Called on a schedule or before token expiry.
- *
- * Production flow:
- *   1. Load current token_metadata from org_microsoft_integration
- *   2. POST to https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token
- *      with grant_type=refresh_token
- *   3. Update token_metadata with new access_token + refresh_token
- *   4. Update last_sync_at and connection_status
+ * Refreshes the Groundpath org-level Microsoft 365 access token.
+ * Uses client_credentials flow — no refresh_token needed (just re-request).
+ * Can be called on a schedule or before token expiry.
  */
 serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
@@ -57,44 +51,68 @@ serve(async (req: Request): Promise<Response> => {
       });
     }
 
-    // TODO: Production token refresh
-    // const tokenMetadata = integration.token_metadata as Record<string, unknown>;
-    // const refreshToken = tokenMetadata.refresh_token as string;
-    //
-    // const tokenResponse = await fetch(
-    //   `https://login.microsoftonline.com/${integration.tenant_id}/oauth2/v2.0/token`,
-    //   {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    //     body: new URLSearchParams({
-    //       client_id: Deno.env.get('MICROSOFT_CLIENT_ID')!,
-    //       client_secret: Deno.env.get('MICROSOFT_CLIENT_SECRET')!,
-    //       grant_type: 'refresh_token',
-    //       refresh_token: refreshToken,
-    //       scope: 'https://graph.microsoft.com/.default',
-    //     }),
-    //   },
-    // );
-    //
-    // if (!tokenResponse.ok) {
-    //   const errBody = await tokenResponse.text();
-    //   await supabase.from('org_microsoft_integration').update({
-    //     connection_status: 'token_expired',
-    //   }).eq('id', integration.id);
-    //   return new Response(JSON.stringify({ success: false, status: 'token_expired', error: errBody }), { ... });
-    // }
-    //
-    // const tokens = await tokenResponse.json();
-    // await supabase.from('org_microsoft_integration').update({
-    //   token_metadata: { access_token: tokens.access_token, refresh_token: tokens.refresh_token, expires_at: ... },
-    //   last_sync_at: new Date().toISOString(),
-    //   connection_status: 'connected',
-    // }).eq('id', integration.id);
+    const tenantId = Deno.env.get('MICROSOFT_TENANT_ID');
+    const clientId = Deno.env.get('MICROSOFT_CLIENT_ID');
+    const clientSecret = Deno.env.get('MICROSOFT_CLIENT_SECRET');
+
+    if (!tenantId || !clientId || !clientSecret) {
+      return new Response(JSON.stringify({
+        success: false,
+        status: 'misconfigured',
+        message: 'Microsoft credentials not configured in secrets',
+      }), {
+        status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Client credentials flow — just request a new token
+    const tokenResponse = await fetch(
+      `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_id: clientId,
+          client_secret: clientSecret,
+          grant_type: 'client_credentials',
+          scope: 'https://graph.microsoft.com/.default',
+        }),
+      },
+    );
+
+    if (!tokenResponse.ok) {
+      const errBody = await tokenResponse.text();
+      console.error('Token refresh failed:', tokenResponse.status, errBody);
+      await supabase.from('org_microsoft_integration').update({
+        connection_status: 'token_expired',
+      }).eq('id', integration.id);
+
+      return new Response(JSON.stringify({
+        success: false,
+        status: 'token_expired',
+        error: errBody,
+      }), {
+        status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const tokens = await tokenResponse.json();
+    const expiresAt = new Date(Date.now() + (tokens.expires_in as number) * 1000).toISOString();
+
+    await supabase.from('org_microsoft_integration').update({
+      token_metadata: {
+        access_token: tokens.access_token,
+        expires_at: expiresAt,
+        token_type: tokens.token_type || 'Bearer',
+      },
+      last_sync_at: new Date().toISOString(),
+      connection_status: 'connected',
+    }).eq('id', integration.id);
 
     return new Response(JSON.stringify({
       success: true,
       status: 'refreshed',
-      message: 'Token refresh placeholder — implement with real Microsoft Entra credentials',
+      expires_at: expiresAt,
     }), {
       status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
