@@ -7,7 +7,7 @@ import { contactFormSchema, checkRateLimit } from '@/lib/validation';
 import { useToast } from '@/hooks/use-toast';
 import MailingListModal from './MailingListModal';
 import HalaxyEmbed from './booking/HalaxyEmbed';
-import NativeBookingPanel from './booking/NativeBookingPanel';
+import { useNavigate } from 'react-router-dom';
 import { scrollToSectionWithOffset } from '@/lib/utils';
 import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
 
@@ -133,7 +133,10 @@ const Contact = () => {
           <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
               {bookingMode === 'native_beta' ? (
-                <NativeBookingPanel />
+                <div className="text-center py-4">
+                  <p className="text-sm text-muted-foreground mb-3">Book a session through our native booking system.</p>
+                  <BookSessionButton />
+                </div>
               ) : HALAXY_EMBED_URL ? (
                 <div className="mb-4">
                   <HalaxyEmbed embedUrl={HALAXY_EMBED_URL} fallbackUrl={HALAXY_EXTERNAL_URL} />
