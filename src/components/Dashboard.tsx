@@ -45,6 +45,7 @@ import { NotificationPreferencesCard } from './dashboard/NotificationPreferences
 import { notesService, Note } from '@/services/notesService';
 import { ClientMessagesPanel } from './messaging/ClientMessagesPanel';
 import NativeBooking from './dashboard/NativeBooking';
+import Microsoft365Card from './dashboard/Microsoft365Card';
 import { gsap } from 'gsap';
 
 interface HalaxyIntegration {
