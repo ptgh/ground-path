@@ -10,7 +10,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-type NotificationType = 'new_request' | 'status_change' | 'client_cancellation' | 'client_request_received' | 'meeting_ready';
+type NotificationType = 'new_request' | 'status_change' | 'client_cancellation' | 'client_request_received' | 'meeting_ready' | 'session_reminder';
 
 interface BookingNotificationRequest {
   type?: NotificationType;
@@ -48,19 +48,101 @@ const formatDate = (dateStr: string) =>
     weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
   });
 
-async function sendEmail(to: string, subject: string, html: string): Promise<Response> {
+/**
+ * Build an iCalendar (.ics) attachment for the booking session.
+ * Times are AEST (+10:00). Converted to UTC for DTSTART/DTEND.
+ */
+function buildIcsAttachment(
+  bookingId: string,
+  date: string,
+  startTime: string,
+  endTime: string,
+  practitionerName: string,
+  meetingUrl: string,
+): EmailAttachment {
+  const norm = (t: string) => (t.length === 5 ? `${t}:00` : t);
+  // AEST is +10:00 — subtract 10h to get UTC
+  const toUtcStamp = (d: string, t: string): string => {
+    const local = new Date(`${d}T${norm(t)}+10:00`);
+    const y = local.getUTCFullYear();
+    const mo = String(local.getUTCMonth() + 1).padStart(2, '0');
+    const da = String(local.getUTCDate()).padStart(2, '0');
+    const h = String(local.getUTCHours()).padStart(2, '0');
+    const mi = String(local.getUTCMinutes()).padStart(2, '0');
+    const s = String(local.getUTCSeconds()).padStart(2, '0');
+    return `${y}${mo}${da}T${h}${mi}${s}Z`;
+  };
+  const dtStart = toUtcStamp(date, startTime);
+  const dtEnd = toUtcStamp(date, endTime);
+  const dtStamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const escape = (s: string) => s.replace(/[\\,;]/g, (m) => `\\${m}`).replace(/\n/g, '\\n');
+  const summary = escape(`groundpath session with ${practitionerName}`);
+  const description = escape(
+    `Your secure video session with ${practitionerName}.\n\nJoin Teams Meeting: ${meetingUrl}\n\nClick the link about 5 minutes before your start time. You'll wait briefly in the lobby until you're admitted.`,
+  );
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//groundpath//Booking//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:${bookingId}@groundpath.com.au`,
+    `DTSTAMP:${dtStamp}`,
+    `DTSTART:${dtStart}`,
+    `DTEND:${dtEnd}`,
+    `SUMMARY:${summary}`,
+    `DESCRIPTION:${description}`,
+    `LOCATION:${escape(meetingUrl)}`,
+    `URL:${meetingUrl}`,
+    'STATUS:CONFIRMED',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT15M',
+    'ACTION:DISPLAY',
+    `DESCRIPTION:${summary}`,
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+  // base64 encode
+  const b64 = btoa(unescape(encodeURIComponent(ics)));
+  return {
+    filename: 'groundpath-session.ics',
+    content: b64,
+    contentType: 'text/calendar; charset=utf-8; method=PUBLISH',
+  };
+}
+
+
+interface EmailAttachment {
+  filename: string;
+  content: string; // base64
+  contentType?: string;
+}
+
+async function sendEmail(
+  to: string,
+  subject: string,
+  html: string,
+  attachments?: EmailAttachment[],
+): Promise<Response> {
+  const payload: Record<string, unknown> = {
+    from: 'groundpath <connect@groundpath.com.au>',
+    to: [to],
+    subject,
+    html,
+  };
+  if (attachments && attachments.length > 0) {
+    payload.attachments = attachments;
+  }
+
   const emailResponse = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${resendApiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      from: 'groundpath <connect@groundpath.com.au>',
-      to: [to],
-      subject,
-      html,
-    }),
+    body: JSON.stringify(payload),
   });
 
   if (!emailResponse.ok) {
@@ -362,11 +444,125 @@ async function handleMeetingReady(
     <p style="text-align:center;font-size:11px;color:#9ca3af;margin:16px 0 0;">groundpath — grounded mental health support · groundpath.com.au</p>
   </div>`;
 
+  const ics = buildIcsAttachment(
+    booking.id,
+    booking.requested_date,
+    booking.requested_start_time,
+    booking.requested_end_time,
+    practName,
+    meetingUrl,
+  );
+
   return await sendEmail(
     clientUser.email,
     `Your Teams session is ready — ${dateStr} — groundpath`,
     html,
+    [ics],
   );
+}
+
+/**
+ * Send a 24-hour reminder email to the client with the Teams join link,
+ * how-to-join guide, and ICS attachment. Marks the booking as reminded.
+ */
+async function handleSessionReminder(
+  supabase: ReturnType<typeof createClient>,
+  body: BookingNotificationRequest,
+): Promise<Response> {
+  const { bookingId } = body;
+  if (!bookingId) {
+    return new Response(JSON.stringify({ error: 'Missing bookingId' }), {
+      status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { data: booking, error: bookingErr } = await supabase
+    .from('booking_requests').select('*').eq('id', bookingId).single();
+  if (bookingErr || !booking) {
+    return new Response(JSON.stringify({ success: true, skipped: true, reason: 'Booking not found' }), {
+      status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (booking.status !== 'confirmed') {
+    return new Response(JSON.stringify({ success: true, skipped: true, reason: 'Booking not confirmed' }), {
+      status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { data: { user: clientUser } } = await supabase.auth.admin.getUserById(booking.client_user_id);
+  if (!clientUser?.email) {
+    return new Response(JSON.stringify({ success: true, skipped: true, reason: 'No client email' }), {
+      status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { data: practProfile } = await supabase
+    .from('profiles').select('display_name').eq('user_id', booking.practitioner_id).single();
+  const practName = practProfile?.display_name || 'your practitioner';
+
+  const dateStr = formatDate(booking.requested_date);
+  const timeStr = `${formatTime(booking.requested_start_time)} – ${formatTime(booking.requested_end_time)}`;
+  const TEAMS_PURPLE = '#5b5fc7';
+  const meetingUrl = (booking.meeting_url as string) || '';
+
+  const joinBlock = meetingUrl
+    ? `<div style="text-align:center;margin:0 0 24px;">
+         <a href="${meetingUrl}" style="display:inline-block;background-color:${TEAMS_PURPLE};color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:15px;font-weight:600;letter-spacing:0.01em;">
+           ${iconVideo.replace(SAGE_DARK, '#ffffff')}Join Teams Meeting
+         </a>
+       </div>`
+    : `<p style="font-size:13px;color:#b45309;text-align:center;margin:0 0 24px;">Your Teams meeting link will arrive shortly. Please check your inbox closer to the session time.</p>`;
+
+  const html = `
+  <div style="background-color:#f3f4f6;padding:24px 12px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;">
+    <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid ${BORDER};border-radius:12px;overflow:hidden;">
+      ${brandHeader}
+      <div style="padding:8px 32px 32px;">
+        <h1 style="font-size:20px;font-weight:600;color:${INK};margin:0 0 12px;text-align:center;letter-spacing:-0.01em;">
+          ${iconClock}Reminder — Your Session is Tomorrow
+        </h1>
+        <p style="font-size:14px;color:${MUTED};line-height:1.6;margin:0 0 20px;text-align:center;">
+          A friendly reminder that your secure video session with <strong style="color:${INK};">${practName}</strong> is coming up. We're here whenever you're ready.
+        </p>
+        <div style="background:${SOFT_BG};border-left:3px solid ${SAGE_DARK};padding:16px 18px;border-radius:0 8px 8px 0;margin:0 0 24px;">
+          ${buildDetailRows(dateStr, timeStr, booking.duration_minutes)}
+        </div>
+        ${joinBlock}
+        <div style="background:#fafafa;border:1px solid ${BORDER};border-radius:8px;padding:16px 18px;margin:0 0 20px;">
+          <p style="font-size:13px;font-weight:600;color:${INK};margin:0 0 10px;">How to join</p>
+          <ul style="font-size:13px;color:#374151;line-height:1.7;margin:0;padding-left:18px;">
+            <li>Click <strong>Join Teams Meeting</strong> about 5 minutes before your start time.</li>
+            <li>Allow your browser or the Teams app to access your microphone and camera.</li>
+            <li>You'll wait briefly in the lobby until ${practName} admits you to the session.</li>
+            <li>No Teams account needed — you can join straight from your browser if the app isn't installed.</li>
+          </ul>
+        </div>
+        <p style="font-size:12px;color:#9ca3af;text-align:center;margin:24px 0 0;line-height:1.5;">
+          Need to reschedule? Cancel from your dashboard as soon as possible so the time can be released.
+        </p>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:11px;color:#9ca3af;margin:16px 0 0;">groundpath — grounded mental health support · groundpath.com.au</p>
+  </div>`;
+
+  const attachments: EmailAttachment[] = meetingUrl
+    ? [buildIcsAttachment(booking.id, booking.requested_date, booking.requested_start_time, booking.requested_end_time, practName, meetingUrl)]
+    : [];
+
+  const result = await sendEmail(
+    clientUser.email,
+    `Reminder — your session is tomorrow (${dateStr}) — groundpath`,
+    html,
+    attachments,
+  );
+
+  // Mark as reminded so we don't double-send
+  await supabase.from('booking_requests')
+    .update({ reminder_sent_at: new Date().toISOString() })
+    .eq('id', bookingId);
+
+  return result;
 }
 
 async function handleClientCancellation(
@@ -506,13 +702,16 @@ serve(async (req: Request): Promise<Response> => {
       case 'meeting_ready':
         emailResponse = await handleMeetingReady(supabase, body);
         break;
+      case 'session_reminder':
+        emailResponse = await handleSessionReminder(supabase, body);
+        break;
       default:
         emailResponse = await handleNewRequest(supabase, body, callerUserId);
         break;
     }
 
     // Fire-and-forget Teams channel notification (skip for client_request_received — it's a duplicate of new_request to the client)
-    if (notificationType !== 'client_request_received' && notificationType !== 'meeting_ready') {
+    if (notificationType !== 'client_request_received' && notificationType !== 'meeting_ready' && notificationType !== 'session_reminder') {
       const teamsType = notificationType === 'status_change'
         ? (body.newStatus === 'confirmed' ? 'confirmed' : 'declined')
         : notificationType === 'client_cancellation' ? 'cancelled' : 'new_request';

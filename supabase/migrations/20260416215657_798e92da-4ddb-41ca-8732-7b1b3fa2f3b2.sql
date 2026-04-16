@@ -1,0 +1,2 @@
+ALTER TABLE public.booking_requests ADD COLUMN IF NOT EXISTS reminder_sent_at TIMESTAMP WITH TIME ZONE;
+CREATE INDEX IF NOT EXISTS idx_booking_requests_reminder_lookup ON public.booking_requests (status, reminder_sent_at, requested_date);
