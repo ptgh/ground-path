@@ -444,11 +444,125 @@ async function handleMeetingReady(
     <p style="text-align:center;font-size:11px;color:#9ca3af;margin:16px 0 0;">groundpath — grounded mental health support · groundpath.com.au</p>
   </div>`;
 
+  const ics = buildIcsAttachment(
+    booking.id,
+    booking.requested_date,
+    booking.requested_start_time,
+    booking.requested_end_time,
+    practName,
+    meetingUrl,
+  );
+
   return await sendEmail(
     clientUser.email,
     `Your Teams session is ready — ${dateStr} — groundpath`,
     html,
+    [ics],
   );
+}
+
+/**
+ * Send a 24-hour reminder email to the client with the Teams join link,
+ * how-to-join guide, and ICS attachment. Marks the booking as reminded.
+ */
+async function handleSessionReminder(
+  supabase: ReturnType<typeof createClient>,
+  body: BookingNotificationRequest,
+): Promise<Response> {
+  const { bookingId } = body;
+  if (!bookingId) {
+    return new Response(JSON.stringify({ error: 'Missing bookingId' }), {
+      status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { data: booking, error: bookingErr } = await supabase
+    .from('booking_requests').select('*').eq('id', bookingId).single();
+  if (bookingErr || !booking) {
+    return new Response(JSON.stringify({ success: true, skipped: true, reason: 'Booking not found' }), {
+      status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (booking.status !== 'confirmed') {
+    return new Response(JSON.stringify({ success: true, skipped: true, reason: 'Booking not confirmed' }), {
+      status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { data: { user: clientUser } } = await supabase.auth.admin.getUserById(booking.client_user_id);
+  if (!clientUser?.email) {
+    return new Response(JSON.stringify({ success: true, skipped: true, reason: 'No client email' }), {
+      status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { data: practProfile } = await supabase
+    .from('profiles').select('display_name').eq('user_id', booking.practitioner_id).single();
+  const practName = practProfile?.display_name || 'your practitioner';
+
+  const dateStr = formatDate(booking.requested_date);
+  const timeStr = `${formatTime(booking.requested_start_time)} – ${formatTime(booking.requested_end_time)}`;
+  const TEAMS_PURPLE = '#5b5fc7';
+  const meetingUrl = (booking.meeting_url as string) || '';
+
+  const joinBlock = meetingUrl
+    ? `<div style="text-align:center;margin:0 0 24px;">
+         <a href="${meetingUrl}" style="display:inline-block;background-color:${TEAMS_PURPLE};color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:15px;font-weight:600;letter-spacing:0.01em;">
+           ${iconVideo.replace(SAGE_DARK, '#ffffff')}Join Teams Meeting
+         </a>
+       </div>`
+    : `<p style="font-size:13px;color:#b45309;text-align:center;margin:0 0 24px;">Your Teams meeting link will arrive shortly. Please check your inbox closer to the session time.</p>`;
+
+  const html = `
+  <div style="background-color:#f3f4f6;padding:24px 12px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;">
+    <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid ${BORDER};border-radius:12px;overflow:hidden;">
+      ${brandHeader}
+      <div style="padding:8px 32px 32px;">
+        <h1 style="font-size:20px;font-weight:600;color:${INK};margin:0 0 12px;text-align:center;letter-spacing:-0.01em;">
+          ${iconClock}Reminder — Your Session is Tomorrow
+        </h1>
+        <p style="font-size:14px;color:${MUTED};line-height:1.6;margin:0 0 20px;text-align:center;">
+          A friendly reminder that your secure video session with <strong style="color:${INK};">${practName}</strong> is coming up. We're here whenever you're ready.
+        </p>
+        <div style="background:${SOFT_BG};border-left:3px solid ${SAGE_DARK};padding:16px 18px;border-radius:0 8px 8px 0;margin:0 0 24px;">
+          ${buildDetailRows(dateStr, timeStr, booking.duration_minutes)}
+        </div>
+        ${joinBlock}
+        <div style="background:#fafafa;border:1px solid ${BORDER};border-radius:8px;padding:16px 18px;margin:0 0 20px;">
+          <p style="font-size:13px;font-weight:600;color:${INK};margin:0 0 10px;">How to join</p>
+          <ul style="font-size:13px;color:#374151;line-height:1.7;margin:0;padding-left:18px;">
+            <li>Click <strong>Join Teams Meeting</strong> about 5 minutes before your start time.</li>
+            <li>Allow your browser or the Teams app to access your microphone and camera.</li>
+            <li>You'll wait briefly in the lobby until ${practName} admits you to the session.</li>
+            <li>No Teams account needed — you can join straight from your browser if the app isn't installed.</li>
+          </ul>
+        </div>
+        <p style="font-size:12px;color:#9ca3af;text-align:center;margin:24px 0 0;line-height:1.5;">
+          Need to reschedule? Cancel from your dashboard as soon as possible so the time can be released.
+        </p>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:11px;color:#9ca3af;margin:16px 0 0;">groundpath — grounded mental health support · groundpath.com.au</p>
+  </div>`;
+
+  const attachments: EmailAttachment[] = meetingUrl
+    ? [buildIcsAttachment(booking.id, booking.requested_date, booking.requested_start_time, booking.requested_end_time, practName, meetingUrl)]
+    : [];
+
+  const result = await sendEmail(
+    clientUser.email,
+    `Reminder — your session is tomorrow (${dateStr}) — groundpath`,
+    html,
+    attachments,
+  );
+
+  // Mark as reminded so we don't double-send
+  await supabase.from('booking_requests')
+    .update({ reminder_sent_at: new Date().toISOString() })
+    .eq('id', bookingId);
+
+  return result;
 }
 
 async function handleClientCancellation(
