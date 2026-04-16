@@ -155,27 +155,68 @@ const Microsoft365Card = () => {
               </div>
             </div>
 
-            {isConnected ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDisconnect}
-                disabled={disconnecting}
-                className="text-destructive border-destructive/30 hover:bg-destructive/10"
-              >
-                {disconnecting && <Loader2 className="h-3 w-3 animate-spin mr-2" />}
-                Disconnect Microsoft 365
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                onClick={handleConnect}
-                disabled={connecting}
-                className="bg-sage-600 hover:bg-sage-700 text-white"
-              >
-                {connecting && <Loader2 className="h-3 w-3 animate-spin mr-2" />}
-                Connect Microsoft 365
-              </Button>
+            <div className="flex items-center gap-2 flex-wrap">
+              {isConnected ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDisconnect}
+                  disabled={disconnecting}
+                  className="text-destructive border-destructive/30 hover:bg-destructive/10"
+                >
+                  {disconnecting && <Loader2 className="h-3 w-3 animate-spin mr-2" />}
+                  Disconnect
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  onClick={handleConnect}
+                  disabled={connecting}
+                  className="bg-sage-600 hover:bg-sage-700 text-white"
+                >
+                  {connecting && <Loader2 className="h-3 w-3 animate-spin mr-2" />}
+                  Connect Microsoft 365
+                </Button>
+              )}
+
+              {isConnected && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDiagnose}
+                  disabled={diagnosing}
+                >
+                  {diagnosing ? (
+                    <Loader2 className="h-3 w-3 animate-spin mr-2" />
+                  ) : (
+                    <Stethoscope className="h-3 w-3 mr-2" />
+                  )}
+                  Test Connection
+                </Button>
+              )}
+            </div>
+
+            {diagResult && (
+              <div className="space-y-1.5 p-3 rounded-lg border border-border/60 bg-muted/20 text-xs">
+                <p className="font-medium text-foreground text-sm mb-2">Diagnostic Results</p>
+                {Object.entries(diagResult).map(([key, check]) => (
+                  <div key={key} className="flex items-start gap-2">
+                    {check.status === 'pass' ? (
+                      <CheckCircle2 className="h-3.5 w-3.5 text-green-600 mt-0.5 shrink-0" />
+                    ) : check.status === 'warn' ? (
+                      <AlertTriangle className="h-3.5 w-3.5 text-amber-500 mt-0.5 shrink-0" />
+                    ) : (
+                      <XCircle className="h-3.5 w-3.5 text-destructive mt-0.5 shrink-0" />
+                    )}
+                    <div>
+                      <span className="font-medium text-foreground">{key.replace(/_/g, ' ')}</span>
+                      {check.detail && (
+                        <p className="text-muted-foreground mt-0.5 break-all">{check.detail}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </>
         )}
