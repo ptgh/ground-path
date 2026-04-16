@@ -109,6 +109,27 @@ serve(async (req: Request): Promise<Response> => {
     const accessToken = tokens.access_token as string;
     const expiresIn = tokens.expires_in as number; // seconds
 
+    // Resolve the organizer's Entra object ID so Graph calls use the canonical ID
+    let userObjectId: string | null = null;
+    try {
+      const userRes = await fetch(
+        `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(organizer_email)}?$select=id,userPrincipalName,displayName`,
+        {
+          headers: { 'Authorization': `Bearer ${accessToken}` },
+        },
+      );
+      if (userRes.ok) {
+        const userData = await userRes.json();
+        userObjectId = userData.id as string;
+        console.info('Resolved organizer object ID:', userObjectId, 'UPN:', userData.userPrincipalName);
+      } else {
+        const errText = await userRes.text();
+        console.warn('Could not resolve organizer object ID:', userRes.status, errText.substring(0, 300));
+      }
+    } catch (e) {
+      console.warn('Error resolving organizer object ID:', e instanceof Error ? e.message : e);
+    }
+
     const now = new Date().toISOString();
     const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
 
@@ -117,7 +138,7 @@ serve(async (req: Request): Promise<Response> => {
       integration_mode: 'org_managed',
       tenant_id: tenantId,
       organizer_email,
-      service_identity_reference: null,
+      service_identity_reference: userObjectId,
       teams_enabled: true,
       calendar_enabled: true,
       connection_status: 'connected',
