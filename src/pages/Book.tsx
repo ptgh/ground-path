@@ -299,13 +299,24 @@ const Book = () => {
       return;
     }
 
+    // Notify practitioner (review request) — best effort
     supabase.functions.invoke('booking-notification', {
       body: {
         practitionerId: selectedPractitioner.user_id,
         requestedDate: format(selectedDate, 'EEE, d MMM yyyy'),
         requestedTime: selectedSlot.label,
       },
-    }).catch(err => console.error('Booking notification error:', err));
+    }).catch(err => console.error('Practitioner notification error:', err));
+
+    // Confirm receipt to the client (pending approval) — best effort
+    supabase.functions.invoke('booking-notification', {
+      body: {
+        type: 'client_request_received',
+        practitionerId: selectedPractitioner.user_id,
+        requestedDate: format(selectedDate, 'EEE, d MMM yyyy'),
+        requestedTime: selectedSlot.label,
+      },
+    }).catch(err => console.error('Client receipt notification error:', err));
 
     toast.success('Booking request submitted! Your practitioner will confirm shortly.');
     setSelectedSlot(null);
