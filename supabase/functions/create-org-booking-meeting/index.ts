@@ -295,6 +295,21 @@ serve(async (req: Request): Promise<Response> => {
 
     console.log(`Teams meeting created for booking ${bookingId}: ${meetingUrl}`);
 
+    // Fire-and-forget: notify the client that their Teams session is ready
+    try {
+      const notifyUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/booking-notification`;
+      fetch(notifyUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+        },
+        body: JSON.stringify({ type: 'meeting_ready', bookingId }),
+      }).then((r) => r.text()).then((t) => console.log('meeting_ready notify:', t)).catch((e) => console.error('meeting_ready notify error:', e));
+    } catch (notifyErr) {
+      console.error('meeting_ready dispatch error (non-blocking):', notifyErr);
+    }
+
     return new Response(JSON.stringify({
       success: true,
       meeting_status: 'created',

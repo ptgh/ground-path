@@ -10,7 +10,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-type NotificationType = 'new_request' | 'status_change' | 'client_cancellation' | 'client_request_received';
+type NotificationType = 'new_request' | 'status_change' | 'client_cancellation' | 'client_request_received' | 'meeting_ready';
 
 interface BookingNotificationRequest {
   type?: NotificationType;
@@ -34,8 +34,13 @@ const CLIENT_BOOKINGS_URL = 'https://groundpath.com.au/dashboard';
 /* ─── Helpers ─── */
 
 const formatTime = (t: string) => {
-  const [h] = t.split(':').map(Number);
-  return h > 12 ? `${h - 12}:00 PM` : h === 12 ? '12:00 PM' : `${h}:00 AM`;
+  const [hRaw, mRaw] = t.split(':').map(Number);
+  const h = hRaw || 0;
+  const m = mRaw || 0;
+  const mm = m.toString().padStart(2, '0');
+  const period = h >= 12 ? 'PM' : 'AM';
+  const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${hour12}:${mm} ${period}`;
 };
 
 const formatDate = (dateStr: string) =>
@@ -264,16 +269,8 @@ async function handleStatusChange(
   const titleIcon = isConfirmed ? iconCheck : iconX;
   const title = isConfirmed ? `${titleIcon}Booking Confirmed` : `${titleIcon}Booking Declined`;
   const intro = isConfirmed
-    ? `<strong style="color:${INK};">${practName}</strong> has confirmed your booking. ${booking.meeting_url ? 'Your Teams meeting link is below.' : 'Meeting details will follow shortly.'}`
+    ? `Good news — <strong style="color:${INK};">${practName}</strong> has confirmed your booking. We'll send your Teams meeting link in a separate email shortly.`
     : `<strong style="color:${INK};">${practName}</strong> was unable to confirm this booking. You're welcome to submit a new request for another time.`;
-
-  const meetingButton = (isConfirmed && booking.meeting_url)
-    ? `<div style="text-align:center;margin:0 0 16px;">
-        <a href="${booking.meeting_url}" style="display:inline-block;background-color:#5b5fc7;color:#ffffff;text-decoration:none;padding:11px 26px;border-radius:8px;font-size:14px;font-weight:500;">
-          ${iconVideo.replace(SAGE_DARK, '#ffffff')}Join Teams Meeting
-        </a>
-      </div>`
-    : '';
 
   return await sendEmail(
     clientUser.email,
@@ -281,15 +278,94 @@ async function handleStatusChange(
     buildEmailHtml(
       title,
       intro,
-      buildDetailRows(dateStr, timeStr, booking.duration_minutes) + meetingButton,
+      buildDetailRows(dateStr, timeStr, booking.duration_minutes),
       CLIENT_BOOKINGS_URL,
       'View My Bookings',
       isConfirmed
-        ? 'See you at your session.'
+        ? 'Your Teams meeting link will arrive in a separate email once it has been generated.'
         : 'You can submit a new booking request anytime from your dashboard.',
       accent,
       panelBg,
     ),
+  );
+}
+
+async function handleMeetingReady(
+  supabase: ReturnType<typeof createClient>,
+  body: BookingNotificationRequest,
+): Promise<Response> {
+  const { bookingId } = body;
+  if (!bookingId) {
+    return new Response(JSON.stringify({ error: 'Missing bookingId' }), {
+      status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { data: booking, error: bookingErr } = await supabase
+    .from('booking_requests').select('*').eq('id', bookingId).single();
+  if (bookingErr || !booking || !booking.meeting_url) {
+    return new Response(JSON.stringify({ success: true, skipped: true, reason: 'Booking or meeting URL missing' }), {
+      status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { data: { user: clientUser } } = await supabase.auth.admin.getUserById(booking.client_user_id);
+  if (!clientUser?.email) {
+    return new Response(JSON.stringify({ success: true, skipped: true, reason: 'No client email' }), {
+      status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { data: practProfile } = await supabase
+    .from('profiles').select('display_name').eq('user_id', booking.practitioner_id).single();
+  const practName = practProfile?.display_name || 'your practitioner';
+
+  const dateStr = formatDate(booking.requested_date);
+  const timeStr = `${formatTime(booking.requested_start_time)} – ${formatTime(booking.requested_end_time)}`;
+
+  const TEAMS_PURPLE = '#5b5fc7';
+  const meetingUrl = booking.meeting_url as string;
+
+  const html = `
+  <div style="background-color:#f3f4f6;padding:24px 12px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;">
+    <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid ${BORDER};border-radius:12px;overflow:hidden;">
+      ${brandHeader}
+      <div style="padding:8px 32px 32px;">
+        <h1 style="font-size:20px;font-weight:600;color:${INK};margin:0 0 12px;text-align:center;letter-spacing:-0.01em;">
+          ${iconCheck}Your Teams Session is Ready
+        </h1>
+        <p style="font-size:14px;color:${MUTED};line-height:1.6;margin:0 0 20px;text-align:center;">
+          Welcome — your secure video session with <strong style="color:${INK};">${practName}</strong> is set. We're glad you're taking this step. Your conversation is private and confidential.
+        </p>
+        <div style="background:${SOFT_BG};border-left:3px solid ${SAGE_DARK};padding:16px 18px;border-radius:0 8px 8px 0;margin:0 0 24px;">
+          ${buildDetailRows(dateStr, timeStr, booking.duration_minutes)}
+        </div>
+        <div style="text-align:center;margin:0 0 24px;">
+          <a href="${meetingUrl}" style="display:inline-block;background-color:${TEAMS_PURPLE};color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:15px;font-weight:600;letter-spacing:0.01em;">
+            ${iconVideo.replace(SAGE_DARK, '#ffffff')}Join Teams Meeting
+          </a>
+        </div>
+        <div style="background:#fafafa;border:1px solid ${BORDER};border-radius:8px;padding:16px 18px;margin:0 0 20px;">
+          <p style="font-size:13px;font-weight:600;color:${INK};margin:0 0 10px;">How to join</p>
+          <ul style="font-size:13px;color:#374151;line-height:1.7;margin:0;padding-left:18px;">
+            <li>Click <strong>Join Teams Meeting</strong> about 5 minutes before your start time.</li>
+            <li>Allow your browser or the Teams app to access your microphone and camera.</li>
+            <li>You'll wait briefly in the lobby until ${practName} admits you to the session.</li>
+            <li>No Teams account needed — you can join straight from your browser if the app isn't installed.</li>
+          </ul>
+        </div>
+        <p style="font-size:12px;color:#9ca3af;text-align:center;margin:24px 0 0;line-height:1.5;">
+          If you can't make it, please cancel from your dashboard as soon as possible so the time can be released.
+        </p>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:11px;color:#9ca3af;margin:16px 0 0;">groundpath — grounded mental health support · groundpath.com.au</p>
+  </div>`;
+
+  return await sendEmail(
+    clientUser.email,
+    `Your Teams session is ready — ${dateStr} — groundpath`,
+    html,
   );
 }
 
@@ -427,13 +503,16 @@ serve(async (req: Request): Promise<Response> => {
       case 'client_request_received':
         emailResponse = await handleClientRequestReceived(supabase, body, callerUserId);
         break;
+      case 'meeting_ready':
+        emailResponse = await handleMeetingReady(supabase, body);
+        break;
       default:
         emailResponse = await handleNewRequest(supabase, body, callerUserId);
         break;
     }
 
     // Fire-and-forget Teams channel notification (skip for client_request_received — it's a duplicate of new_request to the client)
-    if (notificationType !== 'client_request_received') {
+    if (notificationType !== 'client_request_received' && notificationType !== 'meeting_ready') {
       const teamsType = notificationType === 'status_change'
         ? (body.newStatus === 'confirmed' ? 'confirmed' : 'declined')
         : notificationType === 'client_cancellation' ? 'cancelled' : 'new_request';
