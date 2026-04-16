@@ -1,21 +1,20 @@
 
 
-## Plan: Update Microsoft Client Secret
+## Plan: Skip Organizer Validation in microsoft-org-connect
 
-**What I need to do:**
-Update the `MICROSOFT_CLIENT_SECRET` secret in Supabase with your new value from Microsoft Entra.
+**Problem:** The Microsoft Entra tenant can't grant `User.Read.All` admin consent, which blocks the organizer validation step. The token exchange itself works fine.
 
-**Steps:**
-1. Update the `MICROSOFT_CLIENT_SECRET` secret in Supabase Edge Function secrets
-2. Redeploy the Microsoft-related edge functions so they pick up the new secret
+**Solution:** Remove the Graph API user lookup (lines 112-132) from the edge function. Store the integration record immediately after successful token exchange.
 
-**Functions to redeploy:**
-- `microsoft-org-connect`
-- `microsoft-org-refresh`
-- `microsoft-org-disconnect`
-- `create-org-booking-meeting`
-- `sync-org-booking-calendar`
+### Changes
 
-**What I need from you:**
-Paste the new **Secret Value** (the long string, not the Secret ID) from Microsoft Entra.
+**1. Update `supabase/functions/microsoft-org-connect/index.ts`**
+- Remove the `GET /v1.0/users/{email}` call (lines 112-132)
+- Set `service_identity_reference` to `null` instead of `organizerData.id`
+- Remove `organizerData.displayName` from the success response
+- Keep everything else (auth check, token exchange, upsert) unchanged
+
+**2. Redeploy `microsoft-org-connect`**
+
+This is a minimal, safe change — one block of code removed, no new dependencies.
 
