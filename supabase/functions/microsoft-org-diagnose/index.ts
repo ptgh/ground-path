@@ -6,6 +6,19 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+function parseJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const [, payload] = token.split('.');
+    if (!payload) return null;
+
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = normalized.padEnd(normalized.length + ((4 - normalized.length % 4) % 4), '=');
+    return JSON.parse(atob(padded)) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * microsoft-org-diagnose
  *
@@ -67,7 +80,7 @@ serve(async (req: Request): Promise<Response> => {
     // Check 2: Integration record
     const { data: integration } = await supabase
       .from('org_microsoft_integration')
-      .select('connection_status, organizer_email, teams_enabled, calendar_enabled')
+      .select('connection_status, organizer_email, service_identity_reference, teams_enabled, calendar_enabled')
       .eq('provider', 'microsoft')
       .maybeSingle();
 
@@ -110,6 +123,23 @@ serve(async (req: Request): Promise<Response> => {
       const tokens = await tokenResponse.json();
       accessToken = tokens.access_token as string;
       checks.token_exchange = { status: 'pass' };
+
+      const payload = parseJwtPayload(accessToken);
+      const roles = Array.isArray(payload?.roles)
+        ? payload.roles.filter((role): role is string => typeof role === 'string')
+        : [];
+
+      checks.app_permissions = roles.includes('OnlineMeetings.ReadWrite.All')
+        ? {
+            status: 'pass',
+            detail: `Token roles include OnlineMeetings.ReadWrite.All${roles.includes('Calendars.ReadWrite') ? ' and Calendars.ReadWrite' : ''}`,
+          }
+        : {
+            status: 'fail',
+            detail: roles.length > 0
+              ? `Token roles: ${roles.join(', ')}`
+              : 'No app roles found in access token payload',
+          };
     } catch (e) {
       checks.token_exchange = { status: 'fail', detail: e instanceof Error ? e.message : 'Unknown error' };
       return new Response(JSON.stringify({ checks }), {
@@ -118,14 +148,20 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     // Check 4: Application Access Policy — create a test meeting then delete it
-    const organizerEmail = integration.organizer_email;
+    const organizerIdentifier = integration.service_identity_reference || integration.organizer_email;
     try {
       const now = new Date();
       const testStart = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
       const testEnd = new Date(now.getTime() + 24 * 60 * 60 * 1000 + 15 * 60 * 1000).toISOString();
+      const graphUrl = `https://graph.microsoft.com/v1.0/users/${organizerIdentifier}/onlineMeetings`;
+
+      console.info('microsoft-org-diagnose Graph request', {
+        graphUrl,
+        organizerIdentifier,
+      });
 
       const meetingRes = await fetch(
-        `https://graph.microsoft.com/v1.0/users/${organizerEmail}/onlineMeetings`,
+        graphUrl,
         {
           method: 'POST',
           headers: {
@@ -142,9 +178,14 @@ serve(async (req: Request): Promise<Response> => {
 
       if (!meetingRes.ok) {
         const errBody = await meetingRes.text();
+        console.error('microsoft-org-diagnose Graph error', {
+          graphUrl,
+          status: meetingRes.status,
+          responseBody: errBody,
+        });
         checks.application_access_policy = {
           status: 'fail',
-          detail: `Graph API ${meetingRes.status}: ${errBody.substring(0, 300)}`,
+          detail: `POST ${graphUrl} returned ${meetingRes.status}: ${errBody.substring(0, 500)}`,
         };
         return new Response(JSON.stringify({ checks }), {
           status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -160,7 +201,7 @@ serve(async (req: Request): Promise<Response> => {
       // Clean up — delete the test meeting
       try {
         await fetch(
-          `https://graph.microsoft.com/v1.0/users/${organizerEmail}/onlineMeetings/${meeting.id}`,
+          `https://graph.microsoft.com/v1.0/users/${organizerIdentifier}/onlineMeetings/${meeting.id}`,
           {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${accessToken}` },
