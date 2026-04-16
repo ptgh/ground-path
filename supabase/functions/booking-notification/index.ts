@@ -503,6 +503,9 @@ serve(async (req: Request): Promise<Response> => {
       case 'client_request_received':
         emailResponse = await handleClientRequestReceived(supabase, body, callerUserId);
         break;
+      case 'meeting_ready':
+        emailResponse = await handleMeetingReady(supabase, body);
+        break;
       default:
         emailResponse = await handleNewRequest(supabase, body, callerUserId);
         break;
