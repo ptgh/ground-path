@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Loader2, CheckCircle2, XCircle, Video } from 'lucide-react';
+import { Loader2, CheckCircle2, XCircle, Video, Stethoscope, AlertTriangle } from 'lucide-react';
 
 interface IntegrationStatus {
   connection_status: string;
@@ -13,6 +13,13 @@ interface IntegrationStatus {
   teams_enabled: boolean;
   calendar_enabled: boolean;
 }
+
+interface DiagCheck {
+  status: 'pass' | 'fail' | 'warn';
+  detail?: string;
+}
+
+type DiagResult = Record<string, DiagCheck>;
 
 const Microsoft365Card = () => {
   const [status, setStatus] = useState<IntegrationStatus | null>(null);
