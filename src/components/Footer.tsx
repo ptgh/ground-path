@@ -96,9 +96,9 @@ const Footer = () => {
                   <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                   LinkedIn
                 </a>
-                <a href="https://www.halaxy.com/profile/groundpath/location/1353667" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-white transition-colors ml-4">
-                  <img src="https://cdn.halaxy.com/h/images/logo.png" alt="Halaxy" className="h-4 w-auto brightness-0 invert opacity-70" loading="lazy" />
-                  Halaxy
+                <a href="https://teams.microsoft.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-white transition-colors ml-4">
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.404 4.478c.608 0 1.101.493 1.101 1.101v5.506c0 .608-.493 1.101-1.101 1.101h-.55v3.855c0 1.825-1.48 3.305-3.305 3.305h-4.957c-1.825 0-3.305-1.48-3.305-3.305V8.537h-.55c-.608 0-1.101-.493-1.101-1.101V5.579c0-.608.493-1.101 1.101-1.101h12.667zM16.55 2c1.214 0 2.199.984 2.199 2.199S17.763 6.398 16.55 6.398s-2.199-.984-2.199-2.199S15.335 2 16.55 2zM9.89 5.579v7.462h5.506V5.579H9.89zm-5.506 0c-.608 0-1.101.493-1.101 1.101v4.405c0 .608.493 1.101 1.101 1.101h.55V8.537h3.305V5.579H4.384zM7.689 2c1.214 0 2.199.984 2.199 2.199S8.903 6.398 7.689 6.398 5.49 5.414 5.49 4.199 6.475 2 7.689 2z"/></svg>
+                  Teams
                 </a>
               </div>
             </div>
