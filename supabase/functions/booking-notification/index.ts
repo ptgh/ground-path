@@ -702,6 +702,9 @@ serve(async (req: Request): Promise<Response> => {
       case 'meeting_ready':
         emailResponse = await handleMeetingReady(supabase, body);
         break;
+      case 'session_reminder':
+        emailResponse = await handleSessionReminder(supabase, body);
+        break;
       default:
         emailResponse = await handleNewRequest(supabase, body, callerUserId);
         break;
