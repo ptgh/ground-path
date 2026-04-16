@@ -48,6 +48,72 @@ const formatDate = (dateStr: string) =>
     weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
   });
 
+/**
+ * Build an iCalendar (.ics) attachment for the booking session.
+ * Times are AEST (+10:00). Converted to UTC for DTSTART/DTEND.
+ */
+function buildIcsAttachment(
+  bookingId: string,
+  date: string,
+  startTime: string,
+  endTime: string,
+  practitionerName: string,
+  meetingUrl: string,
+): EmailAttachment {
+  const norm = (t: string) => (t.length === 5 ? `${t}:00` : t);
+  // AEST is +10:00 — subtract 10h to get UTC
+  const toUtcStamp = (d: string, t: string): string => {
+    const local = new Date(`${d}T${norm(t)}+10:00`);
+    const y = local.getUTCFullYear();
+    const mo = String(local.getUTCMonth() + 1).padStart(2, '0');
+    const da = String(local.getUTCDate()).padStart(2, '0');
+    const h = String(local.getUTCHours()).padStart(2, '0');
+    const mi = String(local.getUTCMinutes()).padStart(2, '0');
+    const s = String(local.getUTCSeconds()).padStart(2, '0');
+    return `${y}${mo}${da}T${h}${mi}${s}Z`;
+  };
+  const dtStart = toUtcStamp(date, startTime);
+  const dtEnd = toUtcStamp(date, endTime);
+  const dtStamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const escape = (s: string) => s.replace(/[\\,;]/g, (m) => `\\${m}`).replace(/\n/g, '\\n');
+  const summary = escape(`groundpath session with ${practitionerName}`);
+  const description = escape(
+    `Your secure video session with ${practitionerName}.\n\nJoin Teams Meeting: ${meetingUrl}\n\nClick the link about 5 minutes before your start time. You'll wait briefly in the lobby until you're admitted.`,
+  );
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//groundpath//Booking//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:${bookingId}@groundpath.com.au`,
+    `DTSTAMP:${dtStamp}`,
+    `DTSTART:${dtStart}`,
+    `DTEND:${dtEnd}`,
+    `SUMMARY:${summary}`,
+    `DESCRIPTION:${description}`,
+    `LOCATION:${escape(meetingUrl)}`,
+    `URL:${meetingUrl}`,
+    'STATUS:CONFIRMED',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT15M',
+    'ACTION:DISPLAY',
+    `DESCRIPTION:${summary}`,
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+  // base64 encode
+  const b64 = btoa(unescape(encodeURIComponent(ics)));
+  return {
+    filename: 'groundpath-session.ics',
+    content: b64,
+    contentType: 'text/calendar; charset=utf-8; method=PUBLISH',
+  };
+}
+
+
 interface EmailAttachment {
   filename: string;
   content: string; // base64
