@@ -804,6 +804,9 @@ const Dashboard = () => {
                 </Card>
               )}
 
+              {/* Microsoft 365 Integration — admin only */}
+              {isAdmin && <Microsoft365Card />}
+
               {/* UK/International toggle — admin only, display-only for now */}
               {isAdmin && (
                 <Card>
