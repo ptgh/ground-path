@@ -26,6 +26,8 @@ const Microsoft365Card = () => {
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
+  const [diagnosing, setDiagnosing] = useState(false);
+  const [diagResult, setDiagResult] = useState<DiagResult | null>(null);
 
   const fetchStatus = async () => {
     try {
