@@ -512,7 +512,7 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     // Fire-and-forget Teams channel notification (skip for client_request_received — it's a duplicate of new_request to the client)
-    if (notificationType !== 'client_request_received') {
+    if (notificationType !== 'client_request_received' && notificationType !== 'meeting_ready') {
       const teamsType = notificationType === 'status_change'
         ? (body.newStatus === 'confirmed' ? 'confirmed' : 'declined')
         : notificationType === 'client_cancellation' ? 'cancelled' : 'new_request';
