@@ -48,19 +48,35 @@ const formatDate = (dateStr: string) =>
     weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
   });
 
-async function sendEmail(to: string, subject: string, html: string): Promise<Response> {
+interface EmailAttachment {
+  filename: string;
+  content: string; // base64
+  contentType?: string;
+}
+
+async function sendEmail(
+  to: string,
+  subject: string,
+  html: string,
+  attachments?: EmailAttachment[],
+): Promise<Response> {
+  const payload: Record<string, unknown> = {
+    from: 'groundpath <connect@groundpath.com.au>',
+    to: [to],
+    subject,
+    html,
+  };
+  if (attachments && attachments.length > 0) {
+    payload.attachments = attachments;
+  }
+
   const emailResponse = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${resendApiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      from: 'groundpath <connect@groundpath.com.au>',
-      to: [to],
-      subject,
-      html,
-    }),
+    body: JSON.stringify(payload),
   });
 
   if (!emailResponse.ok) {
