@@ -56,13 +56,11 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     const body = await req.json();
-    const { organizer_email } = body;
+    const organizer_email = body.organizer_email || 'connect@groundpath.com.au';
 
-    if (!organizer_email) {
-      return new Response(JSON.stringify({ error: 'organizer_email is required' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+    // Canonical Entra Object ID for connect@groundpath.com.au
+    // This avoids needing User.Read.All permission to resolve the ID at runtime
+    const ORGANIZER_OBJECT_ID = 'd16da54d-29e5-4d67-882c-9c2b3cc14a60';
 
     // Load Microsoft credentials from secrets
     const tenantId = Deno.env.get('MICROSOFT_TENANT_ID');
@@ -109,26 +107,9 @@ serve(async (req: Request): Promise<Response> => {
     const accessToken = tokens.access_token as string;
     const expiresIn = tokens.expires_in as number; // seconds
 
-    // Resolve the organizer's Entra object ID so Graph calls use the canonical ID
-    let userObjectId: string | null = null;
-    try {
-      const userRes = await fetch(
-        `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(organizer_email)}?$select=id,userPrincipalName,displayName`,
-        {
-          headers: { 'Authorization': `Bearer ${accessToken}` },
-        },
-      );
-      if (userRes.ok) {
-        const userData = await userRes.json();
-        userObjectId = userData.id as string;
-        console.info('Resolved organizer object ID:', userObjectId, 'UPN:', userData.userPrincipalName);
-      } else {
-        const errText = await userRes.text();
-        console.warn('Could not resolve organizer object ID:', userRes.status, errText.substring(0, 300));
-      }
-    } catch (e) {
-      console.warn('Error resolving organizer object ID:', e instanceof Error ? e.message : e);
-    }
+    // Use the hardcoded Object ID — no User.Read.All lookup needed
+    const userObjectId = ORGANIZER_OBJECT_ID;
+    console.info('Using organizer object ID:', userObjectId, 'email:', organizer_email);
 
     const now = new Date().toISOString();
     const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
