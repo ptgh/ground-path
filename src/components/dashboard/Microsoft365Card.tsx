@@ -86,6 +86,22 @@ const Microsoft365Card = () => {
     }
   };
 
+  const handleDiagnose = async () => {
+    setDiagnosing(true);
+    setDiagResult(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('microsoft-org-diagnose');
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setDiagResult(data.checks as DiagResult);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Diagnostic failed';
+      toast.error(msg);
+    } finally {
+      setDiagnosing(false);
+    }
+  };
+
   const isConnected = status?.connection_status === 'connected';
 
   return (
