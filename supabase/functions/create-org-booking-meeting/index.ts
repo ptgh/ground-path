@@ -218,9 +218,12 @@ serve(async (req: Request): Promise<Response> => {
       .single();
     const practitionerName = practitionerProfile?.display_name || 'Practitioner';
 
-    // Build meeting start/end with timezone
-    const startDatetime = `${booking.requested_date}T${booking.requested_start_time}:00`;
-    const endDatetime = `${booking.requested_date}T${booking.requested_end_time}:00`;
+    // Build meeting start/end with explicit AEST timezone offset (+10:00)
+    // Microsoft Graph rejects naive ISO datetimes with 400 "Request payload cannot be null"
+    // Times in DB are stored as HH:MM or HH:MM:SS — normalise to HH:MM:SS then append offset
+    const normaliseTime = (t: string) => (t.length === 5 ? `${t}:00` : t);
+    const startDatetime = `${booking.requested_date}T${normaliseTime(booking.requested_start_time)}+10:00`;
+    const endDatetime = `${booking.requested_date}T${normaliseTime(booking.requested_end_time)}+10:00`;
 
     // Create meeting via Microsoft Graph using application permissions
     // POST /users/{userId}/onlineMeetings (requires OnlineMeetings.ReadWrite.All + application access policy)
