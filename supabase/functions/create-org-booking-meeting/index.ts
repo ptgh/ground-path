@@ -224,8 +224,10 @@ serve(async (req: Request): Promise<Response> => {
 
     // Create meeting via Microsoft Graph using application permissions
     // POST /users/{userId}/onlineMeetings (requires OnlineMeetings.ReadWrite.All + application access policy)
+    // Use Object ID (service_identity_reference) for Graph calls — required by application access policy
+    const organizerIdentifier = integration.service_identity_reference || 'd16da54d-29e5-4d67-882c-9c2b3cc14a60';
     const graphResponse = await fetch(
-      `https://graph.microsoft.com/v1.0/users/${integration.organizer_email}/onlineMeetings`,
+      `https://graph.microsoft.com/v1.0/users/${organizerIdentifier}/onlineMeetings`,
       {
         method: 'POST',
         headers: {

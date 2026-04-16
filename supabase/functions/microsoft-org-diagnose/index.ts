@@ -148,7 +148,7 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     // Check 4: Application Access Policy — create a test meeting then delete it
-    const organizerIdentifier = integration.service_identity_reference || integration.organizer_email;
+    const organizerIdentifier = integration.service_identity_reference || 'd16da54d-29e5-4d67-882c-9c2b3cc14a60';
     try {
       const now = new Date();
       const testStart = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
