@@ -38,6 +38,7 @@ export type Database = {
           organizer_email: string | null
           practitioner_id: string
           practitioner_notes: string | null
+          reminder_sent_at: string | null
           requested_date: string
           requested_end_time: string
           requested_start_time: string
@@ -68,6 +69,7 @@ export type Database = {
           organizer_email?: string | null
           practitioner_id: string
           practitioner_notes?: string | null
+          reminder_sent_at?: string | null
           requested_date: string
           requested_end_time: string
           requested_start_time: string
@@ -98,6 +100,7 @@ export type Database = {
           organizer_email?: string | null
           practitioner_id?: string
           practitioner_notes?: string | null
+          reminder_sent_at?: string | null
           requested_date?: string
           requested_end_time?: string
           requested_start_time?: string
