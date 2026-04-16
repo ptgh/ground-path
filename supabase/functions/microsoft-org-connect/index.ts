@@ -109,27 +109,6 @@ serve(async (req: Request): Promise<Response> => {
     const accessToken = tokens.access_token as string;
     const expiresIn = tokens.expires_in as number; // seconds
 
-    // Validate the token by checking if we can resolve the organizer user
-    const meResponse = await fetch(
-      `https://graph.microsoft.com/v1.0/users/${organizer_email}`,
-      {
-        headers: { 'Authorization': `Bearer ${accessToken}` },
-      },
-    );
-
-    if (!meResponse.ok) {
-      const errText = await meResponse.text();
-      console.error('Failed to validate organizer:', meResponse.status, errText);
-      return new Response(JSON.stringify({
-        error: 'Failed to validate organizer_email in Microsoft tenant',
-        detail: errText,
-        connection_status: 'failed',
-      }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const organizerData = await meResponse.json();
     const now = new Date().toISOString();
     const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
 
@@ -138,7 +117,7 @@ serve(async (req: Request): Promise<Response> => {
       integration_mode: 'org_managed',
       tenant_id: tenantId,
       organizer_email,
-      service_identity_reference: organizerData.id || null,
+      service_identity_reference: null,
       teams_enabled: true,
       calendar_enabled: true,
       connection_status: 'connected',
@@ -177,7 +156,6 @@ serve(async (req: Request): Promise<Response> => {
       success: true,
       connection_status: 'connected',
       organizer_email,
-      organizer_display_name: organizerData.displayName || null,
       message: 'Microsoft 365 integration connected successfully.',
     }), {
       status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
