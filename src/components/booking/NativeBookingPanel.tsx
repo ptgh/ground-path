@@ -251,7 +251,7 @@ const NativeBookingPanel = () => {
           <Button
             onClick={handleRequest}
             disabled={!selectedSlot || submitting}
-            className="w-full"
+            className="w-full min-h-[44px]"
             size="lg"
           >
             {submitting ? (
@@ -259,15 +259,22 @@ const NativeBookingPanel = () => {
             ) : (
               <Calendar className="h-4 w-4 mr-2" />
             )}
-            Request Booking
+            Continue to check-in
           </Button>
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
             <Video className="h-3.5 w-3.5" />
-            <span>Sessions conducted via secure video call.</span>
+            <span>A gentle check-in helps your practitioner meet you where you are.</span>
           </div>
         </CardContent>
       </Card>
+
+      <PreSessionCheckIn
+        open={checkInOpen}
+        onOpenChange={setCheckInOpen}
+        onComplete={handleCheckInComplete}
+        submitting={submitting}
+      />
     </div>
   );
 };
