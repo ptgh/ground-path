@@ -23,6 +23,7 @@ import {
   Copy,
 } from 'lucide-react';
 import CalendarTilePopover from '@/components/booking/CalendarTilePopover';
+import CheckInSummary from '@/components/booking/CheckInSummary';
 import { toast } from 'sonner';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
@@ -881,6 +882,11 @@ const NativeBooking = () => {
                           "{booking.notes}"
                         </p>
                       )}
+
+                      {/* Pre-session check-in summary */}
+                      <div className="pl-[52px]">
+                        <CheckInSummary bookingRequestId={booking.id} />
+                      </div>
 
                       {/* Actions row */}
                       {(booking.status === 'pending' || booking.status === 'confirmed') && (

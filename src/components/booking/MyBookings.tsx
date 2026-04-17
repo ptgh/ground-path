@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import CheckInSummary from './CheckInSummary';
 
 interface Booking {
   id: string;
@@ -155,6 +156,9 @@ const MyBookings = () => {
             </span>
           </div>
           <p className="text-xs text-muted-foreground">with {booking.practitioner_name}</p>
+          <div className="mt-1.5">
+            <CheckInSummary bookingRequestId={booking.id} compact />
+          </div>
           {booking.practitioner_notes && (
             <p className="text-xs text-muted-foreground italic mt-1">
               Note: {booking.practitioner_notes}
