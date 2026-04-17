@@ -139,10 +139,20 @@ const MeetingStatusBadge = ({ booking }: { booking: BookingRequest }) => {
 
   if (meetingStatus === 'created' && meetingUrl) {
     return (
-      <div className="flex items-center gap-1.5 mt-1">
+      <div className="flex flex-wrap items-center gap-1.5 mt-1">
         <Badge variant="outline" className="text-[10px] bg-sage-50 text-sage-700 border-sage-200">
           <Video className="h-3 w-3 mr-1" /> Meeting Ready
         </Badge>
+        <Button
+          asChild
+          size="sm"
+          variant="outline"
+          className="h-6 px-2 text-[10px] text-sage-700 border-sage-300"
+        >
+          <a href={`/session/${booking.id}`}>
+            <Video className="h-3 w-3 mr-1" /> Open Session
+          </a>
+        </Button>
         <Button
           size="sm"
           variant="ghost"

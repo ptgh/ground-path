@@ -30,6 +30,7 @@ const SOFT_BG = '#f6f8f6';
 const BORDER = '#e5e7eb';
 const REVIEW_URL = 'https://groundpath.com.au/practitioner/dashboard?tab=booking';
 const CLIENT_BOOKINGS_URL = 'https://groundpath.com.au/dashboard';
+const SESSION_URL = (bookingId: string) => `https://groundpath.com.au/session/${bookingId}`;
 
 /* ─── Helpers ─── */
 
@@ -170,13 +171,12 @@ const iconCheck = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" s
 const iconX = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:6px;"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
 
 /* groundpath wordmark + spiral mark (header)
-   Uses hosted PNG (most email clients block inline SVG).
-   The alt text "GP" acts as a graceful fallback when images are blocked. */
+   Hosted PNG (most email clients block inline SVG).
+   Width 480 keeps it crisp on retina; falls back to alt text "groundpath" when images are blocked. */
 const LOGO_URL = 'https://groundpath.com.au/email/groundpath-logo.png';
 const brandHeader = `
-  <div style="text-align:center;padding:24px 0 8px;">
-    <img src="${LOGO_URL}" width="36" height="36" alt="GP" style="display:inline-block;vertical-align:middle;border:0;outline:none;text-decoration:none;width:36px;height:36px;color:${SAGE};font-weight:600;font-size:14px;line-height:36px;text-align:center;background:#f6f8f6;border-radius:50%;" />
-    <span style="display:inline-block;vertical-align:middle;margin-left:8px;font-family:'Inter',Arial,sans-serif;font-size:18px;font-weight:500;letter-spacing:-0.01em;color:${INK};">groundpath</span>
+  <div style="background:${SAGE};text-align:center;padding:0;">
+    <img src="${LOGO_URL}" width="480" alt="groundpath — mental health support for Australia" style="display:block;width:100%;max-width:480px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;" />
   </div>
 `;
 
