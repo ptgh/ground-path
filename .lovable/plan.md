@@ -1,30 +1,52 @@
 
-## Plan: Fix booking time + split confirmation into two emails
 
-### Issues identified
-1. **Time bug** — `formatTime()` in `booking-notification/index.ts` only reads the hour and hardcodes `:00`, so `10:50` shows as `10:00 AM`. That's why the email reads `10:00 AM – 10:00 AM` instead of `10:00 AM – 10:50 AM`.
-2. **Single confirmation email, no Teams link** — On confirm, the dashboard fires `status_change` notification first, then separately calls `create-org-booking-meeting`. The email goes out before the meeting URL exists, so it just says "Meeting details will follow shortly" with no link.
-3. **Wording** — User wants two distinct emails for the client around confirmation: a friendly "Booking confirmed with [practitioner]" first, then a separate "Your Teams meeting is ready" with the join link, how-to-join instructions, and a welcome tone.
+## Plan: Polish Teams experience + in-app session join (no full embed)
 
-### Changes
+### Quick answer on the embed question
+**Microsoft does not allow Teams meetings to be fully embedded in third-party websites via iframe.** The Teams web client explicitly blocks iframe embedding (`X-Frame-Options: DENY`) and the Graph "join URL" must be opened in either the Teams app or Microsoft's hosted web client at `teams.live.com` / `teams.microsoft.com`.
 
-**1. `supabase/functions/booking-notification/index.ts`**
-- Fix `formatTime` to render minutes correctly: parse both `H` and `M`, output e.g. `10:50 AM`, `2:15 PM`, `12:00 PM`.
-- Update `handleStatusChange` confirmed copy to say: *"Your booking with [Practitioner] is confirmed. We'll send your Teams meeting link in a separate email shortly."* Remove the inline "Join Teams Meeting" button from this email — it now stays purely a confirmation.
-- Add a new notification type `meeting_ready` that sends a separate, welcoming "Your Teams session is ready" email to the client with:
-  - Practitioner name + date/time block (using fixed formatTime)
-  - Prominent **Join Teams Meeting** button (Teams purple)
-  - Short "How to join" guide: click 5 min early, allow camera/mic, you'll wait briefly in the lobby until the practitioner admits you, browser fallback if Teams app isn't installed
-  - Warm welcome line and reassurance about confidentiality
+So a true in-page Teams call is **not possible**. But we can get 90% of that experience: a polished in-app "Join Session" page that hands off to Teams' web client in a new tab/PWA-friendly way, with full mobile support, a fallback if Teams isn't installed, and the same join link in the email — so users get one consistent journey whether they click the email or come via the website.
 
-**2. `supabase/functions/create-org-booking-meeting/index.ts`**
-- After successfully creating the meeting and persisting the URL, fire-and-forget invoke `booking-notification` with `{ type: 'meeting_ready', bookingId }` so the client gets the second email automatically as soon as the link exists.
+I'd recommend doing this rather than trying to embed. Embedding would be brittle, break randomly when Microsoft changes headers, and fail on iOS Safari. The handoff pattern is what every clinical platform does (Halaxy, SimplePractice, Coviu).
 
-**3. No client UI changes needed** — `NativeBooking.handleUpdateBookingStatus` already sends `status_change` then calls `handleCreateMeeting`. The new `meeting_ready` email is triggered server-side from the meeting-creation function so the flow stays: confirm → "Booking confirmed" email → meeting created → "Teams meeting ready" email.
+### Scope
 
-### Resulting client email sequence
-1. Request submitted → "Booking request received — pending approval" (existing)
-2. Practitioner confirms → **"Booking Confirmed with [Practitioner]"** (no link yet, fixed time)
-3. Teams meeting created → **"Your Teams Session is Ready"** (join button + how-to-join + welcome)
+**1. Better logo in emails (full quality)**
+- Replace the small 512px PNG with a properly sized 600px-wide branded email header (sage card with full "groundpath" wordmark + tagline) generated as a high-DPI PNG.
+- Keep "GP" text fallback for image-blocked clients.
+- Apply consistently across all 5 email templates (request received, confirmed, meeting ready, reminder, cancellation).
 
-Practitioner-facing emails (new request, cancellation) are unchanged apart from the time-formatting fix.
+**2. New in-app Join Session page** — `/session/:bookingId`
+- Mobile-first page showing: practitioner name, time, countdown ("Starts in 4 min" / "Live now"), big "Join Teams Meeting" button.
+- Two clear options:
+  - **Open in Teams app** (deep-link `msteams:` — works if Teams installed)
+  - **Join in browser** (uses the Graph `joinWebUrl` which opens `teams.live.com` in a new tab — no install required, works on mobile Safari/Chrome)
+- "How to join" instructions inline (lobby wait, mic/camera permissions, headphones recommended).
+- Auth-protected: only the booked client or assigned practitioner can view.
+- Real-time meeting status: shows "Setting up meeting..." if `meeting_status !== 'created'` and updates live via Supabase realtime.
+
+**3. Update email + dashboard to point at this page**
+- The "Your Teams Session is Ready" and reminder emails get **two buttons**: "Open in Groundpath" (→ `/session/:id`) and "Join Teams directly" (→ Graph `joinWebUrl`).
+- "My Bookings" Join Session button on `MyBookings.tsx` and `ClientDashboard.tsx` routes to `/session/:id` instead of opening Teams directly.
+- Practitioner dashboard gets the same in-app launcher.
+
+**4. Fix lingering time bug** in `MyBookings.tsx` and `NativeBookingPanel.tsx` (`formatTime` still strips minutes — same bug we fixed in the email function but not in these two components).
+
+**5. Mobile polish**
+- Test the join page at 375px viewport.
+- Ensure tap targets ≥44px, button stack vertically on narrow screens.
+- iOS-safe `msteams:` deep link with graceful fallback when the app isn't installed.
+
+### Files to add/edit
+- `src/pages/JoinSession.tsx` — new page
+- `src/App.tsx` — add `/session/:bookingId` route (auth-protected)
+- `src/components/booking/MyBookings.tsx` — fix formatTime; route to `/session/:id`
+- `src/components/booking/NativeBookingPanel.tsx` — fix formatTime
+- `src/components/dashboard/NativeBooking.tsx` — practitioner Join button → `/session/:id`
+- `supabase/functions/booking-notification/index.ts` — add "Open in Groundpath" CTA alongside Teams link in `meeting_ready` and `session_reminder` templates
+- `public/email/groundpath-logo.png` — regenerate at 600×160 with full wordmark
+
+### What I'm NOT doing (and why)
+- **Not embedding Teams in an iframe** — Microsoft blocks it; would break.
+- **Not building a custom WebRTC client** — out of scope, would require months of work and licensing review.
+
