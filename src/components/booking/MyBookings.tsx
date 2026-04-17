@@ -156,6 +156,9 @@ const MyBookings = () => {
             </span>
           </div>
           <p className="text-xs text-muted-foreground">with {booking.practitioner_name}</p>
+          <div className="mt-1.5">
+            <CheckInSummary bookingRequestId={booking.id} compact />
+          </div>
           {booking.practitioner_notes && (
             <p className="text-xs text-muted-foreground italic mt-1">
               Note: {booking.practitioner_notes}
