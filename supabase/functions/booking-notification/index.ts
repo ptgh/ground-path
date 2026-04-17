@@ -23,6 +23,7 @@ interface BookingNotificationRequest {
 
 /* ─── Brand constants ─── */
 const SAGE = '#7B9B85';
+const SAGE_TINT = '#eef3ef';
 const SAGE_DARK = '#4a7c4f';
 const INK = '#1a1a1a';
 const MUTED = '#6b7280';
@@ -173,10 +174,23 @@ const iconX = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" strok
 /* groundpath wordmark + spiral mark (header)
    Hosted PNG (most email clients block inline SVG).
    Width 480 keeps it crisp on retina; falls back to alt text "groundpath" when images are blocked. */
+/* Compact email header — small circular logo + wordmark, not a full banner.
+   Renders cleanly in Gmail/Apple Mail; "GP" text fallback if image blocked. */
 const LOGO_URL = 'https://groundpath.com.au/email/groundpath-logo.png';
 const brandHeader = `
-  <div style="background:${SAGE};text-align:center;padding:0;">
-    <img src="${LOGO_URL}" width="480" alt="groundpath — mental health support for Australia" style="display:block;width:100%;max-width:480px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;" />
+  <div style="background:#ffffff;text-align:center;padding:24px 16px 12px;border-bottom:1px solid ${BORDER};">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
+      <tr>
+        <td style="vertical-align:middle;padding-right:10px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:${SAGE_TINT};color:${SAGE};font-weight:700;font-size:14px;line-height:36px;text-align:center;font-family:'Inter','Helvetica Neue',Arial,sans-serif;">
+            <img src="${LOGO_URL}" width="36" height="36" alt="GP" style="display:block;width:36px;height:36px;border-radius:50%;border:0;outline:none;text-decoration:none;" />
+          </div>
+        </td>
+        <td style="vertical-align:middle;">
+          <span style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:600;color:${INK};letter-spacing:-0.01em;">groundpath</span>
+        </td>
+      </tr>
+    </table>
   </div>
 `;
 
