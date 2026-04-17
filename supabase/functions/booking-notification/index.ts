@@ -423,9 +423,14 @@ async function handleMeetingReady(
         <div style="background:${SOFT_BG};border-left:3px solid ${SAGE_DARK};padding:16px 18px;border-radius:0 8px 8px 0;margin:0 0 24px;">
           ${buildDetailRows(dateStr, timeStr, booking.duration_minutes)}
         </div>
-        <div style="text-align:center;margin:0 0 24px;">
-          <a href="${meetingUrl}" style="display:inline-block;background-color:${TEAMS_PURPLE};color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:15px;font-weight:600;letter-spacing:0.01em;">
+        <div style="text-align:center;margin:0 0 16px;">
+          <a href="${meetingUrl}" style="display:inline-block;background-color:${TEAMS_PURPLE};color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:600;letter-spacing:0.01em;margin:0 4px 8px;">
             ${iconVideo.replace(SAGE_DARK, '#ffffff')}Join Teams Meeting
+          </a>
+        </div>
+        <div style="text-align:center;margin:0 0 24px;">
+          <a href="${SESSION_URL(booking.id)}" style="display:inline-block;background-color:#ffffff;color:${SAGE_DARK};text-decoration:none;padding:11px 28px;border-radius:8px;font-size:14px;font-weight:500;border:1.5px solid ${SAGE_DARK};">
+            Open in groundpath
           </a>
         </div>
         <div style="background:#fafafa;border:1px solid ${BORDER};border-radius:8px;padding:16px 18px;margin:0 0 20px;">
@@ -508,9 +513,14 @@ async function handleSessionReminder(
   const meetingUrl = (booking.meeting_url as string) || '';
 
   const joinBlock = meetingUrl
-    ? `<div style="text-align:center;margin:0 0 24px;">
-         <a href="${meetingUrl}" style="display:inline-block;background-color:${TEAMS_PURPLE};color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:15px;font-weight:600;letter-spacing:0.01em;">
+    ? `<div style="text-align:center;margin:0 0 12px;">
+         <a href="${meetingUrl}" style="display:inline-block;background-color:${TEAMS_PURPLE};color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:600;letter-spacing:0.01em;margin:0 4px 8px;">
            ${iconVideo.replace(SAGE_DARK, '#ffffff')}Join Teams Meeting
+         </a>
+       </div>
+       <div style="text-align:center;margin:0 0 24px;">
+         <a href="${SESSION_URL(booking.id)}" style="display:inline-block;background-color:#ffffff;color:${SAGE_DARK};text-decoration:none;padding:11px 28px;border-radius:8px;font-size:14px;font-weight:500;border:1.5px solid ${SAGE_DARK};">
+           Open in groundpath
          </a>
        </div>`
     : `<p style="font-size:13px;color:#b45309;text-align:center;margin:0 0 24px;">Your Teams meeting link will arrive shortly. Please check your inbox closer to the session time.</p>`;
