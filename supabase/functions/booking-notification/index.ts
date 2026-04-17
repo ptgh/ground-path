@@ -169,13 +169,13 @@ const iconHourglass = `<svg width="18" height="18" viewBox="0 0 24 24" fill="non
 const iconCheck = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${SAGE_DARK}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:6px;"><path d="M20 6 9 17l-5-5"/></svg>`;
 const iconX = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:6px;"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
 
-/* groundpath wordmark + spiral mark (header) */
+/* groundpath wordmark + spiral mark (header)
+   Uses hosted PNG (most email clients block inline SVG).
+   The alt text "GP" acts as a graceful fallback when images are blocked. */
+const LOGO_URL = 'https://groundpath.com.au/email/groundpath-logo.png';
 const brandHeader = `
   <div style="text-align:center;padding:24px 0 8px;">
-    <svg width="36" height="36" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;">
-      <path d="M32 8c13 0 22 9 22 22s-9 22-22 22-22-9-22-22c0-7 4-13 10-16" stroke="${SAGE}" stroke-width="3" stroke-linecap="round" fill="none"/>
-      <path d="M32 18c7 0 12 5 12 12s-5 12-12 12-12-5-12-12c0-4 2-7 5-9" stroke="${SAGE}" stroke-width="3" stroke-linecap="round" fill="none"/>
-    </svg>
+    <img src="${LOGO_URL}" width="36" height="36" alt="GP" style="display:inline-block;vertical-align:middle;border:0;outline:none;text-decoration:none;width:36px;height:36px;color:${SAGE};font-weight:600;font-size:14px;line-height:36px;text-align:center;background:#f6f8f6;border-radius:50%;" />
     <span style="display:inline-block;vertical-align:middle;margin-left:8px;font-family:'Inter',Arial,sans-serif;font-size:18px;font-weight:500;letter-spacing:-0.01em;color:${INK};">groundpath</span>
   </div>
 `;
@@ -294,19 +294,20 @@ async function handleClientRequestReceived(
     .from('profiles').select('display_name').eq('user_id', practitionerId).single();
   const practName = practProfile?.display_name || 'your practitioner';
 
+  // Sage hourglass icon (consistent brand colour, no amber)
+  const iconHourglassSage = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${SAGE_DARK}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:6px;"><path d="M5 22h14M5 2h14M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>`;
+
   return await sendEmail(
     clientUser.email,
     `Booking request received — pending approval — groundpath`,
     buildEmailHtml(
       'Booking Request Received',
-      `Thank you — your booking request with <strong style="color:${INK};">${practName}</strong> has been received and is now <strong style="color:#b45309;">pending approval</strong>. You'll receive another email as soon as it's confirmed or declined.`,
-      `<p style="font-size:13px;color:#374151;margin:0 0 10px;line-height:1.6;">${iconHourglass}<strong style="color:${INK};">Status</strong> &nbsp;Awaiting practitioner approval</p>` +
+      `Thank you — your booking request with <strong style="color:${INK};">${practName}</strong> has been received and is now <strong style="color:${SAGE_DARK};">pending approval</strong>. You'll receive another email as soon as it's confirmed or declined.`,
+      `<p style="font-size:13px;color:#374151;margin:0 0 10px;line-height:1.6;">${iconHourglassSage}<strong style="color:${INK};">Status</strong> &nbsp;Awaiting practitioner approval</p>` +
         buildDetailRows(requestedDate, requestedTime, 50),
       CLIENT_BOOKINGS_URL,
       'View My Bookings',
       'You can review or cancel pending requests anytime from your groundpath dashboard.',
-      '#d97706',
-      '#fffbeb',
     ),
   );
 }
@@ -666,17 +667,25 @@ serve(async (req: Request): Promise<Response> => {
       });
     }
 
-    const anonClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
-      global: { headers: { Authorization: authHeader } },
-    });
     const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: authError } = await anonClient.auth.getClaims(token);
-    if (authError || !claimsData?.claims) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    let callerUserId = '';
+
+    // Allow service-role calls (used by other edge functions like create-org-booking-meeting
+    // and send-booking-reminders for fire-and-forget notifications). Otherwise validate user JWT.
+    if (token === supabaseServiceRoleKey) {
+      callerUserId = 'service-role';
+    } else {
+      const anonClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
+        global: { headers: { Authorization: authHeader } },
       });
+      const { data: claimsData, error: authError } = await anonClient.auth.getClaims(token);
+      if (authError || !claimsData?.claims) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      callerUserId = claimsData.claims.sub as string;
     }
-    const callerUserId = claimsData.claims.sub as string;
 
     const body: BookingNotificationRequest = await req.json();
     const notificationType = body.type || 'new_request';
