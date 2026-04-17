@@ -6,6 +6,7 @@ import { Video, Clock, Calendar, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { format } from 'date-fns';
+import CheckInSummary from './CheckInSummary';
 
 interface NextBooking {
   id: string;
@@ -134,6 +135,9 @@ export const NextSessionCard = () => {
                 <Clock className="h-3.5 w-3.5" />
                 {formatTime(booking.requested_start_time)} – {formatTime(booking.requested_end_time)}
               </span>
+            </div>
+            <div className="mt-3">
+              <CheckInSummary bookingRequestId={booking.id} compact />
             </div>
           </div>
           <Button
