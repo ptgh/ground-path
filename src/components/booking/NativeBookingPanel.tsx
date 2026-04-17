@@ -69,15 +69,17 @@ const NativeBookingPanel = () => {
     load();
   }, []);
 
-  const handleRequest = async () => {
-    if (!selectedSlot || !user) {
-      if (!user) {
-        toast.error('Please sign in to request a booking');
-        return;
-      }
+  const handleRequest = () => {
+    if (!user) {
+      toast.error('Please sign in to request a booking');
       return;
     }
+    if (!selectedSlot) return;
+    setCheckInOpen(true);
+  };
 
+  const handleCheckInComplete = async (checkInData: CheckInData) => {
+    if (!selectedSlot || !user) return;
     const slot = slots.find(s => s.id === selectedSlot);
     if (!slot) return;
 
@@ -118,10 +120,11 @@ const NativeBookingPanel = () => {
     if (existing && existing.length > 0) {
       toast.error('This time slot already has a booking. Please choose another.');
       setSubmitting(false);
+      setCheckInOpen(false);
       return;
     }
 
-    const { error } = await supabase
+    const { data: inserted, error } = await supabase
       .from('booking_requests')
       .insert({
         practitioner_id: slotData.practitioner_id,
@@ -131,14 +134,40 @@ const NativeBookingPanel = () => {
         requested_end_time: slot.end_time,
         duration_minutes: 50,
         session_type: 'video',
-      });
+      })
+      .select('id')
+      .single();
 
-    setSubmitting(false);
-
-    if (error) {
+    if (error || !inserted) {
+      setSubmitting(false);
       toast.error('Failed to submit booking request');
       return;
     }
+
+    // Save check-in (best-effort — booking already created)
+    const hasCheckInContent =
+      checkInData.mood_score !== null ||
+      checkInData.mood_tags.length > 0 ||
+      checkInData.desired_outcome.trim() !== '' ||
+      checkInData.notes_for_practitioner.trim() !== '';
+
+    if (hasCheckInContent) {
+      const { error: checkInError } = await supabase.from('booking_checkins').insert({
+        booking_request_id: inserted.id,
+        client_user_id: user.id,
+        practitioner_id: slotData.practitioner_id,
+        mood_score: checkInData.mood_score,
+        mood_tags: checkInData.mood_tags,
+        desired_outcome: checkInData.desired_outcome.trim() || null,
+        notes_for_practitioner: checkInData.notes_for_practitioner.trim() || null,
+      });
+      if (checkInError) {
+        console.error('Check-in save error:', checkInError);
+      }
+    }
+
+    setSubmitting(false);
+    setCheckInOpen(false);
 
     // Send email notification to practitioner (best-effort)
     supabase.functions.invoke('booking-notification', {
