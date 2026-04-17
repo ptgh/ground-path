@@ -828,44 +828,71 @@ const NativeBooking = () => {
           <CardContent>
             {bookings.length > 0 ? (
               <div className="space-y-3">
-                {bookings.map(booking => (
-                  <div key={booking.id} className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-sage-300 transition-colors">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage-100">
-                      <Video className="h-4 w-4 text-sage-700" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {booking.client_name || 'Client'} — {format(new Date(booking.requested_date), 'EEE d MMM yyyy')}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {booking.requested_start_time.slice(0, 5)} – {booking.requested_end_time.slice(0, 5)} · {booking.duration_minutes} min
-                      </p>
-                      {booking.notes && (
-                        <p className="text-xs text-muted-foreground/70 mt-0.5 truncate">{booking.notes}</p>
-                      )}
-                    </div>
-                     <div className="flex flex-col items-end gap-1.5">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className={`text-[10px] ${statusStyle(booking.status)}`}>
+                {bookings.map(booking => {
+                  const dateObj = new Date(booking.requested_date + 'T00:00:00');
+                  const dayLabel = format(dateObj, 'EEEE');
+                  const dateLabel = format(dateObj, 'd MMM yyyy');
+                  const startLabel = booking.requested_start_time.slice(0, 5);
+                  const endLabel = booking.requested_end_time.slice(0, 5);
+                  return (
+                    <div key={booking.id} className="p-3 rounded-lg border border-border hover:border-sage-300 transition-colors space-y-2.5">
+                      {/* Header row: avatar + client + status */}
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage-100">
+                          <Video className="h-4 w-4 text-sage-700" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-foreground truncate">
+                            {booking.client_name || 'Client'}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {booking.session_type === 'video' ? 'Video session' : booking.session_type} · {booking.duration_minutes} min
+                          </p>
+                        </div>
+                        <Badge variant="outline" className={`text-[10px] shrink-0 ${statusStyle(booking.status)}`}>
                           {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                         </Badge>
-                        {booking.status === 'pending' && (
-                          <div className="flex gap-1">
-                            <Button size="sm" variant="outline" className="h-7 text-xs text-sage-700 border-sage-300" onClick={() => handleUpdateBookingStatus(booking.id, 'confirmed')}>
-                              Confirm
-                            </Button>
-                            <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive" onClick={() => handleUpdateBookingStatus(booking.id, 'cancelled')}>
-                              Decline
-                            </Button>
-                          </div>
-                        )}
                       </div>
-                      {booking.status === 'confirmed' && (
-                        <MeetingActions booking={booking} onRetry={handleCreateMeeting} />
+
+                      {/* Date + time block */}
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pl-[52px] text-xs">
+                        <span className="inline-flex items-center gap-1.5 text-foreground font-medium">
+                          <Calendar className="h-3.5 w-3.5 text-sage-600" />
+                          {dayLabel}, {dateLabel}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                          <Clock className="h-3.5 w-3.5 text-sage-600" />
+                          {startLabel} – {endLabel}
+                        </span>
+                      </div>
+
+                      {booking.notes && (
+                        <p className="text-xs text-muted-foreground/80 pl-[52px] italic line-clamp-2">
+                          "{booking.notes}"
+                        </p>
+                      )}
+
+                      {/* Actions row */}
+                      {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                        <div className="pl-[52px] flex flex-wrap items-center gap-2 pt-0.5">
+                          {booking.status === 'pending' && (
+                            <>
+                              <Button size="sm" variant="outline" className="h-7 text-xs text-sage-700 border-sage-300" onClick={() => handleUpdateBookingStatus(booking.id, 'confirmed')}>
+                                Confirm
+                              </Button>
+                              <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive" onClick={() => handleUpdateBookingStatus(booking.id, 'cancelled')}>
+                                Decline
+                              </Button>
+                            </>
+                          )}
+                          {booking.status === 'confirmed' && (
+                            <MeetingActions booking={booking} onRetry={handleCreateMeeting} />
+                          )}
+                        </div>
                       )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="text-center py-12">
