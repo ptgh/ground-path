@@ -35,8 +35,13 @@ const statusConfig: Record<string, { label: string; variant: 'default' | 'second
 };
 
 const formatTime = (t: string) => {
-  const [h] = t.split(':').map(Number);
-  return h > 12 ? `${h - 12}:00 PM` : h === 12 ? '12:00 PM' : `${h}:00 AM`;
+  const [hRaw, mRaw] = t.split(':').map(Number);
+  const h = hRaw || 0;
+  const m = mRaw || 0;
+  const mm = m.toString().padStart(2, '0');
+  const period = h >= 12 ? 'PM' : 'AM';
+  const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${hour12}:${mm} ${period}`;
 };
 
 const MyBookings = () => {
@@ -157,13 +162,11 @@ const MyBookings = () => {
           )}
           {isConfirmedWithMeeting && (
             <a
-              href={meetingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`/session/${booking.id}`}
               className="inline-flex items-center gap-1.5 mt-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors"
             >
               <Video className="h-3.5 w-3.5" />
-              Join Session
+              Open Session
             </a>
           )}
           {isMeetingPending && (

@@ -46,6 +46,7 @@ import { ClientAIAssistant } from "./components/ClientAIAssistant";
 import GoogleAnalytics from "./components/GoogleAnalytics";
 import ClientDashboard from "./pages/ClientDashboard";
 import Book from "./pages/Book";
+import JoinSession from "./pages/JoinSession";
 // BookPractitioner merged into Book.tsx
 import { useAuth, AuthProvider } from "./hooks/useAuth";
 
@@ -190,6 +191,7 @@ const App = () => {
               <Route path="/practitioner/messages" element={<VerifiedPractitionerRoute><Messages /></VerifiedPractitionerRoute>} />
               <Route path="/messages" element={<AuthenticatedRoute><Messages /></AuthenticatedRoute>} />
               <Route path="/dashboard" element={<AuthenticatedRoute><ClientDashboard /></AuthenticatedRoute>} />
+              <Route path="/session/:bookingId" element={<AuthenticatedRoute><JoinSession /></AuthenticatedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <AIAssistantRouter />

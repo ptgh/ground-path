@@ -12,8 +12,13 @@ import { useAuth } from '@/hooks/useAuth';
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const formatTime = (t: string) => {
-  const [h] = t.split(':').map(Number);
-  return h > 12 ? `${h - 12}:00 PM` : h === 12 ? '12:00 PM' : `${h}:00 AM`;
+  const [hRaw, mRaw] = t.split(':').map(Number);
+  const h = hRaw || 0;
+  const m = mRaw || 0;
+  const mm = m.toString().padStart(2, '0');
+  const period = h >= 12 ? 'PM' : 'AM';
+  const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${hour12}:${mm} ${period}`;
 };
 
 interface Slot {
