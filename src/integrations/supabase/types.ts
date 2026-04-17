@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      booking_checkins: {
+        Row: {
+          booking_request_id: string
+          client_user_id: string
+          created_at: string
+          desired_outcome: string | null
+          id: string
+          mood_score: number | null
+          mood_tags: string[] | null
+          notes_for_practitioner: string | null
+          practitioner_id: string
+          updated_at: string
+        }
+        Insert: {
+          booking_request_id: string
+          client_user_id: string
+          created_at?: string
+          desired_outcome?: string | null
+          id?: string
+          mood_score?: number | null
+          mood_tags?: string[] | null
+          notes_for_practitioner?: string | null
+          practitioner_id: string
+          updated_at?: string
+        }
+        Update: {
+          booking_request_id?: string
+          client_user_id?: string
+          created_at?: string
+          desired_outcome?: string | null
+          id?: string
+          mood_score?: number | null
+          mood_tags?: string[] | null
+          notes_for_practitioner?: string | null
+          practitioner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       booking_requests: {
         Row: {
           calendar_provider: string | null
