@@ -11,6 +11,7 @@ import SEO from '@/components/SEO';
 import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
 import { scrollToSectionWithOffset } from '@/lib/utils';
 import MyBookings from '@/components/booking/MyBookings';
+import NextSessionCard from '@/components/booking/NextSessionCard';
 
 const ClientDashboard = () => {
   const { user, profile } = useAuth();
@@ -31,6 +32,9 @@ const ClientDashboard = () => {
             </h1>
             <p className="text-muted-foreground mt-2">Your mental health support hub</p>
           </div>
+
+          {/* Next Session — prominent in-app launcher */}
+          <NextSessionCard />
 
           {/* Profile Photo */}
           <Card>
