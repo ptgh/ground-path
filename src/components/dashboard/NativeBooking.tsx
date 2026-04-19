@@ -21,6 +21,7 @@ import {
   Loader2,
   Trash2,
   Copy,
+  CreditCard,
 } from 'lucide-react';
 import CalendarTilePopover from '@/components/booking/CalendarTilePopover';
 import CheckInSummary from '@/components/booking/CheckInSummary';
