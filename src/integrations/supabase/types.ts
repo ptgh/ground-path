@@ -621,6 +621,45 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_methods: {
+        Row: {
+          brand: string | null
+          created_at: string
+          exp_month: number | null
+          exp_year: number | null
+          id: string
+          is_default: boolean
+          last4: string | null
+          stripe_payment_method_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string
+          exp_month?: number | null
+          exp_year?: number | null
+          id?: string
+          is_default?: boolean
+          last4?: string | null
+          stripe_payment_method_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string
+          exp_month?: number | null
+          exp_year?: number | null
+          id?: string
+          is_default?: boolean
+          last4?: string | null
+          stripe_payment_method_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       practitioner_availability: {
         Row: {
           created_at: string
@@ -700,6 +739,7 @@ export type Database = {
           cpd_hours_current_year: number | null
           cpd_requirements: number | null
           created_at: string | null
+          currency: string
           directory_approved: boolean | null
           display_name: string | null
           emergency_contact: Json | null
@@ -722,6 +762,7 @@ export type Database = {
           registration_country: string | null
           registration_expiry: string | null
           registration_number: string | null
+          session_rate_cents: number | null
           specializations: string[] | null
           supervisor_details: Json | null
           swe_registration_number: string | null
@@ -742,6 +783,7 @@ export type Database = {
           cpd_hours_current_year?: number | null
           cpd_requirements?: number | null
           created_at?: string | null
+          currency?: string
           directory_approved?: boolean | null
           display_name?: string | null
           emergency_contact?: Json | null
@@ -764,6 +806,7 @@ export type Database = {
           registration_country?: string | null
           registration_expiry?: string | null
           registration_number?: string | null
+          session_rate_cents?: number | null
           specializations?: string[] | null
           supervisor_details?: Json | null
           swe_registration_number?: string | null
@@ -784,6 +827,7 @@ export type Database = {
           cpd_hours_current_year?: number | null
           cpd_requirements?: number | null
           created_at?: string | null
+          currency?: string
           directory_approved?: boolean | null
           display_name?: string | null
           emergency_contact?: Json | null
@@ -806,6 +850,7 @@ export type Database = {
           registration_country?: string | null
           registration_expiry?: string | null
           registration_number?: string | null
+          session_rate_cents?: number | null
           specializations?: string[] | null
           supervisor_details?: Json | null
           swe_registration_number?: string | null
@@ -816,6 +861,87 @@ export type Database = {
           verification_status?: string | null
           website_url?: string | null
           years_experience?: number | null
+        }
+        Relationships: []
+      }
+      session_charges: {
+        Row: {
+          amount_cents: number
+          booking_request_id: string | null
+          charged_at: string | null
+          client_user_id: string
+          created_at: string
+          currency: string
+          description: string | null
+          failure_reason: string | null
+          hosted_invoice_url: string | null
+          id: string
+          practitioner_id: string
+          status: string
+          stripe_invoice_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_receipt_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount_cents: number
+          booking_request_id?: string | null
+          charged_at?: string | null
+          client_user_id: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          failure_reason?: string | null
+          hosted_invoice_url?: string | null
+          id?: string
+          practitioner_id: string
+          status?: string
+          stripe_invoice_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_receipt_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          booking_request_id?: string | null
+          charged_at?: string | null
+          client_user_id?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          failure_reason?: string | null
+          hosted_invoice_url?: string | null
+          id?: string
+          practitioner_id?: string
+          status?: string
+          stripe_invoice_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_receipt_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      stripe_customers: {
+        Row: {
+          created_at: string
+          id: string
+          stripe_customer_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          stripe_customer_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          stripe_customer_id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
