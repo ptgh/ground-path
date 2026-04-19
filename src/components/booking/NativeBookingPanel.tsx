@@ -3,12 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Calendar, Clock, Video, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Calendar, Clock, Video, CheckCircle2, AlertTriangle, Loader2, CreditCard } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import PreSessionCheckIn, { type CheckInData } from './PreSessionCheckIn';
+import AddCardForm from '@/components/billing/AddCardForm';
+import { useSavedCards } from '@/hooks/useSavedCards';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -36,6 +39,9 @@ const NativeBookingPanel = () => {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [checkInOpen, setCheckInOpen] = useState(false);
+  const [cardCaptureOpen, setCardCaptureOpen] = useState(false);
+  const [pendingCheckIn, setPendingCheckIn] = useState<CheckInData | null>(null);
+  const { cards, refresh: refreshCards } = useSavedCards();
 
   useEffect(() => {
     const load = async () => {
@@ -79,6 +85,29 @@ const NativeBookingPanel = () => {
   };
 
   const handleCheckInComplete = async (checkInData: CheckInData) => {
+    if (!selectedSlot || !user) return;
+
+    // If client has no card on file, capture one before creating the booking
+    if (cards.length === 0) {
+      setPendingCheckIn(checkInData);
+      setCheckInOpen(false);
+      setCardCaptureOpen(true);
+      return;
+    }
+
+    await submitBooking(checkInData);
+  };
+
+  const handleCardCaptured = async () => {
+    setCardCaptureOpen(false);
+    await refreshCards();
+    if (pendingCheckIn) {
+      await submitBooking(pendingCheckIn);
+      setPendingCheckIn(null);
+    }
+  };
+
+  const submitBooking = async (checkInData: CheckInData) => {
     if (!selectedSlot || !user) return;
     const slot = slots.find(s => s.id === selectedSlot);
     if (!slot) return;
@@ -275,6 +304,25 @@ const NativeBookingPanel = () => {
         onComplete={handleCheckInComplete}
         submitting={submitting}
       />
+
+      <Dialog open={cardCaptureOpen} onOpenChange={setCardCaptureOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-primary" />
+              Save a card to confirm your booking
+            </DialogTitle>
+            <DialogDescription>
+              We don't charge anything now. Your practitioner will charge the session fee only after your appointment.
+            </DialogDescription>
+          </DialogHeader>
+          <AddCardForm
+            onSuccess={handleCardCaptured}
+            onCancel={() => { setCardCaptureOpen(false); setPendingCheckIn(null); }}
+            submitLabel="Save card & confirm booking"
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
