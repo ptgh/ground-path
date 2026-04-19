@@ -21,14 +21,17 @@ import {
   Loader2,
   Trash2,
   Copy,
+  CreditCard,
 } from 'lucide-react';
 import CalendarTilePopover from '@/components/booking/CalendarTilePopover';
 import CheckInSummary from '@/components/booking/CheckInSummary';
 import ChargeClientButton from '@/components/billing/ChargeClientButton';
+import MarkCompleteAndChargeButton from '@/components/billing/MarkCompleteAndChargeButton';
 import { toast } from 'sonner';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useClientCardStatus } from '@/hooks/useClientCardStatus';
 
 /* ─── Types ─── */
 interface AvailabilitySlot {
@@ -637,6 +640,14 @@ const NativeBooking = () => {
 
   const pendingCount = bookings.filter(b => b.status === 'pending').length;
 
+  // Card-on-file lookup for active bookings (confirmed/completed)
+  const billableClientIds = [...new Set(
+    bookings
+      .filter(b => b.status === 'confirmed' || b.status === 'completed')
+      .map(b => b.client_user_id)
+  )];
+  const { withCard } = useClientCardStatus(billableClientIds);
+
   const viewButtons: { key: BookingView; label: string; icon: React.ElementType }[] = [
     { key: 'calendar', label: 'Calendar', icon: Calendar },
     { key: 'sessions', label: 'Sessions', icon: Users },
@@ -868,7 +879,7 @@ const NativeBooking = () => {
                             {booking.session_type === 'video' ? 'Video session' : booking.session_type} · {booking.duration_minutes} min
                           </p>
                         </div>
-                        <Badge variant="outline" className={`text-[10px] shrink-0 ${statusStyle(booking.status)}`}>
+                      <Badge variant="outline" className={`text-[10px] shrink-0 ${statusStyle(booking.status)}`}>
                           {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                         </Badge>
                       </div>
@@ -883,6 +894,17 @@ const NativeBooking = () => {
                           <Clock className="h-3.5 w-3.5 text-sage-600" />
                           {startLabel} – {endLabel}
                         </span>
+                        {(booking.status === 'confirmed' || booking.status === 'completed') && (
+                          withCard.has(booking.client_user_id) ? (
+                            <Badge variant="outline" className="text-[10px] bg-sage-50 text-sage-700 border-sage-200">
+                              <CreditCard className="h-3 w-3 mr-1" /> Card on file
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-700 border-amber-200">
+                              <CreditCard className="h-3 w-3 mr-1" /> No card on file
+                            </Badge>
+                          )
+                        )}
                       </div>
 
                       {booking.notes && (
@@ -912,12 +934,18 @@ const NativeBooking = () => {
                           {booking.status === 'confirmed' && (
                             <>
                               <MeetingActions booking={booking} onRetry={handleCreateMeeting} />
-                              <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => handleUpdateBookingStatus(booking.id, 'completed')}>
-                                Mark complete
-                              </Button>
+                              <MarkCompleteAndChargeButton
+                                bookingRequestId={booking.id}
+                                clientUserId={booking.client_user_id}
+                                clientName={booking.client_name}
+                                amountCents={sessionRateCents}
+                                currency={currency}
+                                hasCardOnFile={withCard.has(booking.client_user_id)}
+                                onComplete={() => setBookings(prev => prev.map(b => b.id === booking.id ? { ...b, status: 'completed' } : b))}
+                              />
                             </>
                           )}
-                          {(booking.status === 'confirmed' || booking.status === 'completed') && sessionRateCents && sessionRateCents >= 50 && (
+                          {booking.status === 'completed' && sessionRateCents && sessionRateCents >= 50 && (
                             <ChargeClientButton
                               bookingRequestId={booking.id}
                               clientUserId={booking.client_user_id}
