@@ -2,7 +2,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MessageCircle, Phone, BookOpen, User } from 'lucide-react';
+import { MessageCircle, Phone, BookOpen, User, CreditCard } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ClientMessagesPanel } from '@/components/messaging/ClientMessagesPanel';
@@ -50,7 +50,7 @@ const ClientDashboard = () => {
           </Card>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             <Button
               variant="outline"
               className="h-auto py-4 flex flex-col items-center gap-2"
@@ -89,6 +89,14 @@ const ClientDashboard = () => {
             >
               <User className="h-5 w-5" />
               <span className="text-xs">Book Session</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto py-4 flex flex-col items-center gap-2"
+              onClick={() => navigate('/account/billing')}
+            >
+              <CreditCard className="h-5 w-5" />
+              <span className="text-xs">Billing</span>
             </Button>
           </div>
 

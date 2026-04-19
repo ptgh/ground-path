@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import CalendarTilePopover from '@/components/booking/CalendarTilePopover';
 import CheckInSummary from '@/components/booking/CheckInSummary';
+import ChargeClientButton from '@/components/billing/ChargeClientButton';
 import { toast } from 'sonner';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
@@ -222,6 +223,8 @@ const NativeBooking = () => {
   const [newSlotDay, setNewSlotDay] = useState('0');
   const [newSlotStart, setNewSlotStart] = useState('9');
   const [newSlotEnd, setNewSlotEnd] = useState('12');
+  const [sessionRateCents, setSessionRateCents] = useState<number | null>(null);
+  const [currency, setCurrency] = useState<string>('aud');
 
   // Fetch availability, bookings, settings, and client names
   useEffect(() => {
@@ -240,10 +243,15 @@ const NativeBooking = () => {
           .order('requested_date', { ascending: true }),
         supabase
           .from('profiles')
-          .select('halaxy_integration')
+          .select('halaxy_integration, session_rate_cents, currency')
           .eq('user_id', user.id)
           .single(),
       ]);
+
+      if (profileRes.data) {
+        setSessionRateCents(profileRes.data.session_rate_cents ?? null);
+        if (profileRes.data.currency) setCurrency(profileRes.data.currency);
+      }
 
       if (avRes.data) {
         setAvailability(avRes.data.map(row => ({
@@ -889,7 +897,7 @@ const NativeBooking = () => {
                       </div>
 
                       {/* Actions row */}
-                      {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                      {(booking.status === 'pending' || booking.status === 'confirmed' || booking.status === 'completed') && (
                         <div className="pl-[52px] flex flex-wrap items-center gap-2 pt-0.5">
                           {booking.status === 'pending' && (
                             <>
@@ -902,7 +910,21 @@ const NativeBooking = () => {
                             </>
                           )}
                           {booking.status === 'confirmed' && (
-                            <MeetingActions booking={booking} onRetry={handleCreateMeeting} />
+                            <>
+                              <MeetingActions booking={booking} onRetry={handleCreateMeeting} />
+                              <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => handleUpdateBookingStatus(booking.id, 'completed')}>
+                                Mark complete
+                              </Button>
+                            </>
+                          )}
+                          {(booking.status === 'confirmed' || booking.status === 'completed') && sessionRateCents && sessionRateCents >= 50 && (
+                            <ChargeClientButton
+                              bookingRequestId={booking.id}
+                              clientUserId={booking.client_user_id}
+                              clientName={booking.client_name}
+                              amountCents={sessionRateCents}
+                              currency={currency}
+                            />
                           )}
                         </div>
                       )}

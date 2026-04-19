@@ -46,6 +46,7 @@ import { notesService, Note } from '@/services/notesService';
 import { ClientMessagesPanel } from './messaging/ClientMessagesPanel';
 import NativeBooking from './dashboard/NativeBooking';
 import Microsoft365Card from './dashboard/Microsoft365Card';
+import SessionRateCard from './dashboard/SessionRateCard';
 import { gsap } from 'gsap';
 
 interface HalaxyIntegration {
@@ -739,6 +740,8 @@ const Dashboard = () => {
               </Card>
 
               <NotificationPreferencesCard userId={user.id} currentPrefs={profile?.notification_preferences} />
+
+              <SessionRateCard />
 
               {/* Session Mode — admin only */}
               {isAdmin && (
