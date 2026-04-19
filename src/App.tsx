@@ -48,6 +48,7 @@ import ClientDashboard from "./pages/ClientDashboard";
 import Book from "./pages/Book";
 import JoinSession from "./pages/JoinSession";
 import BillingPage from "./pages/BillingPage";
+import ScrollToTop from "./components/ScrollToTop";
 // BookPractitioner merged into Book.tsx
 import { useAuth, AuthProvider } from "./hooks/useAuth";
 
@@ -152,6 +153,7 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
+            <ScrollToTop />
             <AuthCompletionRouter />
             <GoogleAnalytics />
             <Routes>
