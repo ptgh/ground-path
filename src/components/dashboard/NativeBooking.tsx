@@ -639,6 +639,14 @@ const NativeBooking = () => {
 
   const pendingCount = bookings.filter(b => b.status === 'pending').length;
 
+  // Card-on-file lookup for active bookings (confirmed/completed)
+  const billableClientIds = [...new Set(
+    bookings
+      .filter(b => b.status === 'confirmed' || b.status === 'completed')
+      .map(b => b.client_user_id)
+  )];
+  const { withCard } = useClientCardStatus(billableClientIds);
+
   const viewButtons: { key: BookingView; label: string; icon: React.ElementType }[] = [
     { key: 'calendar', label: 'Calendar', icon: Calendar },
     { key: 'sessions', label: 'Sessions', icon: Users },
