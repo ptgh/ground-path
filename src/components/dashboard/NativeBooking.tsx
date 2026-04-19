@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import CalendarTilePopover from '@/components/booking/CalendarTilePopover';
 import CheckInSummary from '@/components/booking/CheckInSummary';
+import ChargeClientButton from '@/components/billing/ChargeClientButton';
 import { toast } from 'sonner';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
