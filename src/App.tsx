@@ -47,6 +47,7 @@ import GoogleAnalytics from "./components/GoogleAnalytics";
 import ClientDashboard from "./pages/ClientDashboard";
 import Book from "./pages/Book";
 import JoinSession from "./pages/JoinSession";
+import BillingPage from "./pages/BillingPage";
 // BookPractitioner merged into Book.tsx
 import { useAuth, AuthProvider } from "./hooks/useAuth";
 
@@ -192,6 +193,7 @@ const App = () => {
               <Route path="/messages" element={<AuthenticatedRoute><Messages /></AuthenticatedRoute>} />
               <Route path="/dashboard" element={<AuthenticatedRoute><ClientDashboard /></AuthenticatedRoute>} />
               <Route path="/session/:bookingId" element={<AuthenticatedRoute><JoinSession /></AuthenticatedRoute>} />
+              <Route path="/account/billing" element={<AuthenticatedRoute><BillingPage /></AuthenticatedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <AIAssistantRouter />
