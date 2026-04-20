@@ -327,7 +327,7 @@ const Header = () => {
                   <button
                     key={item.label}
                     onClick={item.action}
-                    className="text-gray-300 hover:text-white transition-colors font-medium px-3 py-2 rounded-md hover:bg-white/5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                    className="text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2 rounded-md hover:bg-surface-dark-foreground/5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark"
                   >
                     {item.label}
                   </button>
@@ -337,14 +337,14 @@ const Header = () => {
                   <>
                     <button
                       onClick={() => navigate(profile?.user_type === 'practitioner' ? '/practitioner/dashboard' : '/dashboard')}
-                      className="relative text-gray-300 hover:text-white transition-colors font-medium px-3 py-2 rounded-md hover:bg-white/5 text-sm flex items-center gap-1.5"
+                      className="relative text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2 rounded-md hover:bg-surface-dark-foreground/5 text-sm flex items-center gap-1.5"
                     >
                       <LayoutDashboard className="h-4 w-4" />
                       Dashboard
                     </button>
                     <button
                       onClick={() => navigate('/messages')}
-                      className="relative text-gray-300 hover:text-white transition-colors font-medium px-3 py-2 rounded-md hover:bg-white/5 text-sm flex items-center gap-1.5"
+                      className="relative text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2 rounded-md hover:bg-surface-dark-foreground/5 text-sm flex items-center gap-1.5"
                     >
                       <MessageSquare className="h-4 w-4" />
                       Messages
