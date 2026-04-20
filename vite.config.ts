@@ -15,13 +15,13 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' && componentTagger(),
     // Sentry source-map upload — only runs when SENTRY_AUTH_TOKEN is set in CI/build env.
     // Local builds without the token simply skip upload (no error).
-    mode === 'production' && process.env.SENTRY_AUTH_TOKEN && sentryVitePlugin({
+    ...(mode === 'production' && process.env.SENTRY_AUTH_TOKEN ? [sentryVitePlugin({
       org: process.env.SENTRY_ORG,
       project: process.env.SENTRY_PROJECT,
       authToken: process.env.SENTRY_AUTH_TOKEN,
       release: { name: process.env.VITE_APP_VERSION },
       sourcemaps: { assets: './dist/**' },
-    }),
+    })] : []),
   ].filter(Boolean),
   resolve: {
     alias: {
