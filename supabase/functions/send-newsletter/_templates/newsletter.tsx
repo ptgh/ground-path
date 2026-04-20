@@ -41,17 +41,13 @@ export const NewsletterEmail = ({
         {/* Header with Logo */}
         <Section style={header}>
           <Link href="https://groundpath.com.au" style={logoLink}>
-            <svg width="40" height="40" viewBox="0 0 40 40" style={logoSvg}>
-              <path
-                d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
-                fill="none"
-                stroke="#7B9B85"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <Text style={logoText}>groundpath</Text>
+            <img
+              src="https://groundpath.com.au/email/groundpath-logo.png"
+              width="44"
+              height="44"
+              alt="groundpath"
+              style={logoImg}
+            />
           </Link>
         </Section>
 

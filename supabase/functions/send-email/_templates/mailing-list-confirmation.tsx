@@ -32,17 +32,13 @@ export const MailingListConfirmationEmail = ({
       <Container style={container}>
         <Section style={header}>
           <Link href="https://groundpath.com.au" style={logoLink}>
-            <div style={logoContainer}>
-              <svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg" style={logoSvg}>
-                <path d="M20 10 L20 50 L40 50 Q45 50 45 45 L45 25 Q45 20 40 20 L30 20" stroke="#7B9B85" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M55 30 Q55 20 65 20 L75 20 Q85 20 85 30 L85 35 Q85 45 75 45 L65 45 Q55 45 55 35 Z" stroke="#7B9B85" strokeWidth="3" fill="none"/>
-                <path d="M55 32.5 L85 32.5" stroke="#7B9B85" strokeWidth="3" strokeLinecap="round"/>
-                <path d="M100 20 L100 45 M100 20 Q100 15 105 15 L115 15 Q120 15 120 20 L120 30" stroke="#7B9B85" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M135 20 L135 45 M135 20 L150 45 M150 20 L150 45" stroke="#7B9B85" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M165 20 L165 50 L180 50" stroke="#7B9B85" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                <text x="20" y="58" fontFamily="Inter, sans-serif" fontSize="8" fill="#7B9B85" fontWeight="600">GROUNDPATH</text>
-              </svg>
-            </div>
+            <Img
+              src="https://groundpath.com.au/email/groundpath-logo.png"
+              width="44"
+              height="44"
+              alt="groundpath"
+              style={logoImg}
+            />
           </Link>
         </Section>
 
