@@ -487,25 +487,42 @@ const NativeBooking = () => {
     }
   };
 
+  const [updatingBookingId, setUpdatingBookingId] = useState<string | null>(null);
+
   const handleUpdateBookingStatus = async (id: string, status: string) => {
+    if (updatingBookingId) return;
+    setUpdatingBookingId(id);
+
+    // Optimistic UI update so slow networks still reflect the action immediately.
+    const prevSnapshot = bookings;
+    setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
+
     const { error } = await supabase
       .from('booking_requests')
       .update({ status })
       .eq('id', id);
-    if (!error) {
-      setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
-      toast.success(`Booking ${status}`);
 
-      // Notify client of status change (best-effort)
-      supabase.functions.invoke('booking-notification', {
-        body: { type: 'status_change', bookingId: id, newStatus: status },
-      }).catch(err => console.error('Status notification error:', err));
-
-      // Auto-create Teams meeting on confirmation (native flow)
-      if (status === 'confirmed') {
-        handleCreateMeeting(id);
-      }
+    if (error) {
+      // Roll back if the update failed.
+      setBookings(prevSnapshot);
+      setUpdatingBookingId(null);
+      toast.error(`Could not ${status === 'confirmed' ? 'confirm' : status === 'cancelled' ? 'decline' : 'update'} booking`);
+      return;
     }
+
+    toast.success(`Booking ${status}`);
+
+    // Notify client of status change (best-effort)
+    supabase.functions.invoke('booking-notification', {
+      body: { type: 'status_change', bookingId: id, newStatus: status },
+    }).catch(err => console.error('Status notification error:', err));
+
+    // Auto-create Teams meeting on confirmation (native flow)
+    if (status === 'confirmed') {
+      handleCreateMeeting(id);
+    }
+
+    setUpdatingBookingId(null);
   };
 
   const [creatingMeetingId, setCreatingMeetingId] = useState<string | null>(null);
@@ -913,6 +930,11 @@ const NativeBooking = () => {
                         )}
                       </div>
 
+                      {/* Booking submission timestamp */}
+                      <p className="pl-[52px] text-[11px] text-muted-foreground/70">
+                        Requested {format(new Date(booking.created_at), "d MMM yyyy 'at' h:mma").toLowerCase().replace(' at ', ' · ')}
+                      </p>
+
                       {booking.notes && (
                         <p className="text-xs text-muted-foreground/80 pl-[52px] italic line-clamp-2">
                           "{booking.notes}"
@@ -929,10 +951,25 @@ const NativeBooking = () => {
                         <div className="pl-[52px] flex flex-wrap items-center gap-2 pt-0.5">
                           {booking.status === 'pending' && (
                             <>
-                              <Button size="sm" variant="outline" className="h-7 text-xs text-sage-700 border-sage-300" onClick={() => handleUpdateBookingStatus(booking.id, 'confirmed')}>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 text-xs text-sage-700 border-sage-300"
+                                disabled={updatingBookingId === booking.id}
+                                onClick={() => handleUpdateBookingStatus(booking.id, 'confirmed')}
+                              >
+                                {updatingBookingId === booking.id ? (
+                                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                                ) : null}
                                 Confirm
                               </Button>
-                              <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive" onClick={() => handleUpdateBookingStatus(booking.id, 'cancelled')}>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 text-xs text-destructive"
+                                disabled={updatingBookingId === booking.id}
+                                onClick={() => handleUpdateBookingStatus(booking.id, 'cancelled')}
+                              >
                                 Decline
                               </Button>
                             </>
