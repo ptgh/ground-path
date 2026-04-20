@@ -42,6 +42,20 @@ Deno.serve(async (req) => {
 
     let accountId = existing?.stripe_account_id;
 
+    if (accountId) {
+      try {
+        await stripe.accounts.retrieve(accountId);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        if (message.toLowerCase().includes('no such account')) {
+          await svc.from('practitioner_connect_accounts').delete().eq('user_id', user.id);
+          accountId = undefined;
+        } else {
+          throw err;
+        }
+      }
+    }
+
     if (!accountId) {
       const account = await stripe.accounts.create({
         type: 'express',
