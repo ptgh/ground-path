@@ -14,6 +14,7 @@ import {
   Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
+import { BrandHeader } from './brand-header.tsx'
 
 interface MagicLinkEmailProps {
   siteName: string
@@ -29,10 +30,7 @@ export const MagicLinkEmail = ({
     <Preview>Your secure login link for groundpath</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Section style={logoSection}>
-          <Text style={logoText}>⟳ groundpath</Text>
-        </Section>
-        <Hr style={divider} />
+        <BrandHeader />
         <Heading style={h1}>Your login link</Heading>
         <Text style={text}>
           Click the button below to securely log in to your groundpath account. This link will expire shortly.

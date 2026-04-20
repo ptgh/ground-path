@@ -13,6 +13,7 @@ import {
   Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
+import { BrandHeader } from './brand-header.tsx'
 
 interface ReauthenticationEmailProps {
   token: string
@@ -24,10 +25,7 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
     <Preview>Your verification code for groundpath</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Section style={logoSection}>
-          <Text style={logoText}>⟳ groundpath</Text>
-        </Section>
-        <Hr style={divider} />
+        <BrandHeader />
         <Heading style={h1}>Confirm your identity</Heading>
         <Text style={text}>Use the code below to verify your identity:</Text>
         <Text style={codeStyle}>{token}</Text>
