@@ -133,21 +133,17 @@ const Book = () => {
   const bookingRef = useRef<HTMLDivElement>(null);
   const slotsRef = useRef<HTMLDivElement>(null);
 
-  // Load practitioners
+  // Load practitioners — uses RPC that filters to verified + admin-approved + active subscription
   useEffect(() => {
     const load = async () => {
-      const { data } = await supabase
-        .from('profiles')
-        .select('user_id, display_name, avatar_url, profession, bio, specializations, practice_location, professional_verified, halaxy_integration')
-        .eq('user_type', 'practitioner')
-        .eq('directory_approved', true)
-        .in('verification_status', ['verified', 'pending_review']);
+      const { data, error } = await supabase.rpc('list_bookable_practitioners');
+      if (error) console.error('Failed to load practitioners:', error);
 
       if (data) {
-        const nativePractitioners = data.filter(p => {
+        const nativePractitioners = (data as Practitioner[]).filter(p => {
           const integration = p.halaxy_integration as Record<string, unknown> | null;
           return integration?.session_mode === 'native_beta';
-        }) as Practitioner[];
+        });
         setPractitioners(nativePractitioners);
       }
       setLoading(false);
