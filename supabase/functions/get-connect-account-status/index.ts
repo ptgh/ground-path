@@ -40,6 +40,12 @@ Deno.serve(async (req) => {
       await svc.from('practitioner_connect_accounts').update(updated).eq('user_id', user.id);
       return json({ account: { ...row, ...updated } });
     } catch (refreshErr) {
+      const message = refreshErr instanceof Error ? refreshErr.message : String(refreshErr);
+      if (message.toLowerCase().includes('no such account')) {
+        await svc.from('practitioner_connect_accounts').delete().eq('user_id', user.id);
+        return json({ account: null });
+      }
+
       console.warn('Stripe refresh failed, returning cached row:', refreshErr);
       return json({ account: row });
     }
