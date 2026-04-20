@@ -14,7 +14,7 @@ import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
 const HALAXY_EMBED_URL = import.meta.env.VITE_HALAXY_EMBED_URL as string | undefined;
 
 const Contact = () => {
-  const { mode: bookingMode } = useBookingMode();
+  const { mode: bookingMode, loading: bookingModeLoading } = useBookingMode();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -105,11 +105,13 @@ const Contact = () => {
             </h2>
             <div className="fade-in w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
             <p className="fade-in text-lg text-gray-600 max-w-2xl mx-auto">
-              {bookingMode === 'native_beta'
+              {bookingModeLoading
+                ? 'All sessions are conducted online via secure video — simple, safe, and accessible from anywhere.'
+                : bookingMode === 'native_beta'
                 ? 'Select an available time to request a session. Our native booking system is in early beta.'
                 : 'All sessions are currently conducted online via Halaxy Telehealth. Book a time that suits you and receive your meeting link automatically.'}
             </p>
-            {bookingMode === 'halaxy' && (
+            {!bookingModeLoading && bookingMode === 'halaxy' && (
               <div className="fade-in flex justify-center mt-6">
                 <a 
                   href={HALAXY_EXTERNAL_URL}
@@ -132,7 +134,11 @@ const Contact = () => {
 
           <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
-              {bookingMode === 'native_beta' ? (
+              {bookingModeLoading ? (
+                <div className="flex justify-center py-12">
+                  <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
+                </div>
+              ) : bookingMode === 'native_beta' ? (
                 <div className="text-center py-4">
                   <p className="text-sm text-muted-foreground mb-3">Book a session through our native booking system.</p>
                   <button
