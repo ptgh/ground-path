@@ -421,10 +421,18 @@ const AdminMailingList = () => {
           <CardHeader>
             <CardTitle className="flex items-center justify-between gap-2 flex-wrap">
               <span className="text-base">Subscribers ({filtered.length})</span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Button variant="outline" size="sm" onClick={loadSubscribers} disabled={loading}>
                   <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                   Refresh
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Import CSV
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setTestOpen(true)}>
+                  <Mail className="h-4 w-4 mr-2" />
+                  Test newsletter
                 </Button>
                 <Button size="sm" onClick={handleExportCsv} disabled={filtered.length === 0}>
                   <Download className="h-4 w-4 mr-2" />
