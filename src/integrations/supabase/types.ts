@@ -729,6 +729,48 @@ export type Database = {
         }
         Relationships: []
       }
+      practitioner_subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          created_at: string
+          current_period_end: string | null
+          id: string
+          status: string
+          stripe_customer_id: string
+          stripe_price_id: string
+          stripe_subscription_id: string
+          trial_end: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          status: string
+          stripe_customer_id: string
+          stripe_price_id: string
+          stripe_subscription_id: string
+          trial_end?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          status?: string
+          stripe_customer_id?: string
+          stripe_price_id?: string
+          stripe_subscription_id?: string
+          trial_end?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           aasw_membership_number: string | null
@@ -971,12 +1013,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      has_active_practitioner_subscription: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      list_bookable_practitioners: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          bio: string
+          display_name: string
+          halaxy_integration: Json
+          practice_location: string
+          profession: string
+          professional_verified: boolean
+          specializations: string[]
+          user_id: string
+        }[]
       }
       upgrade_practitioner_role: {
         Args: { p_user_id: string }
