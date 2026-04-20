@@ -13,32 +13,39 @@ interface HalaxyIntegration {
  * If `native_beta`, public booking CTAs route to the Groundpath in-house flow.
  * Falls back to 'halaxy' when no practitioner is in beta or on error.
  */
-export const useBookingMode = (): { mode: SessionMode; loading: boolean } => {
-  const [mode, setMode] = useState<SessionMode>('halaxy');
+export const useBookingMode = (): { mode: SessionMode | null; loading: boolean } => {
+  // Start as null so consumers can render a skeleton instead of flashing
+  // the wrong UI (Halaxy iframe) before the real mode resolves.
+  const [mode, setMode] = useState<SessionMode | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     const fetch = async () => {
       try {
+        // Look across all approved practitioners — if ANY is in native_beta,
+        // route public CTAs to the in-house flow.
         const { data } = await supabase
           .from('profiles')
           .select('halaxy_integration')
           .eq('user_type', 'practitioner')
-          .eq('directory_approved', true)
-          .limit(1)
-          .maybeSingle();
+          .eq('directory_approved', true);
 
-        const integration = data?.halaxy_integration as HalaxyIntegration | null;
-        if (integration?.session_mode === 'native_beta') {
-          setMode('native_beta');
-        }
+        if (cancelled) return;
+
+        const anyNative = (data ?? []).some(p => {
+          const integration = p.halaxy_integration as HalaxyIntegration | null;
+          return integration?.session_mode === 'native_beta';
+        });
+        setMode(anyNative ? 'native_beta' : 'halaxy');
       } catch {
-        // default to halaxy
+        if (!cancelled) setMode('halaxy');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     fetch();
+    return () => { cancelled = true; };
   }, []);
 
   return { mode, loading };
