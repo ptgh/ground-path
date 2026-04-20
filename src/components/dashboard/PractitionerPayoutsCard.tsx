@@ -39,8 +39,12 @@ export default function PractitionerPayoutsCard() {
   const startOnboarding = async () => {
     setWorking(true);
     try {
+      const baseUrl = window.location.origin;
+      const returnUrl = `${baseUrl}/practitioner/dashboard?tab=billing&connect=return`;
+      const refreshUrl = `${baseUrl}/practitioner/dashboard?tab=billing&connect=refresh`;
+
       const { data, error } = await supabase.functions.invoke('create-connect-account', {
-        body: {},
+        body: { returnUrl, refreshUrl },
       });
       if (error) throw error;
       if (data?.url) {
@@ -50,7 +54,7 @@ export default function PractitionerPayoutsCard() {
       }
     } catch (err) {
       console.error('Connect onboarding failed:', err);
-      toast.error('Could not start Stripe onboarding. Please try again.');
+      toast.error(err instanceof Error ? err.message : 'Could not start Stripe onboarding. Please try again.');
       setWorking(false);
     }
   };
