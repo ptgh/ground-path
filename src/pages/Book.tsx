@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,6 +8,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import {
   Calendar as CalendarIcon,
   Clock,
@@ -19,6 +21,7 @@ import {
   Heart,
   X,
   ArrowLeft,
+  CreditCard,
 } from 'lucide-react';
 import { format, addDays, isBefore, startOfDay } from 'date-fns';
 import { toast } from 'sonner';
@@ -27,6 +30,9 @@ import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SEO from '@/components/SEO';
+import PreSessionCheckIn, { type CheckInData } from '@/components/booking/PreSessionCheckIn';
+import AddCardForm from '@/components/billing/AddCardForm';
+import { useSavedCards } from '@/hooks/useSavedCards';
 import { gsap } from 'gsap';
 import { cn } from '@/lib/utils';
 
@@ -101,6 +107,8 @@ const statusConfig: Record<string, { label: string; variant: 'default' | 'second
 
 const Book = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { cards, loading: cardsLoading, refresh: refreshCards } = useSavedCards();
 
   const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
   const [loading, setLoading] = useState(true);
@@ -115,6 +123,11 @@ const Book = () => {
   const [myBookings, setMyBookings] = useState<Booking[]>([]);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [loadingBooking, setLoadingBooking] = useState(false);
+
+  // Check-in + card capture flow
+  const [checkInOpen, setCheckInOpen] = useState(false);
+  const [cardCaptureOpen, setCardCaptureOpen] = useState(false);
+  const [pendingCheckIn, setPendingCheckIn] = useState<CheckInData | null>(null);
 
   const listRef = useRef<HTMLDivElement>(null);
   const bookingRef = useRef<HTMLDivElement>(null);
@@ -258,13 +271,50 @@ const Book = () => {
     );
   };
 
-  const handleBook = async () => {
+  // Step 1 — gate auth, then open check-in
+  const handleRequestBooking = () => {
     if (!user) {
-      // Send to client auth with return path so we land back here after sign-in.
-      window.location.href = '/auth?redirect=/book';
+      navigate('/auth?redirect=/book&intent=book');
       return;
     }
     if (!selectedSlot || !selectedDate || !selectedPractitioner) return;
+    setCheckInOpen(true);
+  };
+
+  // Step 2 — check-in complete: verify card on file, otherwise capture one
+  const handleCheckInComplete = async (checkInData: CheckInData) => {
+    if (!selectedSlot || !selectedDate || !selectedPractitioner || !user) return;
+
+    // Authoritative card check — useSavedCards may still be loading on a fresh sign-up
+    let currentCards = cards;
+    if (cardsLoading || currentCards.length === 0) {
+      const { data } = await supabase.functions.invoke('list-payment-methods');
+      currentCards = data?.paymentMethods ?? currentCards;
+    }
+
+    if (currentCards.length === 0) {
+      setPendingCheckIn(checkInData);
+      setCheckInOpen(false);
+      setCardCaptureOpen(true);
+      return;
+    }
+
+    await submitBooking(checkInData);
+  };
+
+  // Step 3 — card captured, resume submission
+  const handleCardCaptured = async () => {
+    setCardCaptureOpen(false);
+    await refreshCards();
+    if (pendingCheckIn) {
+      await submitBooking(pendingCheckIn);
+      setPendingCheckIn(null);
+    }
+  };
+
+  // Final — write booking + check-in, notify both parties
+  const submitBooking = async (checkInData: CheckInData) => {
+    if (!selectedSlot || !selectedDate || !selectedPractitioner || !user) return;
     setSubmitting(true);
     const dateStr = format(selectedDate, 'yyyy-MM-dd');
 
@@ -280,24 +330,52 @@ const Book = () => {
     if (existing && existing.length > 0) {
       toast.error('This slot was just booked. Please select another.');
       setSubmitting(false);
+      setCheckInOpen(false);
       return;
     }
 
-    const { error } = await supabase.from('booking_requests').insert({
-      practitioner_id: selectedPractitioner.user_id,
-      client_user_id: user.id,
-      requested_date: dateStr,
-      requested_start_time: selectedSlot.startTime,
-      requested_end_time: selectedSlot.endTime,
-      duration_minutes: getSettings().sessionDuration,
-      session_type: 'video',
-    });
+    const { data: inserted, error } = await supabase
+      .from('booking_requests')
+      .insert({
+        practitioner_id: selectedPractitioner.user_id,
+        client_user_id: user.id,
+        requested_date: dateStr,
+        requested_start_time: selectedSlot.startTime,
+        requested_end_time: selectedSlot.endTime,
+        duration_minutes: getSettings().sessionDuration,
+        session_type: 'video',
+      })
+      .select('id')
+      .single();
 
-    setSubmitting(false);
-    if (error) {
+    if (error || !inserted) {
+      setSubmitting(false);
       toast.error('Failed to submit booking request');
       return;
     }
+
+    // Save check-in (best-effort — booking already created)
+    const hasCheckInContent =
+      checkInData.mood_score !== null ||
+      checkInData.mood_tags.length > 0 ||
+      checkInData.desired_outcome.trim() !== '' ||
+      checkInData.notes_for_practitioner.trim() !== '';
+
+    if (hasCheckInContent) {
+      const { error: checkInError } = await supabase.from('booking_checkins').insert({
+        booking_request_id: inserted.id,
+        client_user_id: user.id,
+        practitioner_id: selectedPractitioner.user_id,
+        mood_score: checkInData.mood_score,
+        mood_tags: checkInData.mood_tags,
+        desired_outcome: checkInData.desired_outcome.trim() || null,
+        notes_for_practitioner: checkInData.notes_for_practitioner.trim() || null,
+      });
+      if (checkInError) console.error('Check-in save error:', checkInError);
+    }
+
+    setSubmitting(false);
+    setCheckInOpen(false);
 
     // Notify practitioner (review request) — best effort
     supabase.functions.invoke('booking-notification', {
@@ -308,7 +386,7 @@ const Book = () => {
       },
     }).catch(err => console.error('Practitioner notification error:', err));
 
-    // Confirm receipt to the client (pending approval) — best effort
+    // Confirm receipt to the client — best effort
     supabase.functions.invoke('booking-notification', {
       body: {
         type: 'client_request_received',
@@ -331,6 +409,18 @@ const Book = () => {
       .order('requested_date', { ascending: false });
     if (refreshed) setMyBookings(refreshed);
   };
+
+  // Auto-resume after returning from /auth with intent=book
+  useEffect(() => {
+    if (!user) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('intent') === 'book' && selectedSlot && selectedDate && selectedPractitioner) {
+      setCheckInOpen(true);
+      const url = new URL(window.location.href);
+      url.searchParams.delete('intent');
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, [user, selectedSlot, selectedDate, selectedPractitioner]);
 
   const handleCancel = async (id: string) => {
     setCancellingId(id);
