@@ -75,11 +75,11 @@ const Footer = () => {
           <div>
             <h3 className="font-medium mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              <li><button type="button" onClick={() => handleSectionNavigation('about')} className="text-gray-400 hover:text-white transition-colors">About</button></li>
-              <li><button type="button" onClick={() => handleSectionNavigation('services')} className="text-gray-400 hover:text-white transition-colors">Services & Rates</button></li>
-              <li><button type="button" onClick={() => navigate('/resources')} className="text-gray-400 hover:text-white transition-colors">Resources</button></li>
-              <li><button type="button" onClick={() => handleSectionNavigation('newsletter')} className="text-gray-400 hover:text-white transition-colors">Newsletter</button></li>
-              <li><button type="button" onClick={() => handleSectionNavigation('contact')} className="text-gray-400 hover:text-white transition-colors">Contact</button></li>
+              <li><button type="button" onClick={() => handleSectionNavigation('about')} className="text-gray-400 hover:text-white transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900">About</button></li>
+              <li><button type="button" onClick={() => handleSectionNavigation('services')} className="text-gray-400 hover:text-white transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900">Services & Rates</button></li>
+              <li><button type="button" onClick={() => navigate('/resources')} className="text-gray-400 hover:text-white transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900">Resources</button></li>
+              <li><button type="button" onClick={() => handleSectionNavigation('newsletter')} className="text-gray-400 hover:text-white transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900">Newsletter</button></li>
+              <li><button type="button" onClick={() => handleSectionNavigation('contact')} className="text-gray-400 hover:text-white transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900">Contact</button></li>
             </ul>
           </div>
 
@@ -111,23 +111,23 @@ const Footer = () => {
             <span className="whitespace-nowrap">© 2026 groundpath. All rights reserved.</span> • <span className="whitespace-nowrap">ABN: 98 434 283 298</span> • <a href="https://www.aasw.asn.au" target="_blank" rel="noopener noreferrer" className="whitespace-nowrap hover:text-white transition-colors duration-300">AASW Member</a> • <a href="https://www.aca.asn.au" target="_blank" rel="noopener noreferrer" className="whitespace-nowrap hover:text-white transition-colors duration-300">ACA Registered</a>
           </div>
           <div className="text-sm text-gray-400 mt-4 md:mt-0 space-x-4">
-            <button 
+            <button
               onClick={() => setIsPrivacyOpen(true)}
-              className="hover:text-white transition-colors"
+              className="hover:text-white transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
             >
               Privacy Policy
             </button>
             <span>•</span>
-            <button 
+            <button
               onClick={() => setIsTermsOpen(true)}
-              className="hover:text-white transition-colors"
+              className="hover:text-white transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
             >
               Terms of Service
             </button>
             <span>•</span>
-            <button 
+            <button
               onClick={() => setIsABNOpen(true)}
-              className="hover:text-white transition-colors"
+              className="hover:text-white transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
             >
               ABN Lookup
             </button>
