@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -33,7 +33,19 @@ import {
   RefreshCw,
   Send,
   Users,
+  Upload,
+  Mail,
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Subscriber {
   id: string;
@@ -77,6 +89,13 @@ const AdminMailingList = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
   const [resendingId, setResendingId] = useState<string | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importText, setImportText] = useState('');
+  const [importing, setImporting] = useState(false);
+  const [testOpen, setTestOpen] = useState(false);
+  const [testEmail, setTestEmail] = useState('');
+  const [testSending, setTestSending] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadSubscribers = async () => {
     setLoading(true);
@@ -198,6 +217,155 @@ const AdminMailingList = () => {
     }
   };
 
+  const parseCsvEmails = (text: string): { email: string; name: string | null }[] => {
+    const lines = text
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+    if (lines.length === 0) return [];
+    // Detect optional header
+    const first = lines[0].toLowerCase();
+    const hasHeader = first.includes('email');
+    const rows = hasHeader ? lines.slice(1) : lines;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const seen = new Set<string>();
+    const out: { email: string; name: string | null }[] = [];
+    for (const row of rows) {
+      // Split on comma respecting simple quoted values
+      const parts = row.split(',').map((p) => p.replace(/^"|"$/g, '').trim());
+      const email = parts[0]?.toLowerCase();
+      const name = parts[1]?.trim() || null;
+      if (!email || !emailRegex.test(email)) continue;
+      if (seen.has(email)) continue;
+      seen.add(email);
+      out.push({ email, name });
+    }
+    return out;
+  };
+
+  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    setImportText(text);
+    e.target.value = '';
+  };
+
+  const handleImport = async () => {
+    if (!supabase) {
+      toast({ title: 'Service unavailable', variant: 'destructive' });
+      return;
+    }
+    const parsed = parseCsvEmails(importText);
+    if (parsed.length === 0) {
+      toast({
+        title: 'No valid emails',
+        description: 'Provide one email per line, optionally followed by ",Name".',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setImporting(true);
+    try {
+      const rows = parsed.map((p) => ({
+        email: p.email,
+        name: p.name,
+        status: 'confirmed',
+        source: 'import',
+        subscription_date: new Date().toISOString(),
+      }));
+      // Insert in chunks; ignore duplicates via upsert on email
+      const chunkSize = 200;
+      let inserted = 0;
+      let skipped = 0;
+      for (let i = 0; i < rows.length; i += chunkSize) {
+        const chunk = rows.slice(i, i + chunkSize);
+        const { data, error } = await supabase
+          .from('mailing_list')
+          .upsert(chunk, { onConflict: 'email', ignoreDuplicates: true })
+          .select('id');
+        if (error) throw error;
+        const insertedNow = data?.length ?? 0;
+        inserted += insertedNow;
+        skipped += chunk.length - insertedNow;
+      }
+      toast({
+        title: 'Import complete',
+        description: `${inserted} added, ${skipped} skipped (duplicates).`,
+      });
+      setImportOpen(false);
+      setImportText('');
+      await loadSubscribers();
+    } catch (err) {
+      console.error('Import failed', err);
+      toast({
+        title: 'Import failed',
+        description: err instanceof Error ? err.message : 'Unknown error',
+        variant: 'destructive',
+      });
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const handleSendTestNewsletter = async () => {
+    if (!supabase) return;
+    const email = testEmail.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast({ title: 'Invalid email', variant: 'destructive' });
+      return;
+    }
+    setTestSending(true);
+    try {
+      // Pull a few latest published articles for the test
+      const { data: articles } = await supabase
+        .from('newsletter_articles')
+        .select('title, summary, slug, category')
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .limit(3);
+
+      const articlePayload = (articles ?? []).map((a) => ({
+        title: a.title,
+        summary: a.summary,
+        link: `https://groundpath.com.au/article/${a.slug}`,
+        category: a.category,
+      }));
+
+      const { error } = await supabase.functions.invoke('send-newsletter', {
+        body: {
+          subject: '[TEST] groundpath newsletter preview',
+          previewText: 'Test send from admin panel',
+          articles: articlePayload.length
+            ? articlePayload
+            : [
+                {
+                  title: 'Sample article',
+                  summary: 'No published articles found — this is a placeholder.',
+                  link: 'https://groundpath.com.au/resources',
+                  category: 'general',
+                },
+              ],
+          testEmail: email,
+        },
+      });
+      if (error) throw error;
+      toast({ title: 'Test newsletter sent', description: `Delivered to ${email}` });
+      setTestOpen(false);
+      setTestEmail('');
+    } catch (err) {
+      console.error('Test send failed', err);
+      toast({
+        title: 'Failed to send test',
+        description: err instanceof Error ? err.message : 'Unknown error',
+        variant: 'destructive',
+      });
+    } finally {
+      setTestSending(false);
+    }
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -253,10 +421,18 @@ const AdminMailingList = () => {
           <CardHeader>
             <CardTitle className="flex items-center justify-between gap-2 flex-wrap">
               <span className="text-base">Subscribers ({filtered.length})</span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Button variant="outline" size="sm" onClick={loadSubscribers} disabled={loading}>
                   <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                   Refresh
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Import CSV
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setTestOpen(true)}>
+                  <Mail className="h-4 w-4 mr-2" />
+                  Test newsletter
                 </Button>
                 <Button size="sm" onClick={handleExportCsv} disabled={filtered.length === 0}>
                   <Download className="h-4 w-4 mr-2" />
@@ -357,6 +533,116 @@ const AdminMailingList = () => {
           </CardContent>
         </Card>
       </main>
+
+      {/* CSV Import Dialog */}
+      <Dialog open={importOpen} onOpenChange={setImportOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Import subscribers</DialogTitle>
+            <DialogDescription>
+              Bulk-add confirmed subscribers. One email per line, optionally followed by{' '}
+              <code className="text-xs">,Name</code>. Duplicates are skipped.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,text/csv,text/plain"
+                className="hidden"
+                onChange={handleFileSelected}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Choose file
+              </Button>
+              <span className="text-xs text-muted-foreground">or paste below</span>
+            </div>
+            <div>
+              <Label htmlFor="import-text" className="sr-only">
+                CSV content
+              </Label>
+              <Textarea
+                id="import-text"
+                value={importText}
+                onChange={(e) => setImportText(e.target.value)}
+                placeholder={'email,name\njane@example.com,Jane Doe\nbob@example.com'}
+                rows={8}
+                className="font-mono text-xs"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Imported rows are saved with status <strong>confirmed</strong> and source{' '}
+              <strong>import</strong>.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setImportOpen(false)} disabled={importing}>
+              Cancel
+            </Button>
+            <Button onClick={handleImport} disabled={importing || !importText.trim()}>
+              {importing ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Importing…
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Import
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Test newsletter dialog */}
+      <Dialog open={testOpen} onOpenChange={setTestOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Send test newsletter</DialogTitle>
+            <DialogDescription>
+              Triggers <code className="text-xs">send-newsletter</code> with up to 3 latest
+              published articles, addressed only to the email below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="test-email">Recipient email</Label>
+            <Input
+              id="test-email"
+              type="email"
+              value={testEmail}
+              onChange={(e) => setTestEmail(e.target.value)}
+              placeholder="you@example.com"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTestOpen(false)} disabled={testSending}>
+              Cancel
+            </Button>
+            <Button onClick={handleSendTestNewsletter} disabled={testSending || !testEmail.trim()}>
+              {testSending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Sending…
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4 mr-2" />
+                  Send test
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <Footer />
     </div>
   );

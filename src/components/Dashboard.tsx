@@ -65,7 +65,7 @@ const getSessionMode = (profile: { halaxy_integration?: unknown } | null): Sessi
 /* ─── Stat card for the overview ─── */
 const StatCard = ({ label, value, icon: Icon }: { label: string; value: string | number; icon: React.ElementType }) => (
   <div className="flex items-center gap-3 rounded-lg border border-border/60 bg-card p-4">
-    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sage-100 text-sage-700">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
       <Icon className="h-5 w-5" />
     </div>
     <div className="min-w-0">
@@ -212,8 +212,8 @@ const Dashboard = () => {
   const getProfessionBadgeColor = (role: string) => {
     switch (role) {
       case 'admin': return 'bg-destructive/10 text-destructive';
-      case 'social_worker': return 'bg-sage-100 text-sage-800';
-      case 'mental_health_professional': return 'bg-sage-100 text-sage-700';
+      case 'social_worker': return 'bg-primary/10 text-primary';
+      case 'mental_health_professional': return 'bg-primary/10 text-primary';
       case 'moderator': return 'bg-muted text-muted-foreground';
       default: return 'bg-muted text-muted-foreground';
     }
@@ -306,9 +306,9 @@ const Dashboard = () => {
           <div className="mb-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                <Avatar className="h-12 w-12 sm:h-14 sm:w-14 mx-auto sm:mx-0 ring-2 ring-sage-200 ring-offset-2 ring-offset-background">
+                <Avatar className="h-12 w-12 sm:h-14 sm:w-14 mx-auto sm:mx-0 ring-2 ring-primary/30 ring-offset-2 ring-offset-background">
                   <AvatarImage src={profile?.avatar_url} />
-                  <AvatarFallback className="text-sm sm:text-lg bg-sage-100 text-sage-700">
+                  <AvatarFallback className="text-sm sm:text-lg bg-primary/10 text-primary">
                     {profile?.display_name?.[0] || user.email?.[0] || 'U'}
                   </AvatarFallback>
                 </Avatar>
@@ -338,14 +338,14 @@ const Dashboard = () => {
           {/* ─── Tabs ─── */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className={`grid w-full h-auto p-1 gap-0.5 ${isAdmin ? 'grid-cols-4 lg:grid-cols-10' : getSessionMode(profile) === 'native_beta' ? 'grid-cols-4 lg:grid-cols-8' : 'grid-cols-4 lg:grid-cols-7'}`}>
-              <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Overview</TabsTrigger>
+              <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Overview</TabsTrigger>
               {(isAdmin || getSessionMode(profile) === 'native_beta') && (
-                <TabsTrigger value="booking" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+                <TabsTrigger value="booking" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <Calendar className="h-3 w-3 mr-1 hidden sm:inline" />
                   Booking
                 </TabsTrigger>
               )}
-              <TabsTrigger value="messages" className="relative text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+              <TabsTrigger value="messages" className="relative text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <MessageSquare className="h-3 w-3 mr-1 hidden sm:inline" />
                 Messages
                 {unreadCount > 0 && (
@@ -354,37 +354,37 @@ const Dashboard = () => {
                   </span>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="resources" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+              <TabsTrigger value="resources" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <BookOpen className="h-3 w-3 mr-1 hidden sm:inline" />
                 Learning
               </TabsTrigger>
-              <TabsTrigger value="forms" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+              <TabsTrigger value="forms" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <FileText className="h-3 w-3 mr-1 hidden sm:inline" />
                 Forms
               </TabsTrigger>
-              <TabsTrigger value="history" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">History</TabsTrigger>
-              <TabsTrigger value="notes" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Notes</TabsTrigger>
+              <TabsTrigger value="history" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">History</TabsTrigger>
+              <TabsTrigger value="notes" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Notes</TabsTrigger>
               {isAdmin && (
                 <>
-                  <TabsTrigger value="articles" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+                  <TabsTrigger value="articles" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                     <Newspaper className="h-3 w-3 mr-1 hidden sm:inline" />
                     Articles
                   </TabsTrigger>
-                  <TabsTrigger value="approvals" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+                  <TabsTrigger value="approvals" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                     <Shield className="h-3 w-3 mr-1 hidden sm:inline" />
                     Approvals
                   </TabsTrigger>
                   <TabsTrigger
                     value="mailing"
                     onClick={() => navigate('/practitioner/admin/mailing-list')}
-                    className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white"
+                    className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
                     <MessageSquare className="h-3 w-3 mr-1 hidden sm:inline" />
                     Mailing
                   </TabsTrigger>
                 </>
               )}
-              <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Settings</TabsTrigger>
+              <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Settings</TabsTrigger>
             </TabsList>
 
             {/* ═══ Booking Tab ═══ */}
@@ -408,7 +408,7 @@ const Dashboard = () => {
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <Activity className="h-4 w-4 text-sage-600" />
+                    <Activity className="h-4 w-4 text-primary" />
                     Quick Actions
                   </CardTitle>
                 </CardHeader>
@@ -418,10 +418,10 @@ const Dashboard = () => {
                       <Button 
                         key={index}
                         variant="outline" 
-                        className="dashboard-cta h-auto p-4 flex flex-col items-center gap-2 text-center border-border hover:border-sage-300 hover:bg-sage-50/50 transition-all"
+                        className="dashboard-cta h-auto p-4 flex flex-col items-center gap-2 text-center border-border hover:border-primary/40 hover:bg-primary/5 transition-all"
                         onClick={action.action}
                       >
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sage-100 text-sage-700">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
                           <action.icon className="h-4 w-4" />
                         </div>
                         <div className="text-center">
@@ -441,7 +441,7 @@ const Dashboard = () => {
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <CardTitle className="flex items-center gap-2 text-base">
-                        <Clock className="h-4 w-4 text-sage-600" />
+                        <Clock className="h-4 w-4 text-primary" />
                         Recent Notes
                       </CardTitle>
                       {notes.length > 0 && (
@@ -468,9 +468,9 @@ const Dashboard = () => {
                           <button
                             key={note.id}
                             onClick={() => handleNoteModal(note)}
-                            className="w-full text-left border-l-2 border-sage-300 hover:border-sage-600 pl-3 py-2 rounded-r-md hover:bg-sage-50/50 transition-colors group"
+                            className="w-full text-left border-l-2 border-primary/40 hover:border-primary pl-3 py-2 rounded-r-md hover:bg-primary/5 transition-colors group"
                           >
-                            <h4 className="font-medium text-sm group-hover:text-sage-700 truncate">{note.title}</h4>
+                            <h4 className="font-medium text-sm group-hover:text-primary truncate">{note.title}</h4>
                             <p className="text-[11px] text-muted-foreground">
                               {new Date(note.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </p>
@@ -478,7 +478,7 @@ const Dashboard = () => {
                         ))}
                         <Button 
                           variant="ghost" 
-                          className="w-full mt-2 text-sage-600 hover:text-sage-700 hover:bg-sage-50" 
+                          className="w-full mt-2 text-primary hover:text-primary hover:bg-primary/10" 
                           size="sm"
                           onClick={() => setActiveTab('notes')}
                         >
@@ -503,7 +503,7 @@ const Dashboard = () => {
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-base">
-                      <BarChart3 className="h-4 w-4 text-sage-600" />
+                      <BarChart3 className="h-4 w-4 text-primary" />
                       Professional Summary
                     </CardTitle>
                   </CardHeader>
@@ -528,7 +528,7 @@ const Dashboard = () => {
                     </div>
                     <Separator />
                     <ProfessionalProfileModal>
-                      <Button variant="outline" className="dashboard-cta w-full border-sage-200 text-sage-700 hover:bg-sage-50" size="sm">
+                      <Button variant="outline" className="dashboard-cta w-full border-primary/30 text-primary hover:bg-primary/10" size="sm">
                         Update Professional Info
                       </Button>
                     </ProfessionalProfileModal>
@@ -560,10 +560,10 @@ const Dashboard = () => {
                       <Button
                         key={form.path}
                         variant="outline"
-                        className="dashboard-cta h-auto py-3 px-4 flex items-center gap-3 border-border hover:border-sage-300 hover:bg-sage-50/50 text-left justify-start transition-all"
+                        className="dashboard-cta h-auto py-3 px-4 flex items-center gap-3 border-border hover:border-primary/40 hover:bg-primary/5 text-left justify-start transition-all"
                         onClick={() => navigate(form.path)}
                       >
-                        <ClipboardList className="h-4 w-4 text-sage-500 shrink-0" />
+                        <ClipboardList className="h-4 w-4 text-primary/80 shrink-0" />
                         <div className="min-w-0">
                           <span className="font-medium text-sm block">{form.label}</span>
                           <span className="text-[11px] text-muted-foreground block truncate">{form.desc}</span>
@@ -587,7 +587,7 @@ const Dashboard = () => {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
                       <CardTitle className="flex items-center gap-2 text-base">
-                        <FileText className="h-4 w-4 text-sage-600" />
+                        <FileText className="h-4 w-4 text-primary" />
                         Your Notes & Activities
                       </CardTitle>
                       <CardDescription className="mt-1">
@@ -595,7 +595,7 @@ const Dashboard = () => {
                       </CardDescription>
                     </div>
                     <Button 
-                      className="dashboard-cta w-full sm:w-auto bg-sage-600 hover:bg-sage-700 text-white shrink-0"
+                      className="dashboard-cta w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground shrink-0"
                       size="sm"
                       onClick={() => handleNoteModal()}
                     >
@@ -620,12 +620,12 @@ const Dashboard = () => {
                       {notes.map((note: Note) => (
                         <div 
                           key={note.id} 
-                          className="p-4 rounded-lg border border-border hover:border-sage-300 hover:shadow-sm cursor-pointer transition-all group"
+                          className="p-4 rounded-lg border border-border hover:border-primary/40 hover:shadow-sm cursor-pointer transition-all group"
                           onClick={() => handleNoteModal(note)}
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0 flex-1">
-                              <h4 className="font-medium text-sm group-hover:text-sage-700 truncate">{note.title}</h4>
+                              <h4 className="font-medium text-sm group-hover:text-primary truncate">{note.title}</h4>
                               <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                                 {note.content || 'No content'}
                               </p>
@@ -698,7 +698,7 @@ const Dashboard = () => {
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <Settings className="h-4 w-4 text-sage-600" />
+                    <Settings className="h-4 w-4 text-primary" />
                     Profile Settings
                   </CardTitle>
                   <CardDescription>
@@ -741,7 +741,7 @@ const Dashboard = () => {
                   <ProfileField label="Bio" value={profile?.bio || 'No bio provided'} />
                   <div className="flex flex-col sm:flex-row gap-2 pt-2">
                     <ProfessionalProfileModal>
-                      <Button className="dashboard-cta bg-sage-600 hover:bg-sage-700 text-white">Update Professional Profile</Button>
+                      <Button className="dashboard-cta bg-primary hover:bg-primary/90 text-primary-foreground">Update Professional Profile</Button>
                     </ProfessionalProfileModal>
                   </div>
                 </CardContent>
@@ -756,7 +756,7 @@ const Dashboard = () => {
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-base">
-                      <Video className="h-4 w-4 text-sage-600" />
+                      <Video className="h-4 w-4 text-primary" />
                       Session Mode
                     </CardTitle>
                     <CardDescription>
@@ -773,8 +773,8 @@ const Dashboard = () => {
                           type="button"
                           className={`w-full text-left p-4 rounded-lg border-2 transition-colors ${
                             isSelected
-                              ? 'border-sage-500 bg-sage-50 dark:bg-sage-950'
-                              : 'border-border hover:border-sage-200'
+                              ? 'border-primary bg-primary/10'
+                              : 'border-border hover:border-primary/30'
                           }`}
                           onClick={async () => {
                             if (isSelected) return;
@@ -793,9 +793,9 @@ const Dashboard = () => {
                         >
                           <div className="flex items-center gap-3">
                             <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${
-                              isSelected ? 'border-sage-600' : 'border-muted-foreground/40'
+                              isSelected ? 'border-primary' : 'border-muted-foreground/40'
                             }`}>
-                              {isSelected && <div className="h-2 w-2 rounded-full bg-sage-600" />}
+                              {isSelected && <div className="h-2 w-2 rounded-full bg-primary" />}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
@@ -828,7 +828,7 @@ const Dashboard = () => {
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-base">
-                      <Globe className="h-4 w-4 text-sage-600" />
+                      <Globe className="h-4 w-4 text-primary" />
                       International Registrations
                     </CardTitle>
                     <CardDescription>
