@@ -1,6 +1,6 @@
 // Stripe webhook handler — keeps local payment_methods + session_charges in sync.
 // Public endpoint (no JWT). Validates Stripe signature.
-import Stripe from 'https://esm.sh/stripe@17.5.0?target=deno';
+import Stripe from 'npm:stripe@17.5.0';
 import { getStripe, getServiceClient } from '../_shared/stripe.ts';
 
 Deno.serve(async (req) => {
