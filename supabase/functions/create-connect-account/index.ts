@@ -88,8 +88,9 @@ Deno.serve(async (req) => {
 
     const body = (await req.json().catch(() => ({}))) as { returnUrl?: string; refreshUrl?: string };
     const origin = req.headers.get('origin') || req.headers.get('referer')?.split('/').slice(0, 3).join('/') || '';
-    const returnUrl = body.returnUrl || `${origin}/dashboard?tab=billing&connect=return`;
-    const refreshUrl = body.refreshUrl || `${origin}/dashboard?tab=billing&connect=refresh`;
+    const fallbackBaseUrl = origin || 'https://groundpath.com.au';
+    const returnUrl = body.returnUrl || `${fallbackBaseUrl}/practitioner/dashboard?tab=billing&connect=return`;
+    const refreshUrl = body.refreshUrl || `${fallbackBaseUrl}/practitioner/dashboard?tab=billing&connect=refresh`;
 
     const link = await stripe.accountLinks.create({
       account: accountId,

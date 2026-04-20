@@ -54,8 +54,8 @@ const PractitionerSubscriptionCard = () => {
       const { data, error } = await supabase.functions.invoke('create-practitioner-subscription', {
         method: 'POST',
         body: {
-          successUrl: `${window.location.origin}/dashboard?sub=success`,
-          cancelUrl: `${window.location.origin}/dashboard?sub=cancelled`,
+          successUrl: `${window.location.origin}/practitioner/dashboard?sub=success`,
+          cancelUrl: `${window.location.origin}/practitioner/dashboard?sub=cancelled`,
         },
       });
       if (error) throw error;
