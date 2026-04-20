@@ -117,11 +117,13 @@ const Contact = () => {
                   href={HALAXY_EXTERNAL_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sage-600 hover:text-sage-700 transition-colors"
+                  className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
                 >
                   <img 
                     src="https://cdn.halaxy.com/h/images/logo.png" 
                     alt="Halaxy booking system logo"
+                    width="96"
+                    height="24"
                     className="h-6 w-auto"
                     loading="lazy"
                     decoding="async"
@@ -156,7 +158,7 @@ const Contact = () => {
                 <div className="flex items-center gap-3 mb-4">
                   <button 
                     onClick={() => window.open(HALAXY_EXTERNAL_URL, '_blank')}
-                    className="flex-1 bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium"
+                    className="flex-1 bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors font-medium"
                     aria-label="Book online session via Halaxy"
                   >
                     Book Online Session
@@ -170,8 +172,11 @@ const Contact = () => {
                     <img 
                       src="https://cdn.halaxy.com/h/images/logo.png" 
                       alt="Halaxy Profile"
+                      width="160"
+                      height="40"
                       className="h-10 w-auto hover:opacity-80 transition-opacity cursor-pointer"
                       loading="lazy"
+                      decoding="async"
                     />
                   </a>
                 </div>
@@ -360,7 +365,7 @@ const Contact = () => {
               <button
                 type="submit"
                 disabled={contactFormMutation.isPending}
-                className="w-full bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors font-medium mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {contactFormMutation.isPending ? 'Sending...' : 'Send Message'}
               </button>
