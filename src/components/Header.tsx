@@ -378,7 +378,7 @@ const Header = () => {
           <div className="md:hidden flex items-center gap-2">
             {isLoggedIn && <MobileAuthIndicator />}
             <button
-              className="p-2 text-gray-300 hover:text-white rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+              className="p-2 text-surface-dark-muted hover:text-surface-dark-foreground rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isMenuOpen}
