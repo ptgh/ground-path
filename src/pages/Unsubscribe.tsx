@@ -42,32 +42,6 @@ const UnsubscribePage = () => {
           </div>
         );
 
-      case 'confirm':
-        return (
-          <div className="text-center py-8">
-            <Mail className="h-16 w-16 mx-auto text-primary mb-4" />
-            <h2 className="text-2xl font-semibold text-foreground mb-2">Confirm Unsubscribe</h2>
-            <p className="text-muted-foreground mb-4">
-              Are you sure you want to unsubscribe from our mailing list?
-            </p>
-            <p className="text-sm text-muted-foreground mb-6">
-              Email: <strong className="text-foreground">{email}</strong>
-            </p>
-            <div className="flex gap-3 justify-center">
-              <Button variant="outline" onClick={() => window.history.back()} disabled={isProcessing}>
-                Cancel
-              </Button>
-              <Button variant="destructive" onClick={handleManualUnsubscribe} disabled={isProcessing}>
-                {isProcessing ? (
-                  <><Loader2 className="h-4 w-4 animate-spin mr-2" />Unsubscribing…</>
-                ) : (
-                  'Unsubscribe'
-                )}
-              </Button>
-            </div>
-          </div>
-        );
-
       case 'success':
         return (
           <div className="text-center py-8">
