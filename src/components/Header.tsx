@@ -430,7 +430,7 @@ const Header = () => {
                     <button
                       key={item.label}
                       onClick={() => { item.action(); setIsMenuOpen(false); }}
-                      className="text-left text-gray-300 hover:text-white transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-white/5 text-sm"
+                      className="text-left text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-surface-dark-foreground/5 text-sm"
                     >
                       {item.label}
                     </button>
@@ -439,14 +439,14 @@ const Header = () => {
                     <>
                       <button
                         onClick={() => { navigate(profile?.user_type === 'practitioner' ? '/practitioner/dashboard' : '/dashboard'); setIsMenuOpen(false); }}
-                        className="flex items-center gap-2 text-left text-gray-300 hover:text-white transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-white/5 text-sm"
+                        className="flex items-center gap-2 text-left text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-surface-dark-foreground/5 text-sm"
                       >
                         <LayoutDashboard className="h-4 w-4" />
                         Dashboard
                       </button>
                       <button
                         onClick={() => { navigate('/messages'); setIsMenuOpen(false); }}
-                        className="relative flex items-center gap-2 text-left text-gray-300 hover:text-white transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-white/5 text-sm"
+                        className="relative flex items-center gap-2 text-left text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-surface-dark-foreground/5 text-sm"
                       >
                         <MessageSquare className="h-4 w-4" />
                         Messages
@@ -458,7 +458,7 @@ const Header = () => {
                       </button>
                     </>
                   )}
-                  <div className="border-t border-gray-700 my-2" />
+                  <div className="border-t border-surface-dark-border my-2" />
                   <Button
                     onClick={() => { scrollToSection('booking'); setIsMenuOpen(false); }}
                     className="bg-primary text-primary-foreground hover:bg-primary/90 w-full mb-2"
@@ -470,7 +470,7 @@ const Header = () => {
                   ) : (
                     <Button
                       onClick={() => { handleProfessionalLogin(); setIsMenuOpen(false); }}
-                      className="bg-gray-700 text-white hover:bg-gray-600 border border-gray-500 w-full"
+                      className="bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-surface-dark-border w-full"
                     >
                       Login
                     </Button>
