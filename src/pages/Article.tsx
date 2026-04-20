@@ -163,7 +163,20 @@ const Article = () => {
     );
   }
 
-  const formattedContent = DOMPurify.sanitize(formatArticleContent(article.content));
+  // Hardened DOMPurify config: allow only a safe subset of formatting tags,
+  // strip any inline event handlers / scripts / iframes, and forbid javascript: URLs.
+  const formattedContent = DOMPurify.sanitize(formatArticleContent(article.content), {
+    ALLOWED_TAGS: [
+      'p', 'br', 'strong', 'em', 'u', 'b', 'i',
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'ul', 'ol', 'li',
+      'a', 'blockquote', 'code', 'pre', 'span',
+    ],
+    ALLOWED_ATTR: ['href', 'title', 'target', 'rel'],
+    FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed', 'form'],
+    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'style'],
+    ALLOW_DATA_ATTR: false,
+  });
 
   return (
     <div className="min-h-screen bg-background">
