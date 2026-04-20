@@ -1,52 +1,68 @@
 
 
-## Plan: Polish Teams experience + in-app session join (no full embed)
+## The bug
 
-### Quick answer on the embed question
-**Microsoft does not allow Teams meetings to be fully embedded in third-party websites via iframe.** The Teams web client explicitly blocks iframe embedding (`X-Frame-Options: DENY`) and the Graph "join URL" must be opened in either the Teams app or Microsoft's hosted web client at `teams.live.com` / `teams.microsoft.com`.
+The `/book` page (`src/pages/Book.tsx`) — which is what users actually land on after selecting a practitioner and signing up — has its own booking flow that **bypasses both the check-in questions and card capture entirely**. It just inserts a `booking_requests` row and shows a toast.
 
-So a true in-page Teams call is **not possible**. But we can get 90% of that experience: a polished in-app "Join Session" page that hands off to Teams' web client in a new tab/PWA-friendly way, with full mobile support, a fallback if Teams isn't installed, and the same join link in the email — so users get one consistent journey whether they click the email or come via the website.
+The "good" flow with `PreSessionCheckIn` + `AddCardForm` lives in `NativeBookingPanel.tsx`, but **that component is never rendered anywhere in the app** (orphaned). All the polish work we did on it (auto-resume after auth, awaited card list, capture dialog) was on a component nobody sees.
 
-I'd recommend doing this rather than trying to embed. Embedding would be brittle, break randomly when Microsoft changes headers, and fail on iOS Safari. The handoff pattern is what every clinical platform does (Halaxy, SimplePractice, Coviu).
+That's why your test signup got no questions and no card prompt.
 
-### Scope
+## The fix — wire the real flow into `/book`
 
-**1. Better logo in emails (full quality)**
-- Replace the small 512px PNG with a properly sized 600px-wide branded email header (sage card with full "groundpath" wordmark + tagline) generated as a high-DPI PNG.
-- Keep "GP" text fallback for image-blocked clients.
-- Apply consistently across all 5 email templates (request received, confirmed, meeting ready, reminder, cancellation).
+Bring the check-in + card capture flow into `Book.tsx` so it runs for every booking on the public page.
 
-**2. New in-app Join Session page** — `/session/:bookingId`
-- Mobile-first page showing: practitioner name, time, countdown ("Starts in 4 min" / "Live now"), big "Join Teams Meeting" button.
-- Two clear options:
-  - **Open in Teams app** (deep-link `msteams:` — works if Teams installed)
-  - **Join in browser** (uses the Graph `joinWebUrl` which opens `teams.live.com` in a new tab — no install required, works on mobile Safari/Chrome)
-- "How to join" instructions inline (lobby wait, mic/camera permissions, headphones recommended).
-- Auth-protected: only the booked client or assigned practitioner can view.
-- Real-time meeting status: shows "Setting up meeting..." if `meeting_status !== 'created'` and updates live via Supabase realtime.
+### Flow after fix
 
-**3. Update email + dashboard to point at this page**
-- The "Your Teams Session is Ready" and reminder emails get **two buttons**: "Open in Groundpath" (→ `/session/:id`) and "Join Teams directly" (→ Graph `joinWebUrl`).
-- "My Bookings" Join Session button on `MyBookings.tsx` and `ClientDashboard.tsx` routes to `/session/:id` instead of opening Teams directly.
-- Practitioner dashboard gets the same in-app launcher.
+```
+User picks practitioner → date → slot
+   ↓
+Click "Request Booking"
+   ↓
+Not signed in?  →  /auth?redirect=/book&intent=book   (return here)
+   ↓ (signed in, or returned from auth)
+PreSessionCheckIn modal opens (4 steps: mood, tags, outcome, notes)
+   ↓
+Check if user has a card on file (await list-payment-methods)
+   ↓
+No card?  →  AddCardForm dialog ("Save a card to confirm booking")
+   ↓
+Insert booking_requests + booking_checkins rows
+   ↓
+Notify practitioner + client confirmation email
+   ↓
+Toast: "Booking request submitted"
+```
 
-**4. Fix lingering time bug** in `MyBookings.tsx` and `NativeBookingPanel.tsx` (`formatTime` still strips minutes — same bug we fixed in the email function but not in these two components).
+### Changes
 
-**5. Mobile polish**
-- Test the join page at 375px viewport.
-- Ensure tap targets ≥44px, button stack vertically on narrow screens.
-- iOS-safe `msteams:` deep link with graceful fallback when the app isn't installed.
+**`src/pages/Book.tsx`** — the only file that really needs surgery:
+- Import `PreSessionCheckIn`, `AddCardForm`, `useSavedCards`, `useNavigate`.
+- Add state: `checkInOpen`, `cardCaptureOpen`, `pendingCheckIn`.
+- Split `handleBook` into two functions:
+  - `handleRequestBooking()` — gates auth (redirect to `/auth?redirect=/book&intent=book`), then opens check-in.
+  - `handleCheckInComplete(data)` — awaits card list, opens card capture if none, otherwise calls `submitBooking`.
+  - `handleCardCaptured()` — submits the pending booking after card is saved.
+  - `submitBooking(checkInData)` — does the existing insert + also writes `booking_checkins` row + sends both notification emails.
+- Auto-open check-in on mount when `?intent=book` is present and a slot is selected (post-auth return).
+- Render the two dialogs (`PreSessionCheckIn`, card capture `Dialog`) at the bottom of the page.
 
-### Files to add/edit
-- `src/pages/JoinSession.tsx` — new page
-- `src/App.tsx` — add `/session/:bookingId` route (auth-protected)
-- `src/components/booking/MyBookings.tsx` — fix formatTime; route to `/session/:id`
-- `src/components/booking/NativeBookingPanel.tsx` — fix formatTime
-- `src/components/dashboard/NativeBooking.tsx` — practitioner Join button → `/session/:id`
-- `supabase/functions/booking-notification/index.ts` — add "Open in Groundpath" CTA alongside Teams link in `meeting_ready` and `session_reminder` templates
-- `public/email/groundpath-logo.png` — regenerate at 600×160 with full wordmark
+**Cleanup**: delete (or mark deprecated) `src/components/booking/NativeBookingPanel.tsx` since its logic now lives in `Book.tsx`. I'll delete it to avoid future confusion.
 
-### What I'm NOT doing (and why)
-- **Not embedding Teams in an iframe** — Microsoft blocks it; would break.
-- **Not building a custom WebRTC client** — out of scope, would require months of work and licensing review.
+**No DB / RLS / edge function changes.** The `booking_checkins` table, `list-payment-methods` function, and `booking-notification` function already exist and work — they just weren't being called from the page users actually use.
+
+### Edge cases handled
+
+- **Slow card list on first signup**: explicit `await supabase.functions.invoke('list-payment-methods')` if `useSavedCards` is still loading, so we never skip capture for a new user.
+- **Post-auth return**: `?intent=book` triggers check-in auto-open once a slot is re-selected (slot selection is local state and resets on auth navigation, so the user will pick again — acceptable for v1).
+- **User abandons check-in or card**: booking is NOT created until both complete. No orphan rows.
+- **User cancels card capture but already filled check-in**: pending check-in is cleared; nothing is saved.
+
+### Quick post-fix QA you should do
+
+1. Sign out, go to `/book`, pick practitioner → slot → click Request → expect `/auth` redirect with banner.
+2. Sign up as a new client → land back on `/book` → check-in modal opens.
+3. Complete 4 steps → card capture dialog appears (because new user has no card).
+4. Save a test card → booking submitted, toast shown, appears in "Pending" tab.
+5. Practitioner receives review-request email.
 
