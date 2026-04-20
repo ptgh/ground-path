@@ -177,12 +177,12 @@ const MobileAuthIndicator = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-white/10 transition-colors">
+        <button className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-surface-dark-foreground/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark">
           <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/20">
             <User className="h-4 w-4 text-primary" />
           </div>
           {roleLabel && (
-            <span className="text-[10px] font-medium text-emerald-400">{roleLabel}</span>
+            <span className="text-[10px] font-medium text-primary">{roleLabel}</span>
           )}
         </button>
       </DropdownMenuTrigger>
