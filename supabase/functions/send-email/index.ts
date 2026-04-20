@@ -76,9 +76,18 @@ const handler = async (req: Request): Promise<Response> => {
       
       case 'mailing_list_confirmation': {
         subject = 'Confirm your subscription - groundpath professional resources';
-        
-        const unsubscribeUrl = `https://groundpath.com.au/unsubscribe?email=${encodeURIComponent(to)}`;
-        
+
+        // Look up the per-subscriber unsubscribe token (set by DB default on insert)
+        const { data: sub } = await supabase
+          .from('mailing_list')
+          .select('unsubscribe_token')
+          .eq('email', to)
+          .maybeSingle();
+
+        const unsubscribeUrl = sub?.unsubscribe_token
+          ? `https://groundpath.com.au/unsubscribe?token=${sub.unsubscribe_token}`
+          : `https://groundpath.com.au/unsubscribe`;
+
         emailContent = await renderAsync(
           React.createElement(MailingListConfirmationEmail, {
             name: data.name,
