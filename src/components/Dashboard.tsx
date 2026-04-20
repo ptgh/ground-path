@@ -421,7 +421,7 @@ const Dashboard = () => {
                         className="dashboard-cta h-auto p-4 flex flex-col items-center gap-2 text-center border-border hover:border-primary/40 hover:bg-primary/5 transition-all"
                         onClick={action.action}
                       >
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sage-100 text-primary">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
                           <action.icon className="h-4 w-4" />
                         </div>
                         <div className="text-center">
@@ -478,7 +478,7 @@ const Dashboard = () => {
                         ))}
                         <Button 
                           variant="ghost" 
-                          className="w-full mt-2 text-primary hover:text-primary hover:bg-sage-50" 
+                          className="w-full mt-2 text-primary hover:text-primary hover:bg-primary/10" 
                           size="sm"
                           onClick={() => setActiveTab('notes')}
                         >
@@ -528,7 +528,7 @@ const Dashboard = () => {
                     </div>
                     <Separator />
                     <ProfessionalProfileModal>
-                      <Button variant="outline" className="dashboard-cta w-full border-sage-200 text-primary hover:bg-sage-50" size="sm">
+                      <Button variant="outline" className="dashboard-cta w-full border-primary/30 text-primary hover:bg-primary/10" size="sm">
                         Update Professional Info
                       </Button>
                     </ProfessionalProfileModal>
