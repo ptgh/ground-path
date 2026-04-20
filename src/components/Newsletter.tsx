@@ -84,14 +84,14 @@ const Newsletter = () => {
   };
 
   return (
-    <section id="newsletter" className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 scroll-mt-20">
+    <section id="newsletter" className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/40 scroll-mt-20">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-light text-foreground mb-4">
-            Stay <span className="text-sage-600 font-normal">Connected</span>
+            Stay <span className="text-primary font-normal">Connected</span>
           </h2>
-          <div className="w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
+          <div className="w-20 h-1 bg-primary mx-auto mb-6"></div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Get the latest insights on mental health, social work practice, and professional development delivered to your inbox.
           </p>
@@ -102,7 +102,7 @@ const Newsletter = () => {
           <div className="lg:order-2">
             <Card className="shadow-lg">
               <CardHeader>
-                <CardTitle className="text-2xl text-gray-900">Join Our Mailing List</CardTitle>
+                <CardTitle className="text-2xl text-foreground">Join Our Mailing List</CardTitle>
                 <CardDescription>
                   Be the first to know about new articles, resources, and professional insights.
                 </CardDescription>
@@ -132,7 +132,7 @@ const Newsletter = () => {
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full bg-sage-600 hover:bg-sage-700 text-white"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                     disabled={subscriptionMutation.isPending}
                   >
                     {subscriptionMutation.isPending ? 'Subscribing...' : 'Subscribe'}
@@ -144,14 +144,14 @@ const Newsletter = () => {
 
           {/* Recent Articles */}
           <div className="lg:order-1">
-            <h3 className="text-2xl font-light text-gray-900 mb-6">Recent Articles</h3>
+            <h3 className="text-2xl font-light text-foreground mb-6">Recent Articles</h3>
             {loading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="animate-pulse">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
-                    <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                    <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-muted rounded w-full mb-1"></div>
+                    <div className="h-3 bg-muted rounded w-2/3"></div>
                   </div>
                 ))}
               </div>
@@ -162,14 +162,14 @@ const Newsletter = () => {
                     <div className="flex items-start justify-between gap-4 mb-2">
                       <Link 
                         to={`/article/${article.slug}`}
-                        className="text-lg font-medium text-gray-900 hover:text-sage-600 transition-colors leading-tight"
+                        className="text-lg font-medium text-foreground hover:text-primary transition-colors leading-tight"
                       >
                         {article.title}
                       </Link>
                       <Button 
                         size="sm" 
                         variant="outline"
-                        className="text-sage-600 border-sage-600 hover:bg-sage-50 shrink-0"
+                        className="text-primary border-primary hover:bg-primary/10 shrink-0"
                         asChild
                       >
                         <Link to={`/article/${article.slug}`}>
@@ -177,11 +177,11 @@ const Newsletter = () => {
                         </Link>
                       </Button>
                     </div>
-                    <p className="text-gray-600 text-sm mb-3 leading-relaxed">
+                    <p className="text-muted-foreground text-sm mb-3 leading-relaxed">
                       {article.summary}
                     </p>
-                    <div className="flex items-center gap-3 text-xs text-gray-500">
-                      <Badge variant="secondary" className="bg-sage-100 text-sage-700 whitespace-nowrap">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <Badge variant="secondary" className="bg-primary/15 text-primary whitespace-nowrap">
                         {article.category}
                       </Badge>
                       <span>{formatDate(article.published_at)}</span>
@@ -196,7 +196,7 @@ const Newsletter = () => {
                 ))}
               </div>
             ) : (
-              <p className="text-gray-600">No articles available at the moment.</p>
+              <p className="text-muted-foreground">No articles available at the moment.</p>
             )}
           </div>
         </div>

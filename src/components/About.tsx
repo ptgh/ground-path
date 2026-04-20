@@ -66,7 +66,7 @@ const About = () => {
   const [isQualificationsOpen, setIsQualificationsOpen] = useState(false);
 
   return (
-    <section id="about" className="py-20 bg-gray-50 scroll-mt-20">
+    <section id="about" className="py-20 bg-muted/40 scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           {/* Section Header */}
@@ -82,11 +82,11 @@ const About = () => {
                   strokeLinejoin="round"
                 />
               </svg>
-              <h2 className="text-3xl sm:text-4xl font-light text-gray-900">
+              <h2 className="text-3xl sm:text-4xl font-light text-foreground">
                 groundpath
               </h2>
             </div>
-            <div className="fade-in w-20 h-1 bg-sage-600 mx-auto"></div>
+            <div className="fade-in w-20 h-1 bg-primary mx-auto"></div>
           </div>
 
           {/* Main Content */}

@@ -97,14 +97,14 @@ const Contact = () => {
   return (
     <>
       {/* Booking Section */}
-      <section id="booking" className="py-20 bg-gray-50 scroll-mt-20">
+      <section id="booking" className="py-20 bg-muted/40 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="fade-in text-3xl sm:text-4xl font-light text-gray-900 mb-4">
+            <h2 className="fade-in text-3xl sm:text-4xl font-light text-foreground mb-4">
               Book a Session
             </h2>
-            <div className="fade-in w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
-            <p className="fade-in text-lg text-gray-600 max-w-2xl mx-auto">
+            <div className="fade-in w-20 h-1 bg-primary mx-auto mb-6"></div>
+            <p className="fade-in text-lg text-muted-foreground max-w-2xl mx-auto">
               {bookingModeLoading
                 ? 'All sessions are conducted online via secure video — simple, safe, and accessible from anywhere.'
                 : bookingMode === 'native_beta'
@@ -216,11 +216,11 @@ const Contact = () => {
       <section id="contact" className="py-20 bg-background scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="fade-in text-3xl sm:text-4xl font-light text-gray-900 mb-4">
+            <h2 className="fade-in text-3xl sm:text-4xl font-light text-foreground mb-4">
               Get in Touch
             </h2>
-            <div className="fade-in w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
-            <p className="fade-in text-lg text-gray-600 max-w-2xl mx-auto">
+            <div className="fade-in w-20 h-1 bg-primary mx-auto mb-6"></div>
+            <p className="fade-in text-lg text-muted-foreground max-w-2xl mx-auto">
               Have a question? Send us a message and we'll get back to you.
             </p>
           </div>
