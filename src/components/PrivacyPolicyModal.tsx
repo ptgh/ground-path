@@ -47,22 +47,22 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
     >
       <div 
         ref={backdropRef}
-        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-foreground/60 backdrop-blur-sm"
         onClick={onClose}
       />
       
       <div 
         ref={contentRef}
-        className="relative bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-white/20"
+        className="relative bg-card/95 backdrop-blur-md rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-border"
       >
         {/* Header */}
-        <div className="flex items-start justify-between p-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-sm">
-          <h2 className="text-2xl font-light text-gray-900">Privacy Policy</h2>
+        <div className="flex items-start justify-between p-6 border-b border-border bg-card/80 backdrop-blur-sm">
+          <h2 className="text-2xl font-light text-foreground">Privacy Policy</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100/50 rounded-lg transition-colors shrink-0 mt-0.5"
+            className="p-2 hover:bg-muted rounded-lg transition-colors shrink-0 mt-0.5"
           >
-            <X className="h-5 w-5 text-gray-500" />
+            <X className="h-5 w-5 text-muted-foreground" />
           </button>
         </div>
 
