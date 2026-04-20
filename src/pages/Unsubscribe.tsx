@@ -6,55 +6,31 @@ import { CheckCircle, XCircle, Mail, Loader2 } from 'lucide-react';
 import { mailingListService } from '@/services/mailingListService';
 import SEO from '@/components/SEO';
 
-type Status = 'loading' | 'confirm' | 'success' | 'error' | 'already_unsubscribed';
+type Status = 'loading' | 'success' | 'error' | 'already_unsubscribed';
 
 const UnsubscribePage = () => {
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<Status>('loading');
-  const [isProcessing, setIsProcessing] = useState(false);
 
-  const email = searchParams.get('email');
   const token = searchParams.get('token');
 
   useEffect(() => {
-    // One-click unsubscribe via tokenised link
-    if (token) {
-      (async () => {
-        try {
-          await mailingListService.unsubscribe(token, { byToken: true });
-          setStatus('success');
-        } catch (error) {
-          const msg = (error as Error).message ?? '';
-          if (msg.includes('already unsubscribed')) setStatus('already_unsubscribed');
-          else setStatus('error');
-        }
-      })();
+    // Token-only unsubscribe — proves the holder of the email link
+    if (!token) {
+      setStatus('error');
       return;
     }
-
-    // Manual confirmation flow when only email is provided
-    if (email) {
-      setStatus('confirm');
-      return;
-    }
-
-    setStatus('error');
-  }, [email, token]);
-
-  const handleManualUnsubscribe = async () => {
-    if (!email) return;
-    setIsProcessing(true);
-    try {
-      await mailingListService.unsubscribe(email);
-      setStatus('success');
-    } catch (error) {
-      const msg = (error as Error).message ?? '';
-      if (msg.includes('already unsubscribed')) setStatus('already_unsubscribed');
-      else setStatus('error');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+    (async () => {
+      try {
+        await mailingListService.unsubscribe(token, { byToken: true });
+        setStatus('success');
+      } catch (error) {
+        const msg = (error as Error).message ?? '';
+        if (msg.includes('already unsubscribed')) setStatus('already_unsubscribed');
+        else setStatus('error');
+      }
+    })();
+  }, [token]);
 
   const renderContent = () => {
     switch (status) {
@@ -63,32 +39,6 @@ const UnsubscribePage = () => {
           <div className="text-center py-8">
             <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary mb-4" />
             <p className="text-muted-foreground">Processing your unsubscribe request…</p>
-          </div>
-        );
-
-      case 'confirm':
-        return (
-          <div className="text-center py-8">
-            <Mail className="h-16 w-16 mx-auto text-primary mb-4" />
-            <h2 className="text-2xl font-semibold text-foreground mb-2">Confirm Unsubscribe</h2>
-            <p className="text-muted-foreground mb-4">
-              Are you sure you want to unsubscribe from our mailing list?
-            </p>
-            <p className="text-sm text-muted-foreground mb-6">
-              Email: <strong className="text-foreground">{email}</strong>
-            </p>
-            <div className="flex gap-3 justify-center">
-              <Button variant="outline" onClick={() => window.history.back()} disabled={isProcessing}>
-                Cancel
-              </Button>
-              <Button variant="destructive" onClick={handleManualUnsubscribe} disabled={isProcessing}>
-                {isProcessing ? (
-                  <><Loader2 className="h-4 w-4 animate-spin mr-2" />Unsubscribing…</>
-                ) : (
-                  'Unsubscribe'
-                )}
-              </Button>
-            </div>
           </div>
         );
 
