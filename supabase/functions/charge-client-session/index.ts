@@ -23,21 +23,27 @@ async function sendInvoiceEmail(opts: {
   }
 
   const html = `
-    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#1f2937;">
-      <h1 style="font-size:20px;font-weight:600;color:#7B9B85;margin:0 0 16px;">groundpath</h1>
-      <p style="font-size:16px;line-height:1.5;margin:0 0 16px;">Hello${opts.clientName ? ' ' + opts.clientName : ''},</p>
-      <p style="font-size:15px;line-height:1.6;margin:0 0 16px;">
-        Thank you for your session${opts.practitionerName ? ' with ' + opts.practitionerName : ''}.
-        Your card on file has been charged <strong>${opts.amountFormatted}</strong>.
-      </p>
-      <p style="margin:24px 0;">
-        <a href="${opts.hostedInvoiceUrl}" style="background:#7B9B85;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;display:inline-block;font-weight:500;">View receipt</a>
-      </p>
-      <p style="font-size:13px;color:#6b7280;line-height:1.6;margin:24px 0 0;">
-        If you have any questions about this charge, please reply to this email or contact your practitioner directly.
-      </p>
-      <hr style="border:none;border-top:1px solid #e5e7eb;margin:32px 0 16px;" />
-      <p style="font-size:12px;color:#9ca3af;margin:0;">groundpath — grounded mental health support</p>
+    <div style="background-color:#f3f4f6;padding:24px 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+      <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #d4ddd4;border-radius:12px;overflow:hidden;">
+        <div style="background:#ffffff;text-align:center;padding:24px 16px 16px;border-bottom:1px solid #d4ddd4;">
+          <img src="https://groundpath.com.au/email/groundpath-logo.png" width="44" height="44" alt="groundpath" style="display:inline-block;width:44px;height:44px;border-radius:50%;border:0;outline:none;text-decoration:none;" />
+        </div>
+        <div style="padding:24px 32px 32px;color:#1f2937;">
+          <h1 style="font-size:20px;font-weight:600;color:#0a0f1a;margin:0 0 16px;text-align:center;letter-spacing:-0.01em;">Receipt for your session</h1>
+          <p style="font-size:15px;line-height:1.6;margin:0 0 16px;">Hello${opts.clientName ? ' ' + opts.clientName : ''},</p>
+          <p style="font-size:15px;line-height:1.6;margin:0 0 16px;">
+            Thank you for your session${opts.practitionerName ? ' with ' + opts.practitionerName : ''}.
+            Your card on file has been charged <strong>${opts.amountFormatted}</strong>.
+          </p>
+          <p style="margin:24px 0;text-align:center;">
+            <a href="${opts.hostedInvoiceUrl}" style="background:#4a7c4f;color:white;padding:12px 32px;text-decoration:none;border-radius:8px;display:inline-block;font-weight:500;font-size:14px;">View receipt</a>
+          </p>
+          <p style="font-size:13px;color:#6b7280;line-height:1.6;margin:24px 0 0;">
+            If you have any questions about this charge, please reply to this email or contact your practitioner directly.
+          </p>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:11px;color:#9ca3af;margin:16px 0 0;">groundpath — grounded mental health support · groundpath.com.au</p>
     </div>
   `;
 

@@ -15,6 +15,7 @@ import {
   Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
+import { BrandHeader } from './brand-header.tsx'
 
 interface SignupEmailProps {
   siteName: string
@@ -34,10 +35,7 @@ export const SignupEmail = ({
     <Preview>Confirm your email to get started with groundpath</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Section style={logoSection}>
-          <Text style={logoText}>⟳ groundpath</Text>
-        </Section>
-        <Hr style={divider} />
+        <BrandHeader />
         <Heading style={h1}>Confirm your email</Heading>
         <Text style={text}>
           Welcome to{' '}

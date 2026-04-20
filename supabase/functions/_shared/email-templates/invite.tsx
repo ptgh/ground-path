@@ -15,6 +15,7 @@ import {
   Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
+import { BrandHeader } from './brand-header.tsx'
 
 interface InviteEmailProps {
   siteName: string
@@ -32,10 +33,7 @@ export const InviteEmail = ({
     <Preview>You've been invited to join groundpath</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Section style={logoSection}>
-          <Text style={logoText}>⟳ groundpath</Text>
-        </Section>
-        <Hr style={divider} />
+        <BrandHeader />
         <Heading style={h1}>You've been invited</Heading>
         <Text style={text}>
           You've been invited to join{' '}

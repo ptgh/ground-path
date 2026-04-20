@@ -39,17 +39,13 @@ export const NewsletterEmail = ({
       <Container style={container}>
         <Section style={header}>
           <Link href="https://groundpath.com.au" style={logoLink}>
-            <svg width="40" height="40" viewBox="0 0 40 40" style={logoSvg}>
-              <path
-                d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
-                fill="none"
-                stroke="#7B9B85"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <Text style={logoText}>groundpath</Text>
+            <Img
+              src="https://groundpath.com.au/email/groundpath-logo.png"
+              width="44"
+              height="44"
+              alt="groundpath"
+              style={logoImg}
+            />
           </Link>
           <Text style={headerText}>Professional Social Work Resources</Text>
         </Section>
@@ -158,29 +154,19 @@ const header = {
   borderBottom: '1px solid #eaeaea',
 }
 
-const logo = {
-  margin: '0 auto',
-}
-
 const logoLink = {
-  display: 'flex',
-  alignItems: 'center',
+  display: 'inline-block',
   textDecoration: 'none',
-  gap: '12px',
-  justifyContent: 'center',
   marginBottom: '8px',
 }
 
-const logoSvg = {
-  display: 'block',
-}
-
-const logoText = {
-  fontSize: '24px',
-  fontWeight: '300',
-  color: '#7B9B85',
-  letterSpacing: '2px',
-  margin: '0',
+const logoImg = {
+  display: 'inline-block',
+  width: '44px',
+  height: '44px',
+  borderRadius: '50%',
+  border: '0',
+  outline: 'none',
 }
 
 const headerText = {

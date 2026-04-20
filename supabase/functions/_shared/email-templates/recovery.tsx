@@ -14,6 +14,7 @@ import {
   Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
+import { BrandHeader } from './brand-header.tsx'
 
 interface RecoveryEmailProps {
   siteName: string
@@ -29,10 +30,7 @@ export const RecoveryEmail = ({
     <Preview>Reset your password for groundpath</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Section style={logoSection}>
-          <Text style={logoText}>⟳ groundpath</Text>
-        </Section>
-        <Hr style={divider} />
+        <BrandHeader />
         <Heading style={h1}>Reset your password</Heading>
         <Text style={text}>
           We received a request to reset your password for your groundpath account.

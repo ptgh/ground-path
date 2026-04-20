@@ -39,9 +39,9 @@ export const NewsletterEmail = ({
       <Container style={container}>
         <Section style={header}>
           <Img
-            src="https://vzwhccciarvirzqmvldl.supabase.co/storage/v1/object/public/resources/ground-path-logo.png"
-            width="200"
-            height="60"
+            src="https://groundpath.com.au/email/groundpath-logo.png"
+            width="44"
+            height="44"
             alt="groundpath"
             style={logo}
           />
@@ -151,6 +151,12 @@ const header = {
 }
 
 const logo = {
+  display: 'inline-block',
+  width: '44px',
+  height: '44px',
+  borderRadius: '50%',
+  border: '0',
+  outline: 'none',
   margin: '0 auto',
 }
 
