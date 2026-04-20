@@ -273,11 +273,17 @@ const Book = () => {
 
   // Step 1 — gate auth, then open check-in
   const handleRequestBooking = () => {
+    if (!selectedSlot || !selectedDate || !selectedPractitioner) return;
     if (!user) {
+      // Persist selection so we can restore it after the auth round-trip
+      sessionStorage.setItem('pending_booking_selection', JSON.stringify({
+        practitionerId: selectedPractitioner.user_id,
+        date: format(selectedDate, 'yyyy-MM-dd'),
+        slot: selectedSlot,
+      }));
       navigate('/auth?redirect=/book&intent=book');
       return;
     }
-    if (!selectedSlot || !selectedDate || !selectedPractitioner) return;
     setCheckInOpen(true);
   };
 
@@ -410,17 +416,46 @@ const Book = () => {
     if (refreshed) setMyBookings(refreshed);
   };
 
-  // Auto-resume after returning from /auth with intent=book
+  // Auto-resume after returning from /auth with intent=book.
+  // Practitioners load asynchronously, so we may need two passes:
+  //   1) restore selectedPractitioner from list
+  //   2) restore date + slot, then open check-in
   useEffect(() => {
     if (!user) return;
     const params = new URLSearchParams(window.location.search);
-    if (params.get('intent') === 'book' && selectedSlot && selectedDate && selectedPractitioner) {
-      setCheckInOpen(true);
-      const url = new URL(window.location.href);
-      url.searchParams.delete('intent');
-      window.history.replaceState({}, '', url.toString());
+    if (params.get('intent') !== 'book') return;
+
+    const stored = sessionStorage.getItem('pending_booking_selection');
+    if (!stored) return;
+
+    try {
+      const parsed = JSON.parse(stored) as {
+        practitionerId: string;
+        date: string;
+        slot: TimeSlot;
+      };
+
+      // Pass 1 — practitioner list ready but no practitioner selected yet
+      if (!selectedPractitioner) {
+        const found = practitioners.find(p => p.user_id === parsed.practitionerId);
+        if (found) setSelectedPractitioner(found);
+        return;
+      }
+
+      // Pass 2 — selected practitioner matches stored one; restore slot
+      if (selectedPractitioner.user_id === parsed.practitionerId && !selectedSlot) {
+        setSelectedDate(new Date(`${parsed.date}T00:00:00`));
+        setSelectedSlot(parsed.slot);
+        setTimeout(() => setCheckInOpen(true), 100);
+        sessionStorage.removeItem('pending_booking_selection');
+        const url = new URL(window.location.href);
+        url.searchParams.delete('intent');
+        window.history.replaceState({}, '', url.toString());
+      }
+    } catch {
+      sessionStorage.removeItem('pending_booking_selection');
     }
-  }, [user, selectedSlot, selectedDate, selectedPractitioner]);
+  }, [user, practitioners, selectedPractitioner, selectedSlot]);
 
   const handleCancel = async (id: string) => {
     setCancellingId(id);

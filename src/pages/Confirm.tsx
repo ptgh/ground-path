@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, XCircle, Mail, Loader2 } from 'lucide-react';
 import { mailingListService } from '@/services/mailingListService';
+import SEO from '@/components/SEO';
 
 const ConfirmPage = () => {
   const [searchParams] = useSearchParams();
@@ -31,47 +32,37 @@ const ConfirmPage = () => {
     })();
   }, [token]);
 
-
   const renderContent = () => {
     switch (status) {
       case 'loading':
         return (
           <div className="text-center py-8">
-            <Loader2 className="h-12 w-12 animate-spin mx-auto text-sage-600 mb-4" />
-            <p className="text-gray-600">Confirming your subscription...</p>
+            <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary mb-4" />
+            <p className="text-muted-foreground">Confirming your subscription…</p>
           </div>
         );
 
       case 'success':
         return (
           <div className="text-center py-8">
-            <CheckCircle className="h-16 w-16 mx-auto text-green-600 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Subscription Confirmed!</h2>
-            <p className="text-gray-600 mb-6">
+            <CheckCircle className="h-16 w-16 mx-auto text-primary mb-4" />
+            <h2 className="text-2xl font-semibold text-foreground mb-2">Subscription Confirmed</h2>
+            <p className="text-muted-foreground mb-6">
               Thank you for confirming your subscription to groundpath's professional mailing list.
             </p>
-            <p className="text-sm text-gray-500 mb-6">
-              You'll start receiving our curated content including:
-            </p>
-            <ul className="text-sm text-gray-600 text-left mb-6 space-y-1">
-              <li>• Weekly curated articles on social work best practices</li>
+            <p className="text-sm text-muted-foreground mb-4">You'll start receiving:</p>
+            <ul className="text-sm text-muted-foreground text-left mb-6 space-y-1 max-w-xs mx-auto">
+              <li>• Weekly curated articles on social work practice</li>
               <li>• NDIS updates and compliance guidance</li>
               <li>• Professional development opportunities</li>
               <li>• Mental health assessment tools and resources</li>
             </ul>
-            <div className="space-y-3">
-              <Button
-                onClick={() => window.location.href = '/professional-forms'}
-                className="w-full bg-sage-600 hover:bg-sage-700 text-white"
-              >
-                Explore Professional Forms
+            <div className="space-y-2">
+              <Button asChild className="w-full">
+                <a href="/professional-forms">Explore Professional Forms</a>
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => window.location.href = '/'}
-                className="w-full"
-              >
-                Return to Home
+              <Button variant="outline" asChild className="w-full">
+                <a href="/">Return to Home</a>
               </Button>
             </div>
           </div>
@@ -80,16 +71,13 @@ const ConfirmPage = () => {
       case 'already_confirmed':
         return (
           <div className="text-center py-8">
-            <CheckCircle className="h-16 w-16 mx-auto text-green-600 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Already Confirmed</h2>
-            <p className="text-gray-600 mb-6">
+            <CheckCircle className="h-16 w-16 mx-auto text-primary mb-4" />
+            <h2 className="text-2xl font-semibold text-foreground mb-2">Already Confirmed</h2>
+            <p className="text-muted-foreground mb-6">
               Your subscription is already confirmed. You should be receiving our newsletters.
             </p>
-            <Button
-              onClick={() => window.location.href = '/'}
-              className="bg-sage-600 hover:bg-sage-700 text-white"
-            >
-              Return to Home
+            <Button asChild>
+              <a href="/">Return to Home</a>
             </Button>
           </div>
         );
@@ -97,25 +85,17 @@ const ConfirmPage = () => {
       case 'error':
         return (
           <div className="text-center py-8">
-            <XCircle className="h-16 w-16 mx-auto text-red-600 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Confirmation Error</h2>
-            <p className="text-gray-600 mb-6">
-              We encountered an error confirming your subscription.
+            <XCircle className="h-16 w-16 mx-auto text-destructive mb-4" />
+            <h2 className="text-2xl font-semibold text-foreground mb-2">Confirmation Error</h2>
+            <p className="text-muted-foreground mb-2">
+              We couldn't confirm your subscription. The link may be expired or invalid.
             </p>
-            <p className="text-sm text-gray-500 mb-6">
-              The confirmation link may be expired or invalid.
+            <p className="text-sm text-muted-foreground mb-6">
+              Please contact <a href="mailto:connect@groundpath.com.au" className="underline text-primary">connect@groundpath.com.au</a> if this keeps happening.
             </p>
-            <div className="space-y-3">
-              <Button
-                onClick={() => window.location.href = '/'}
-                className="w-full bg-sage-600 hover:bg-sage-700 text-white"
-              >
-                Return to Home
-              </Button>
-              <p className="text-xs text-gray-400">
-                If you continue to have issues, please contact our support team.
-              </p>
-            </div>
+            <Button variant="outline" asChild className="w-full">
+              <a href="/">Return to Home</a>
+            </Button>
           </div>
         );
 
@@ -125,31 +105,23 @@ const ConfirmPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sage-50 to-sage-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
+      <SEO title="Confirm Subscription" path="/confirm" noindex />
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="flex items-center justify-center gap-2">
-            <Mail className="h-6 w-6 text-sage-600" />
+          <CardTitle className="flex items-center justify-center gap-2 text-foreground">
+            <Mail className="h-6 w-6 text-primary" />
             groundpath Newsletter
           </CardTitle>
         </CardHeader>
         <CardContent>
           {renderContent()}
-          
           {status !== 'loading' && status !== 'error' && (
-            <div className="mt-8 pt-6 border-t border-gray-200">
-              <div className="text-center">
-                <p className="text-sm text-gray-500 mb-2">
-                  Questions about our services?
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => window.location.href = 'mailto:connect@groundpath.com.au'}
-                >
-                  Contact Us
-                </Button>
-              </div>
+            <div className="mt-8 pt-6 border-t border-border text-center">
+              <p className="text-sm text-muted-foreground mb-3">Questions about our services?</p>
+              <Button variant="outline" size="sm" asChild>
+                <a href="mailto:connect@groundpath.com.au">Contact Us</a>
+              </Button>
             </div>
           )}
         </CardContent>

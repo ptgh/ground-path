@@ -155,13 +155,44 @@ export const PractitionerList = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-8">
-        <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true" aria-label="Loading practitioners">
+        {[0, 1, 2].map((i) => (
+          <Card key={i} className="border-border/50">
+            <CardContent className="p-5">
+              <div className="flex gap-4">
+                <div className="h-14 w-14 rounded-full bg-muted animate-pulse flex-shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-3/4 bg-muted rounded animate-pulse" />
+                  <div className="h-3 w-1/2 bg-muted rounded animate-pulse" />
+                  <div className="h-3 w-2/3 bg-muted/70 rounded animate-pulse" />
+                  <div className="flex gap-1.5 pt-1">
+                    <div className="h-4 w-12 bg-muted rounded-full animate-pulse" />
+                    <div className="h-4 w-16 bg-muted rounded-full animate-pulse" />
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <div className="h-9 flex-1 bg-muted rounded animate-pulse" />
+                <div className="h-9 flex-1 bg-muted rounded animate-pulse" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     );
   }
 
-  if (practitioners.length === 0) return null;
+  if (practitioners.length === 0) {
+    return (
+      <div className="text-center py-12 border border-dashed border-border rounded-lg bg-muted/20">
+        <ShieldCheck className="h-10 w-10 mx-auto text-muted-foreground/40 mb-3" />
+        <p className="text-foreground font-medium mb-1">Practitioners coming soon</p>
+        <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+          We're onboarding qualified mental health professionals. Join our mailing list to be notified when bookings open.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div ref={listRef} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

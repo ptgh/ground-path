@@ -61,35 +61,40 @@ const Hero = () => {
             Social Work, Counselling & Mental Health Support — Online & In-Person
           </p>
 
-          {/* CTA Buttons */}
-          <div ref={ctaButtonsRef} className="fade-in flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center items-center max-w-2xl mx-auto">
-            <button 
-              onClick={() => scrollToSection('booking')}
-              className="hero-cta bg-primary text-primary-foreground px-4 sm:px-6 py-3.5 rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-full sm:w-auto min-w-[140px]"
+          {/* CTA Buttons — primary stands out, secondary actions are quieter */}
+          <div ref={ctaButtonsRef} className="fade-in flex flex-col sm:flex-row flex-wrap gap-3 justify-center items-center max-w-2xl mx-auto">
+            <button
+              onClick={() => scrollToSection('practitioners')}
+              aria-label="Book a session with a practitioner"
+              className="hero-cta bg-primary text-primary-foreground px-6 sm:px-8 py-3.5 rounded-lg hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl w-full sm:w-auto min-w-[180px]"
             >
               Book a Session
             </button>
-            <button 
+            <button
               onClick={() => scrollToSection('services')}
-              className="hero-cta bg-primary text-primary-foreground px-4 sm:px-6 py-3.5 rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-full sm:w-auto min-w-[140px]"
+              aria-label="View services and rates"
+              className="hero-cta bg-card text-foreground border border-border px-4 sm:px-6 py-3.5 rounded-lg hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 font-medium w-full sm:w-auto min-w-[140px]"
             >
               View Services & Rates
             </button>
-            <button 
+            <button
               onClick={() => scrollToSection('about')}
-              className="hero-cta bg-primary text-primary-foreground px-4 sm:px-6 py-3.5 rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-full sm:w-auto min-w-[140px]"
+              aria-label="Learn more about groundpath"
+              className="hero-cta bg-card text-foreground border border-border px-4 sm:px-6 py-3.5 rounded-lg hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 font-medium w-full sm:w-auto min-w-[140px]"
             >
               About
             </button>
-            <button 
+            <button
               onClick={() => setIsMailingListOpen(true)}
-              className="hero-cta bg-primary text-primary-foreground px-4 sm:px-6 py-3.5 rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-full sm:w-auto min-w-[140px]"
+              aria-label="Join our mailing list"
+              className="hero-cta bg-card text-foreground border border-border px-4 sm:px-6 py-3.5 rounded-lg hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 font-medium w-full sm:w-auto min-w-[140px]"
             >
               Join Mailing List
             </button>
-            <button 
+            <button
               onClick={() => scrollToSection('ai-counselling')}
-              className="hero-cta bg-primary text-primary-foreground px-4 sm:px-6 py-3.5 rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 w-full sm:w-auto min-w-[140px] flex items-center justify-center gap-2"
+              aria-label="Try AI counselling"
+              className="hero-cta bg-card text-foreground border border-border px-4 sm:px-6 py-3.5 rounded-lg hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 font-medium w-full sm:w-auto min-w-[140px] flex items-center justify-center gap-2"
             >
               <Mic className="w-4 h-4" />
               AI Counselling

@@ -86,15 +86,37 @@ class MailingListService {
     return data;
   }
 
-  async unsubscribe(email: string) {
+  /**
+   * Unsubscribe by token (preferred — proves the holder of the email link)
+   * or by email (manual confirmation flow only — token absent).
+   */
+  async unsubscribe(emailOrToken: string, opts?: { byToken?: boolean }) {
     if (!this.isSupabaseAvailable()) {
       throw new Error('Supabase is not configured.');
+    }
+
+    const byToken = opts?.byToken === true;
+    const column = byToken ? 'unsubscribe_token' : 'email';
+
+    // Look up the row first to distinguish "not found" vs "already unsubscribed".
+    const { data: existing } = await supabase!
+      .from('mailing_list')
+      .select('id, status')
+      .eq(column, emailOrToken)
+      .maybeSingle();
+
+    if (!existing) {
+      throw new Error('Subscription not found.');
+    }
+
+    if (existing.status === 'unsubscribed') {
+      throw new Error('already unsubscribed');
     }
 
     const { data, error } = await supabase!
       .from('mailing_list')
       .update({ status: 'unsubscribed' })
-      .eq('email', email)
+      .eq('id', existing.id)
       .select()
       .single();
 
