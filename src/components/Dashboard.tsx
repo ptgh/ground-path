@@ -65,7 +65,7 @@ const getSessionMode = (profile: { halaxy_integration?: unknown } | null): Sessi
 /* ─── Stat card for the overview ─── */
 const StatCard = ({ label, value, icon: Icon }: { label: string; value: string | number; icon: React.ElementType }) => (
   <div className="flex items-center gap-3 rounded-lg border border-border/60 bg-card p-4">
-    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sage-100 text-sage-700">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
       <Icon className="h-5 w-5" />
     </div>
     <div className="min-w-0">
@@ -212,8 +212,8 @@ const Dashboard = () => {
   const getProfessionBadgeColor = (role: string) => {
     switch (role) {
       case 'admin': return 'bg-destructive/10 text-destructive';
-      case 'social_worker': return 'bg-sage-100 text-sage-800';
-      case 'mental_health_professional': return 'bg-sage-100 text-sage-700';
+      case 'social_worker': return 'bg-primary/10 text-primary';
+      case 'mental_health_professional': return 'bg-primary/10 text-primary';
       case 'moderator': return 'bg-muted text-muted-foreground';
       default: return 'bg-muted text-muted-foreground';
     }
@@ -306,9 +306,9 @@ const Dashboard = () => {
           <div className="mb-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                <Avatar className="h-12 w-12 sm:h-14 sm:w-14 mx-auto sm:mx-0 ring-2 ring-sage-200 ring-offset-2 ring-offset-background">
+                <Avatar className="h-12 w-12 sm:h-14 sm:w-14 mx-auto sm:mx-0 ring-2 ring-primary/30 ring-offset-2 ring-offset-background">
                   <AvatarImage src={profile?.avatar_url} />
-                  <AvatarFallback className="text-sm sm:text-lg bg-sage-100 text-sage-700">
+                  <AvatarFallback className="text-sm sm:text-lg bg-primary/10 text-primary">
                     {profile?.display_name?.[0] || user.email?.[0] || 'U'}
                   </AvatarFallback>
                 </Avatar>
