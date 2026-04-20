@@ -626,9 +626,9 @@ const Book = () => {
                                   </button>
                                 ))}
                               </div>
-                              <Button onClick={handleBook} disabled={!selectedSlot || submitting} className="w-full" size="lg">
+                              <Button onClick={handleRequestBooking} disabled={!selectedSlot || submitting} className="w-full" size="lg">
                                 {submitting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <CalendarIcon className="h-4 w-4 mr-2" />}
-                                {user ? 'Request Booking' : 'Sign in to Book'}
+                                {user ? 'Continue to check-in' : 'Sign in to Book'}
                               </Button>
                             </CardContent>
                           </Card>
@@ -732,6 +732,32 @@ const Book = () => {
         </div>
       </main>
       <Footer />
+
+      <PreSessionCheckIn
+        open={checkInOpen}
+        onOpenChange={setCheckInOpen}
+        onComplete={handleCheckInComplete}
+        submitting={submitting}
+      />
+
+      <Dialog open={cardCaptureOpen} onOpenChange={(open) => { setCardCaptureOpen(open); if (!open) setPendingCheckIn(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-primary" />
+              Save a card to confirm your booking
+            </DialogTitle>
+            <DialogDescription>
+              We don't charge anything now. Your practitioner will charge the session fee only after your appointment.
+            </DialogDescription>
+          </DialogHeader>
+          <AddCardForm
+            onSuccess={handleCardCaptured}
+            onCancel={() => { setCardCaptureOpen(false); setPendingCheckIn(null); }}
+            submitLabel="Save card & confirm booking"
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
