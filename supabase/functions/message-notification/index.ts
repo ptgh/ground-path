@@ -122,27 +122,30 @@ serve(async (req: Request): Promise<Response> => {
         to: [recipientUser.email],
         subject: `New message from ${senderName || 'a client'} — Groundpath`,
         html: `
-          <div style="font-family: 'Inter', Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px; background-color: #ffffff;">
-            <div style="text-align: center; margin-bottom: 28px;">
-              <h1 style="font-size: 20px; font-weight: 600; color: #1a1a1a; margin: 0;">
-                New Message
-              </h1>
+          <div style="background-color:#f3f4f6;padding:24px 12px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;">
+            <div style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #d4ddd4;border-radius:12px;overflow:hidden;">
+              <div style="background:#ffffff;text-align:center;padding:24px 16px 16px;border-bottom:1px solid #d4ddd4;">
+                <img src="https://groundpath.com.au/email/groundpath-logo.png" width="44" height="44" alt="groundpath" style="display:inline-block;width:44px;height:44px;border-radius:50%;border:0;outline:none;text-decoration:none;" />
+              </div>
+              <div style="padding:24px 32px 32px;">
+                <h1 style="font-size:20px;font-weight:600;color:#1a1a1a;margin:0 0 16px;text-align:center;letter-spacing:-0.01em;">New Message</h1>
+                <div style="background-color:#f8faf8;border-left:3px solid #4a7c4f;padding:16px 20px;border-radius:0 8px 8px 0;margin-bottom:24px;">
+                  <p style="font-size:14px;color:#374151;line-height:1.6;margin:0;">
+                    You have a new message from <strong>${senderName || 'a client'}</strong> in groundpath.
+                  </p>
+                </div>
+                <div style="text-align:center;margin-bottom:28px;">
+                  <a href="https://groundpath.com.au/messages" style="display:inline-block;background-color:#4a7c4f;color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:500;">
+                    View Message
+                  </a>
+                </div>
+                <p style="font-size:12px;color:#9ca3af;text-align:center;margin:0;line-height:1.5;">
+                  For your privacy, the message content is not included in this email.<br/>
+                  You can manage notification preferences in your groundpath dashboard.
+                </p>
+              </div>
             </div>
-            <div style="background-color: #f8faf8; border-left: 3px solid #4a7c4f; padding: 16px 20px; border-radius: 0 8px 8px 0; margin-bottom: 24px;">
-              <p style="font-size: 14px; color: #374151; line-height: 1.6; margin: 0;">
-                You have a new message from <strong>${senderName || 'a client'}</strong> in Groundpath.
-              </p>
-            </div>
-            <div style="text-align: center; margin-bottom: 28px;">
-              <a href="https://groundpath.com.au/messages"
-                 style="display: inline-block; background-color: #4a7c4f; color: #ffffff; text-decoration: none; padding: 12px 32px; border-radius: 6px; font-size: 14px; font-weight: 500;">
-                View Message
-              </a>
-            </div>
-            <p style="font-size: 12px; color: #9ca3af; text-align: center; margin: 0; line-height: 1.5;">
-              For your privacy, the message content is not included in this email.<br/>
-              You can manage notification preferences in your Groundpath dashboard.
-            </p>
+            <p style="text-align:center;font-size:11px;color:#9ca3af;margin:16px 0 0;">groundpath — grounded mental health support · groundpath.com.au</p>
           </div>
         `,
       }),
