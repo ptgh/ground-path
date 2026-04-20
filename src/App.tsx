@@ -186,7 +186,7 @@ const App = () => {
               <Route path="/practitioner/forms/supervision-record/fill" element={<VerifiedPractitionerRoute><SupervisionRecordForm /></VerifiedPractitionerRoute>} />
               <Route path="/practitioner/forms/reflective-practice/fill" element={<VerifiedPractitionerRoute><ReflectivePracticeForm /></VerifiedPractitionerRoute>} />
               <Route path="/practitioner/forms/k10/fill" element={<VerifiedPractitionerRoute><BDIForm /></VerifiedPractitionerRoute>} />
-              <Route path="/auth" element={<Navigate to="/practitioner/auth" replace />} />
+              <Route path="/auth" element={<AuthPage defaultUserType="user" />} />
               <Route path="/practitioner/auth" element={<AuthPage />} />
               <Route path="/practitioner/auth/callback" element={<AuthCallback />} />
               <Route path="/auth/callback" element={<LinkedInCallback />} />
