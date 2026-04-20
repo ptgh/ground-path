@@ -29,7 +29,7 @@ const INK = '#1a1a1a';
 const MUTED = '#6b7280';
 const SOFT_BG = '#f6f8f6';
 const BORDER = '#e5e7eb';
-const REVIEW_URL = 'https://groundpath.com.au/practitioner/dashboard?tab=booking';
+const REVIEW_URL = 'https://groundpath.com.au/practitioner/dashboard?tab=booking&view=sessions';
 const CLIENT_BOOKINGS_URL = 'https://groundpath.com.au/dashboard';
 const SESSION_URL = (bookingId: string) => `https://groundpath.com.au/session/${bookingId}`;
 

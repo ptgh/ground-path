@@ -216,7 +216,13 @@ const MeetingActions = ({ booking, onRetry }: { booking: BookingRequest; onRetry
 /* ═══════════════════════════════════════════ */
 const NativeBooking = () => {
   const { user } = useAuth();
-  const [view, setView] = useState<BookingView>('calendar');
+  const [view, setView] = useState<BookingView>(() => {
+    if (typeof window === 'undefined') return 'calendar';
+    const params = new URLSearchParams(window.location.search);
+    const v = params.get('view');
+    if (v === 'sessions' || v === 'settings' || v === 'calendar') return v;
+    return 'calendar';
+  });
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [bookings, setBookings] = useState<BookingRequest[]>([]);
