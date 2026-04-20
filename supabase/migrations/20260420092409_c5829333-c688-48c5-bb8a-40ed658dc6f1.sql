@@ -1,0 +1,1 @@
+DELETE FROM public.practitioner_connect_accounts;
