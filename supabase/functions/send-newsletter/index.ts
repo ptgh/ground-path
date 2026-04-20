@@ -50,10 +50,10 @@ const handler = async (req: Request): Promise<Response> => {
       recipients = [body.testEmail];
       console.log('Sending test newsletter to:', body.testEmail);
     } else {
-      // Production mode - get all confirmed subscribers
+      // Production mode - get all confirmed subscribers (with their unsubscribe tokens)
       const { data: subscribers, error } = await supabase
         .from('mailing_list')
-        .select('email')
+        .select('email, unsubscribe_token')
         .eq('status', 'confirmed');
 
       if (error) {
@@ -62,66 +62,85 @@ const handler = async (req: Request): Promise<Response> => {
 
       recipients = subscribers.map(sub => sub.email);
       console.log(`Sending newsletter to ${recipients.length} confirmed subscribers`);
-    }
 
-    if (recipients.length === 0) {
+      if (recipients.length === 0) {
+        return new Response(
+          JSON.stringify({ error: "No recipients found", message: "No confirmed subscribers" }),
+          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } },
+        );
+      }
+
+      // Send one email per subscriber so each has a tokenised unsubscribe link
+      const results = [];
+      for (const sub of subscribers) {
+        const unsubscribeUrl = sub.unsubscribe_token
+          ? `https://groundpath.com.au/unsubscribe?token=${sub.unsubscribe_token}`
+          : `https://groundpath.com.au/unsubscribe`;
+
+        const html = await renderAsync(
+          NewsletterEmail({
+            subject: body.subject,
+            previewText: body.previewText || "Your latest professional development updates from groundpath",
+            articles: body.articles,
+            unsubscribeUrl,
+          }),
+        );
+
+        const emailResponse = await resend.emails.send({
+          from: "groundpath newsletter <newsletter@groundpath.com.au>",
+          to: [sub.email],
+          subject: body.subject,
+          html,
+        });
+        results.push(emailResponse);
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      console.log('Newsletter sent successfully to all recipients');
       return new Response(
-        JSON.stringify({ 
-          error: "No recipients found",
-          message: body.testEmail ? "Test email provided but no confirmed subscribers" : "No confirmed subscribers"
+        JSON.stringify({
+          success: true,
+          recipientCount: recipients.length,
+          batches: results.length,
+          message: 'Newsletter sent to all confirmed subscribers',
         }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
       );
     }
 
-    // Render the email template
+    // Test-mode path (single recipient, no token)
+    if (recipients.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "No recipients found", message: "Test email provided but no confirmed subscribers" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } },
+      );
+    }
+
     const html = await renderAsync(
       NewsletterEmail({
         subject: body.subject,
         previewText: body.previewText || "Your latest professional development updates from groundpath",
         articles: body.articles,
         unsubscribeUrl: "https://groundpath.com.au/unsubscribe",
-      })
+      }),
     );
 
-    // Send emails in batches to avoid rate limiting
-    const batchSize = 50;
-    const results = [];
-    
-    for (let i = 0; i < recipients.length; i += batchSize) {
-      const batch = recipients.slice(i, i + batchSize);
-      
-      const emailResponse = await resend.emails.send({
-        from: "groundpath newsletter <newsletter@groundpath.com.au>",
-        to: batch,
-        subject: body.subject,
-        html: html,
-      });
-
-      results.push(emailResponse);
-      
-      // Small delay between batches
-      if (i + batchSize < recipients.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-    }
-
-    console.log('Newsletter sent successfully to all recipients');
+    const emailResponse = await resend.emails.send({
+      from: "groundpath newsletter <newsletter@groundpath.com.au>",
+      to: recipients,
+      subject: body.subject,
+      html,
+    });
 
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         success: true,
         recipientCount: recipients.length,
-        batches: results.length,
-        message: body.testEmail ? 'Test newsletter sent successfully' : 'Newsletter sent to all confirmed subscribers'
+        batches: 1,
+        message: 'Test newsletter sent successfully',
+        emailResponse,
       }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
     );
 
   } catch (error) {
