@@ -71,15 +71,15 @@ const Services = () => {
   ];
 
   return (
-    <section id="services" ref={sectionRef} className="py-20 bg-white scroll-mt-20">
+    <section id="services" ref={sectionRef} className="py-20 bg-background scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="fade-in text-3xl sm:text-4xl font-light text-gray-900 mb-4">
+          <h2 className="fade-in text-3xl sm:text-4xl font-light text-foreground mb-4">
             Services & Rates
           </h2>
-          <div className="fade-in w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
-          <p className="fade-in text-lg text-gray-600 max-w-2xl mx-auto">
+          <div className="fade-in w-20 h-1 bg-primary mx-auto mb-6"></div>
+          <p className="fade-in text-lg text-muted-foreground max-w-2xl mx-auto">
             Professional, affordable mental health and social work services tailored to your needs
           </p>
         </div>
@@ -97,19 +97,19 @@ const Services = () => {
               },
             } : {};
             return (
-            <CardTag key={index} {...cardProps} className={`service-card ${isBookable ? 'service-card-bookable' : ''} bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow duration-300 block ${service.comingSoon ? 'opacity-75' : 'cursor-pointer'}`}>
+            <CardTag key={index} {...cardProps} className={`service-card ${isBookable ? 'service-card-bookable' : ''} bg-muted/40 rounded-xl p-8 hover:shadow-lg transition-shadow duration-300 block ${service.comingSoon ? 'opacity-75' : 'cursor-pointer'}`}>
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-xl font-medium text-gray-900">{service.name}</h3>
+                  <h3 className="text-xl font-medium text-foreground">{service.name}</h3>
                 </div>
                 <div className="flex gap-2">
                   {service.comingSoon && (
-                    <span className="bg-sage-50 text-sage-600 border border-sage-200 px-3 py-1 rounded-full text-xs font-medium tracking-wide uppercase whitespace-nowrap">
+                    <span className="bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full text-xs font-medium tracking-wide uppercase whitespace-nowrap">
                       Coming Soon
                     </span>
                   )}
                   {service.ndis && (
-                    <span className="bg-sage-100 text-sage-700 px-3 py-1 rounded-full text-sm font-medium">
+                    <span className="bg-primary/15 text-primary px-3 py-1 rounded-full text-sm font-medium">
                       NDIS
                     </span>
                   )}
@@ -118,16 +118,16 @@ const Services = () => {
               
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Format:</span>
-                  <span className="font-medium text-gray-900">{service.format}</span>
+                  <span className="text-muted-foreground">Format:</span>
+                  <span className="font-medium text-foreground">{service.format}</span>
                 </div>
                 
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Rate (AUD):</span>
-                  <span className="font-medium text-sage-600 text-lg">{service.rate}</span>
+                  <span className="text-muted-foreground">Rate (AUD):</span>
+                  <span className="font-medium text-primary text-lg">{service.rate}</span>
                 </div>
                 
-                <p className="text-gray-600 text-sm mt-4 pt-4 border-t border-gray-200">
+                <p className="text-muted-foreground text-sm mt-4 pt-4 border-t border-border">
                   {service.description}
                 </p>
               </div>
@@ -137,18 +137,18 @@ const Services = () => {
         </div>
 
         {/* Important Notes */}
-        <div className="fade-in bg-sage-50 rounded-xl p-8">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Important Information</h3>
+        <div className="fade-in bg-primary/5 rounded-xl p-8">
+          <h3 className="text-lg font-medium text-foreground mb-4">Important Information</h3>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <h4 className="font-medium text-sage-700 mb-2">✅ NDIS Accepted</h4>
-              <p className="text-gray-600 text-sm">
+              <h4 className="font-medium text-primary mb-2">✅ NDIS Accepted</h4>
+              <p className="text-muted-foreground text-sm">
                 Plan-managed and Self-managed NDIS participants welcome
               </p>
             </div>
             <div>
-              <h4 className="font-medium text-gray-700 mb-2">❌ Medicare Billing</h4>
-              <p className="text-gray-600 text-sm">
+              <h4 className="font-medium text-foreground mb-2">❌ Medicare Billing</h4>
+              <p className="text-muted-foreground text-sm">
                 Medicare billing not yet available - private rates apply
               </p>
             </div>

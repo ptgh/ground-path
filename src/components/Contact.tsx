@@ -97,14 +97,14 @@ const Contact = () => {
   return (
     <>
       {/* Booking Section */}
-      <section id="booking" className="py-20 bg-gray-50 scroll-mt-20">
+      <section id="booking" className="py-20 bg-muted/40 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="fade-in text-3xl sm:text-4xl font-light text-gray-900 mb-4">
+            <h2 className="fade-in text-3xl sm:text-4xl font-light text-foreground mb-4">
               Book a Session
             </h2>
-            <div className="fade-in w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
-            <p className="fade-in text-lg text-gray-600 max-w-2xl mx-auto">
+            <div className="fade-in w-20 h-1 bg-primary mx-auto mb-6"></div>
+            <p className="fade-in text-lg text-muted-foreground max-w-2xl mx-auto">
               {bookingModeLoading
                 ? 'All sessions are conducted online via secure video — simple, safe, and accessible from anywhere.'
                 : bookingMode === 'native_beta'
@@ -117,11 +117,13 @@ const Contact = () => {
                   href={HALAXY_EXTERNAL_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sage-600 hover:text-sage-700 transition-colors"
+                  className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
                 >
                   <img 
                     src="https://cdn.halaxy.com/h/images/logo.png" 
                     alt="Halaxy booking system logo"
+                    width="96"
+                    height="24"
                     className="h-6 w-auto"
                     loading="lazy"
                     decoding="async"
@@ -156,7 +158,7 @@ const Contact = () => {
                 <div className="flex items-center gap-3 mb-4">
                   <button 
                     onClick={() => window.open(HALAXY_EXTERNAL_URL, '_blank')}
-                    className="flex-1 bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium"
+                    className="flex-1 bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors font-medium"
                     aria-label="Book online session via Halaxy"
                   >
                     Book Online Session
@@ -170,8 +172,11 @@ const Contact = () => {
                     <img 
                       src="https://cdn.halaxy.com/h/images/logo.png" 
                       alt="Halaxy Profile"
+                      width="160"
+                      height="40"
                       className="h-10 w-auto hover:opacity-80 transition-opacity cursor-pointer"
                       loading="lazy"
+                      decoding="async"
                     />
                   </a>
                 </div>
@@ -216,11 +221,11 @@ const Contact = () => {
       <section id="contact" className="py-20 bg-background scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="fade-in text-3xl sm:text-4xl font-light text-gray-900 mb-4">
+            <h2 className="fade-in text-3xl sm:text-4xl font-light text-foreground mb-4">
               Get in Touch
             </h2>
-            <div className="fade-in w-20 h-1 bg-sage-600 mx-auto mb-6"></div>
-            <p className="fade-in text-lg text-gray-600 max-w-2xl mx-auto">
+            <div className="fade-in w-20 h-1 bg-primary mx-auto mb-6"></div>
+            <p className="fade-in text-lg text-muted-foreground max-w-2xl mx-auto">
               Have a question? Send us a message and we'll get back to you.
             </p>
           </div>
@@ -360,7 +365,7 @@ const Contact = () => {
               <button
                 type="submit"
                 disabled={contactFormMutation.isPending}
-                className="w-full bg-sage-600 text-white py-3 px-4 rounded-lg hover:bg-sage-700 transition-colors font-medium mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors font-medium mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {contactFormMutation.isPending ? 'Sending...' : 'Send Message'}
               </button>
