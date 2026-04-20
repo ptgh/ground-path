@@ -92,40 +92,40 @@ const About = () => {
           {/* Main Content */}
           <div className="grid md:grid-cols-2 gap-12 items-start">
             {/* Services Info Box */}
-            <div className="fade-in bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+            <div className="fade-in bg-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-border">
               <div className="space-y-5">
                 <div>
-                  <h3 className="text-xl font-medium text-gray-900 mb-3">
+                  <h3 className="text-xl font-medium text-foreground mb-3">
                     Qualified & Experienced Social Workers and Counsellors
                   </h3>
-                  <p className="text-gray-600 leading-relaxed text-sm">
+                  <p className="text-muted-foreground leading-relaxed text-sm">
                     At groundpath, we provide person-centred, evidence-based support grounded in the AASW and ACA Code of Ethics and Practice.
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-medium text-gray-900 mb-3">
+                  <h3 className="text-xl font-medium text-foreground mb-3">
                     Professional Standards & Compliance
                   </h3>
-                  <p className="text-gray-600 leading-relaxed text-sm">
+                  <p className="text-muted-foreground leading-relaxed text-sm">
                     All team members maintain current professional registration, undertake regular clinical supervision, and meet annual CPD requirements. Cultural safety principles and comprehensive feedback processes ensure the highest standards of ethical practice.
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-medium text-gray-900 mb-3">
+                  <h3 className="text-xl font-medium text-foreground mb-3">
                     Service Delivery & Approach
                   </h3>
-                  <p className="text-gray-600 leading-relaxed text-sm">
+                  <p className="text-muted-foreground leading-relaxed text-sm">
                     We offer flexible service delivery including telehealth consultations and in-person sessions. Our evidence-based therapeutic approaches are trauma-informed and culturally responsive, with quality assurance through regular supervision and client feedback processes to ensure optimal outcomes.
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-medium text-gray-900 mb-3">
+                  <h3 className="text-xl font-medium text-foreground mb-3">
                     NDIS Services
                   </h3>
-                  <p className="text-gray-600 leading-relaxed text-sm">
+                  <p className="text-muted-foreground leading-relaxed text-sm">
                     High-quality services for plan-managed and self-managed participants including counselling and therapeutic support, psychosocial recovery coaching, support coordination, and community participation support. Delivered with trauma-informed, culturally respectful approach.
                   </p>
                 </div>
@@ -136,34 +136,34 @@ const About = () => {
             <div className="fade-in space-y-4">
               <button 
                 onClick={() => setIsMSWOpen(true)}
-                className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                className="w-full bg-card h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border cursor-pointer hover:bg-muted/40"
               >
                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
-                  <div className="text-lg font-light text-sage-600">MSW</div>
-                  <div className="text-gray-600 text-xs">Master of Social Work</div>
-                  <div className="text-xs text-gray-500 text-center">Qualified professionals with advanced degrees</div>
+                  <div className="text-lg font-light text-primary">MSW</div>
+                  <div className="text-muted-foreground text-xs">Master of Social Work</div>
+                  <div className="text-xs text-muted-foreground/80 text-center">Qualified professionals with advanced degrees</div>
                 </div>
               </button>
 
                <button 
                  onClick={() => setIsAASWOpen(true)}
-                 className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                 className="w-full bg-card h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border cursor-pointer hover:bg-muted/40"
                >
                  <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
-                   <div className="text-lg font-light text-sage-600">AASW</div>
-                   <div className="text-gray-600 text-xs">Professional Registration</div>
-                   <div className="text-xs text-gray-500 text-center">Australian Association of Social Workers (AASW)</div>
+                   <div className="text-lg font-light text-primary">AASW</div>
+                   <div className="text-muted-foreground text-xs">Professional Registration</div>
+                   <div className="text-xs text-muted-foreground/80 text-center">Australian Association of Social Workers (AASW)</div>
                  </div>
                </button>
 
               <button 
                 onClick={() => setIsCPDOpen(true)}
-                className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                className="w-full bg-card h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border cursor-pointer hover:bg-muted/40"
               >
                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
-                  <div className="text-lg font-light text-sage-600">CPD</div>
-                  <div className="text-gray-600 text-xs">Continuing Professional Development</div>
-                  <div className="text-xs text-gray-500 text-center">30+ hours annual training</div>
+                  <div className="text-lg font-light text-primary">CPD</div>
+                  <div className="text-muted-foreground text-xs">Continuing Professional Development</div>
+                  <div className="text-xs text-muted-foreground/80 text-center">30+ hours annual training</div>
                 </div>
               </button>
 
@@ -171,12 +171,12 @@ const About = () => {
 
               <button 
                 onClick={() => setIsNDISOpen(true)}
-                className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                className="w-full bg-card h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border cursor-pointer hover:bg-muted/40"
               >
                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
-                  <div className="text-lg font-light text-sage-600">NDIS</div>
-                  <div className="text-gray-600 text-xs">National Disability Insurance Scheme</div>
-                  <div className="text-xs text-gray-500 text-center">Plan-managed & self-managed support</div>
+                  <div className="text-lg font-light text-primary">NDIS</div>
+                  <div className="text-muted-foreground text-xs">National Disability Insurance Scheme</div>
+                  <div className="text-xs text-muted-foreground/80 text-center">Plan-managed & self-managed support</div>
                 </div>
               </button>
 
@@ -184,45 +184,45 @@ const About = () => {
 
                <button 
                 onClick={() => setIsProfessionalIndemnityOpen(true)}
-                className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                className="w-full bg-card h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border cursor-pointer hover:bg-muted/40"
               >
                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
-                  <div className="text-lg font-light text-sage-600">Professional Indemnity</div>
-                  <div className="text-gray-600 text-xs">Insurance Coverage</div>
-                  <div className="text-xs text-gray-500 text-center">Client protection & professional liability</div>
+                  <div className="text-lg font-light text-primary">Professional Indemnity</div>
+                  <div className="text-muted-foreground text-xs">Insurance Coverage</div>
+                  <div className="text-xs text-muted-foreground/80 text-center">Client protection & professional liability</div>
                 </div>
               </button>
 
               <button 
                 onClick={() => setIsAMHSWOpen(true)}
-                className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                className="w-full bg-card h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border cursor-pointer hover:bg-muted/40"
               >
                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
-                  <div className="text-lg font-light text-sage-600">AMHSW</div>
-                  <div className="text-gray-600 text-xs">Accredited Mental Health Social Worker</div>
-                  <div className="text-xs text-gray-500 text-center">Registration in progress</div>
+                  <div className="text-lg font-light text-primary">AMHSW</div>
+                  <div className="text-muted-foreground text-xs">Accredited Mental Health Social Worker</div>
+                  <div className="text-xs text-muted-foreground/80 text-center">Registration in progress</div>
                 </div>
               </button>
 
               <button 
                 onClick={() => setIsACAOpen(true)}
-                className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                className="w-full bg-card h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border cursor-pointer hover:bg-muted/40"
               >
                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
-                  <div className="text-lg font-light text-sage-600">ACA</div>
-                  <div className="text-gray-600 text-xs">Professional Registration</div>
-                  <div className="text-xs text-gray-500 text-center">Australian Counselling Association (ACA)</div>
+                  <div className="text-lg font-light text-primary">ACA</div>
+                  <div className="text-muted-foreground text-xs">Professional Registration</div>
+                  <div className="text-xs text-muted-foreground/80 text-center">Australian Counselling Association (ACA)</div>
                 </div>
               </button>
 
               <button 
                 onClick={() => setIsQualificationsOpen(true)}
-                className="w-full bg-white h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer hover:bg-gray-50/50"
+                className="w-full bg-card h-24 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border cursor-pointer hover:bg-muted/40"
               >
                 <div className="flex flex-col items-center justify-center h-full px-4 py-2 space-y-0.5">
-                  <div className="text-lg font-light text-sage-600">Qualifications</div>
-                  <div className="text-gray-600 text-xs">Academic & Professional</div>
-                  <div className="text-xs text-gray-500 text-center">MSW, Graduate Certificate in Counselling</div>
+                  <div className="text-lg font-light text-primary">Qualifications</div>
+                  <div className="text-muted-foreground text-xs">Academic & Professional</div>
+                  <div className="text-xs text-muted-foreground/80 text-center">MSW, Graduate Certificate in Counselling</div>
                 </div>
               </button>
             </div>
@@ -262,10 +262,10 @@ const About = () => {
       {/* AMHSW Modal */}
       {isAMHSWOpen && (
         <CredentialModal title="AMHSW — Accredited Mental Health Social Worker" onClose={() => setIsAMHSWOpen(false)}>
-          <div className="space-y-4 text-sm text-gray-600">
+          <div className="space-y-4 text-sm text-muted-foreground">
             <p className="leading-relaxed">Accredited Mental Health Social Worker (AMHSW) status is a specialist endorsement through the Australian Association of Social Workers (AASW), recognising advanced competency in mental health practice.</p>
             <p className="leading-relaxed">AMHSW registration is currently in progress for groundpath practitioners. Once accredited, this will enable Medicare-rebated mental health sessions under the Better Access initiative via GP Mental Health Treatment Plans.</p>
-            <h4 className="font-medium text-gray-900">Requirements include:</h4>
+            <h4 className="font-medium text-foreground">Requirements include:</h4>
             <ul className="list-disc pl-5 space-y-1">
               <li>Master of Social Work qualification from an AASW-accredited program</li>
               <li>Minimum supervised practice hours in mental health settings</li>
@@ -279,10 +279,10 @@ const About = () => {
       {/* ACA Modal */}
       {isACAOpen && (
         <CredentialModal title="ACA — Australian Counselling Association" onClose={() => setIsACAOpen(false)}>
-          <div className="space-y-4 text-sm text-gray-600">
+          <div className="space-y-4 text-sm text-muted-foreground">
             <p className="leading-relaxed">The Australian Counselling Association (ACA) is the largest national professional body for counsellors and psychotherapists in Australia.</p>
             <p className="leading-relaxed">Groundpath practitioners are registered with the ACA. This registration provides professional recognition and enables clients to access private health insurance rebates where applicable.</p>
-            <h4 className="font-medium text-gray-900">ACA Membership includes:</h4>
+            <h4 className="font-medium text-foreground">ACA Membership includes:</h4>
             <ul className="list-disc pl-5 space-y-1">
               <li>Professional recognition as a qualified counsellor</li>
               <li>Adherence to the ACA Code of Ethics and Practice</li>
@@ -296,11 +296,11 @@ const About = () => {
       {/* Qualifications Modal */}
       {isQualificationsOpen && (
         <CredentialModal title="Academic & Professional Qualifications" onClose={() => setIsQualificationsOpen(false)}>
-          <div className="space-y-4 text-sm text-gray-600">
-            <h4 className="font-medium text-gray-900">Completed Qualifications</h4>
+          <div className="space-y-4 text-sm text-muted-foreground">
+            <h4 className="font-medium text-foreground">Completed Qualifications</h4>
             <ul className="list-disc pl-5 space-y-1">
-              <li><span className="font-medium text-gray-900">Master of Social Work (MSW)</span> — Advanced professional qualification in social work practice</li>
-              <li><span className="font-medium text-gray-900">Graduate Certificate in Counselling</span> — Expanding therapeutic skills and counselling competency</li>
+              <li><span className="font-medium text-foreground">Master of Social Work (MSW)</span> — Advanced professional qualification in social work practice</li>
+              <li><span className="font-medium text-foreground">Graduate Certificate in Counselling</span> — Expanding therapeutic skills and counselling competency</li>
             </ul>
             <p className="leading-relaxed">This combination of qualifications ensures a well-rounded, evidence-based approach to mental health and social work practice.</p>
           </div>
