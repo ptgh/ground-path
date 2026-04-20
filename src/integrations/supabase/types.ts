@@ -696,6 +696,48 @@ export type Database = {
         }
         Relationships: []
       }
+      practitioner_connect_accounts: {
+        Row: {
+          charges_enabled: boolean
+          country: string | null
+          created_at: string
+          default_currency: string | null
+          details_submitted: boolean
+          id: string
+          payouts_enabled: boolean
+          requirements_currently_due: string[] | null
+          stripe_account_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          charges_enabled?: boolean
+          country?: string | null
+          created_at?: string
+          default_currency?: string | null
+          details_submitted?: boolean
+          id?: string
+          payouts_enabled?: boolean
+          requirements_currently_due?: string[] | null
+          stripe_account_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          charges_enabled?: boolean
+          country?: string | null
+          created_at?: string
+          default_currency?: string | null
+          details_submitted?: boolean
+          id?: string
+          payouts_enabled?: boolean
+          requirements_currently_due?: string[] | null
+          stripe_account_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       practitioner_registrations: {
         Row: {
           body_name: string
@@ -1022,6 +1064,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_practitioner_connect_ready: {
+        Args: { _user_id: string }
         Returns: boolean
       }
       list_bookable_practitioners: {
