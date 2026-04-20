@@ -302,8 +302,8 @@ const Header = () => {
                       onClick={() => { navigate(item.path); setIsMenuOpen(false); }}
                       className={`relative flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                         isActive
-                          ? 'text-white bg-white/10'
-                          : 'text-gray-300 hover:text-white hover:bg-white/5'
+                          ? 'text-surface-dark-foreground bg-surface-dark-foreground/10'
+                          : 'text-surface-dark-muted hover:text-surface-dark-foreground hover:bg-surface-dark-foreground/5'
                       }`}
                     >
                       <item.icon className="h-4 w-4" />
@@ -313,10 +313,10 @@ const Header = () => {
                   );
                 })}
                 {/* Separator + public links */}
-                <div className="w-px h-5 bg-gray-700 mx-2" />
+                <div className="w-px h-5 bg-surface-dark-border mx-2" />
                 <button
                   onClick={() => navigate('/')}
-                  className="text-gray-400 hover:text-white transition-colors text-sm font-medium px-3 py-2"
+                  className="text-surface-dark-muted hover:text-surface-dark-foreground transition-colors text-sm font-medium px-3 py-2"
                 >
                   View Site
                 </button>
