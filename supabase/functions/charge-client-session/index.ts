@@ -1,13 +1,27 @@
 // Practitioner-initiated charge for a completed session.
 // Creates a Stripe Invoice (so the client gets a hosted receipt), then pays it
-// off-session using the client's default saved card. Sends a Resend email with
-// the hosted invoice link on success.
+// off-session using the client's default saved card.
+//
+// Stripe Connect split:
+//   - Platform fee: 5% + A$1.00 (taken via application_fee_amount)
+//   - Net to practitioner: invoice total − platform fee − Stripe processing
+//   - If practitioner has Connect active → invoice is created on_behalf_of their account,
+//     funds settle directly to them, application fee comes to groundpath.
+//   - If practitioner is NOT Connect-ready → invoice is created on the platform account,
+//     funds are held in groundpath's balance and transferred manually once they onboard.
 import { getStripe, getServiceClient, getUserClient } from '../_shared/stripe.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const PLATFORM_FEE_PERCENT = 0.05;       // 5%
+const PLATFORM_FEE_FIXED_CENTS = 100;    // A$1.00
+
+function calculatePlatformFeeCents(amountCents: number): number {
+  return Math.round(amountCents * PLATFORM_FEE_PERCENT) + PLATFORM_FEE_FIXED_CENTS;
+}
 
 async function sendInvoiceEmail(opts: {
   to: string;
@@ -94,12 +108,20 @@ Deno.serve(async (req) => {
     const customer = await stripe.customers.retrieve(custRow.stripe_customer_id);
     const defaultPm = (customer as any).invoice_settings?.default_payment_method;
     if (!defaultPm) {
-      // Fall back to first available card
       const cards = await stripe.paymentMethods.list({ customer: custRow.stripe_customer_id, type: 'card', limit: 1 });
       if (cards.data.length === 0) {
         return new Response(JSON.stringify({ error: 'Client has no card on file' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
     }
+
+    // Look up practitioner's Connect account (if any)
+    const { data: connectRow } = await svc
+      .from('practitioner_connect_accounts')
+      .select('stripe_account_id, charges_enabled, payouts_enabled')
+      .eq('user_id', practitioner.id)
+      .maybeSingle();
+    const connectReady = !!connectRow?.charges_enabled && !!connectRow?.payouts_enabled;
+    const platformFeeCents = calculatePlatformFeeCents(amountCents);
 
     // Insert local charge row (pending)
     const { data: chargeRow, error: insertErr } = await svc.from('session_charges').insert({
@@ -113,7 +135,6 @@ Deno.serve(async (req) => {
     }).select('id').single();
     if (insertErr || !chargeRow) throw new Error('Failed to record charge');
 
-    // Create + finalize + pay invoice (gives client a hosted receipt link)
     try {
       await stripe.invoiceItems.create({
         customer: custRow.stripe_customer_id,
@@ -121,12 +142,28 @@ Deno.serve(async (req) => {
         currency,
         description: description ?? 'Counselling session',
       });
-      const invoice = await stripe.invoices.create({
+
+      // Build invoice. If Connect-ready, route funds + take application fee.
+      const invoiceParams: Record<string, unknown> = {
         customer: custRow.stripe_customer_id,
         collection_method: 'charge_automatically',
         auto_advance: false,
-        metadata: { booking_request_id: bookingRequestId ?? '', charge_row_id: chargeRow.id },
-      });
+        metadata: {
+          booking_request_id: bookingRequestId ?? '',
+          charge_row_id: chargeRow.id,
+          practitioner_id: practitioner.id,
+          platform_fee_cents: String(platformFeeCents),
+          connect_ready: connectReady ? 'true' : 'false',
+        },
+      };
+
+      if (connectReady && connectRow?.stripe_account_id) {
+        invoiceParams.on_behalf_of = connectRow.stripe_account_id;
+        invoiceParams.transfer_data = { destination: connectRow.stripe_account_id };
+        invoiceParams.application_fee_amount = platformFeeCents;
+      }
+
+      const invoice = await stripe.invoices.create(invoiceParams);
       const finalized = await stripe.invoices.finalizeInvoice(invoice.id);
       const paid = await stripe.invoices.pay(finalized.id);
 
@@ -135,7 +172,6 @@ Deno.serve(async (req) => {
         stripe_invoice_id: paid.id,
         stripe_payment_intent_id: typeof paid.payment_intent === 'string' ? paid.payment_intent : paid.payment_intent?.id,
         hosted_invoice_url: paid.hosted_invoice_url,
-        stripe_receipt_url: (paid as any).charge ? null : null,
         charged_at: new Date().toISOString(),
       }).eq('id', chargeRow.id);
 
@@ -154,7 +190,14 @@ Deno.serve(async (req) => {
         });
       }
 
-      return new Response(JSON.stringify({ success: true, chargeId: chargeRow.id, hostedInvoiceUrl: paid.hosted_invoice_url }), {
+      return new Response(JSON.stringify({
+        success: true,
+        chargeId: chargeRow.id,
+        hostedInvoiceUrl: paid.hosted_invoice_url,
+        connectReady,
+        platformFeeCents,
+        heldOnPlatform: !connectReady,
+      }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     } catch (stripeErr) {
