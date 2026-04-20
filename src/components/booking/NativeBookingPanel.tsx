@@ -41,7 +41,7 @@ const NativeBookingPanel = () => {
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [cardCaptureOpen, setCardCaptureOpen] = useState(false);
   const [pendingCheckIn, setPendingCheckIn] = useState<CheckInData | null>(null);
-  const { cards, refresh: refreshCards } = useSavedCards();
+  const { cards, loading: cardsLoading, refresh: refreshCards } = useSavedCards();
 
   useEffect(() => {
     const load = async () => {
@@ -87,8 +87,16 @@ const NativeBookingPanel = () => {
   const handleCheckInComplete = async (checkInData: CheckInData) => {
     if (!selectedSlot || !user) return;
 
-    // If client has no card on file, capture one before creating the booking
-    if (cards.length === 0) {
+    // Make sure we have an authoritative cards list before deciding to capture.
+    // Without this, a slow first-load fetch can leave `cards` empty and skip
+    // capture, OR show capture for someone who already has a card on file.
+    let currentCards = cards;
+    if (cardsLoading || currentCards.length === 0) {
+      const { data } = await supabase.functions.invoke('list-payment-methods');
+      currentCards = data?.paymentMethods ?? currentCards;
+    }
+
+    if (currentCards.length === 0) {
       setPendingCheckIn(checkInData);
       setCheckInOpen(false);
       setCardCaptureOpen(true);
