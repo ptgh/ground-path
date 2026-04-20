@@ -119,7 +119,7 @@ const FlipLoginButton = ({ onClick }: { onClick: () => void }) => {
     <button
       ref={containerRef}
       onClick={onClick}
-      className="relative border border-gray-400 text-white hover:text-white hover:border-white hover:bg-white/10 px-5 py-2 rounded-lg font-medium text-sm h-10 overflow-hidden"
+      className="relative border border-surface-dark-border text-surface-dark-foreground hover:border-surface-dark-foreground hover:bg-surface-dark-foreground/10 px-5 py-2 rounded-lg font-medium text-sm h-10 overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark"
       style={{ perspective: '400px', minWidth: '80px' }}
     >
       <span
@@ -177,12 +177,12 @@ const MobileAuthIndicator = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-white/10 transition-colors">
+        <button className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-surface-dark-foreground/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark">
           <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/20">
             <User className="h-4 w-4 text-primary" />
           </div>
           {roleLabel && (
-            <span className="text-[10px] font-medium text-emerald-400">{roleLabel}</span>
+            <span className="text-[10px] font-medium text-primary">{roleLabel}</span>
           )}
         </button>
       </DropdownMenuTrigger>
@@ -276,7 +276,7 @@ const Header = () => {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 z-50">
+    <header className="fixed top-0 left-0 right-0 bg-surface-dark/95 backdrop-blur-sm border-b border-surface-dark-border z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
@@ -302,8 +302,8 @@ const Header = () => {
                       onClick={() => { navigate(item.path); setIsMenuOpen(false); }}
                       className={`relative flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                         isActive
-                          ? 'text-white bg-white/10'
-                          : 'text-gray-300 hover:text-white hover:bg-white/5'
+                          ? 'text-surface-dark-foreground bg-surface-dark-foreground/10'
+                          : 'text-surface-dark-muted hover:text-surface-dark-foreground hover:bg-surface-dark-foreground/5'
                       }`}
                     >
                       <item.icon className="h-4 w-4" />
@@ -313,10 +313,10 @@ const Header = () => {
                   );
                 })}
                 {/* Separator + public links */}
-                <div className="w-px h-5 bg-gray-700 mx-2" />
+                <div className="w-px h-5 bg-surface-dark-border mx-2" />
                 <button
                   onClick={() => navigate('/')}
-                  className="text-gray-400 hover:text-white transition-colors text-sm font-medium px-3 py-2"
+                  className="text-surface-dark-muted hover:text-surface-dark-foreground transition-colors text-sm font-medium px-3 py-2"
                 >
                   View Site
                 </button>
@@ -327,7 +327,7 @@ const Header = () => {
                   <button
                     key={item.label}
                     onClick={item.action}
-                    className="text-gray-300 hover:text-white transition-colors font-medium px-3 py-2 rounded-md hover:bg-white/5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                    className="text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2 rounded-md hover:bg-surface-dark-foreground/5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark"
                   >
                     {item.label}
                   </button>
@@ -337,14 +337,14 @@ const Header = () => {
                   <>
                     <button
                       onClick={() => navigate(profile?.user_type === 'practitioner' ? '/practitioner/dashboard' : '/dashboard')}
-                      className="relative text-gray-300 hover:text-white transition-colors font-medium px-3 py-2 rounded-md hover:bg-white/5 text-sm flex items-center gap-1.5"
+                      className="relative text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2 rounded-md hover:bg-surface-dark-foreground/5 text-sm flex items-center gap-1.5"
                     >
                       <LayoutDashboard className="h-4 w-4" />
                       Dashboard
                     </button>
                     <button
                       onClick={() => navigate('/messages')}
-                      className="relative text-gray-300 hover:text-white transition-colors font-medium px-3 py-2 rounded-md hover:bg-white/5 text-sm flex items-center gap-1.5"
+                      className="relative text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2 rounded-md hover:bg-surface-dark-foreground/5 text-sm flex items-center gap-1.5"
                     >
                       <MessageSquare className="h-4 w-4" />
                       Messages
@@ -378,7 +378,7 @@ const Header = () => {
           <div className="md:hidden flex items-center gap-2">
             {isLoggedIn && <MobileAuthIndicator />}
             <button
-              className="p-2 text-gray-300 hover:text-white rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+              className="p-2 text-surface-dark-muted hover:text-surface-dark-foreground rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isMenuOpen}
@@ -390,7 +390,7 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-800">
+          <div className="md:hidden py-4 border-t border-surface-dark-border">
             <nav className="flex flex-col space-y-1 px-2">
               {isPractitionerRoute ? (
                 <>
@@ -402,8 +402,8 @@ const Header = () => {
                         onClick={() => { navigate(item.path); setIsMenuOpen(false); }}
                         className={`relative flex items-center gap-2 text-left px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
                           isActive
-                            ? 'text-white bg-white/10'
-                            : 'text-gray-300 hover:text-white hover:bg-white/5'
+                            ? 'text-surface-dark-foreground bg-surface-dark-foreground/10'
+                            : 'text-surface-dark-muted hover:text-surface-dark-foreground hover:bg-surface-dark-foreground/5'
                         }`}
                       >
                         <item.icon className="h-4 w-4" />
@@ -416,10 +416,10 @@ const Header = () => {
                       </button>
                     );
                   })}
-                  <div className="border-t border-gray-700 my-2" />
+                  <div className="border-t border-surface-dark-border my-2" />
                   <button
                     onClick={() => { navigate('/'); setIsMenuOpen(false); }}
-                    className="text-left text-gray-400 hover:text-white transition-colors text-sm font-medium px-3 py-2.5"
+                    className="text-left text-surface-dark-muted hover:text-surface-dark-foreground transition-colors text-sm font-medium px-3 py-2.5"
                   >
                     View Site
                   </button>
@@ -430,7 +430,7 @@ const Header = () => {
                     <button
                       key={item.label}
                       onClick={() => { item.action(); setIsMenuOpen(false); }}
-                      className="text-left text-gray-300 hover:text-white transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-white/5 text-sm"
+                      className="text-left text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-surface-dark-foreground/5 text-sm"
                     >
                       {item.label}
                     </button>
@@ -439,14 +439,14 @@ const Header = () => {
                     <>
                       <button
                         onClick={() => { navigate(profile?.user_type === 'practitioner' ? '/practitioner/dashboard' : '/dashboard'); setIsMenuOpen(false); }}
-                        className="flex items-center gap-2 text-left text-gray-300 hover:text-white transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-white/5 text-sm"
+                        className="flex items-center gap-2 text-left text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-surface-dark-foreground/5 text-sm"
                       >
                         <LayoutDashboard className="h-4 w-4" />
                         Dashboard
                       </button>
                       <button
                         onClick={() => { navigate('/messages'); setIsMenuOpen(false); }}
-                        className="relative flex items-center gap-2 text-left text-gray-300 hover:text-white transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-white/5 text-sm"
+                        className="relative flex items-center gap-2 text-left text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-surface-dark-foreground/5 text-sm"
                       >
                         <MessageSquare className="h-4 w-4" />
                         Messages
@@ -458,7 +458,7 @@ const Header = () => {
                       </button>
                     </>
                   )}
-                  <div className="border-t border-gray-700 my-2" />
+                  <div className="border-t border-surface-dark-border my-2" />
                   <Button
                     onClick={() => { scrollToSection('booking'); setIsMenuOpen(false); }}
                     className="bg-primary text-primary-foreground hover:bg-primary/90 w-full mb-2"
@@ -470,7 +470,7 @@ const Header = () => {
                   ) : (
                     <Button
                       onClick={() => { handleProfessionalLogin(); setIsMenuOpen(false); }}
-                      className="bg-gray-700 text-white hover:bg-gray-600 border border-gray-500 w-full"
+                      className="bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-surface-dark-border w-full"
                     >
                       Login
                     </Button>

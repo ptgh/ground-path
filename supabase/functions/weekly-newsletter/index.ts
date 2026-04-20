@@ -114,10 +114,10 @@ const sendNewsletterToSubscribers = async () => {
     const { articles, weeklyTip } = await generateCuratedContent();
     console.log('Generated content:', { articles: articles.length, weeklyTip: !!weeklyTip });
 
-    // Get confirmed subscribers
+    // Get confirmed subscribers (with their unsubscribe tokens)
     const { data: subscribers, error: subscribersError } = await supabase
       .from('mailing_list')
-      .select('email, name')
+      .select('email, name, unsubscribe_token')
       .eq('status', 'confirmed');
 
     if (subscribersError) {
@@ -137,7 +137,9 @@ const sendNewsletterToSubscribers = async () => {
     // Send newsletter to each subscriber
     for (const subscriber of subscribers) {
       try {
-        const unsubscribeUrl = `https://groundpath.com.au/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
+        const unsubscribeUrl = subscriber.unsubscribe_token
+          ? `https://groundpath.com.au/unsubscribe?token=${subscriber.unsubscribe_token}`
+          : `https://groundpath.com.au/unsubscribe`;
 
         // Render the React email template
         const emailHtml = await renderAsync(
