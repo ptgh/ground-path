@@ -661,6 +661,17 @@ const Book = () => {
                                   </button>
                                 ))}
                               </div>
+                              {selectedSlot && selectedDate && selectedPractitioner && (
+                                <div className="mb-3 rounded-lg border border-primary/30 bg-primary/5 p-3">
+                                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">You're booking</p>
+                                  <p className="text-sm font-semibold text-foreground">{selectedPractitioner.display_name}</p>
+                                  <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground mt-1">
+                                    <span className="flex items-center gap-1"><CalendarIcon className="h-3 w-3" />{format(selectedDate, 'EEE, d MMM yyyy')}</span>
+                                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{selectedSlot.label}</span>
+                                    <span className="flex items-center gap-1"><Video className="h-3 w-3" />{getSettings().sessionDuration} min video</span>
+                                  </div>
+                                </div>
+                              )}
                               <Button onClick={handleRequestBooking} disabled={!selectedSlot || submitting} className="w-full" size="lg">
                                 {submitting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <CalendarIcon className="h-4 w-4 mr-2" />}
                                 {user ? 'Continue to check-in' : 'Sign in to Book'}
