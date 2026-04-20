@@ -62,7 +62,7 @@ export const ResourceShareForm = ({ onSubmit, onCancel }: ResourceShareFormProps
       />
       <Button
         size="sm"
-        className="h-8 bg-sage-600 hover:bg-sage-700 text-white"
+        className="h-8 bg-primary hover:bg-primary/90 text-white"
         onClick={handleSubmit}
         disabled={!url.trim()}
       >

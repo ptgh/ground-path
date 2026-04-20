@@ -377,7 +377,7 @@ export const AIAssistant = () => {
             <Button
               ref={chatButtonRef}
               size="lg"
-              className="fixed bottom-20 right-6 h-16 w-16 rounded-full shadow-2xl bg-sage-600 hover:bg-sage-700 z-50 border-2 border-sage-500/20 backdrop-blur-sm transition-all duration-300 hover:scale-110"
+              className="fixed bottom-20 right-6 h-16 w-16 rounded-full shadow-2xl bg-primary hover:bg-primary/90 z-50 border-2 border-primary/20 backdrop-blur-sm transition-all duration-300 hover:scale-110"
             >
               <svg width="36" height="36" viewBox="0 0 40 40" className="text-white">
                 <path
@@ -448,7 +448,7 @@ export const AIAssistant = () => {
                 </Button>
               </div>
             </DialogTitle>
-            <p className="text-sm text-gray-600 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               Professional development support for practitioners, students, and educators
             </p>
           </DialogHeader>
@@ -479,7 +479,7 @@ export const AIAssistant = () => {
                   conversations.map((conv) => (
                     <div
                       key={conv.id}
-                      className="p-3 rounded-lg border bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors"
+                      className="p-3 rounded-lg border bg-muted/50 hover:bg-muted cursor-pointer transition-colors"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div 
@@ -523,12 +523,12 @@ export const AIAssistant = () => {
                       <div className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center ${
                         message.role === 'user' 
                           ? 'bg-sage-600 text-white' 
-                          : 'bg-gray-100'
+                          : 'bg-muted'
                       }`}>
                         {message.role === 'user' ? (
                           <User className="h-4 w-4" />
                         ) : (
-                           <svg width="20" height="20" viewBox="0 0 40 40" className="text-sage-600">
+                           <svg width="20" height="20" viewBox="0 0 40 40" className="text-primary">
                             <path
                               d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
                               fill="none"
@@ -546,11 +546,11 @@ export const AIAssistant = () => {
                         <div className={`inline-block px-3 py-2 rounded-lg max-w-[80%] ${
                           message.role === 'user'
                             ? 'bg-sage-600 text-white ml-auto'
-                            : 'bg-gray-50 text-gray-900'
+                            : 'bg-muted/50 text-foreground'
                         }`}>
                           <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                         </div>
-                         <p className="text-xs text-gray-500">
+                         <p className="text-xs text-muted-foreground">
                            {message.timestamp.toLocaleTimeString([], { 
                              hour: '2-digit', 
                              minute: '2-digit' 
@@ -562,8 +562,8 @@ export const AIAssistant = () => {
                   
                   {isLoading && (
                     <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
-                        <svg width="20" height="20" viewBox="0 0 40 40" className="text-sage-600">
+                      <div className="flex-shrink-0 h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+                        <svg width="20" height="20" viewBox="0 0 40 40" className="text-primary">
                           <path
                             d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
                             fill="none"
@@ -575,8 +575,8 @@ export const AIAssistant = () => {
                         </svg>
                       </div>
                       <div className="flex-1 space-y-1">
-                        <div className="inline-block px-3 py-2 rounded-lg bg-gray-50">
-                          <Loader2 className="h-4 w-4 animate-spin text-sage-600" />
+                        <div className="inline-block px-3 py-2 rounded-lg bg-muted/50">
+                          <Loader2 className="h-4 w-4 animate-spin text-primary" />
                         </div>
                       </div>
                     </div>
@@ -586,15 +586,15 @@ export const AIAssistant = () => {
 
               {/* Quick Questions */}
               {messages && messages.length === 1 && (
-                <div className="px-6 py-4 border-t border-gray-200 bg-sage-50/50">
-                  <p className="text-sm font-semibold mb-3 text-gray-900">Quick questions:</p>
+                <div className="px-6 py-4 border-t border-border bg-primary/5/50">
+                  <p className="text-sm font-semibold mb-3 text-foreground">Quick questions:</p>
                   <div className="grid grid-cols-1 gap-2">
                     {(quickQuestions || []).map((question, index) => (
                       <Button
                         key={index}
                         variant="ghost"
                         size="sm"
-                        className="justify-start h-auto p-3 text-xs hover:bg-sage-100 border border-transparent hover:border-sage-200 rounded-lg transition-all duration-200 text-gray-700"
+                        className="justify-start h-auto p-3 text-xs hover:bg-sage-100 border border-transparent hover:border-primary/30 rounded-lg transition-all duration-200 text-foreground"
                         onClick={() => handleQuickQuestion(question)}
                       >
                         {question}
@@ -619,7 +619,7 @@ export const AIAssistant = () => {
                     onClick={isLoading ? stopStreaming : sendMessage} 
                     disabled={!input.trim() && !isLoading}
                     size="sm"
-                    className={isLoading ? "bg-red-500 hover:bg-red-600 shadow-md hover:shadow-lg transition-all duration-200" : "bg-sage-600 hover:bg-sage-700 shadow-md hover:shadow-lg transition-all duration-200"}
+                    className={isLoading ? "bg-red-500 hover:bg-red-600 shadow-md hover:shadow-lg transition-all duration-200" : "bg-primary hover:bg-primary/90 shadow-md hover:shadow-lg transition-all duration-200"}
                   >
                     {isLoading ? (
                       <Square className="h-4 w-4" />
@@ -629,7 +629,7 @@ export const AIAssistant = () => {
                     <span className="sr-only">{isLoading ? 'Stop response' : 'Send message'}</span>
                   </Button>
                 </div>
-                <p className="text-xs text-gray-500 mt-3 text-center">
+                <p className="text-xs text-muted-foreground mt-3 text-center">
                   This assistant provides general information only. For emergencies, call 000 or Lifeline 13 11 14.
                 </p>
               </div>

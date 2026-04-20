@@ -47,22 +47,22 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
     >
       <div 
         ref={backdropRef}
-        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-foreground/60 backdrop-blur-sm"
         onClick={onClose}
       />
       
       <div 
         ref={contentRef}
-        className="relative bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-white/20"
+        className="relative bg-card/95 backdrop-blur-md rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-border"
       >
         {/* Header */}
-        <div className="flex items-start justify-between p-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-sm">
-          <h2 className="text-2xl font-light text-gray-900">Privacy Policy</h2>
+        <div className="flex items-start justify-between p-6 border-b border-border bg-card/80 backdrop-blur-sm">
+          <h2 className="text-2xl font-light text-foreground">Privacy Policy</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100/50 rounded-lg transition-colors shrink-0 mt-0.5"
+            className="p-2 hover:bg-muted rounded-lg transition-colors shrink-0 mt-0.5"
           >
-            <X className="h-5 w-5 text-gray-500" />
+            <X className="h-5 w-5 text-muted-foreground" />
           </button>
         </div>
 
@@ -72,16 +72,16 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
 
             {/* 1. Introduction */}
             <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">1. Introduction</h3>
-              <p className="text-gray-600 leading-relaxed text-sm">
+              <h3 className="text-lg font-medium text-foreground mb-3">1. Introduction</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm">
                 groundpath is committed to protecting your privacy in accordance with the Privacy Act 1988 (Cth) and the Australian Privacy Principles (APPs). This Privacy Policy explains how we collect, use, store, and disclose your personal information. It also describes how you can access or correct your information, make a complaint, and how we will deal with that complaint.
               </p>
             </section>
 
             {/* 2. Information We Collect */}
             <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">2. Information We Collect</h3>
-              <div className="text-gray-600 leading-relaxed text-sm space-y-2">
+              <h3 className="text-lg font-medium text-foreground mb-3">2. Information We Collect</h3>
+              <div className="text-muted-foreground leading-relaxed text-sm space-y-2">
                 <p>We may collect the following types of personal information:</p>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Contact details (name, email, phone number, address)</li>
@@ -98,8 +98,8 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
 
             {/* 3. How We Use Your Information */}
             <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">3. How We Use Your Information</h3>
-              <div className="text-gray-600 leading-relaxed text-sm space-y-2">
+              <h3 className="text-lg font-medium text-foreground mb-3">3. How We Use Your Information</h3>
+              <div className="text-muted-foreground leading-relaxed text-sm space-y-2">
                 <p>We use your personal information to:</p>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Provide professional social work and counselling services</li>
@@ -116,16 +116,16 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
 
             {/* 4. Information Security */}
             <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">4. Information Security</h3>
-              <p className="text-gray-600 leading-relaxed text-sm">
+              <h3 className="text-lg font-medium text-foreground mb-3">4. Information Security</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm">
                 We implement appropriate security measures to protect your personal information against unauthorized access, modification, disclosure, or destruction. This includes secure storage systems, encrypted communications, and access controls.
               </p>
             </section>
 
             {/* 5. Disclosure of Information */}
             <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">5. Disclosure of Information</h3>
-              <div className="text-gray-600 leading-relaxed text-sm space-y-2">
+              <h3 className="text-lg font-medium text-foreground mb-3">5. Disclosure of Information</h3>
+              <div className="text-muted-foreground leading-relaxed text-sm space-y-2">
                 <p>We may disclose your personal information in the following circumstances:</p>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>With your explicit consent</li>
@@ -140,8 +140,8 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
 
             {/* 6. Overseas Disclosure */}
             <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">6. Overseas Disclosure</h3>
-              <div className="text-gray-600 leading-relaxed text-sm space-y-2">
+              <h3 className="text-lg font-medium text-foreground mb-3">6. Overseas Disclosure</h3>
+              <div className="text-muted-foreground leading-relaxed text-sm space-y-2">
                 <p>
                   In the course of providing our services, personal information may be disclosed to overseas recipients. Our technology service providers are primarily located in the <strong>United States</strong>, including:
                 </p>
@@ -159,40 +159,40 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
 
             {/* 7. Third-Party Service Providers */}
             <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">7. Third-Party Service Providers (Subprocessors)</h3>
-              <div className="text-gray-600 leading-relaxed text-sm space-y-3">
+              <h3 className="text-lg font-medium text-foreground mb-3">7. Third-Party Service Providers (Subprocessors)</h3>
+              <div className="text-muted-foreground leading-relaxed text-sm space-y-3">
                 <p>We engage the following third-party service providers to help deliver our services:</p>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                  <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
                     <thead>
-                      <tr className="bg-gray-50">
-                        <th className="text-left p-3 font-medium text-gray-700 border-b border-gray-200">Service</th>
-                        <th className="text-left p-3 font-medium text-gray-700 border-b border-gray-200">Purpose</th>
-                        <th className="text-left p-3 font-medium text-gray-700 border-b border-gray-200">Country</th>
-                        <th className="text-left p-3 font-medium text-gray-700 border-b border-gray-200">Data Processed</th>
+                      <tr className="bg-muted/50">
+                        <th className="text-left p-3 font-medium text-foreground border-b border-border">Service</th>
+                        <th className="text-left p-3 font-medium text-foreground border-b border-border">Purpose</th>
+                        <th className="text-left p-3 font-medium text-foreground border-b border-border">Country</th>
+                        <th className="text-left p-3 font-medium text-foreground border-b border-border">Data Processed</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="border-b border-gray-100">
-                        <td className="p-3 font-medium text-gray-700">Supabase</td>
+                      <tr className="border-b border-border/60">
+                        <td className="p-3 font-medium text-foreground">Supabase</td>
                         <td className="p-3">Authentication & database</td>
                         <td className="p-3">US</td>
                         <td className="p-3">Account data, messages, profile information</td>
                       </tr>
-                      <tr className="border-b border-gray-100 bg-gray-50/50">
-                        <td className="p-3 font-medium text-gray-700">ElevenLabs</td>
+                      <tr className="border-b border-border/60 bg-muted/30">
+                        <td className="p-3 font-medium text-foreground">ElevenLabs</td>
                         <td className="p-3">AI voice counselling</td>
                         <td className="p-3">US</td>
                         <td className="p-3">Voice audio data (processed in real-time, not stored permanently)</td>
                       </tr>
-                      <tr className="border-b border-gray-100">
-                        <td className="p-3 font-medium text-gray-700">Resend</td>
+                      <tr className="border-b border-border/60">
+                        <td className="p-3 font-medium text-foreground">Resend</td>
                         <td className="p-3">Email notifications</td>
                         <td className="p-3">US</td>
                         <td className="p-3">Email address, notification content</td>
                       </tr>
                       <tr>
-                        <td className="p-3 font-medium text-gray-700">OpenAI</td>
+                        <td className="p-3 font-medium text-foreground">OpenAI</td>
                         <td className="p-3">AI assistant features</td>
                         <td className="p-3">US</td>
                         <td className="p-3">Conversation context for AI-powered tools</td>
@@ -205,8 +205,8 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
 
             {/* 8. AI and Automated Decision-Making */}
             <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">8. AI and Automated Decision-Making</h3>
-              <div className="text-gray-600 leading-relaxed text-sm space-y-2">
+              <h3 className="text-lg font-medium text-foreground mb-3">8. AI and Automated Decision-Making</h3>
+              <div className="text-muted-foreground leading-relaxed text-sm space-y-2">
                 <p>groundpath uses artificial intelligence technologies to enhance our service delivery:</p>
                 <ul className="list-disc pl-5 space-y-1">
                   <li><strong>AI Voice Counselling:</strong> We use ElevenLabs to power AI voice counselling agents (Sarah and James) that provide conversational wellbeing support.</li>
@@ -215,7 +215,7 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
                 <p>
                   These AI tools assist with information delivery and general wellbeing support. They do not make clinical decisions, diagnoses, or treatment recommendations. All clinical decisions are made by qualified human practitioners.
                 </p>
-                <p className="text-xs text-gray-500 italic">
+                <p className="text-xs text-muted-foreground/80 italic">
                   From 10 December 2026, we will provide additional information about substantially automated decisions that significantly affect your rights, as required by amendments to the Privacy Act 1988.
                 </p>
               </div>
@@ -223,8 +223,8 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
 
             {/* 9. Your Rights */}
             <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">9. Your Rights</h3>
-              <div className="text-gray-600 leading-relaxed text-sm space-y-2">
+              <h3 className="text-lg font-medium text-foreground mb-3">9. Your Rights</h3>
+              <div className="text-muted-foreground leading-relaxed text-sm space-y-2">
                 <p>You have the right to:</p>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Access your personal information</li>
@@ -238,19 +238,19 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
 
             {/* 10. Retention of Records */}
             <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">10. Retention of Records</h3>
-              <p className="text-gray-600 leading-relaxed text-sm">
+              <h3 className="text-lg font-medium text-foreground mb-3">10. Retention of Records</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm">
                 We retain your personal information for the period required by professional standards and legal obligations, typically seven years from the last service provision, or longer if required by law.
               </p>
             </section>
 
             {/* 11. Complaints */}
             <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">11. Complaints</h3>
-              <div className="text-gray-600 leading-relaxed text-sm space-y-2">
+              <h3 className="text-lg font-medium text-foreground mb-3">11. Complaints</h3>
+              <div className="text-muted-foreground leading-relaxed text-sm space-y-2">
                 <p>
                   If you believe we have breached your privacy or mishandled your personal information, you may lodge a complaint by emailing us at{' '}
-                  <a href="mailto:connect@groundpath.com.au" className="text-sage-600 hover:text-sage-700">
+                  <a href="mailto:connect@groundpath.com.au" className="text-primary hover:text-primary/80">
                     connect@groundpath.com.au
                   </a>.
                 </p>
@@ -259,7 +259,7 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
                 </p>
                 <p>
                   If you are not satisfied with our response, you may lodge a complaint with the Office of the Australian Information Commissioner (OAIC) at{' '}
-                  <a href="https://www.oaic.gov.au" target="_blank" rel="noopener noreferrer" className="text-sage-600 hover:text-sage-700">
+                  <a href="https://www.oaic.gov.au" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
                     www.oaic.gov.au
                   </a>{' '}
                   or by calling <strong>1300 363 992</strong>.
@@ -269,10 +269,10 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
 
             {/* 12. Contact Us */}
             <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">12. Contact Us</h3>
-              <p className="text-gray-600 leading-relaxed text-sm">
+              <h3 className="text-lg font-medium text-foreground mb-3">12. Contact Us</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm">
                 If you have questions about this Privacy Policy or wish to exercise your rights, please contact us at{' '}
-                <a href="mailto:connect@groundpath.com.au" className="text-sage-600 hover:text-sage-700">
+                <a href="mailto:connect@groundpath.com.au" className="text-primary hover:text-primary/80">
                   connect@groundpath.com.au
                 </a>
               </p>
@@ -280,13 +280,13 @@ const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps) => {
 
             {/* 13. Changes to This Policy */}
             <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">13. Changes to This Policy</h3>
-              <p className="text-gray-600 leading-relaxed text-sm">
+              <h3 className="text-lg font-medium text-foreground mb-3">13. Changes to This Policy</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm">
                 We may update this Privacy Policy from time to time. Changes will be posted on our website with the effective date clearly indicated.
               </p>
             </section>
 
-            <p className="text-xs text-gray-500 mt-6 pb-6">
+            <p className="text-xs text-muted-foreground/80 mt-6 pb-6">
               Last updated: April 2025
             </p>
           </div>

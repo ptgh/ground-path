@@ -98,6 +98,77 @@ Deno.serve(async (req) => {
         }).eq('stripe_payment_intent_id', pi.id);
         break;
       }
+
+      // ─── Practitioner subscription events ───
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session;
+        if (session.mode !== 'subscription' || !session.subscription) break;
+        const subId = typeof session.subscription === 'string' ? session.subscription : session.subscription.id;
+        const sub = await stripe.subscriptions.retrieve(subId);
+        const userId = sub.metadata?.supabase_user_id ?? session.metadata?.supabase_user_id;
+        if (!userId) break;
+
+        const priceId = sub.items.data[0]?.price.id;
+        await svc.from('practitioner_subscriptions').upsert({
+          user_id: userId,
+          stripe_customer_id: typeof sub.customer === 'string' ? sub.customer : sub.customer.id,
+          stripe_subscription_id: sub.id,
+          stripe_price_id: priceId ?? '',
+          status: sub.status,
+          current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
+          cancel_at_period_end: sub.cancel_at_period_end,
+          trial_end: sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null,
+        }, { onConflict: 'user_id' });
+        break;
+      }
+
+      case 'customer.subscription.updated':
+      case 'customer.subscription.deleted': {
+        const sub = event.data.object as Stripe.Subscription;
+        const userId = sub.metadata?.supabase_user_id;
+        const priceId = sub.items.data[0]?.price.id;
+
+        // Match by stripe_subscription_id (works even if metadata missing)
+        const update = {
+          status: sub.status,
+          current_period_end: sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
+          cancel_at_period_end: sub.cancel_at_period_end,
+          trial_end: sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null,
+          stripe_price_id: priceId ?? '',
+        };
+        const { error: updErr } = await svc
+          .from('practitioner_subscriptions')
+          .update(update)
+          .eq('stripe_subscription_id', sub.id);
+
+        // Insert if not found and we have a user id
+        if (updErr || (!updErr && userId)) {
+          const { data: existing } = await svc
+            .from('practitioner_subscriptions')
+            .select('id')
+            .eq('stripe_subscription_id', sub.id)
+            .maybeSingle();
+          if (!existing && userId) {
+            await svc.from('practitioner_subscriptions').upsert({
+              user_id: userId,
+              stripe_customer_id: typeof sub.customer === 'string' ? sub.customer : sub.customer.id,
+              stripe_subscription_id: sub.id,
+              ...update,
+            }, { onConflict: 'user_id' });
+          }
+        }
+        break;
+      }
+
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice;
+        if (!invoice.subscription) break;
+        const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription.id;
+        await svc.from('practitioner_subscriptions')
+          .update({ status: 'past_due' })
+          .eq('stripe_subscription_id', subId);
+        break;
+      }
     }
   } catch (err) {
     console.error('Webhook handler error:', err);

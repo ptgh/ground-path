@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -11,8 +12,16 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    mode === 'development' && componentTagger(),
+    // Sentry source-map upload — only runs when SENTRY_AUTH_TOKEN is set in CI/build env.
+    // Local builds without the token simply skip upload (no error).
+    ...(mode === 'production' && process.env.SENTRY_AUTH_TOKEN ? [sentryVitePlugin({
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      release: { name: process.env.VITE_APP_VERSION },
+      sourcemaps: { assets: './dist/**' },
+    })] : []),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -20,20 +29,15 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    sourcemap: mode === 'production',
     rollupOptions: {
       output: {
         manualChunks: {
-          // React + routing core (always needed)
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          // Heavy PDF/canvas libs — only loaded when forms/PDFs are used
           'pdf-vendor': ['jspdf', 'html2canvas'],
-          // Animation library — used across many pages but heavy
           'gsap-vendor': ['gsap'],
-          // Supabase client + auth helpers
           'supabase-vendor': ['@supabase/supabase-js'],
-          // Data layer
           'query-vendor': ['@tanstack/react-query'],
-          // Form / validation
           'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
         },
       },

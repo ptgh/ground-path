@@ -236,7 +236,7 @@ export const ArticleManager = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'published':
-        return <Badge className="bg-green-100 text-green-800">Published</Badge>;
+        return <Badge className="bg-emerald-100 text-emerald-800">Published</Badge>;
       case 'draft':
         return <Badge variant="secondary">Draft</Badge>;
       default:
@@ -268,7 +268,7 @@ export const ArticleManager = () => {
             </div>
             <Button 
               onClick={openCreateDialog}
-              className="bg-sage-600 hover:bg-sage-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-white"
             >
               <PlusCircle className="h-4 w-4 mr-2" />
               New Article
@@ -317,7 +317,7 @@ export const ArticleManager = () => {
                               href={article.source_url} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="flex items-center gap-1 hover:text-sage-600"
+                              className="flex items-center gap-1 hover:text-primary"
                             >
                               <ExternalLink className="h-3 w-3" />
                               Source
@@ -528,7 +528,7 @@ export const ArticleManager = () => {
             <Button 
               onClick={handleSave} 
               disabled={saving}
-              className="bg-sage-600 hover:bg-sage-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-white"
             >
               {saving ? (
                 <>

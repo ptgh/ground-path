@@ -108,7 +108,7 @@ const Microsoft365Card = () => {
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
-          <Video className="h-4 w-4 text-sage-600" />
+          <Video className="h-4 w-4 text-primary" />
           Microsoft 365 Integration
         </CardTitle>
         <CardDescription>
@@ -172,7 +172,7 @@ const Microsoft365Card = () => {
                   size="sm"
                   onClick={handleConnect}
                   disabled={connecting}
-                  className="bg-sage-600 hover:bg-sage-700 text-white"
+                  className="bg-primary hover:bg-primary/90 text-white"
                 >
                   {connecting && <Loader2 className="h-3 w-3 animate-spin mr-2" />}
                   Connect Microsoft 365

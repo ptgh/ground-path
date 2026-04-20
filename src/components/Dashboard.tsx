@@ -47,6 +47,7 @@ import { ClientMessagesPanel } from './messaging/ClientMessagesPanel';
 import NativeBooking from './dashboard/NativeBooking';
 import Microsoft365Card from './dashboard/Microsoft365Card';
 import SessionRateCard from './dashboard/SessionRateCard';
+import PractitionerSubscriptionCard from './dashboard/PractitionerSubscriptionCard';
 import { gsap } from 'gsap';
 
 interface HalaxyIntegration {
@@ -748,6 +749,8 @@ const Dashboard = () => {
               </Card>
 
               <NotificationPreferencesCard userId={user.id} currentPrefs={profile?.notification_preferences} />
+
+              <PractitionerSubscriptionCard />
 
               <SessionRateCard />
 
