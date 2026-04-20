@@ -65,6 +65,12 @@
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Brand dark surfaces (header/footer) — stay dark in both themes */
+    --surface-dark: 0 0% 11%;
+    --surface-dark-foreground: 0 0% 100%;
+    --surface-dark-muted: 0 0% 65%;
+    --surface-dark-border: 0 0% 20%;
   }
 
   .dark {
