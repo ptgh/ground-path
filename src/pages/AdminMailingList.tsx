@@ -217,7 +217,154 @@ const AdminMailingList = () => {
     }
   };
 
-  if (authLoading) {
+  const parseCsvEmails = (text: string): { email: string; name: string | null }[] => {
+    const lines = text
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+    if (lines.length === 0) return [];
+    // Detect optional header
+    const first = lines[0].toLowerCase();
+    const hasHeader = first.includes('email');
+    const rows = hasHeader ? lines.slice(1) : lines;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const seen = new Set<string>();
+    const out: { email: string; name: string | null }[] = [];
+    for (const row of rows) {
+      // Split on comma respecting simple quoted values
+      const parts = row.split(',').map((p) => p.replace(/^"|"$/g, '').trim());
+      const email = parts[0]?.toLowerCase();
+      const name = parts[1]?.trim() || null;
+      if (!email || !emailRegex.test(email)) continue;
+      if (seen.has(email)) continue;
+      seen.add(email);
+      out.push({ email, name });
+    }
+    return out;
+  };
+
+  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    setImportText(text);
+    e.target.value = '';
+  };
+
+  const handleImport = async () => {
+    if (!supabase) {
+      toast({ title: 'Service unavailable', variant: 'destructive' });
+      return;
+    }
+    const parsed = parseCsvEmails(importText);
+    if (parsed.length === 0) {
+      toast({
+        title: 'No valid emails',
+        description: 'Provide one email per line, optionally followed by ",Name".',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setImporting(true);
+    try {
+      const rows = parsed.map((p) => ({
+        email: p.email,
+        name: p.name,
+        status: 'confirmed',
+        source: 'import',
+        subscription_date: new Date().toISOString(),
+      }));
+      // Insert in chunks; ignore duplicates via upsert on email
+      const chunkSize = 200;
+      let inserted = 0;
+      let skipped = 0;
+      for (let i = 0; i < rows.length; i += chunkSize) {
+        const chunk = rows.slice(i, i + chunkSize);
+        const { data, error } = await supabase
+          .from('mailing_list')
+          .upsert(chunk, { onConflict: 'email', ignoreDuplicates: true })
+          .select('id');
+        if (error) throw error;
+        const insertedNow = data?.length ?? 0;
+        inserted += insertedNow;
+        skipped += chunk.length - insertedNow;
+      }
+      toast({
+        title: 'Import complete',
+        description: `${inserted} added, ${skipped} skipped (duplicates).`,
+      });
+      setImportOpen(false);
+      setImportText('');
+      await loadSubscribers();
+    } catch (err) {
+      console.error('Import failed', err);
+      toast({
+        title: 'Import failed',
+        description: err instanceof Error ? err.message : 'Unknown error',
+        variant: 'destructive',
+      });
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const handleSendTestNewsletter = async () => {
+    if (!supabase) return;
+    const email = testEmail.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast({ title: 'Invalid email', variant: 'destructive' });
+      return;
+    }
+    setTestSending(true);
+    try {
+      // Pull a few latest published articles for the test
+      const { data: articles } = await supabase
+        .from('newsletter_articles')
+        .select('title, summary, slug, category')
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .limit(3);
+
+      const articlePayload = (articles ?? []).map((a) => ({
+        title: a.title,
+        summary: a.summary,
+        link: `https://groundpath.com.au/article/${a.slug}`,
+        category: a.category,
+      }));
+
+      const { error } = await supabase.functions.invoke('send-newsletter', {
+        body: {
+          subject: '[TEST] groundpath newsletter preview',
+          previewText: 'Test send from admin panel',
+          articles: articlePayload.length
+            ? articlePayload
+            : [
+                {
+                  title: 'Sample article',
+                  summary: 'No published articles found — this is a placeholder.',
+                  link: 'https://groundpath.com.au/resources',
+                  category: 'general',
+                },
+              ],
+          testEmail: email,
+        },
+      });
+      if (error) throw error;
+      toast({ title: 'Test newsletter sent', description: `Delivered to ${email}` });
+      setTestOpen(false);
+      setTestEmail('');
+    } catch (err) {
+      console.error('Test send failed', err);
+      toast({
+        title: 'Failed to send test',
+        description: err instanceof Error ? err.message : 'Unknown error',
+        variant: 'destructive',
+      });
+    } finally {
+      setTestSending(false);
+    }
+  };
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
