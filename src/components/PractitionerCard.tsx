@@ -98,10 +98,11 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
             size="sm"
             className="flex-1 gap-1.5"
             onClick={() => {
-              if (bookingMode === 'native_beta') {
-                navigate('/book');
-              } else {
+              // Always route through /book — it handles auth + native/halaxy fork.
+              if (bookingMode === 'halaxy') {
                 window.open(HALAXY_EXTERNAL_URL, '_blank');
+              } else {
+                navigate('/book');
               }
             }}
           >

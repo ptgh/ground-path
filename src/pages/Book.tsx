@@ -259,12 +259,12 @@ const Book = () => {
   };
 
   const handleBook = async () => {
-    if (!selectedSlot || !selectedDate || !selectedPractitioner || !user) {
-      if (!user) {
-        toast.error('Please sign in to book a session');
-      }
+    if (!user) {
+      // Send to client auth with return path so we land back here after sign-in.
+      window.location.href = '/auth?redirect=/book';
       return;
     }
+    if (!selectedSlot || !selectedDate || !selectedPractitioner) return;
     setSubmitting(true);
     const dateStr = format(selectedDate, 'yyyy-MM-dd');
 

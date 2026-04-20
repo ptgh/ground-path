@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +35,7 @@ interface Slot {
 
 const NativeBookingPanel = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [slots, setSlots] = useState<Slot[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -75,9 +77,23 @@ const NativeBookingPanel = () => {
     load();
   }, []);
 
+  // Auto-open check-in if user just arrived with intent=book (post-auth return)
+  useEffect(() => {
+    if (!user || loading) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('intent') === 'book' && selectedSlot) {
+      setCheckInOpen(true);
+      // Clean URL so a refresh doesn't reopen it
+      const url = new URL(window.location.href);
+      url.searchParams.delete('intent');
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, [user, loading, selectedSlot]);
+
   const handleRequest = () => {
     if (!user) {
-      toast.error('Please sign in to request a booking');
+      // Send to client auth page with return path; check-in opens automatically on return.
+      navigate('/auth?redirect=/book&intent=book');
       return;
     }
     if (!selectedSlot) return;

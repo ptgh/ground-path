@@ -88,10 +88,15 @@ const PasswordInput = ({
   </div>
 );
 
-const AuthPage = () => {
+interface AuthPageProps {
+  /** Pre-select Client or Practitioner on signup, hides the toggle when set. */
+  defaultUserType?: 'user' | 'practitioner';
+}
+
+const AuthPage = ({ defaultUserType }: AuthPageProps = {}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userType, setUserType] = useState<AccountType>('');
+  const [userType, setUserType] = useState<AccountType>(defaultUserType ?? '');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
@@ -598,49 +603,51 @@ const AuthPage = () => {
 
   const renderSignUp = () => (
     <form onSubmit={handleSignUp} className="space-y-5">
-      <div className="space-y-3">
-        <Label className="text-sm font-medium">I am joining as a…</Label>
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => setUserType('user')}
-            className={`flex flex-col items-center gap-2.5 rounded-xl border-2 p-4 transition-all duration-200 ${
-              userType === 'user'
-                ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
-                : 'border-border hover:border-muted-foreground/30 hover:bg-muted/50'
-            }`}
-          >
-            <div className={`p-2.5 rounded-full ${userType === 'user' ? 'bg-primary/10' : 'bg-muted'}`}>
-              <User className={`h-6 w-6 ${userType === 'user' ? 'text-primary' : 'text-muted-foreground'}`} />
-            </div>
-            <div className="text-center">
-              <span className={`text-sm font-medium block ${userType === 'user' ? 'text-primary' : 'text-foreground'}`}>
-                Client
-              </span>
-              <span className="text-[11px] text-muted-foreground">Seeking support</span>
-            </div>
-          </button>
-          <button
-            type="button"
-            onClick={() => setUserType('practitioner')}
-            className={`flex flex-col items-center gap-2.5 rounded-xl border-2 p-4 transition-all duration-200 ${
-              userType === 'practitioner'
-                ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
-                : 'border-border hover:border-muted-foreground/30 hover:bg-muted/50'
-            }`}
-          >
-            <div className={`p-2.5 rounded-full ${userType === 'practitioner' ? 'bg-primary/10' : 'bg-muted'}`}>
-              <Stethoscope className={`h-6 w-6 ${userType === 'practitioner' ? 'text-primary' : 'text-muted-foreground'}`} />
-            </div>
-            <div className="text-center">
-              <span className={`text-sm font-medium block ${userType === 'practitioner' ? 'text-primary' : 'text-foreground'}`}>
-                Practitioner
-              </span>
-              <span className="text-[11px] text-muted-foreground">Providing care</span>
-            </div>
-          </button>
+      {!defaultUserType && (
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">I am joining as a…</Label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setUserType('user')}
+              className={`flex flex-col items-center gap-2.5 rounded-xl border-2 p-4 transition-all duration-200 ${
+                userType === 'user'
+                  ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                  : 'border-border hover:border-muted-foreground/30 hover:bg-muted/50'
+              }`}
+            >
+              <div className={`p-2.5 rounded-full ${userType === 'user' ? 'bg-primary/10' : 'bg-muted'}`}>
+                <User className={`h-6 w-6 ${userType === 'user' ? 'text-primary' : 'text-muted-foreground'}`} />
+              </div>
+              <div className="text-center">
+                <span className={`text-sm font-medium block ${userType === 'user' ? 'text-primary' : 'text-foreground'}`}>
+                  Client
+                </span>
+                <span className="text-[11px] text-muted-foreground">Seeking support</span>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => setUserType('practitioner')}
+              className={`flex flex-col items-center gap-2.5 rounded-xl border-2 p-4 transition-all duration-200 ${
+                userType === 'practitioner'
+                  ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                  : 'border-border hover:border-muted-foreground/30 hover:bg-muted/50'
+              }`}
+            >
+              <div className={`p-2.5 rounded-full ${userType === 'practitioner' ? 'bg-primary/10' : 'bg-muted'}`}>
+                <Stethoscope className={`h-6 w-6 ${userType === 'practitioner' ? 'text-primary' : 'text-muted-foreground'}`} />
+              </div>
+              <div className="text-center">
+                <span className={`text-sm font-medium block ${userType === 'practitioner' ? 'text-primary' : 'text-foreground'}`}>
+                  Practitioner
+                </span>
+                <span className="text-[11px] text-muted-foreground">Providing care</span>
+              </div>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {userType && (
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">

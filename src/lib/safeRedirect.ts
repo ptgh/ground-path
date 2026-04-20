@@ -5,6 +5,9 @@ export const ALLOWED_REDIRECTS = [
   '/practitioner/messages',
   '/practitioner/forms',
   '/practitioner/verify',
+  '/book',
+  '/auth',
+  '/account/billing',
 ];
 
 export function getSafeRedirect(search: string): string | null {
