@@ -89,6 +89,13 @@ const AdminMailingList = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
   const [resendingId, setResendingId] = useState<string | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importText, setImportText] = useState('');
+  const [importing, setImporting] = useState(false);
+  const [testOpen, setTestOpen] = useState(false);
+  const [testEmail, setTestEmail] = useState('');
+  const [testSending, setTestSending] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadSubscribers = async () => {
     setLoading(true);
