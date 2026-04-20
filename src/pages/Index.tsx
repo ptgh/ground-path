@@ -1,25 +1,36 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import Header from '../components/Header';
 import CrisisDisclaimer from '../components/CrisisDisclaimer';
 import Hero from '../components/Hero';
 import SEO from '../components/SEO';
-import About from '../components/About';
-import Services from '../components/Services';
-import HowSessionsWork from '../components/HowSessionsWork';
-import HowGroundpathIsDifferent from '../components/HowGroundpathIsDifferent';
-import VoiceCounsellingSection from '../components/VoiceCounsellingSection';
-import Newsletter from '../components/Newsletter';
-import Contact from '../components/Contact';
-import Footer from '../components/Footer';
-
-import { PractitionerList } from '../components/PractitionerCard';
-import NewsletterTest from '../components/NewsletterTest';
-import { Button } from '@/components/ui/button';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useNavigate } from 'react-router-dom';
 import { CalendarCheck } from 'lucide-react';
+
+// Lazy-load below-the-fold sections to shrink the main bundle
+const About = lazy(() => import('../components/About'));
+const Services = lazy(() => import('../components/Services'));
+const HowSessionsWork = lazy(() => import('../components/HowSessionsWork'));
+const HowGroundpathIsDifferent = lazy(() => import('../components/HowGroundpathIsDifferent'));
+const VoiceCounsellingSection = lazy(() => import('../components/VoiceCounsellingSection'));
+const Newsletter = lazy(() => import('../components/Newsletter'));
+const Contact = lazy(() => import('../components/Contact'));
+const Footer = lazy(() => import('../components/Footer'));
+const PractitionerList = lazy(() =>
+  import('../components/PractitionerCard').then((m) => ({ default: m.PractitionerList })),
+);
+const NewsletterTest = lazy(() => import('../components/NewsletterTest'));
+const Button = lazy(() =>
+  import('@/components/ui/button').then((m) => ({ default: m.Button })),
+);
+
+const SectionFallback = () => (
+  <div className="py-12 flex items-center justify-center">
+    <div className="h-6 w-6 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+  </div>
+);
 
 gsap.registerPlugin(ScrollTrigger);
 
