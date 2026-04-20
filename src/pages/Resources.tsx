@@ -403,13 +403,16 @@ const Resources = () => {
             if (resource.type === 'phone') {
               const phoneNumber = resource.url.replace(/\s/g, '');
               if (phoneNumber.startsWith('Text')) {
-                // For text-based services, just copy to clipboard or show info
-                window.alert(resource.url);
+                // Text-based services — copy instruction so user can act on it
+                if (navigator.clipboard) {
+                  void navigator.clipboard.writeText(resource.url);
+                }
+                window.alert(`${resource.title}\n\n${resource.url}\n\n(Copied to clipboard)`);
               } else {
                 window.open(`tel:${phoneNumber}`, '_self');
               }
             } else {
-              window.open(resource.url, '_blank');
+              window.open(resource.url, '_blank', 'noopener,noreferrer');
             }
           }}
         >
