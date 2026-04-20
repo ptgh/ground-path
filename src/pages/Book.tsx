@@ -477,7 +477,7 @@ const Book = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO path="/book" />
+      <SEO title="Book a Session" path="/book" description="Book a confidential online counselling session with a verified groundpath practitioner across Australia." noindex />
       <Header />
       <main className="pt-24 pb-16 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
