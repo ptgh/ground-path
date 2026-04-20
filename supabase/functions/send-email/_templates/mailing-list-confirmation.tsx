@@ -281,17 +281,17 @@ const footerLink = {
 }
 
 const logoLink = {
-  display: 'block',
+  display: 'inline-block',
   textDecoration: 'none',
 }
 
-const logoContainer = {
+const logoImg = {
   display: 'inline-block',
-  margin: '0 auto',
-}
-
-const logoSvg = {
-  display: 'block',
+  width: '44px',
+  height: '44px',
+  borderRadius: '50%',
+  border: '0',
+  outline: 'none',
 }
 
 const stayConnectedSection = {

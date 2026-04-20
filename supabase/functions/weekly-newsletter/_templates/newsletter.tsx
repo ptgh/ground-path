@@ -154,29 +154,19 @@ const header = {
   borderBottom: '1px solid #eaeaea',
 }
 
-const logo = {
-  margin: '0 auto',
-}
-
 const logoLink = {
-  display: 'flex',
-  alignItems: 'center',
+  display: 'inline-block',
   textDecoration: 'none',
-  gap: '12px',
-  justifyContent: 'center',
   marginBottom: '8px',
 }
 
-const logoSvg = {
-  display: 'block',
-}
-
-const logoText = {
-  fontSize: '24px',
-  fontWeight: '300',
-  color: '#7B9B85',
-  letterSpacing: '2px',
-  margin: '0',
+const logoImg = {
+  display: 'inline-block',
+  width: '44px',
+  height: '44px',
+  borderRadius: '50%',
+  border: '0',
+  outline: 'none',
 }
 
 const headerText = {

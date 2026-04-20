@@ -151,6 +151,12 @@ const header = {
 }
 
 const logo = {
+  display: 'inline-block',
+  width: '44px',
+  height: '44px',
+  borderRadius: '50%',
+  border: '0',
+  outline: 'none',
   margin: '0 auto',
 }
 
