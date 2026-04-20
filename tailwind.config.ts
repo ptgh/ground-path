@@ -64,6 +64,12 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
+				'surface-dark': {
+					DEFAULT: 'hsl(var(--surface-dark))',
+					foreground: 'hsl(var(--surface-dark-foreground))',
+					muted: 'hsl(var(--surface-dark-muted))',
+					border: 'hsl(var(--surface-dark-border))',
+				},
 				sage: {
 					50: 'hsl(var(--sage-50))',
 					100: 'hsl(var(--sage-100))',
