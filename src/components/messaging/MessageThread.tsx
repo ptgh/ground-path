@@ -302,7 +302,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
         )}
         <Avatar className="h-9 w-9">
           <AvatarImage src={conversation.other_party_avatar} />
-          <AvatarFallback className="text-xs bg-sage-100 text-sage-700">
+          <AvatarFallback className="text-xs bg-primary/10 text-primary">
             {(conversation.other_party_name || '?')[0]?.toUpperCase()}
           </AvatarFallback>
         </Avatar>
@@ -310,20 +310,20 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
           <h3 className="text-sm font-semibold truncate">{conversation.other_party_name}</h3>
           {linkedHalaxy && (
             <div className="flex items-center gap-1">
-              <CheckCircle2 className="h-3 w-3 text-sage-600" />
-              <span className="text-[10px] text-sage-600 font-medium">Halaxy Linked · {linkedHalaxy}</span>
+              <CheckCircle2 className="h-3 w-3 text-primary" />
+              <span className="text-[10px] text-primary font-medium">Halaxy Linked · {linkedHalaxy}</span>
             </div>
           )}
         </div>
         {isPractitioner && (
           <div className="flex items-center gap-1">
             {!linkedHalaxy ? (
-              <Button variant="ghost" size="sm" className="text-xs text-sage-600 hover:text-sage-700" onClick={() => setShowHalaxyLink(!showHalaxyLink)}>
+              <Button variant="ghost" size="sm" className="text-xs text-primary hover:text-primary/80" onClick={() => setShowHalaxyLink(!showHalaxyLink)}>
                 <Link2 className="h-3.5 w-3.5 mr-1" />
                 Link Halaxy
               </Button>
             ) : (
-              <Button variant="ghost" size="sm" className="text-xs text-sage-600" onClick={() => window.open(`https://www.halaxy.com/clients/${linkedHalaxy}`, '_blank')}>
+              <Button variant="ghost" size="sm" className="text-xs text-primary" onClick={() => window.open(`https://www.halaxy.com/clients/${linkedHalaxy}`, '_blank')}>
                 <ExternalLink className="h-3.5 w-3.5 mr-1" />
                 Halaxy
               </Button>
@@ -334,9 +334,9 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
 
       {/* Halaxy link input */}
       {showHalaxyLink && isPractitioner && (
-        <div className="flex items-center gap-2 p-2 bg-sage-50 dark:bg-sage-900/20 border-b border-border">
+        <div className="flex items-center gap-2 p-2 bg-primary/5 dark:bg-sage-900/20 border-b border-border">
           <Input placeholder="Halaxy Client ID..." value={halaxyId} onChange={(e) => setHalaxyId(e.target.value)} className="h-8 text-sm flex-1" />
-          <Button size="sm" className="h-8 bg-sage-600 hover:bg-sage-700 text-white" onClick={handleLinkHalaxy} disabled={!halaxyId.trim()}>Link</Button>
+          <Button size="sm" className="h-8 bg-primary hover:bg-primary/90 text-white" onClick={handleLinkHalaxy} disabled={!halaxyId.trim()}>Link</Button>
           <Button size="sm" variant="ghost" className="h-8" onClick={() => { setShowHalaxyLink(false); setHalaxyId(linkedHalaxy || ''); }}>Cancel</Button>
         </div>
       )}
@@ -491,7 +491,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
           />
           <Button
             size="icon"
-            className="h-9 w-9 bg-sage-600 hover:bg-sage-700 text-white"
+            className="h-9 w-9 bg-primary hover:bg-primary/90 text-white"
             onClick={() => handleSend()}
             disabled={!newMessage.trim() || uploading}
           >

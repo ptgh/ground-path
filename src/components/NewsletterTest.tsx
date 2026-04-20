@@ -99,7 +99,7 @@ const NewsletterTest = ({ isOpen, onClose }: NewsletterTestProps) => {
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5 text-sage-600" />
+            <Mail className="h-5 w-5 text-primary" />
             Test Newsletter
           </CardTitle>
         </CardHeader>
@@ -127,17 +127,17 @@ const NewsletterTest = ({ isOpen, onClose }: NewsletterTestProps) => {
 
             <div>
               <Label>Sample Newsletter Preview</Label>
-              <div className="mt-2 p-4 bg-gray-50 rounded-lg space-y-3">
+              <div className="mt-2 p-4 bg-muted/50 rounded-lg space-y-3">
                 <div>
                   <p className="font-semibold text-sm">Subject:</p>
-                  <p className="text-sm text-gray-700">{sampleNewsletter.subject}</p>
+                  <p className="text-sm text-foreground">{sampleNewsletter.subject}</p>
                 </div>
                 <div>
                   <p className="font-semibold text-sm">Articles included:</p>
-                  <ul className="text-sm text-gray-700 space-y-1">
+                  <ul className="text-sm text-foreground space-y-1">
                     {sampleNewsletter.articles.map((article, index) => (
                       <li key={index} className="flex items-start gap-2">
-                        <span className="text-sage-600 font-medium text-xs bg-sage-100 px-2 py-0.5 rounded">
+                        <span className="text-primary font-medium text-xs bg-sage-100 px-2 py-0.5 rounded">
                           {article.category}
                         </span>
                         <span>{article.title}</span>
@@ -160,7 +160,7 @@ const NewsletterTest = ({ isOpen, onClose }: NewsletterTestProps) => {
             <Button
               onClick={sendTestNewsletter}
               disabled={isLoading || !testEmail.trim()}
-              className="bg-sage-600 hover:bg-sage-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-white"
             >
               {isLoading ? (
                 <>

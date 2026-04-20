@@ -95,7 +95,7 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5 text-sage-600" />
+            <Mail className="h-5 w-5 text-primary" />
             Join Our Mailing List
           </DialogTitle>
           <DialogDescription>
@@ -108,13 +108,13 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
             <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
               <Check className="h-8 w-8 text-green-600" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">You're all set!</h3>
-            <p className="text-gray-600">Check your email to confirm your subscription.</p>
+            <h3 className="text-lg font-medium text-foreground mb-2">You're all set!</h3>
+            <p className="text-muted-foreground">Check your email to confirm your subscription.</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
                 Email Address *
               </label>
               <Input
@@ -132,7 +132,7 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
             </div>
 
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
                 First Name (Optional)
               </label>
               <Input
@@ -148,8 +148,8 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
               {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
             </div>
 
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <p className="text-xs text-gray-600">
+            <div className="bg-muted/50 p-3 rounded-lg">
+              <p className="text-xs text-muted-foreground">
                 We respect your privacy. Unsubscribe at any time. 
                 We'll only send you relevant updates about our services and mental health resources.
               </p>
@@ -167,7 +167,7 @@ const MailingListModal = ({ isOpen, onClose }: MailingListModalProps) => {
               </Button>
               <Button
                 type="submit"
-                className="flex-1 bg-sage-600 hover:bg-sage-700"
+                className="flex-1 bg-primary hover:bg-primary/90"
                 disabled={subscriptionMutation.isPending || !email}
               >
                 {subscriptionMutation.isPending ? (

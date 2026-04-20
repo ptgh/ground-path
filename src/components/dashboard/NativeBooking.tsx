@@ -92,7 +92,7 @@ const DEFAULT_SETTINGS: AvailabilitySettings = {
 
 const statusStyle = (s: string) => {
   switch (s) {
-    case 'confirmed': return 'bg-sage-100 text-sage-800';
+    case 'confirmed': return 'bg-primary/15 text-primary';
     case 'pending': return 'bg-amber-50 text-amber-700 border-amber-200';
     case 'completed': return 'bg-muted text-muted-foreground';
     case 'cancelled': return 'bg-destructive/10 text-destructive';
@@ -145,14 +145,14 @@ const MeetingStatusBadge = ({ booking }: { booking: BookingRequest }) => {
   if (meetingStatus === 'created' && meetingUrl) {
     return (
       <div className="flex flex-wrap items-center gap-1.5 mt-1">
-        <Badge variant="outline" className="text-[10px] bg-sage-50 text-sage-700 border-sage-200">
+        <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/30">
           <Video className="h-3 w-3 mr-1" /> Meeting Ready
         </Badge>
         <Button
           asChild
           size="sm"
           variant="outline"
-          className="h-6 px-2 text-[10px] text-sage-700 border-sage-300"
+          className="h-6 px-2 text-[10px] text-primary border-primary/40"
         >
           <a href={`/session/${booking.id}`}>
             <Video className="h-3 w-3 mr-1" /> Open Session
@@ -203,7 +203,7 @@ const MeetingActions = ({ booking, onRetry }: { booking: BookingRequest; onRetry
         <Button
           size="sm"
           variant="outline"
-          className="h-6 px-2 text-[10px] text-sage-700 border-sage-300"
+          className="h-6 px-2 text-[10px] text-primary border-primary/40"
           onClick={() => onRetry(booking.id)}
         >
           <Video className="h-3 w-3 mr-1" /> Create Meeting
@@ -703,7 +703,7 @@ const NativeBooking = () => {
             variant={view === v.key ? 'default' : 'outline'}
             size="sm"
             onClick={() => setView(v.key)}
-            className={view === v.key ? 'bg-sage-600 hover:bg-sage-700 text-white' : 'hover:border-sage-300'}
+            className={view === v.key ? 'bg-primary hover:bg-primary/90 text-white' : 'hover:border-primary/40'}
           >
             <v.icon className="h-3.5 w-3.5 mr-1.5" />
             {v.label}
@@ -725,7 +725,7 @@ const NativeBooking = () => {
           <CardHeader className="pb-3">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <CardTitle className="flex items-center gap-2 text-base">
-                <Calendar className="h-4 w-4 text-sage-600" />
+                <Calendar className="h-4 w-4 text-primary" />
                 Weekly Calendar
               </CardTitle>
               <div className="flex items-center gap-2">
@@ -748,7 +748,7 @@ const NativeBooking = () => {
           <CardContent>
             <div className="flex items-center gap-4 mb-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-sage-200" /> Available</span>
-              <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-sage-500" /> Booked</span>
+              <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-primary/50" /> Booked</span>
               <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-muted" /> Unavailable</span>
             </div>
 
@@ -760,7 +760,7 @@ const NativeBooking = () => {
                     const date = addDays(weekStart, i);
                     const isToday = isSameDay(date, new Date());
                     return (
-                      <div key={day} className={`text-center py-1.5 text-xs font-medium rounded-md ${isToday ? 'bg-sage-100 text-sage-800' : 'text-muted-foreground'}`}>
+                      <div key={day} className={`text-center py-1.5 text-xs font-medium rounded-md ${isToday ? 'bg-primary/15 text-primary' : 'text-muted-foreground'}`}>
                         {day}
                         <div className={`text-[10px] ${isToday ? 'font-semibold' : 'font-normal'}`}>{format(date, 'd')}</div>
                       </div>
@@ -792,9 +792,9 @@ const NativeBooking = () => {
                             <button
                               className={`h-7 w-full rounded-sm border transition-colors ${
                                 booked
-                                  ? 'bg-sage-500 border-sage-600 hover:bg-sage-600'
+                                  ? 'bg-primary/50 border-sage-600 hover:bg-sage-600'
                                   : available
-                                    ? 'bg-sage-100 border-sage-200 hover:bg-sage-200'
+                                    ? 'bg-sage-100 border-primary/30 hover:bg-sage-200'
                                     : 'bg-muted/40 border-border/40 hover:bg-muted/60'
                               }`}
                             />
@@ -854,12 +854,12 @@ const NativeBooking = () => {
                   </Select>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" className="bg-sage-600 hover:bg-sage-700 text-white" onClick={handleAddSlot}>Add</Button>
+                  <Button size="sm" className="bg-primary hover:bg-primary/90 text-white" onClick={handleAddSlot}>Add</Button>
                   <Button size="sm" variant="ghost" onClick={() => setShowAddSlot(false)}>Cancel</Button>
                 </div>
               </div>
             ) : (
-              <Button variant="outline" size="sm" onClick={() => setShowAddSlot(true)} className="hover:border-sage-300">
+              <Button variant="outline" size="sm" onClick={() => setShowAddSlot(true)} className="hover:border-primary/40">
                 <Plus className="h-3.5 w-3.5 mr-1.5" /> Add Availability
               </Button>
             )}
@@ -873,7 +873,7 @@ const NativeBooking = () => {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-base">
-                <Users className="h-4 w-4 text-sage-600" />
+                <Users className="h-4 w-4 text-primary" />
                 Booking Requests
               </CardTitle>
             </div>
@@ -888,11 +888,11 @@ const NativeBooking = () => {
                   const startLabel = booking.requested_start_time.slice(0, 5);
                   const endLabel = booking.requested_end_time.slice(0, 5);
                   return (
-                    <div key={booking.id} className="p-3 rounded-lg border border-border hover:border-sage-300 transition-colors space-y-2.5">
+                    <div key={booking.id} className="p-3 rounded-lg border border-border hover:border-primary/40 transition-colors space-y-2.5">
                       {/* Header row: avatar + client + status */}
                       <div className="flex items-start gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage-100">
-                          <Video className="h-4 w-4 text-sage-700" />
+                          <Video className="h-4 w-4 text-primary" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-foreground truncate">
@@ -910,16 +910,16 @@ const NativeBooking = () => {
                       {/* Date + time block */}
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pl-[52px] text-xs">
                         <span className="inline-flex items-center gap-1.5 text-foreground font-medium">
-                          <Calendar className="h-3.5 w-3.5 text-sage-600" />
+                          <Calendar className="h-3.5 w-3.5 text-primary" />
                           {dayLabel}, {dateLabel}
                         </span>
                         <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-                          <Clock className="h-3.5 w-3.5 text-sage-600" />
+                          <Clock className="h-3.5 w-3.5 text-primary" />
                           {startLabel} – {endLabel}
                         </span>
                         {(booking.status === 'confirmed' || booking.status === 'completed') && (
                           withCard.has(booking.client_user_id) ? (
-                            <Badge variant="outline" className="text-[10px] bg-sage-50 text-sage-700 border-sage-200">
+                            <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/30">
                               <CreditCard className="h-3 w-3 mr-1" /> Card on file
                             </Badge>
                           ) : (
@@ -954,7 +954,7 @@ const NativeBooking = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="h-7 text-xs text-sage-700 border-sage-300"
+                                className="h-7 text-xs text-primary border-primary/40"
                                 disabled={updatingBookingId === booking.id}
                                 onClick={() => handleUpdateBookingStatus(booking.id, 'confirmed')}
                               >
@@ -1019,7 +1019,7 @@ const NativeBooking = () => {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4 text-sage-600" />
+              <Settings className="h-4 w-4 text-primary" />
               Availability Settings
             </CardTitle>
             <CardDescription className="text-xs">
@@ -1075,7 +1075,7 @@ const NativeBooking = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 shrink-0 text-muted-foreground hover:text-sage-700"
+                          className="h-8 w-8 shrink-0 text-muted-foreground hover:text-primary"
                           title="Apply to all working days"
                           onClick={() => applyToAllDays(i)}
                         >
@@ -1125,7 +1125,7 @@ const NativeBooking = () => {
 
             <Separator />
 
-            <Button onClick={handleSaveSettings} disabled={savingSettings || hasValidationErrors} className="bg-sage-600 hover:bg-sage-700 text-white">
+            <Button onClick={handleSaveSettings} disabled={savingSettings || hasValidationErrors} className="bg-primary hover:bg-primary/90 text-white">
               {savingSettings ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <CheckCircle2 className="h-4 w-4 mr-1.5" />}
               {savingSettings ? 'Saving…' : 'Save Settings'}
             </Button>
@@ -1140,7 +1140,7 @@ const NativeBooking = () => {
       <Card className="border-dashed border-border/70">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <CheckCircle2 className="h-4 w-4 text-sage-600" />
+            <CheckCircle2 className="h-4 w-4 text-primary" />
             Next Setup Steps
           </CardTitle>
           <CardDescription className="text-xs">

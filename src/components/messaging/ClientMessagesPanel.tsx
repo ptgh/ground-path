@@ -67,7 +67,7 @@ export const ClientMessagesPanel = () => {
               >
                 <Avatar className="h-9 w-9 flex-shrink-0">
                   <AvatarImage src={conv.other_party_avatar} />
-                  <AvatarFallback className="text-xs bg-sage-100 text-sage-700">
+                  <AvatarFallback className="text-xs bg-primary/10 text-primary">
                     {(conv.other_party_name || '?')[0]?.toUpperCase()}
                   </AvatarFallback>
                 </Avatar>

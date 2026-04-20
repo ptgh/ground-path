@@ -43,7 +43,7 @@ export const MessagePractitionerButton = ({
       variant={variant}
       size={size}
       onClick={handleClick}
-      className={`border-sage-300 text-sage-700 hover:bg-sage-50 hover:text-sage-800 ${className}`}
+      className={`border-primary/40 text-primary hover:bg-primary/5 hover:text-primary ${className}`}
     >
       <MessageSquare className="h-4 w-4 mr-2" />
       {practitionerName ? `Message ${practitionerName}` : 'Message Practitioner'}

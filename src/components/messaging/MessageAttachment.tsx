@@ -99,7 +99,7 @@ export const MessageAttachment = ({ message, isOwn }: MessageAttachmentProps) =>
           isOwn ? 'bg-white/10 hover:bg-white/20' : 'bg-background hover:bg-accent'
         } transition-colors`}
       >
-        <FileText className={`h-5 w-5 flex-shrink-0 ${isOwn ? 'text-white/80' : 'text-sage-600'}`} />
+        <FileText className={`h-5 w-5 flex-shrink-0 ${isOwn ? 'text-white/80' : 'text-primary'}`} />
         <div className="min-w-0 flex-1">
           <p className={`text-xs font-medium truncate ${isOwn ? 'text-white' : 'text-foreground'}`}>
             {message.attachment_name || 'File'}
@@ -127,7 +127,7 @@ export const MessageAttachment = ({ message, isOwn }: MessageAttachmentProps) =>
         } transition-colors`}
       >
         <div className="flex items-start gap-2">
-          <ExternalLink className={`h-4 w-4 mt-0.5 flex-shrink-0 ${isOwn ? 'text-white/70' : 'text-sage-600'}`} />
+          <ExternalLink className={`h-4 w-4 mt-0.5 flex-shrink-0 ${isOwn ? 'text-white/70' : 'text-primary'}`} />
           <div className="min-w-0 flex-1">
             <p className={`text-xs font-semibold truncate ${isOwn ? 'text-white' : 'text-foreground'}`}>
               {message.resource_title || message.resource_url}
@@ -153,7 +153,7 @@ export const MessageAttachment = ({ message, isOwn }: MessageAttachmentProps) =>
         href={message.attachment_url}
         target="_blank"
         rel="noopener noreferrer"
-        className={`text-xs underline mt-1 block ${isOwn ? 'text-white/80' : 'text-sage-600'}`}
+        className={`text-xs underline mt-1 block ${isOwn ? 'text-white/80' : 'text-primary'}`}
       >
         📎 Attachment
       </a>

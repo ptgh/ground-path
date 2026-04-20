@@ -243,20 +243,20 @@ const ProfessionalResources = () => {
     <Card className="hover:shadow-md transition-all duration-200 border-border">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="p-2 rounded-lg bg-sage-100 text-sage-600 flex-shrink-0">
+          <div className="p-2 rounded-lg bg-primary/10 text-primary flex-shrink-0">
             {resource.icon}
           </div>
           <div className="flex-grow min-w-0">
             <h4 className="font-medium text-foreground text-sm">{resource.title}</h4>
             <p className="text-xs text-muted-foreground mt-1">{resource.description}</p>
             <div className="flex items-center justify-between mt-2">
-              <Badge variant="secondary" className="bg-sage-50 text-sage-700 text-xs">
+              <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
                 {resource.category}
               </Badge>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="h-7 px-2 text-sage-600 hover:text-sage-700"
+                className="h-7 px-2 text-primary hover:text-primary/80"
                 onClick={() => window.open(resource.url, '_blank')}
               >
                 <ExternalLink className="h-3 w-3 mr-1" />
@@ -288,16 +288,16 @@ const ProfessionalResources = () => {
       <CardContent>
         <Tabs defaultValue="standards" className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-4 h-auto p-1">
-            <TabsTrigger value="standards" className="text-xs px-2 py-1.5 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+            <TabsTrigger value="standards" className="text-xs px-2 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Standards
             </TabsTrigger>
-            <TabsTrigger value="cpd" className="text-xs px-2 py-1.5 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+            <TabsTrigger value="cpd" className="text-xs px-2 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               CPD
             </TabsTrigger>
-            <TabsTrigger value="services" className="text-xs px-2 py-1.5 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+            <TabsTrigger value="services" className="text-xs px-2 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               {country === 'AU' ? 'NDIS' : 'NHS'}
             </TabsTrigger>
-            <TabsTrigger value="clinical" className="text-xs px-2 py-1.5 data-[state=active]:bg-sage-600 data-[state=active]:text-white">
+            <TabsTrigger value="clinical" className="text-xs px-2 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Clinical
             </TabsTrigger>
           </TabsList>

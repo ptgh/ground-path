@@ -34,7 +34,7 @@ const formatHour = (h: number) =>
 
 const statusLabel: Record<string, { text: string; className: string }> = {
   pending: { text: 'Pending', className: 'bg-amber-50 text-amber-700 border-amber-200' },
-  confirmed: { text: 'Confirmed', className: 'bg-sage-100 text-sage-800' },
+  confirmed: { text: 'Confirmed', className: 'bg-primary/15 text-primary' },
   completed: { text: 'Completed', className: 'bg-muted text-muted-foreground' },
   cancelled: { text: 'Cancelled', className: 'bg-destructive/10 text-destructive' },
 };
@@ -70,7 +70,7 @@ const CalendarTilePopover = ({
           {booking ? (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Video className="h-3.5 w-3.5 text-sage-600" />
+                <Video className="h-3.5 w-3.5 text-primary" />
                 <span className="text-xs font-medium">Session Booked</span>
                 <Badge variant="outline" className={`text-[10px] ml-auto ${statusLabel[booking.status]?.className ?? ''}`}>
                   {statusLabel[booking.status]?.text ?? booking.status}
@@ -96,7 +96,7 @@ const CalendarTilePopover = ({
                   <Button
                     size="sm"
                     variant="outline"
-                    className="flex-1 h-7 text-xs text-sage-700 border-sage-300"
+                    className="flex-1 h-7 text-xs text-primary border-primary/40"
                     onClick={() => onConfirmBooking?.(booking.id)}
                   >
                     <CheckCircle2 className="h-3 w-3 mr-1" /> Confirm
@@ -115,8 +115,8 @@ const CalendarTilePopover = ({
           ) : isAvailable ? (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <CalendarCheck className="h-3.5 w-3.5 text-sage-600" />
-                <span className="text-xs font-medium text-sage-700">Available</span>
+                <CalendarCheck className="h-3.5 w-3.5 text-primary" />
+                <span className="text-xs font-medium text-primary">Available</span>
               </div>
               <p className="text-[11px] text-muted-foreground">
                 This slot is open for client bookings. No sessions scheduled.
@@ -142,7 +142,7 @@ const CalendarTilePopover = ({
               <Button
                 size="sm"
                 variant="outline"
-                className="w-full h-7 text-xs text-sage-700 hover:border-sage-400"
+                className="w-full h-7 text-xs text-primary hover:border-sage-400"
                 onClick={() => onToggleAvailability(dayIdx, hour, false)}
               >
                 <CalendarCheck className="h-3 w-3 mr-1" /> Make Available
