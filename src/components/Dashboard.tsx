@@ -374,6 +374,14 @@ const Dashboard = () => {
                     <Shield className="h-3 w-3 mr-1 hidden sm:inline" />
                     Approvals
                   </TabsTrigger>
+                  <TabsTrigger
+                    value="mailing"
+                    onClick={() => navigate('/practitioner/admin/mailing-list')}
+                    className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white"
+                  >
+                    <MessageSquare className="h-3 w-3 mr-1 hidden sm:inline" />
+                    Mailing
+                  </TabsTrigger>
                 </>
               )}
               <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-2 sm:px-3 data-[state=active]:bg-sage-600 data-[state=active]:text-white">Settings</TabsTrigger>
