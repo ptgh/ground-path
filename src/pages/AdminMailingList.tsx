@@ -533,6 +533,116 @@ const AdminMailingList = () => {
           </CardContent>
         </Card>
       </main>
+
+      {/* CSV Import Dialog */}
+      <Dialog open={importOpen} onOpenChange={setImportOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Import subscribers</DialogTitle>
+            <DialogDescription>
+              Bulk-add confirmed subscribers. One email per line, optionally followed by{' '}
+              <code className="text-xs">,Name</code>. Duplicates are skipped.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,text/csv,text/plain"
+                className="hidden"
+                onChange={handleFileSelected}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Choose file
+              </Button>
+              <span className="text-xs text-muted-foreground">or paste below</span>
+            </div>
+            <div>
+              <Label htmlFor="import-text" className="sr-only">
+                CSV content
+              </Label>
+              <Textarea
+                id="import-text"
+                value={importText}
+                onChange={(e) => setImportText(e.target.value)}
+                placeholder={'email,name\njane@example.com,Jane Doe\nbob@example.com'}
+                rows={8}
+                className="font-mono text-xs"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Imported rows are saved with status <strong>confirmed</strong> and source{' '}
+              <strong>import</strong>.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setImportOpen(false)} disabled={importing}>
+              Cancel
+            </Button>
+            <Button onClick={handleImport} disabled={importing || !importText.trim()}>
+              {importing ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Importing…
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Import
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Test newsletter dialog */}
+      <Dialog open={testOpen} onOpenChange={setTestOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Send test newsletter</DialogTitle>
+            <DialogDescription>
+              Triggers <code className="text-xs">send-newsletter</code> with up to 3 latest
+              published articles, addressed only to the email below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="test-email">Recipient email</Label>
+            <Input
+              id="test-email"
+              type="email"
+              value={testEmail}
+              onChange={(e) => setTestEmail(e.target.value)}
+              placeholder="you@example.com"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTestOpen(false)} disabled={testSending}>
+              Cancel
+            </Button>
+            <Button onClick={handleSendTestNewsletter} disabled={testSending || !testEmail.trim()}>
+              {testSending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Sending…
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4 mr-2" />
+                  Send test
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <Footer />
     </div>
   );
