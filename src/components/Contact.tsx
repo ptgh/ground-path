@@ -135,7 +135,7 @@ const Contact = () => {
           </div>
 
           <div className="max-w-2xl mx-auto">
-            <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
+            <div className="bg-card rounded-xl p-6 shadow-sm mb-6">
               {bookingModeLoading ? (
                 <div className="flex justify-center py-12">
                   <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
@@ -185,7 +185,7 @@ const Contact = () => {
               <div className="space-y-3">
                 <button 
                   onClick={() => setIsMailingListOpen(true)}
-                  className="w-full border border-sage-600 text-sage-600 py-3 px-4 rounded-lg hover:bg-sage-50 transition-colors font-medium"
+                  className="w-full border border-primary text-primary py-3 px-4 rounded-lg hover:bg-primary/5 transition-colors font-medium"
                 >
                   Join Mailing List
                 </button>
@@ -195,19 +195,19 @@ const Contact = () => {
                       window.location.href = '/#practitioners';
                     }
                   }}
-                  className="w-full flex items-center justify-center gap-2 border border-sage-600 text-sage-600 py-3 px-4 rounded-lg hover:bg-sage-50 transition-colors font-medium"
+                  className="w-full flex items-center justify-center gap-2 border border-primary text-primary py-3 px-4 rounded-lg hover:bg-primary/5 transition-colors font-medium"
                 >
                   <MessageCircle className="h-4 w-4" />
                   Send a Secure Message
                 </button>
-                <p className="text-xs text-gray-500 text-center">Choose a practitioner above to start a secure conversation.</p>
+                <p className="text-xs text-muted-foreground text-center">Choose a practitioner above to start a secure conversation.</p>
               </div>
             </div>
 
             {/* Professional Standards */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h4 className="font-medium text-gray-900 mb-4">Professional Standards</h4>
-              <div className="space-y-3 text-sm text-gray-600">
+            <div className="bg-card rounded-xl p-6 shadow-sm">
+              <h4 className="font-medium text-foreground mb-4">Professional Standards</h4>
+              <div className="space-y-3 text-sm text-muted-foreground">
                 <div>✓ Professional indemnity insurance maintained</div>
                 <div>✓ Cultural safety principles integrated</div>
                 <div>✓ Complaints process available via AASW</div>
@@ -234,44 +234,44 @@ const Contact = () => {
             {/* Contact Information */}
             <div className="fade-in flex flex-col">
               <div className="flex-1">
-                <h3 className="text-xl font-medium text-gray-900 mb-6">Contact Information</h3>
+                <h3 className="text-xl font-medium text-foreground mb-6">Contact Information</h3>
                 
                 <div className="space-y-6 mb-8">
                   <div className="flex items-center space-x-4">
-                    <Mail className="h-5 w-5 text-sage-600" />
+                    <Mail className="h-5 w-5 text-primary" />
                     <div>
-                      <div className="font-medium text-gray-900">Email</div>
-                      <a href="mailto:connect@groundpath.com.au" className="text-sage-600 hover:text-sage-700">
+                      <div className="font-medium text-foreground">Email</div>
+                      <a href="mailto:connect@groundpath.com.au" className="text-primary hover:text-primary">
                         connect@groundpath.com.au
                       </a>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-4">
-                    <Phone className="h-5 w-5 text-sage-600" />
+                    <Phone className="h-5 w-5 text-primary" />
                     <div>
-                      <div className="font-medium text-gray-900">Phone</div>
-                      <a href="tel:+61410883659" className="text-sage-600 hover:text-sage-700">
+                      <div className="font-medium text-foreground">Phone</div>
+                      <a href="tel:+61410883659" className="text-primary hover:text-primary">
                         +61 410 883 659
                       </a>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-4">
-                    <Linkedin className="h-5 w-5 text-sage-600" />
+                    <Linkedin className="h-5 w-5 text-primary" />
                     <div>
-                      <div className="font-medium text-gray-900">LinkedIn</div>
-                      <a href="https://www.linkedin.com/company/groundpath" target="_blank" rel="noopener noreferrer" className="text-sage-600 hover:text-sage-700">
+                      <div className="font-medium text-foreground">LinkedIn</div>
+                      <a href="https://www.linkedin.com/company/groundpath" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary">
                         groundpath
                       </a>
                     </div>
                   </div>
                   
                   <div className="flex items-start space-x-4">
-                    <div className="h-5 w-5 text-sage-600 mt-0.5">📍</div>
+                    <div className="h-5 w-5 text-primary mt-0.5">📍</div>
                      <div>
-                       <div className="font-medium text-gray-900">Service Delivery</div>
-                       <div className="text-gray-600">
+                       <div className="font-medium text-foreground">Service Delivery</div>
+                       <div className="text-muted-foreground">
                          {bookingMode === 'native_beta'
                            ? 'All sessions online via secure video'
                            : 'All sessions online via Halaxy Telehealth'}<br />
@@ -285,12 +285,12 @@ const Contact = () => {
 
           {/* Contact Form */}
           <div className="fade-in">
-            <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-sm flex flex-col">
-              <h3 className="text-xl font-medium text-gray-900 mb-6">Send a Message</h3>
+            <form onSubmit={handleSubmit} className="bg-card rounded-xl p-6 shadow-sm flex flex-col">
+              <h3 className="text-xl font-medium text-foreground mb-6">Send a Message</h3>
               
               <div className="space-y-4 flex-1">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
                     Name *
                   </label>
                   <input
@@ -300,15 +300,15 @@ const Contact = () => {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent ${
-                      errors.name ? 'border-red-500' : 'border-gray-200'
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                      errors.name ? 'border-red-500' : 'border-border'
                     }`}
                   />
                   {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
                     Email *
                   </label>
                   <input
@@ -318,22 +318,22 @@ const Contact = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent ${
-                      errors.email ? 'border-red-500' : 'border-gray-200'
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                      errors.email ? 'border-red-500' : 'border-border'
                     }`}
                   />
                   {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="subject" className="block text-sm font-medium text-foreground mb-2">
                     Subject
                   </label>
                   <Select value={formData.subject} onValueChange={handleSelectChange}>
-                    <SelectTrigger className="w-full px-4 py-3 h-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent">
+                    <SelectTrigger className="w-full px-4 py-3 h-12 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                       <SelectValue placeholder="Select a subject" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                    <SelectContent className="bg-card border border-border rounded-lg shadow-lg z-50">
                       <SelectItem value="booking">Booking Enquiry</SelectItem>
                       <SelectItem value="services">Services Information</SelectItem>
                       <SelectItem value="ndis">NDIS Support</SelectItem>
@@ -343,7 +343,7 @@ const Contact = () => {
                 </div>
 
                 <div className="flex-1">
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
                     Message *
                   </label>
                   <textarea
@@ -353,8 +353,8 @@ const Contact = () => {
                     required
                     value={formData.message}
                     onChange={handleChange}
-                    className={`w-full h-full min-h-[100px] px-4 py-3 border rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent resize-none ${
-                      errors.message ? 'border-red-500' : 'border-gray-200'
+                    className={`w-full h-full min-h-[100px] px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none ${
+                      errors.message ? 'border-red-500' : 'border-border'
                     }`}
                     placeholder="Tell us how we can help you..."
                   ></textarea>
