@@ -96,57 +96,64 @@ const Index = () => {
       <Header />
       <main>
         <Hero />
-        <About />
-        <Services />
-        <HowGroundpathIsDifferent />
-        <HowSessionsWork />
-        <VoiceCounsellingSection />
-        {/* Our Practitioners */}
-        <section id="practitioners" className="py-20 bg-accent/30 scroll-mt-20">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold text-foreground mb-3">Our Practitioners</h2>
-              <div className="w-16 h-1 bg-primary mx-auto mb-4 rounded-full" />
-              <p className="text-muted-foreground max-w-xl mx-auto">
-                Connect directly with a qualified mental health professional. Send a message or book an online session.
-              </p>
+        <Suspense fallback={<SectionFallback />}>
+          <About />
+          <Services />
+          <HowGroundpathIsDifferent />
+          <HowSessionsWork />
+          <VoiceCounsellingSection />
+          {/* Our Practitioners */}
+          <section id="practitioners" className="py-20 bg-accent/30 scroll-mt-20">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6">
+              <div className="text-center mb-10">
+                <h2 className="text-3xl font-bold text-foreground mb-3">Our Practitioners</h2>
+                <div className="w-16 h-1 bg-primary mx-auto mb-4 rounded-full" />
+                <p className="text-muted-foreground max-w-xl mx-auto">
+                  Connect directly with a qualified mental health professional. Send a message or book an online session.
+                </p>
+              </div>
+              <PractitionerList />
+              {/* Book a Session CTA */}
+              <div className="text-center mt-10">
+                <button
+                  onClick={() => navigate('/book')}
+                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-lg text-base"
+                >
+                  <CalendarCheck className="h-5 w-5" />
+                  Book an Online Session
+                </button>
+              </div>
             </div>
-            <PractitionerList />
-            {/* Book a Session CTA */}
-            <div className="text-center mt-10">
-              <button
-                onClick={() => navigate('/book')}
-                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-lg text-base"
-              >
-                <CalendarCheck className="h-5 w-5" />
-                Book an Online Session
-              </button>
-            </div>
-          </div>
-        </section>
-        <Newsletter />
-        <Contact />
+          </section>
+          <Newsletter />
+          <Contact />
+        </Suspense>
       </main>
-      <Footer />
-      
-      
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
+
       {/* Admin/Test Newsletter Button - Show in development or with special query param */}
       {(import.meta.env.DEV || window.location.search.includes('admin=true')) && (
         <div className="fixed bottom-20 right-4">
-          <Button
-            onClick={() => setShowNewsletterTest(true)}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
-            size="sm"
-          >
-            Test Newsletter
-          </Button>
+          <Suspense fallback={null}>
+            <Button
+              onClick={() => setShowNewsletterTest(true)}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+              size="sm"
+            >
+              Test Newsletter
+            </Button>
+          </Suspense>
         </div>
       )}
-      
-      <NewsletterTest 
-        isOpen={showNewsletterTest} 
-        onClose={() => setShowNewsletterTest(false)} 
-      />
+
+      <Suspense fallback={null}>
+        <NewsletterTest
+          isOpen={showNewsletterTest}
+          onClose={() => setShowNewsletterTest(false)}
+        />
+      </Suspense>
     </div>
   );
 };
