@@ -390,7 +390,7 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-800">
+          <div className="md:hidden py-4 border-t border-surface-dark-border">
             <nav className="flex flex-col space-y-1 px-2">
               {isPractitionerRoute ? (
                 <>
@@ -402,8 +402,8 @@ const Header = () => {
                         onClick={() => { navigate(item.path); setIsMenuOpen(false); }}
                         className={`relative flex items-center gap-2 text-left px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
                           isActive
-                            ? 'text-white bg-white/10'
-                            : 'text-gray-300 hover:text-white hover:bg-white/5'
+                            ? 'text-surface-dark-foreground bg-surface-dark-foreground/10'
+                            : 'text-surface-dark-muted hover:text-surface-dark-foreground hover:bg-surface-dark-foreground/5'
                         }`}
                       >
                         <item.icon className="h-4 w-4" />
@@ -416,10 +416,10 @@ const Header = () => {
                       </button>
                     );
                   })}
-                  <div className="border-t border-gray-700 my-2" />
+                  <div className="border-t border-surface-dark-border my-2" />
                   <button
                     onClick={() => { navigate('/'); setIsMenuOpen(false); }}
-                    className="text-left text-gray-400 hover:text-white transition-colors text-sm font-medium px-3 py-2.5"
+                    className="text-left text-surface-dark-muted hover:text-surface-dark-foreground transition-colors text-sm font-medium px-3 py-2.5"
                   >
                     View Site
                   </button>
