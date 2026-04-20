@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SEO from '@/components/SEO';
 
 const VerifyEmail = () => {
   const [resendLoading, setResendLoading] = useState(false);
@@ -99,11 +100,15 @@ const VerifyEmail = () => {
     }
   };
 
+  const userType = sessionStorage.getItem('pending_signup_user_type');
+  const backHref = userType === 'practitioner' ? '/practitioner/auth' : '/auth';
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+      <SEO title="Verify your email" path="/verify-email" noindex />
       <div className="w-full max-w-md space-y-4">
         <Link
-          to="/practitioner/auth"
+          to={backHref}
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
