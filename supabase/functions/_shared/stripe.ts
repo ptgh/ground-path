@@ -1,5 +1,5 @@
 // Shared Stripe helpers for Groundpath edge functions.
-import Stripe from 'https://esm.sh/stripe@17.5.0?target=deno';
+import Stripe from 'npm:stripe@17.5.0';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 export function getStripe(): Stripe {
