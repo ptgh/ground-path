@@ -17,7 +17,7 @@ vi.mock('@/hooks/useAuth', () => ({ useAuth: vi.fn() }));
 // Chainable Supabase query-builder mock (supports .select().eq().in().order() etc.)
 const makeQueryBuilder = () => {
   const builder: Record<string, unknown> = {};
-  const methods = ['select', 'insert', 'update', 'upsert', 'delete', 'eq', 'neq', 'in', 'order', 'limit', 'single'];
+  const methods = ['select', 'insert', 'update', 'upsert', 'delete', 'eq', 'neq', 'in', 'gte', 'lte', 'gt', 'lt', 'order', 'limit', 'single'];
   methods.forEach((m) => { builder[m] = vi.fn().mockReturnValue(builder); });
   // Make the object awaitable — resolves to an empty result set
   builder['then'] = (resolve: (v: unknown) => void) =>
