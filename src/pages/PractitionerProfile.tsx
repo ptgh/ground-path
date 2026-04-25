@@ -397,7 +397,6 @@ const PractitionerProfile = () => {
                               }`}
                             >
                               <MessageCircle className="h-3 w-3" /> WhatsApp
-                              {isPreferred('whatsapp') && <span className="text-[10px] uppercase tracking-wide">Preferred</span>}
                             </a>
                           )}
                         </div>
