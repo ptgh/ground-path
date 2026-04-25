@@ -12,6 +12,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SEO from '@/components/SEO';
 import { getNextAvailableSlots, type UpcomingSlot } from '@/lib/availability';
+import InlineBookingPanel from '@/components/booking/InlineBookingPanel';
 
 interface ProfileRow {
   user_id: string;
