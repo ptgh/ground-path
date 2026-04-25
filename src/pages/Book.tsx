@@ -128,6 +128,7 @@ const Book = () => {
   const [myBookings, setMyBookings] = useState<Booking[]>([]);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [loadingBooking, setLoadingBooking] = useState(false);
+  const [identities, setIdentities] = useState<ProfessionalIdentity[]>([]);
 
   // Check-in + card capture flow
   const [checkInOpen, setCheckInOpen] = useState(false);
