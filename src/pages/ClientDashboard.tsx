@@ -27,7 +27,7 @@ const greetingFor = (name: string | undefined, visitCount: number, streak: numbe
 const ClientDashboard = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
-  const { visitCount: _vc2, streak: _s2 } = { visitCount: 0, streak: 0 };
+  
   const { visitCount, streak, markMilestone } = useReturningVisitor();
 
   useEffect(() => {
