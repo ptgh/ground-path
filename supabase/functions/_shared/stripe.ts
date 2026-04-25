@@ -5,7 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 export function getStripe(): Stripe {
   const key = Deno.env.get('STRIPE_SECRET_KEY');
   if (!key) throw new Error('STRIPE_SECRET_KEY not configured');
-  return new Stripe(key, { apiVersion: '2024-11-20.acacia' as any, httpClient: Stripe.createFetchHttpClient() });
+  return new Stripe(key, { apiVersion: '2024-11-20.acacia' as Stripe.LatestApiVersion, httpClient: Stripe.createFetchHttpClient() });
 }
 
 export function getServiceClient() {

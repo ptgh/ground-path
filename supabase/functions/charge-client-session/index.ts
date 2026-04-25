@@ -10,6 +10,7 @@
 //   - If practitioner is NOT Connect-ready → invoice is created on the platform account,
 //     funds are held in groundpath's balance and transferred manually once they onboard.
 import { getStripe, getServiceClient, getUserClient } from '../_shared/stripe.ts';
+import type Stripe from 'npm:stripe@17.5.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -105,8 +106,8 @@ Deno.serve(async (req) => {
     if (!custRow) return new Response(JSON.stringify({ error: 'Client has no card on file' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
     const stripe = getStripe();
-    const customer = await stripe.customers.retrieve(custRow.stripe_customer_id);
-    const defaultPm = (customer as any).invoice_settings?.default_payment_method;
+    const customer = await stripe.customers.retrieve(custRow.stripe_customer_id) as Stripe.Customer;
+    const defaultPm = customer.invoice_settings?.default_payment_method;
     if (!defaultPm) {
       const cards = await stripe.paymentMethods.list({ customer: custRow.stripe_customer_id, type: 'card', limit: 1 });
       if (cards.data.length === 0) {

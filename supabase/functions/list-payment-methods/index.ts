@@ -1,5 +1,6 @@
 // Returns the authenticated user's saved cards (synced fresh from Stripe).
 import { getStripe, getServiceClient, getUserClient } from '../_shared/stripe.ts';
+import type Stripe from 'npm:stripe@17.5.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -28,7 +29,7 @@ Deno.serve(async (req) => {
       stripe.paymentMethods.list({ customer: row.stripe_customer_id, type: 'card' }),
       stripe.customers.retrieve(row.stripe_customer_id),
     ]);
-    const defaultPmId = (customer as any).invoice_settings?.default_payment_method ?? null;
+    const defaultPmId = (customer as Stripe.Customer).invoice_settings?.default_payment_method ?? null;
 
     const result = cards.data.map(pm => ({
       id: pm.id,
