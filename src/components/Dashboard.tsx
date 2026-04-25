@@ -502,17 +502,11 @@ const Dashboard = () => {
                       {[
                         { label: 'Profession', value: formatProfession(profile?.profession) },
                         { label: 'License Number', value: profile?.license_number || 'Not provided' },
-                        { label: 'Session Mode', value: getSessionMode(profile) === 'native_beta' ? 'Native Beta (Teams)' : 'Halaxy Booking + Telehealth' },
                         { label: 'Active Since', value: new Date(user.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }) },
                       ].map(item => (
                         <div key={item.label} className="flex items-center justify-between text-sm">
                           <span className="text-muted-foreground">{item.label}</span>
-                          <span className="font-medium text-foreground flex items-center gap-1.5">
-                            {item.value}
-                            {item.label === 'Session Mode' && getSessionMode(profile) === 'native_beta' && (
-                              <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-amber-300 text-amber-700 bg-amber-50">Beta</Badge>
-                            )}
-                          </span>
+                          <span className="font-medium text-foreground">{item.value}</span>
                         </div>
                       ))}
                     </div>
