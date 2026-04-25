@@ -27,6 +27,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useSavedCards } from '@/hooks/useSavedCards';
 import PreSessionCheckIn, { type CheckInData } from '@/components/booking/PreSessionCheckIn';
 import AddCardForm from '@/components/billing/AddCardForm';
+import { getNextAvailableSlots, type UpcomingSlot } from '@/lib/availability';
 
 interface AvailabilityBlock {
   day_of_week: number;
