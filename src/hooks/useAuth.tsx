@@ -36,7 +36,7 @@ interface Profile {
   qualifications?: string[];
   supervisor_details?: unknown;
   emergency_contact?: unknown;
-  halaxy_integration?: unknown;
+  booking_integration?: unknown;
   user_type?: string;
   verification_status?: string;
   verification_method?: string;
