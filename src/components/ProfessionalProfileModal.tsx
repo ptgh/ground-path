@@ -166,6 +166,9 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     website_url: '',
     linkedin_profile: '',
     preferred_contact_method: 'email',
+    contact_email: '',
+    contact_phone: '',
+    whatsapp_number: '',
     bio: '',
     halaxy_profile_url: ''
   });
