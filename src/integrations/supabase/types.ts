@@ -820,12 +820,15 @@ export type Database = {
           ahpra_profession: string | null
           avatar_url: string | null
           bio: string | null
+          contact_email: string | null
+          contact_phone: string | null
           cpd_hours_current_year: number | null
           cpd_requirements: number | null
           created_at: string | null
           currency: string
           directory_approved: boolean | null
           display_name: string | null
+          duration_rates: Json
           emergency_contact: Json | null
           halaxy_integration: Json | null
           id: string
@@ -856,6 +859,7 @@ export type Database = {
           verification_method: string | null
           verification_status: string | null
           website_url: string | null
+          whatsapp_number: string | null
           years_experience: number | null
         }
         Insert: {
@@ -864,12 +868,15 @@ export type Database = {
           ahpra_profession?: string | null
           avatar_url?: string | null
           bio?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           cpd_hours_current_year?: number | null
           cpd_requirements?: number | null
           created_at?: string | null
           currency?: string
           directory_approved?: boolean | null
           display_name?: string | null
+          duration_rates?: Json
           emergency_contact?: Json | null
           halaxy_integration?: Json | null
           id?: string
@@ -900,6 +907,7 @@ export type Database = {
           verification_method?: string | null
           verification_status?: string | null
           website_url?: string | null
+          whatsapp_number?: string | null
           years_experience?: number | null
         }
         Update: {
@@ -908,12 +916,15 @@ export type Database = {
           ahpra_profession?: string | null
           avatar_url?: string | null
           bio?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           cpd_hours_current_year?: number | null
           cpd_requirements?: number | null
           created_at?: string | null
           currency?: string
           directory_approved?: boolean | null
           display_name?: string | null
+          duration_rates?: Json
           emergency_contact?: Json | null
           halaxy_integration?: Json | null
           id?: string
@@ -944,6 +955,7 @@ export type Database = {
           verification_method?: string | null
           verification_status?: string | null
           website_url?: string | null
+          whatsapp_number?: string | null
           years_experience?: number | null
         }
         Relationships: []
@@ -1055,6 +1067,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_practitioner_rate_range: {
+        Args: { p_duration?: number }
+        Returns: {
+          max_cents: number
+          min_cents: number
+          practitioner_count: number
+        }[]
+      }
       has_active_practitioner_subscription: {
         Args: { _user_id: string }
         Returns: boolean
