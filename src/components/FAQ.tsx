@@ -160,31 +160,37 @@ const FAQ = () => {
           </p>
         </div>
 
-        <div className="space-y-8">
+        <Accordion type="multiple" className="space-y-3">
           {groups.map((group) => (
-            <div key={group.title} className="faq-fade">
-              <h3 className="text-sm font-medium uppercase tracking-wide text-primary/80 mb-3">
+            <AccordionItem
+              key={group.title}
+              value={group.title}
+              className="faq-fade rounded-xl border border-border/60 bg-card px-4"
+            >
+              <AccordionTrigger className="text-left text-sm font-medium uppercase tracking-wide text-primary/80 hover:no-underline py-4">
                 {group.title}
-              </h3>
-              <Accordion type="single" collapsible className="rounded-xl border border-border/60 bg-card divide-y divide-border/60">
-                {group.items.map((item, idx) => (
-                  <AccordionItem
-                    key={item.q}
-                    value={`${group.title}-${idx}`}
-                    className="border-0 px-4"
-                  >
-                    <AccordionTrigger className="text-left text-sm sm:text-base font-medium text-foreground hover:no-underline py-4">
-                      {item.q}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-4">
-                      {item.a}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-3">
+                <Accordion type="single" collapsible className="divide-y divide-border/60">
+                  {group.items.map((item, idx) => (
+                    <AccordionItem
+                      key={item.q}
+                      value={`${group.title}-${idx}`}
+                      className="border-0"
+                    >
+                      <AccordionTrigger className="text-left text-sm sm:text-base font-medium text-foreground hover:no-underline py-3">
+                        {item.q}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-3">
+                        {item.a}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </AccordionContent>
+            </AccordionItem>
           ))}
-        </div>
+        </Accordion>
 
         <p className="text-xs text-muted-foreground/70 text-center mt-8">
           Have a question we haven&apos;t answered? <a href="#contact" className="text-primary underline">Send us a message</a> — we usually reply within one business day.
