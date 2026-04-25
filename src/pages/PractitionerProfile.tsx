@@ -4,7 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Loader2, ShieldCheck, MapPin, Calendar, MessageCircle, Video, ArrowLeft, Clock, Mail, Phone } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Loader2, ShieldCheck, MapPin, Calendar, MessageCircle, Video, ArrowLeft, Clock, Mail, Phone, X, CalendarClock } from 'lucide-react';
+import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
@@ -56,8 +67,34 @@ interface MyBookingRow {
   status: string;
 }
 
-const formatTimeLabel = (t: string) => {
+/**
+ * Defensive parser for booking_requests rows. The hub page renders these
+ * directly into the UI, so we never want a missing/null column or a renamed
+ * field to crash the section. We coerce safely and drop unusable rows.
+ */
+const parseMyBooking = (raw: unknown): MyBookingRow | null => {
+  if (!raw || typeof raw !== 'object') return null;
+  const r = raw as Record<string, unknown>;
+  const id = typeof r.id === 'string' ? r.id : null;
+  const requested_date = typeof r.requested_date === 'string' ? r.requested_date : null;
+  const requested_start_time = typeof r.requested_start_time === 'string' ? r.requested_start_time : null;
+  if (!id || !requested_date || !requested_start_time) return null;
+  return {
+    id,
+    requested_date,
+    requested_start_time,
+    requested_end_time:
+      typeof r.requested_end_time === 'string' && r.requested_end_time.length > 0
+        ? r.requested_end_time
+        : requested_start_time,
+    status: typeof r.status === 'string' && r.status.length > 0 ? r.status : 'pending',
+  };
+};
+
+const formatTimeLabel = (t: string | null | undefined) => {
+  if (!t || typeof t !== 'string' || !t.includes(':')) return '—';
   const [h, m] = t.slice(0, 5).split(':').map(Number);
+  if (Number.isNaN(h) || Number.isNaN(m)) return '—';
   const suffix = h >= 12 ? 'PM' : 'AM';
   const hour12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
   return `${hour12}:${String(m).padStart(2, '0')} ${suffix}`;
@@ -78,6 +115,9 @@ const PractitionerProfile = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [myBookings, setMyBookings] = useState<MyBookingRow[]>([]);
+  const [bookingsRefreshTick, setBookingsRefreshTick] = useState(0);
+  const [cancelTarget, setCancelTarget] = useState<MyBookingRow | null>(null);
+  const [actionBusyId, setActionBusyId] = useState<string | null>(null);
 
   // Load the signed-in user's bookings with this practitioner so the hub
   // shows everything in one place (avoids the old need to visit /book).
@@ -95,10 +135,38 @@ const PractitionerProfile = () => {
         .eq('practitioner_id', userId)
         .order('requested_date', { ascending: false })
         .limit(10);
-      if (!cancelled && data) setMyBookings(data as MyBookingRow[]);
+      if (cancelled) return;
+      const safe = (data ?? [])
+        .map(parseMyBooking)
+        .filter((b): b is MyBookingRow => b !== null);
+      setMyBookings(safe);
     })();
     return () => { cancelled = true; };
-  }, [user, userId]);
+  }, [user, userId, bookingsRefreshTick]);
+
+  const handleReschedule = () => {
+    // Reschedule = pick a new slot below; the old request stays visible until
+    // the user cancels it. Keeps the flow simple and avoids data loss.
+    toast.info('Pick a new time below — your existing request will stay visible until you cancel it.');
+    document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const confirmCancel = async () => {
+    if (!cancelTarget) return;
+    setActionBusyId(cancelTarget.id);
+    const { error } = await supabase
+      .from('booking_requests')
+      .update({ status: 'cancelled' })
+      .eq('id', cancelTarget.id);
+    setActionBusyId(null);
+    if (error) {
+      toast.error('Could not cancel — please try again or message your practitioner.');
+      return;
+    }
+    toast.success('Booking request cancelled.');
+    setCancelTarget(null);
+    setBookingsRefreshTick(t => t + 1);
+  };
 
   useEffect(() => {
     if (!userId) return;
@@ -425,24 +493,58 @@ const PractitionerProfile = () => {
                   <CardContent>
                     <ul className="space-y-2">
                       {myBookings.slice(0, 5).map(b => {
-                        const dateLabel = new Date(`${b.requested_date}T00:00:00`).toLocaleDateString(undefined, {
-                          weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
-                        });
+                        // Defensive date parse — invalid date strings won't crash the row.
+                        const parsed = new Date(`${b.requested_date}T00:00:00`);
+                        const dateLabel = Number.isNaN(parsed.getTime())
+                          ? b.requested_date
+                          : parsed.toLocaleDateString(undefined, {
+                              weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+                            });
                         const statusColor =
                           b.status === 'confirmed' ? 'text-primary border-primary/40 bg-primary/5'
                           : b.status === 'pending' ? 'text-amber-700 border-amber-300 bg-amber-50'
                           : 'text-muted-foreground border-border bg-muted/40';
+                        const isActive = b.status === 'pending' || b.status === 'confirmed';
+                        const isBusy = actionBusyId === b.id;
                         return (
-                          <li key={b.id} className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-3 py-2 text-sm">
-                            <div className="min-w-0">
-                              <p className="font-medium text-foreground truncate">{dateLabel}</p>
-                              <p className="text-xs text-muted-foreground">
+                          <li
+                            key={b.id}
+                            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 rounded-md border border-border bg-card px-3 py-2.5 text-sm"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="font-medium text-foreground truncate">{dateLabel}</p>
+                                <span className={`text-[11px] uppercase tracking-wide rounded-full px-2 py-0.5 border ${statusColor}`}>
+                                  {b.status}
+                                </span>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-0.5">
                                 {formatTimeLabel(b.requested_start_time)} – {formatTimeLabel(b.requested_end_time)}
                               </p>
                             </div>
-                            <span className={`text-[11px] uppercase tracking-wide rounded-full px-2 py-0.5 border ${statusColor}`}>
-                              {b.status}
-                            </span>
+                            {isActive && (
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={handleReschedule}
+                                  disabled={isBusy}
+                                  className="h-8 px-2 text-xs gap-1"
+                                >
+                                  <CalendarClock className="h-3.5 w-3.5" /> Reschedule
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setCancelTarget(b)}
+                                  disabled={isBusy}
+                                  className="h-8 px-2 text-xs gap-1 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                >
+                                  {isBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <X className="h-3.5 w-3.5" />}
+                                  Cancel
+                                </Button>
+                              </div>
+                            )}
                           </li>
                         );
                       })}
@@ -519,6 +621,43 @@ const PractitionerProfile = () => {
           </Button>
         </div>
       )}
+
+      <AlertDialog open={!!cancelTarget} onOpenChange={(o) => { if (!o) setCancelTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel this booking request?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {cancelTarget && (
+                <>
+                  Cancelling your request for{' '}
+                  <span className="font-medium text-foreground">
+                    {(() => {
+                      const d = new Date(`${cancelTarget.requested_date}T00:00:00`);
+                      return Number.isNaN(d.getTime())
+                        ? cancelTarget.requested_date
+                        : d.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+                    })()}
+                  </span>{' '}
+                  at{' '}
+                  <span className="font-medium text-foreground">{formatTimeLabel(cancelTarget.requested_start_time)}</span>.
+                  This cannot be undone — you can re-book any time below.
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={!!actionBusyId}>Keep request</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); confirmCancel(); }}
+              disabled={!!actionBusyId}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {actionBusyId ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              Yes, cancel
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Footer />
     </div>

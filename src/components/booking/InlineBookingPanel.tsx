@@ -323,6 +323,7 @@ const InlineBookingPanel = ({ practitionerId, practitionerName, halaxyIntegratio
   const pickQuickSlot = (s: UpcomingSlot) => {
     setSelectedDate(s.date);
     setSelectedSlot({ startTime: s.startTime, endTime: s.endTime, label: `${formatTimeLabel(s.startTime)} – ${formatTimeLabel(s.endTime)}` });
+    toast.success(`Selected ${format(s.date, 'EEE d MMM')} at ${formatTimeLabel(s.startTime)} — review & confirm below.`);
     // Scroll the booking confirmation into view on small screens
     setTimeout(() => {
       document.getElementById('inline-booking-confirm')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
