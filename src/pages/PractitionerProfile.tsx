@@ -138,6 +138,26 @@ const PractitionerProfile = () => {
   const hasInPerson = !!profile?.practice_location;
   const seoTitle = profile ? `${displayName} — ${profile.profession ? formatProfessionLabel(profile.profession) : 'Practitioner'} | groundpath` : 'Practitioner';
 
+  const identities = profile
+    ? buildProfessionalIdentities({
+        profession: profile.profession,
+        aaswNumber: profile.aasw_membership_number,
+        sweNumber: profile.swe_registration_number,
+        ahpraNumber: profile.ahpra_number,
+        registrations: registrations.map(r => ({
+          body_name: r.body_name,
+          registration_number: r.registration_number,
+        })),
+      })
+    : [];
+
+  const preferredChannel = profile?.preferred_contact_method ?? 'email';
+  const isPreferred = (channel: string) =>
+    preferredChannel === channel || (channel !== 'whatsapp' && preferredChannel === 'both');
+  const whatsappLink = profile?.whatsapp_number
+    ? `https://wa.me/${profile.whatsapp_number.replace(/[^0-9]/g, '')}`
+    : null;
+
   const personJsonLd = profile
     ? {
         '@context': 'https://schema.org',
