@@ -169,8 +169,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     contact_email: '',
     contact_phone: '',
     whatsapp_number: '',
-    bio: '',
-    booking_profile_url: ''
+    bio: ''
   });
 
   // Fetch registrations from the new table
