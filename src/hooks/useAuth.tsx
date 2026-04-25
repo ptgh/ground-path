@@ -29,6 +29,9 @@ interface Profile {
   website_url?: string;
   linkedin_profile?: string;
   preferred_contact_method?: string;
+  contact_email?: string;
+  contact_phone?: string;
+  whatsapp_number?: string;
   specializations?: string[];
   qualifications?: string[];
   supervisor_details?: unknown;
