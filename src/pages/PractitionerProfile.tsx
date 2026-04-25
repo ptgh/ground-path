@@ -67,8 +67,34 @@ interface MyBookingRow {
   status: string;
 }
 
-const formatTimeLabel = (t: string) => {
+/**
+ * Defensive parser for booking_requests rows. The hub page renders these
+ * directly into the UI, so we never want a missing/null column or a renamed
+ * field to crash the section. We coerce safely and drop unusable rows.
+ */
+const parseMyBooking = (raw: unknown): MyBookingRow | null => {
+  if (!raw || typeof raw !== 'object') return null;
+  const r = raw as Record<string, unknown>;
+  const id = typeof r.id === 'string' ? r.id : null;
+  const requested_date = typeof r.requested_date === 'string' ? r.requested_date : null;
+  const requested_start_time = typeof r.requested_start_time === 'string' ? r.requested_start_time : null;
+  if (!id || !requested_date || !requested_start_time) return null;
+  return {
+    id,
+    requested_date,
+    requested_start_time,
+    requested_end_time:
+      typeof r.requested_end_time === 'string' && r.requested_end_time.length > 0
+        ? r.requested_end_time
+        : requested_start_time,
+    status: typeof r.status === 'string' && r.status.length > 0 ? r.status : 'pending',
+  };
+};
+
+const formatTimeLabel = (t: string | null | undefined) => {
+  if (!t || typeof t !== 'string' || !t.includes(':')) return '—';
   const [h, m] = t.slice(0, 5).split(':').map(Number);
+  if (Number.isNaN(h) || Number.isNaN(m)) return '—';
   const suffix = h >= 12 ? 'PM' : 'AM';
   const hour12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
   return `${hour12}:${String(m).padStart(2, '0')} ${suffix}`;
