@@ -310,7 +310,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     setLoading(true);
 
     try {
-      const { booking_profile_url, registration_number, registration_body, registration_expiry, ...rest } = formData;
+      const { registration_number, registration_body, registration_expiry, ...rest } = formData;
       const updates = {
         ...rest,
         years_experience: formData.years_experience ? parseInt(formData.years_experience) : null,
@@ -319,7 +319,6 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         specializations,
         qualifications,
         insurance_expiry: formData.insurance_expiry || null,
-        booking_integration: { ...((profile?.booking_integration as BookingIntegration) || {}), profile_url: booking_profile_url || null }
       };
 
       await updateProfile(updates);
