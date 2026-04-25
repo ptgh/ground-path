@@ -755,7 +755,7 @@ const Dashboard = () => {
 
               <PractitionerPayoutsCard />
 
-              <SessionRateCard />
+              <SessionRatesCard />
 
               {/* Session Mode — admin only */}
               {isAdmin && (
