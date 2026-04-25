@@ -71,7 +71,7 @@ const PractitionerProfile = () => {
       try {
         const profilePromise = supabase
           .from('profiles')
-          .select('user_id, display_name, avatar_url, profession, bio, specializations, qualifications, practice_location, professional_verified, verification_status, directory_approved, user_type, halaxy_integration, years_experience')
+          .select('user_id, display_name, avatar_url, profession, bio, specializations, qualifications, practice_location, professional_verified, verification_status, directory_approved, user_type, halaxy_integration, years_experience, aasw_membership_number, swe_registration_number, ahpra_number, contact_email, contact_phone, whatsapp_number, preferred_contact_method')
           .eq('user_id', userId)
           .maybeSingle();
         const regsPromise = supabase
