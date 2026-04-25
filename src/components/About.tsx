@@ -90,10 +90,10 @@ const About = () => {
           </div>
 
           {/* Main Content */}
-          <div className="grid md:grid-cols-2 gap-12 items-start">
+          <div className="grid md:grid-cols-2 gap-12 items-stretch">
             {/* Services Info Box */}
-            <div className="fade-in bg-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-border">
-              <div className="space-y-5">
+            <div className="fade-in bg-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-border h-full flex">
+              <div className="space-y-5 flex-1 flex flex-col justify-between">
                 <div>
                   <h3 className="text-xl font-medium text-foreground mb-3">
                     Qualified & Experienced Social Workers and Counsellors
