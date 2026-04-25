@@ -439,7 +439,15 @@ const PractitionerProfile = () => {
                   {user && myBookings.length > 0 && (
                     <li><a href="#your-bookings" className="hover:text-primary transition-colors">Your bookings</a></li>
                   )}
-                  <li><a href="#booking" className="font-medium text-primary hover:underline">Book →</a></li>
+                  <li>
+                    <a
+                      href="#booking"
+                      onClick={(e) => { e.preventDefault(); scrollToBooking(); }}
+                      className="font-medium text-primary hover:underline"
+                    >
+                      Book →
+                    </a>
+                  </li>
                 </ul>
               </nav>
 
