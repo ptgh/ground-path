@@ -145,6 +145,18 @@ const Book = () => {
           return integration?.session_mode === 'native_beta';
         });
         setPractitioners(nativePractitioners);
+
+        // Deep-link: ?practitioner=<uuid> auto-selects on load.
+        const params = new URLSearchParams(window.location.search);
+        const requestedId = params.get('practitioner');
+        if (requestedId) {
+          const match = nativePractitioners.find(p => p.user_id === requestedId);
+          if (match) {
+            setSelectedPractitioner(match);
+          } else {
+            toast.message("That practitioner isn't currently bookable. Showing all available practitioners.");
+          }
+        }
       }
       setLoading(false);
     };
@@ -398,7 +410,7 @@ const Book = () => {
       },
     }).catch(err => console.error('Client receipt notification error:', err));
 
-    toast.success('Booking request submitted! Your practitioner will confirm shortly.');
+    toast.success('You took a brave step today — your booking request is in.');
     setSelectedSlot(null);
     setSelectedDate(undefined);
 

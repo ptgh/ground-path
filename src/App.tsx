@@ -52,6 +52,7 @@ const Book = lazy(() => import("./pages/Book"));
 const JoinSession = lazy(() => import("./pages/JoinSession"));
 const BillingPage = lazy(() => import("./pages/BillingPage"));
 const AdminMailingList = lazy(() => import("./pages/AdminMailingList"));
+const PractitionerProfile = lazy(() => import("./pages/PractitionerProfile"));
 
 const queryClient = new QueryClient();
 
@@ -65,13 +66,24 @@ const AIAssistantRouter = () => {
   const location = useLocation();
   const { user } = useAuth();
 
-  const isPractitionerRoute = location.pathname.startsWith('/practitioner');
+  // App-shell ("dashboard-style") practitioner routes — assistant is the
+  // signed-in practitioner assistant. All other routes (including the public
+  // /practitioner/:id profile page) get the public client assistant.
+  const PRACTITIONER_APP_PREFIXES = [
+    '/practitioner/dashboard',
+    '/practitioner/messages',
+    '/practitioner/forms',
+    '/practitioner/admin',
+    '/practitioner/verify',
+    '/practitioner/auth',
+  ];
+  const isPractitionerApp = PRACTITIONER_APP_PREFIXES.some(p => location.pathname.startsWith(p));
 
-  if (isPractitionerRoute && user) {
+  if (isPractitionerApp && user) {
     return <AIAssistant />;
   }
 
-  if (!isPractitionerRoute) {
+  if (!isPractitionerApp) {
     return <ClientAIAssistant />;
   }
 
@@ -202,6 +214,8 @@ const App = () => {
                 <Route path="/dashboard" element={<AuthenticatedRoute><ClientDashboard /></AuthenticatedRoute>} />
                 <Route path="/session/:bookingId" element={<AuthenticatedRoute><JoinSession /></AuthenticatedRoute>} />
                 <Route path="/account/billing" element={<AuthenticatedRoute><BillingPage /></AuthenticatedRoute>} />
+                {/* Public practitioner profile — must come after all specific /practitioner/* routes */}
+                <Route path="/practitioner/:userId" element={<PractitionerProfile />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>

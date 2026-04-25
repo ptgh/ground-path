@@ -71,6 +71,12 @@
     --surface-dark-foreground: 0 0% 100%;
     --surface-dark-muted: 0 0% 65%;
     --surface-dark-border: 0 0% 20%;
+
+    /* Subtle delight accents — used sparingly for greetings, sparkles,
+       milestone toasts, and the weather strip. Brand stays sage-first. */
+    --accent-warm: 38 78% 62%;
+    --accent-sky: 202 70% 64%;
+    --accent-rose: 350 60% 75%;
   }
 
   .dark {

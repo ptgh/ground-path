@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Menu, X, User, LogOut, FileText, BookOpen, LayoutDashboard, Newspaper, MessageSquare } from 'lucide-react';
+import WeatherEncouragement from './header/WeatherEncouragement';
 import { useAuth } from '@/hooks/useAuth';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { Button } from '@/components/ui/button';
@@ -358,6 +359,7 @@ const Header = () => {
 
           {/* Right side */}
           <div className="hidden md:flex items-center gap-3">
+            <WeatherEncouragement />
             {isLoggedIn ? (
               <AuthAwareSection />
             ) : (
@@ -391,6 +393,7 @@ const Header = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-surface-dark-border">
+            <div className="px-3 pb-3"><WeatherEncouragement compact /></div>
             <nav className="flex flex-col space-y-1 px-2">
               {isPractitionerRoute ? (
                 <>

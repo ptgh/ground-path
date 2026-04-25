@@ -58,7 +58,7 @@ export const MailingListConfirmationEmail = ({
           </Text>
 
           <Section style={buttonContainer}>
-            <Button pY={12} pX={24} style={button} href={confirmationUrl}>
+            <Button style={{ ...button, padding: '12px 24px' }} href={confirmationUrl}>
               Confirm Your Subscription
             </Button>
           </Section>
@@ -77,7 +77,7 @@ export const MailingListConfirmationEmail = ({
             <Text style={ctaText}>
               Ready to enhance your professional practice? 
             </Text>
-            <Button pY={10} pX={20} style={secondaryButton} href="https://groundpath.com.au/professional-forms">
+            <Button style={{ ...secondaryButton, padding: '10px 20px' }} href="https://groundpath.com.au/professional-forms">
               Explore Professional Forms
             </Button>
           </Section>

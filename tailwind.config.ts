@@ -81,7 +81,10 @@ export default {
 					700: 'hsl(var(--sage-700))',
 					800: 'hsl(var(--sage-800))',
 					900: 'hsl(var(--sage-900))',
-				}
+				},
+				'accent-warm': 'hsl(var(--accent-warm))',
+				'accent-sky': 'hsl(var(--accent-sky))',
+				'accent-rose': 'hsl(var(--accent-rose))',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
