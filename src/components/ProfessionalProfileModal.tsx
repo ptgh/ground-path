@@ -293,8 +293,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         contact_email: profile.contact_email || '',
         contact_phone: profile.contact_phone || '',
         whatsapp_number: profile.whatsapp_number || '',
-        bio: profile.bio || '',
-        booking_profile_url: (profile.booking_integration as BookingIntegration)?.profile_url || ''
+        bio: profile.bio || ''
       };
       setFormData(loadedData);
       setLastSavedFormData({
