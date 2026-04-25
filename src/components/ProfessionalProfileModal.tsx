@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Settings, User, Shield, Briefcase, Heart, Plus, X, Linkedin, CheckCircle2, ExternalLink, Loader2, Copy, ShieldAlert, Pencil, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import AvatarUpload from './AvatarUpload';
-interface HalaxyIntegration {
+interface BookingIntegration {
   profile_url?: string | null;
   verified?: boolean;
   session_mode?: 'halaxy' | 'native_beta';
@@ -170,7 +170,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     contact_phone: '',
     whatsapp_number: '',
     bio: '',
-    halaxy_profile_url: ''
+    booking_profile_url: ''
   });
 
   // Fetch registrations from the new table
@@ -295,7 +295,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         contact_phone: profile.contact_phone || '',
         whatsapp_number: profile.whatsapp_number || '',
         bio: profile.bio || '',
-        halaxy_profile_url: (profile.booking_integration as HalaxyIntegration)?.profile_url || ''
+        booking_profile_url: (profile.booking_integration as BookingIntegration)?.profile_url || ''
       };
       setFormData(loadedData);
       setLastSavedFormData({
@@ -312,7 +312,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     setLoading(true);
 
     try {
-      const { halaxy_profile_url, registration_number, registration_body, registration_expiry, ...rest } = formData;
+      const { booking_profile_url, registration_number, registration_body, registration_expiry, ...rest } = formData;
       const updates = {
         ...rest,
         years_experience: formData.years_experience ? parseInt(formData.years_experience) : null,
@@ -321,7 +321,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         specializations,
         qualifications,
         insurance_expiry: formData.insurance_expiry || null,
-        booking_integration: { ...((profile?.booking_integration as HalaxyIntegration) || {}), profile_url: halaxy_profile_url || null }
+        booking_integration: { ...((profile?.booking_integration as BookingIntegration) || {}), profile_url: booking_profile_url || null }
       };
 
       await updateProfile(updates);
@@ -563,8 +563,8 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="halaxy_profile_url">Halaxy Profile</Label>
-                    {(profile?.booking_integration as HalaxyIntegration)?.verified ? (
+                    <Label htmlFor="booking_profile_url">Halaxy Profile</Label>
+                    {(profile?.booking_integration as BookingIntegration)?.verified ? (
                       <div className="flex items-center justify-between gap-2 p-2 rounded-md border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950 mb-2">
                         <div className="flex items-center gap-2">
                           <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
@@ -578,7 +578,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                           onClick={async () => {
                             await updateProfile({
                               booking_integration: {
-                                ...((profile?.booking_integration as HalaxyIntegration) || {}),
+                                ...((profile?.booking_integration as BookingIntegration) || {}),
                                 verified: false,
                                 verified_at: null,
                               },
@@ -598,44 +598,44 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                     <div className="flex items-center gap-2 p-2 rounded-md border border-border bg-muted/30 mb-2">
                       <span className="text-xs text-muted-foreground">Session mode:</span>
                       <span className="text-xs font-medium text-foreground">
-                        {(profile?.booking_integration as HalaxyIntegration)?.session_mode === 'native_beta'
+                        {(profile?.booking_integration as BookingIntegration)?.session_mode === 'native_beta'
                           ? 'Groundpath Native Beta (Teams)'
                           : 'Halaxy Booking + Telehealth'}
                       </span>
                     </div>
                     <div className="flex gap-1">
                       <Input
-                        id="halaxy_profile_url"
+                        id="booking_profile_url"
                         type="url"
-                        value={formData.halaxy_profile_url}
-                        onChange={(e) => setFormData({...formData, halaxy_profile_url: e.target.value})}
+                        value={formData.booking_profile_url}
+                        onChange={(e) => setFormData({...formData, booking_profile_url: e.target.value})}
                         placeholder="https://www.halaxy.com/profile/your-practice/location/..."
                         className="flex-1"
                       />
-                      {formData.halaxy_profile_url && (
-                        <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.halaxy_profile_url); toast({ title: 'Copied', description: 'Halaxy URL copied to clipboard' }); }}>
+                      {formData.booking_profile_url && (
+                        <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.booking_profile_url); toast({ title: 'Copied', description: 'Halaxy URL copied to clipboard' }); }}>
                           <Copy className="h-3.5 w-3.5" />
                         </Button>
                       )}
-                      {!(profile?.booking_integration as HalaxyIntegration)?.verified && (
+                      {!(profile?.booking_integration as BookingIntegration)?.verified && (
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
                           className="shrink-0"
-                          disabled={halaxyVerifying || !formData.halaxy_profile_url.trim()}
+                          disabled={halaxyVerifying || !formData.booking_profile_url.trim()}
                           onClick={async () => {
                             setHalaxyVerifying(true);
                             try {
                               const { data, error } = await supabase.functions.invoke('verify-halaxy-url', {
-                                body: { url: formData.halaxy_profile_url.trim() },
+                                body: { url: formData.booking_profile_url.trim() },
                               });
                               if (error) throw error;
                               if (data?.verified) {
                                 await updateProfile({
                                   booking_integration: {
-                                    ...((profile?.booking_integration as HalaxyIntegration) || {}),
-                                    profile_url: formData.halaxy_profile_url.trim(),
+                                    ...((profile?.booking_integration as BookingIntegration) || {}),
+                                    profile_url: formData.booking_profile_url.trim(),
                                     verified: true,
                                     verified_at: data.verified_at,
                                   },

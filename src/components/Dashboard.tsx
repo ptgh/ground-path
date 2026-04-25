@@ -51,7 +51,7 @@ import PractitionerSubscriptionCard from './dashboard/PractitionerSubscriptionCa
 import PractitionerPayoutsCard from './dashboard/PractitionerPayoutsCard';
 import { gsap } from 'gsap';
 
-interface HalaxyIntegration {
+interface BookingIntegration {
   profile_url?: string | null;
   verified?: boolean;
   session_mode?: 'halaxy' | 'native_beta';
@@ -60,7 +60,7 @@ interface HalaxyIntegration {
 type SessionMode = 'halaxy' | 'native_beta';
 
 const getSessionMode = (profile: { booking_integration?: unknown } | null): SessionMode => {
-  const integration = profile?.booking_integration as HalaxyIntegration | undefined;
+  const integration = profile?.booking_integration as BookingIntegration | undefined;
   return integration?.session_mode || 'halaxy';
 };
 
@@ -787,7 +787,7 @@ const Dashboard = () => {
                             try {
                               await updateProfile({
                                 booking_integration: {
-                                  ...((profile?.booking_integration as HalaxyIntegration) || {}),
+                                  ...((profile?.booking_integration as BookingIntegration) || {}),
                                   session_mode: mode,
                                 },
                               });

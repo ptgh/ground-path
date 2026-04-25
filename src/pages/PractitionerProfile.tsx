@@ -558,7 +558,7 @@ const PractitionerProfile = () => {
                   <InlineBookingPanel
                     practitionerId={profile.user_id}
                     practitionerName={displayName}
-                    halaxyIntegration={profile.booking_integration}
+                    bookingIntegration={profile.booking_integration}
                     authRedirectPath={`/practitioner/${profile.user_id}#booking`}
                   />
                 </CardContent>
