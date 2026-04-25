@@ -46,7 +46,7 @@ import { notesService, Note } from '@/services/notesService';
 import { ClientMessagesPanel } from './messaging/ClientMessagesPanel';
 import NativeBooking from './dashboard/NativeBooking';
 import Microsoft365Card from './dashboard/Microsoft365Card';
-import SessionRateCard from './dashboard/SessionRateCard';
+import SessionRatesCard from './dashboard/SessionRatesCard';
 import PractitionerSubscriptionCard from './dashboard/PractitionerSubscriptionCard';
 import PractitionerPayoutsCard from './dashboard/PractitionerPayoutsCard';
 import { gsap } from 'gsap';
@@ -755,7 +755,7 @@ const Dashboard = () => {
 
               <PractitionerPayoutsCard />
 
-              <SessionRateCard />
+              <SessionRatesCard />
 
               {/* Session Mode — admin only */}
               {isAdmin && (

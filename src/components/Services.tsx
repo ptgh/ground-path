@@ -1,14 +1,45 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { scrollToSectionWithOffset } from '@/lib/utils';
 import { useBookingMode } from '@/hooks/useBookingMode';
+import { supabase } from '@/integrations/supabase/client';
 
 gsap.registerPlugin(ScrollTrigger);
+
+interface RateRange {
+  min_cents: number;
+  max_cents: number;
+  practitioner_count: number;
+}
+
+const formatRateLabel = (range: RateRange | null): string => {
+  if (!range || !range.min_cents || range.practitioner_count === 0) {
+    return 'From $100 / 50 min';
+  }
+  const min = Math.round(range.min_cents / 100);
+  const max = Math.round(range.max_cents / 100);
+  if (min === max) return `From $${min} / 50 min`;
+  return `$${min}–$${max} / 50 min`;
+};
 
 const Services = () => {
   const { mode: bookingMode } = useBookingMode();
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [rateRange, setRateRange] = useState<RateRange | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase.rpc('get_practitioner_rate_range', { p_duration: 50 });
+      if (cancelled || error) return;
+      const row = (data as RateRange[] | null)?.[0];
+      if (row && row.min_cents) setRateRange(row);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -34,37 +65,33 @@ const Services = () => {
     });
   }, []);
   const videoLabel = bookingMode === 'native_beta' ? 'Online via Secure Video' : 'Online via Halaxy Telehealth';
+  const rateLabel = formatRateLabel(rateRange);
   const services = [
     {
       name: "Mental Health Support",
       format: videoLabel,
-      rate: "$100",
       description: `Social Worker providing professional support via secure ${bookingMode === 'native_beta' ? 'video' : 'Halaxy Telehealth video'} calls`
     },
     {
       name: "Psychosocial Recovery Coaching",
       format: videoLabel,
-      rate: "$100",
       description: "NDIS-funded support for psychosocial recovery and daily living skills — delivered online",
       ndis: true
     },
     {
       name: "Accredited Mental Health Social Worker (AMHSW)",
       format: videoLabel,
-      rate: "$100",
       description: "AMHSW registration currently in progress — service coming soon",
       comingSoon: true
     },
     {
       name: "Counselling Support",
       format: videoLabel,
-      rate: "$100",
       description: "Professional counselling sessions delivered by qualified social workers — ACA Registered"
     },
     {
       name: "In-Person Support",
       format: "Perth, WA",
-      rate: "$100",
       description: `Face-to-face sessions coming soon — currently all sessions are conducted online via ${bookingMode === 'native_beta' ? 'secure video' : 'Halaxy Telehealth'}`,
       comingSoon: true
     }
@@ -74,13 +101,22 @@ const Services = () => {
     <section id="services" ref={sectionRef} className="py-20 bg-background scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-10">
           <h2 className="fade-in text-3xl sm:text-4xl font-light text-foreground mb-4">
             Services & Rates
           </h2>
           <div className="fade-in w-20 h-1 bg-primary mx-auto mb-6"></div>
           <p className="fade-in text-lg text-muted-foreground max-w-2xl mx-auto">
             Professional, affordable mental health and social work services tailored to your needs
+          </p>
+        </div>
+
+        {/* Dynamic rate banner */}
+        <div className="fade-in mx-auto mb-10 max-w-xl text-center rounded-xl border border-primary/20 bg-primary/5 px-6 py-5">
+          <p className="text-xs uppercase tracking-wide text-primary/80 font-medium mb-1">Standard rate</p>
+          <p className="text-2xl sm:text-3xl font-light text-foreground">{rateLabel}</p>
+          <p className="text-xs text-muted-foreground mt-2">
+            Each practitioner sets their own fee. 30, 45 and 60-minute sessions also available where offered. Final rate is confirmed before your session.
           </p>
         </div>
 
