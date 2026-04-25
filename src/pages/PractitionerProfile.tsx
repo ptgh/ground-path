@@ -452,7 +452,7 @@ const PractitionerProfile = () => {
               )}
 
               {bookingMode !== 'halaxy' && (
-                <Card id="booking">
+                <Card id="booking" className="scroll-mt-32">
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                       <Calendar className="h-4 w-4" /> Book a session with {displayName.split(' ')[0]}
