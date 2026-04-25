@@ -118,6 +118,15 @@ const PractitionerProfile = () => {
   const [cancelTarget, setCancelTarget] = useState<MyBookingRow | null>(null);
   const [actionBusyId, setActionBusyId] = useState<string | null>(null);
 
+  // Ensure the hub always opens at the top of the page when navigating to a
+  // practitioner. Without this, lazy-loaded content can leave the previous
+  // page's scroll position, so users land mid-page (e.g., on About).
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.location.hash) return; // honour anchor links like #booking
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [userId]);
+
   // Load the signed-in user's bookings with this practitioner so the hub
   // shows everything in one place (avoids the old need to visit /book).
   useEffect(() => {
@@ -397,7 +406,6 @@ const PractitionerProfile = () => {
                               }`}
                             >
                               <MessageCircle className="h-3 w-3" /> WhatsApp
-                              {isPreferred('whatsapp') && <span className="text-[10px] uppercase tracking-wide">Preferred</span>}
                             </a>
                           )}
                         </div>
