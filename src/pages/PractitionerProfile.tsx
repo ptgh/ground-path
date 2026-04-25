@@ -279,41 +279,61 @@ const PractitionerProfile = () => {
                 </Card>
               )}
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Clock className="h-4 w-4" /> Upcoming availability
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {upcoming.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                      No public availability listed in the next two weeks.{' '}
-                      <Link to="/book" className="text-primary underline">Browse all practitioners</Link>{' '}
-                      or <button onClick={handleMessage} className="text-primary underline">send a message</button>.
-                    </p>
-                  ) : (
-                    <div className="space-y-2">
-                      {upcoming.map((s, i) => (
-                        <button
-                          key={i}
-                          onClick={handleBook}
-                          className="w-full text-left flex items-center justify-between gap-3 px-3 py-2.5 rounded-md border border-border hover:border-primary/40 hover:bg-muted/40 transition-colors text-sm"
-                        >
-                          <span className="inline-flex items-center gap-2">
-                            <Calendar className="h-4 w-4 text-primary" />
-                            {s.label}
-                          </span>
-                          <span className="text-xs text-muted-foreground">Book →</span>
-                        </button>
-                      ))}
-                      <p className="text-[11px] text-muted-foreground/70 pt-1">
-                        Times shown in your local timezone. Final confirmation by the practitioner.
+              {bookingMode !== 'halaxy' && (
+                <Card id="booking">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Calendar className="h-4 w-4" /> Book a session with {displayName.split(' ')[0]}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <InlineBookingPanel
+                      practitionerId={profile.user_id}
+                      practitionerName={displayName}
+                      halaxyIntegration={profile.halaxy_integration}
+                      authRedirectPath={`/practitioner/${profile.user_id}#booking`}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+
+              {bookingMode === 'halaxy' && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Clock className="h-4 w-4" /> Upcoming availability
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {upcoming.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">
+                        No public availability listed in the next two weeks.{' '}
+                        <Link to="/book" className="text-primary underline">Browse all practitioners</Link>{' '}
+                        or <button onClick={handleMessage} className="text-primary underline">send a message</button>.
                       </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                    ) : (
+                      <div className="space-y-2">
+                        {upcoming.map((s, i) => (
+                          <button
+                            key={i}
+                            onClick={handleBook}
+                            className="w-full text-left flex items-center justify-between gap-3 px-3 py-2.5 rounded-md border border-border hover:border-primary/40 hover:bg-muted/40 transition-colors text-sm"
+                          >
+                            <span className="inline-flex items-center gap-2">
+                              <Calendar className="h-4 w-4 text-primary" />
+                              {s.label}
+                            </span>
+                            <span className="text-xs text-muted-foreground">Book →</span>
+                          </button>
+                        ))}
+                        <p className="text-[11px] text-muted-foreground/70 pt-1">
+                          Times shown in your local timezone. Final confirmation by the practitioner.
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
             </div>
           )}
         </div>
