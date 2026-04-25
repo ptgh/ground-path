@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Send, User, Loader2, Trash2, Globe, Calendar, AlertTriangle, Phone, Mail, X, Clock, Square, Mic, CheckCircle2 } from 'lucide-react';
+import { MessageCircle, Send, User, Loader2, Trash2, Globe, Calendar, AlertTriangle, Phone, Mail, X, Clock, Square, Mic, CheckCircle2, BookOpen, DollarSign, HelpCircle, Sparkles } from 'lucide-react';
 import VoiceCounsellingSession from './VoiceCounsellingSession';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -105,6 +106,7 @@ const renderMessageWithLinks = (text: string): React.ReactNode => {
 };
 
 export const ClientAIAssistant = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [country] = useState<Country>('AU');
   const [showCountryPrompt] = useState(false);
@@ -494,11 +496,17 @@ export const ClientAIAssistant = () => {
     }
   };
 
-  const quickQuestions = [
-    "What services does groundpath offer?",
-    "How can I access NDIS support?",
-    "How do I book a counselling session?",
-    "What mental health resources are available?"
+  // Quick intents — each one either navigates to a real page (more useful than
+  // dumping the question into the input) or seeds a relevant prompt.
+  type QuickIntent =
+    | { kind: 'navigate'; label: string; icon: typeof Calendar; href: string }
+    | { kind: 'prompt'; label: string; icon: typeof Calendar; prompt: string };
+  const quickIntents: QuickIntent[] = [
+    { kind: 'navigate', label: 'Book a session', icon: Calendar, href: '/book' },
+    { kind: 'navigate', label: 'Pricing & FAQ', icon: DollarSign, href: '/#faq' },
+    { kind: 'navigate', label: 'Resources', icon: BookOpen, href: '/resources' },
+    { kind: 'prompt', label: 'NDIS support?', icon: HelpCircle, prompt: 'How can I access NDIS support through groundpath?' },
+    { kind: 'prompt', label: 'What is groundpath?', icon: Sparkles, prompt: 'What services does groundpath offer?' },
   ];
 
   // Animations
@@ -887,19 +895,39 @@ export const ClientAIAssistant = () => {
                 </Button>
               </div>
               <div className="flex flex-wrap gap-2">
-                {quickQuestions.map((question, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setInput(question)}
-                    className={`text-xs px-3 py-1.5 rounded-full ${
-                      isSessionMode 
-                        ? 'bg-amber-50 text-amber-700 hover:bg-amber-100' 
-                        : 'bg-primary/10 text-primary hover:bg-primary/20'
-                    } transition-colors`}
-                  >
-                    {question}
-                  </button>
-                ))}
+                {quickIntents.map((intent, index) => {
+                  const Icon = intent.icon;
+                  const handleClick = () => {
+                    if (intent.kind === 'navigate') {
+                      setIsOpen(false);
+                      // Hash routes need a small delay so the dialog can close + smooth scroll lands.
+                      if (intent.href.startsWith('/#')) {
+                        setTimeout(() => {
+                          const id = intent.href.slice(2);
+                          document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+                        }, 250);
+                      } else {
+                        navigate(intent.href);
+                      }
+                    } else {
+                      setInput(intent.prompt);
+                    }
+                  };
+                  return (
+                    <button
+                      key={index}
+                      onClick={handleClick}
+                      className={`text-xs px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 ${
+                        isSessionMode
+                          ? 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+                          : 'bg-primary/10 text-primary hover:bg-primary/20'
+                      } transition-colors`}
+                    >
+                      <Icon className="h-3 w-3" />
+                      {intent.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
