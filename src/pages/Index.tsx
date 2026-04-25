@@ -16,6 +16,7 @@ const HowSessionsWork = lazy(() => import('../components/HowSessionsWork'));
 const HowGroundpathIsDifferent = lazy(() => import('../components/HowGroundpathIsDifferent'));
 const VoiceCounsellingSection = lazy(() => import('../components/VoiceCounsellingSection'));
 const Newsletter = lazy(() => import('../components/Newsletter'));
+const FAQ = lazy(() => import('../components/FAQ'));
 const Contact = lazy(() => import('../components/Contact'));
 const Footer = lazy(() => import('../components/Footer'));
 const PractitionerList = lazy(() =>

@@ -101,13 +101,22 @@ const Services = () => {
     <section id="services" ref={sectionRef} className="py-20 bg-background scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-10">
           <h2 className="fade-in text-3xl sm:text-4xl font-light text-foreground mb-4">
             Services & Rates
           </h2>
           <div className="fade-in w-20 h-1 bg-primary mx-auto mb-6"></div>
           <p className="fade-in text-lg text-muted-foreground max-w-2xl mx-auto">
             Professional, affordable mental health and social work services tailored to your needs
+          </p>
+        </div>
+
+        {/* Dynamic rate banner */}
+        <div className="fade-in mx-auto mb-10 max-w-xl text-center rounded-xl border border-primary/20 bg-primary/5 px-6 py-5">
+          <p className="text-xs uppercase tracking-wide text-primary/80 font-medium mb-1">Standard rate</p>
+          <p className="text-2xl sm:text-3xl font-light text-foreground">{rateLabel}</p>
+          <p className="text-xs text-muted-foreground mt-2">
+            Each practitioner sets their own fee. 30, 45 and 60-minute sessions also available where offered. Final rate is confirmed before your session.
           </p>
         </div>
 
