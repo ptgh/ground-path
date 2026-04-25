@@ -107,7 +107,6 @@ const PractitionerProfile = () => {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { mode: bookingMode } = useBookingMode();
 
   const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [registrations, setRegistrations] = useState<RegistrationRow[]>([]);
