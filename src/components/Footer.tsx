@@ -6,6 +6,7 @@ import PrivacyPolicyModal from './PrivacyPolicyModal';
 import TermsOfServiceModal from './TermsOfServiceModal';
 import ABNLookupModal from './ABNLookupModal';
 import { scrollToSectionWithOffset } from '@/lib/utils';
+import { quoteOfTheDayFooter } from '@/lib/quotes';
 
 const Footer = () => {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
@@ -121,6 +122,9 @@ const Footer = () => {
             <button onClick={() => setIsABNOpen(true)} className={linkClass}>ABN Lookup</button>
           </div>
         </div>
+        <p className="text-[11px] text-surface-dark-muted/60 text-center italic mt-6">
+          “{quoteOfTheDayFooter()}”
+        </p>
       </div>
 
       <PrivacyPolicyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />

@@ -410,7 +410,7 @@ const Book = () => {
       },
     }).catch(err => console.error('Client receipt notification error:', err));
 
-    toast.success('Booking request submitted! Your practitioner will confirm shortly.');
+    toast.success('You took a brave step today — your booking request is in.');
     setSelectedSlot(null);
     setSelectedDate(undefined);
 
