@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Paperclip, ArrowLeft, Trash2, RotateCcw } from 'lucide-react';
+import { Send, Paperclip, Link2, ArrowLeft, Trash2, RotateCcw } from 'lucide-react';
 import { Conversation, Message, MessageStatus as MsgStatusType, messagingService } from '@/services/messagingService';
 import { MessageAttachment } from '@/components/messaging/MessageAttachment';
 import { MessageStatus } from '@/components/messaging/MessageStatus';
