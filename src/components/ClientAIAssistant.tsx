@@ -106,6 +106,7 @@ const renderMessageWithLinks = (text: string): React.ReactNode => {
 };
 
 export const ClientAIAssistant = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [country] = useState<Country>('AU');
   const [showCountryPrompt] = useState(false);
