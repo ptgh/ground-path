@@ -493,24 +493,58 @@ const PractitionerProfile = () => {
                   <CardContent>
                     <ul className="space-y-2">
                       {myBookings.slice(0, 5).map(b => {
-                        const dateLabel = new Date(`${b.requested_date}T00:00:00`).toLocaleDateString(undefined, {
-                          weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
-                        });
+                        // Defensive date parse — invalid date strings won't crash the row.
+                        const parsed = new Date(`${b.requested_date}T00:00:00`);
+                        const dateLabel = Number.isNaN(parsed.getTime())
+                          ? b.requested_date
+                          : parsed.toLocaleDateString(undefined, {
+                              weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+                            });
                         const statusColor =
                           b.status === 'confirmed' ? 'text-primary border-primary/40 bg-primary/5'
                           : b.status === 'pending' ? 'text-amber-700 border-amber-300 bg-amber-50'
                           : 'text-muted-foreground border-border bg-muted/40';
+                        const isActive = b.status === 'pending' || b.status === 'confirmed';
+                        const isBusy = actionBusyId === b.id;
                         return (
-                          <li key={b.id} className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-3 py-2 text-sm">
-                            <div className="min-w-0">
-                              <p className="font-medium text-foreground truncate">{dateLabel}</p>
-                              <p className="text-xs text-muted-foreground">
+                          <li
+                            key={b.id}
+                            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 rounded-md border border-border bg-card px-3 py-2.5 text-sm"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="font-medium text-foreground truncate">{dateLabel}</p>
+                                <span className={`text-[11px] uppercase tracking-wide rounded-full px-2 py-0.5 border ${statusColor}`}>
+                                  {b.status}
+                                </span>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-0.5">
                                 {formatTimeLabel(b.requested_start_time)} – {formatTimeLabel(b.requested_end_time)}
                               </p>
                             </div>
-                            <span className={`text-[11px] uppercase tracking-wide rounded-full px-2 py-0.5 border ${statusColor}`}>
-                              {b.status}
-                            </span>
+                            {isActive && (
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={handleReschedule}
+                                  disabled={isBusy}
+                                  className="h-8 px-2 text-xs gap-1"
+                                >
+                                  <CalendarClock className="h-3.5 w-3.5" /> Reschedule
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setCancelTarget(b)}
+                                  disabled={isBusy}
+                                  className="h-8 px-2 text-xs gap-1 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                >
+                                  {isBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <X className="h-3.5 w-3.5" />}
+                                  Cancel
+                                </Button>
+                              </div>
+                            )}
                           </li>
                         );
                       })}
