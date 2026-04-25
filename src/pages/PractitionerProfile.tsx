@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Loader2, ShieldCheck, MapPin, Calendar, MessageCircle, Video, ArrowLeft, Clock } from 'lucide-react';
+import { Loader2, ShieldCheck, MapPin, Calendar, MessageCircle, Video, ArrowLeft, Clock, Mail, Phone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
@@ -13,6 +13,10 @@ import Footer from '@/components/Footer';
 import SEO from '@/components/SEO';
 import { getNextAvailableSlots, type UpcomingSlot } from '@/lib/availability';
 import InlineBookingPanel from '@/components/booking/InlineBookingPanel';
+import {
+  buildProfessionalIdentities,
+  formatIdentitiesLine,
+} from '@/lib/professionalIdentities';
 
 interface ProfileRow {
   user_id: string;
