@@ -33,6 +33,13 @@ interface ProfileRow {
   user_type: string | null;
   halaxy_integration: Record<string, unknown> | null;
   years_experience: number | null;
+  aasw_membership_number: string | null;
+  swe_registration_number: string | null;
+  ahpra_number: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  whatsapp_number: string | null;
+  preferred_contact_method: string | null;
 }
 
 interface RegistrationRow {
