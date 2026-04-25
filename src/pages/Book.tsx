@@ -145,6 +145,18 @@ const Book = () => {
           return integration?.session_mode === 'native_beta';
         });
         setPractitioners(nativePractitioners);
+
+        // Deep-link: ?practitioner=<uuid> auto-selects on load.
+        const params = new URLSearchParams(window.location.search);
+        const requestedId = params.get('practitioner');
+        if (requestedId) {
+          const match = nativePractitioners.find(p => p.user_id === requestedId);
+          if (match) {
+            setSelectedPractitioner(match);
+          } else {
+            toast.message("That practitioner isn't currently bookable. Showing all available practitioners.");
+          }
+        }
       }
       setLoading(false);
     };
