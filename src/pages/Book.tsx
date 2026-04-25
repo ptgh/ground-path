@@ -35,6 +35,11 @@ import AddCardForm from '@/components/billing/AddCardForm';
 import { useSavedCards } from '@/hooks/useSavedCards';
 import { gsap } from 'gsap';
 import { cn } from '@/lib/utils';
+import {
+  buildProfessionalIdentities,
+  formatIdentitiesLine,
+  type ProfessionalIdentity,
+} from '@/lib/professionalIdentities';
 
 interface Practitioner {
   user_id: string;
