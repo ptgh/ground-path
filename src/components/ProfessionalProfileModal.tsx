@@ -295,7 +295,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         contact_phone: profile.contact_phone || '',
         whatsapp_number: profile.whatsapp_number || '',
         bio: profile.bio || '',
-        halaxy_profile_url: (profile.halaxy_integration as HalaxyIntegration)?.profile_url || ''
+        halaxy_profile_url: (profile.booking_integration as HalaxyIntegration)?.profile_url || ''
       };
       setFormData(loadedData);
       setLastSavedFormData({
@@ -321,7 +321,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         specializations,
         qualifications,
         insurance_expiry: formData.insurance_expiry || null,
-        halaxy_integration: { ...((profile?.halaxy_integration as HalaxyIntegration) || {}), profile_url: halaxy_profile_url || null }
+        booking_integration: { ...((profile?.booking_integration as HalaxyIntegration) || {}), profile_url: halaxy_profile_url || null }
       };
 
       await updateProfile(updates);
@@ -564,7 +564,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="halaxy_profile_url">Halaxy Profile</Label>
-                    {(profile?.halaxy_integration as HalaxyIntegration)?.verified ? (
+                    {(profile?.booking_integration as HalaxyIntegration)?.verified ? (
                       <div className="flex items-center justify-between gap-2 p-2 rounded-md border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950 mb-2">
                         <div className="flex items-center gap-2">
                           <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
@@ -577,8 +577,8 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                           className="h-7 w-7 text-destructive hover:text-destructive shrink-0"
                           onClick={async () => {
                             await updateProfile({
-                              halaxy_integration: {
-                                ...((profile?.halaxy_integration as HalaxyIntegration) || {}),
+                              booking_integration: {
+                                ...((profile?.booking_integration as HalaxyIntegration) || {}),
                                 verified: false,
                                 verified_at: null,
                               },
@@ -598,7 +598,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                     <div className="flex items-center gap-2 p-2 rounded-md border border-border bg-muted/30 mb-2">
                       <span className="text-xs text-muted-foreground">Session mode:</span>
                       <span className="text-xs font-medium text-foreground">
-                        {(profile?.halaxy_integration as HalaxyIntegration)?.session_mode === 'native_beta'
+                        {(profile?.booking_integration as HalaxyIntegration)?.session_mode === 'native_beta'
                           ? 'Groundpath Native Beta (Teams)'
                           : 'Halaxy Booking + Telehealth'}
                       </span>
@@ -617,7 +617,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                           <Copy className="h-3.5 w-3.5" />
                         </Button>
                       )}
-                      {!(profile?.halaxy_integration as HalaxyIntegration)?.verified && (
+                      {!(profile?.booking_integration as HalaxyIntegration)?.verified && (
                         <Button
                           type="button"
                           variant="outline"
@@ -633,8 +633,8 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                               if (error) throw error;
                               if (data?.verified) {
                                 await updateProfile({
-                                  halaxy_integration: {
-                                    ...((profile?.halaxy_integration as HalaxyIntegration) || {}),
+                                  booking_integration: {
+                                    ...((profile?.booking_integration as HalaxyIntegration) || {}),
                                     profile_url: formData.halaxy_profile_url.trim(),
                                     verified: true,
                                     verified_at: data.verified_at,

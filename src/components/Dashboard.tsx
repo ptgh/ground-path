@@ -59,8 +59,8 @@ interface HalaxyIntegration {
 
 type SessionMode = 'halaxy' | 'native_beta';
 
-const getSessionMode = (profile: { halaxy_integration?: unknown } | null): SessionMode => {
-  const integration = profile?.halaxy_integration as HalaxyIntegration | undefined;
+const getSessionMode = (profile: { booking_integration?: unknown } | null): SessionMode => {
+  const integration = profile?.booking_integration as HalaxyIntegration | undefined;
   return integration?.session_mode || 'halaxy';
 };
 
@@ -786,8 +786,8 @@ const Dashboard = () => {
                             if (isSelected) return;
                             try {
                               await updateProfile({
-                                halaxy_integration: {
-                                  ...((profile?.halaxy_integration as HalaxyIntegration) || {}),
+                                booking_integration: {
+                                  ...((profile?.booking_integration as HalaxyIntegration) || {}),
                                   session_mode: mode,
                                 },
                               });
