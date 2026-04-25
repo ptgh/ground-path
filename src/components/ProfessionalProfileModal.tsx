@@ -13,10 +13,9 @@ import { useToast } from '@/hooks/use-toast';
 import { Settings, User, Shield, Briefcase, Heart, Plus, X, Linkedin, CheckCircle2, ExternalLink, Loader2, Copy, ShieldAlert, Pencil, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import AvatarUpload from './AvatarUpload';
-interface HalaxyIntegration {
+interface BookingIntegration {
   profile_url?: string | null;
   verified?: boolean;
-  session_mode?: 'halaxy' | 'native_beta';
 }
 
 
@@ -129,7 +128,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [halaxyVerifying, setHalaxyVerifying] = useState(false);
+  
 
   // Multi-registration state
   const [registrations, setRegistrations] = useState<PractitionerRegistration[]>([]);
@@ -169,8 +168,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     contact_email: '',
     contact_phone: '',
     whatsapp_number: '',
-    bio: '',
-    halaxy_profile_url: ''
+    bio: ''
   });
 
   // Fetch registrations from the new table
@@ -294,8 +292,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         contact_email: profile.contact_email || '',
         contact_phone: profile.contact_phone || '',
         whatsapp_number: profile.whatsapp_number || '',
-        bio: profile.bio || '',
-        halaxy_profile_url: (profile.halaxy_integration as HalaxyIntegration)?.profile_url || ''
+        bio: profile.bio || ''
       };
       setFormData(loadedData);
       setLastSavedFormData({
@@ -312,7 +309,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
     setLoading(true);
 
     try {
-      const { halaxy_profile_url, registration_number, registration_body, registration_expiry, ...rest } = formData;
+      const { registration_number, registration_body, registration_expiry, ...rest } = formData;
       const updates = {
         ...rest,
         years_experience: formData.years_experience ? parseInt(formData.years_experience) : null,
@@ -321,7 +318,6 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         specializations,
         qualifications,
         insurance_expiry: formData.insurance_expiry || null,
-        halaxy_integration: { ...((profile?.halaxy_integration as HalaxyIntegration) || {}), profile_url: halaxy_profile_url || null }
       };
 
       await updateProfile(updates);
@@ -561,101 +557,6 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                         )}
                       </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="halaxy_profile_url">Halaxy Profile</Label>
-                    {(profile?.halaxy_integration as HalaxyIntegration)?.verified ? (
-                      <div className="flex items-center justify-between gap-2 p-2 rounded-md border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950 mb-2">
-                        <div className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
-                          <span className="text-xs text-green-700 dark:text-green-300 font-medium">Verified via Halaxy</span>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 text-destructive hover:text-destructive shrink-0"
-                          onClick={async () => {
-                            await updateProfile({
-                              halaxy_integration: {
-                                ...((profile?.halaxy_integration as HalaxyIntegration) || {}),
-                                verified: false,
-                                verified_at: null,
-                              },
-                            });
-                            toast({ title: 'Halaxy verification removed', description: 'You can re-verify your Halaxy profile URL.' });
-                          }}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 p-2 rounded-md border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950 mb-2">
-                        <ShieldAlert className="h-4 w-4 text-amber-600 shrink-0" />
-                        <span className="text-xs text-amber-700 dark:text-amber-300 font-medium">Unverified</span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-2 p-2 rounded-md border border-border bg-muted/30 mb-2">
-                      <span className="text-xs text-muted-foreground">Session mode:</span>
-                      <span className="text-xs font-medium text-foreground">
-                        {(profile?.halaxy_integration as HalaxyIntegration)?.session_mode === 'native_beta'
-                          ? 'Groundpath Native Beta (Teams)'
-                          : 'Halaxy Booking + Telehealth'}
-                      </span>
-                    </div>
-                    <div className="flex gap-1">
-                      <Input
-                        id="halaxy_profile_url"
-                        type="url"
-                        value={formData.halaxy_profile_url}
-                        onChange={(e) => setFormData({...formData, halaxy_profile_url: e.target.value})}
-                        placeholder="https://www.halaxy.com/profile/your-practice/location/..."
-                        className="flex-1"
-                      />
-                      {formData.halaxy_profile_url && (
-                        <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => { navigator.clipboard.writeText(formData.halaxy_profile_url); toast({ title: 'Copied', description: 'Halaxy URL copied to clipboard' }); }}>
-                          <Copy className="h-3.5 w-3.5" />
-                        </Button>
-                      )}
-                      {!(profile?.halaxy_integration as HalaxyIntegration)?.verified && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          className="shrink-0"
-                          disabled={halaxyVerifying || !formData.halaxy_profile_url.trim()}
-                          onClick={async () => {
-                            setHalaxyVerifying(true);
-                            try {
-                              const { data, error } = await supabase.functions.invoke('verify-halaxy-url', {
-                                body: { url: formData.halaxy_profile_url.trim() },
-                              });
-                              if (error) throw error;
-                              if (data?.verified) {
-                                await updateProfile({
-                                  halaxy_integration: {
-                                    ...((profile?.halaxy_integration as HalaxyIntegration) || {}),
-                                    profile_url: formData.halaxy_profile_url.trim(),
-                                    verified: true,
-                                    verified_at: data.verified_at,
-                                  },
-                                });
-                                toast({ title: 'Halaxy verified', description: 'Your Halaxy profile page has been confirmed.' });
-                              } else {
-                                toast({ title: 'Verification failed', description: data?.error || 'Could not confirm the Halaxy profile page. Please check the URL.', variant: 'destructive' });
-                              }
-                            } catch (err) {
-                              toast({ title: 'Verification error', description: err.message || 'Could not verify URL.', variant: 'destructive' });
-                            } finally {
-                              setHalaxyVerifying(false);
-                            }
-                          }}
-                        >
-                          {halaxyVerifying ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Verify'}
-                        </Button>
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground">Your personal Halaxy booking page URL</p>
                   </div>
                 </CardContent>
               </Card>

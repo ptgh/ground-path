@@ -107,7 +107,6 @@ const PractitionerProfile = () => {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { mode: bookingMode } = useBookingMode();
 
   const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [registrations, setRegistrations] = useState<RegistrationRow[]>([]);
@@ -559,21 +558,11 @@ const PractitionerProfile = () => {
                   <InlineBookingPanel
                     practitionerId={profile.user_id}
                     practitionerName={displayName}
-                    halaxyIntegration={profile.booking_integration}
+                    bookingIntegration={profile.booking_integration}
                     authRedirectPath={`/practitioner/${profile.user_id}#booking`}
                   />
                 </CardContent>
               </Card>
-                          </button>
-                        ))}
-                        <p className="text-[11px] text-muted-foreground/70 pt-1">
-                          Times shown in your local timezone. Final confirmation by the practitioner.
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
             </div>
           )}
         </div>

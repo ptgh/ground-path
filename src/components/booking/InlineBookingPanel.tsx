@@ -45,7 +45,7 @@ interface Props {
   practitionerId: string;
   practitionerName: string;
   /** Optional integration object for session duration / buffer overrides. */
-  halaxyIntegration?: Record<string, unknown> | null;
+  bookingIntegration?: Record<string, unknown> | null;
   /** Where to redirect on auth gate. Defaults to current path. */
   authRedirectPath?: string;
 }
@@ -79,7 +79,7 @@ const generateSlots = (
   return out;
 };
 
-const InlineBookingPanel = ({ practitionerId, practitionerName, halaxyIntegration, authRedirectPath }: Props) => {
+const InlineBookingPanel = ({ practitionerId, practitionerName, bookingIntegration, authRedirectPath }: Props) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { cards, loading: cardsLoading, refresh: refreshCards } = useSavedCards();
@@ -96,7 +96,7 @@ const InlineBookingPanel = ({ practitionerId, practitionerName, halaxyIntegratio
   const [rateInfo, setRateInfo] = useState<{ minRate: number } | null>(null);
 
   const settings = (() => {
-    const saved = (halaxyIntegration as Record<string, unknown> | null | undefined)?.availability_settings as
+    const saved = (bookingIntegration as Record<string, unknown> | null | undefined)?.availability_settings as
       | Record<string, unknown>
       | undefined;
     return {
