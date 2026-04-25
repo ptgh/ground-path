@@ -126,6 +126,7 @@ const Index = () => {
               </div>
             </div>
           </section>
+          <FAQ />
           <Newsletter />
           <Contact />
         </Suspense>
