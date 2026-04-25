@@ -622,6 +622,43 @@ const PractitionerProfile = () => {
         </div>
       )}
 
+      <AlertDialog open={!!cancelTarget} onOpenChange={(o) => { if (!o) setCancelTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel this booking request?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {cancelTarget && (
+                <>
+                  Cancelling your request for{' '}
+                  <span className="font-medium text-foreground">
+                    {(() => {
+                      const d = new Date(`${cancelTarget.requested_date}T00:00:00`);
+                      return Number.isNaN(d.getTime())
+                        ? cancelTarget.requested_date
+                        : d.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+                    })()}
+                  </span>{' '}
+                  at{' '}
+                  <span className="font-medium text-foreground">{formatTimeLabel(cancelTarget.requested_start_time)}</span>.
+                  This cannot be undone — you can re-book any time below.
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={!!actionBusyId}>Keep request</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); confirmCancel(); }}
+              disabled={!!actionBusyId}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {actionBusyId ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              Yes, cancel
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Footer />
     </div>
   );
