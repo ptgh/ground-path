@@ -380,11 +380,9 @@ const Dashboard = () => {
             </TabsList>
 
             {/* ═══ Booking Tab ═══ */}
-            {(isAdmin || getSessionMode(profile) === 'native_beta') && (
-              <TabsContent value="booking" className="space-y-6">
-                <NativeBooking />
-              </TabsContent>
-            )}
+            <TabsContent value="booking" className="space-y-6">
+              <NativeBooking />
+            </TabsContent>
 
             {/* ═══ Overview Tab ═══ */}
             <TabsContent value="overview" className="space-y-6">
