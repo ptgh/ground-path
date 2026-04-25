@@ -307,7 +307,6 @@ export type Database = {
           id: string
           last_message_at: string | null
           last_message_text: string | null
-          linked_halaxy_client_id: string | null
           practitioner_id: string
           status: string
           unread_count_practitioner: number
@@ -320,7 +319,6 @@ export type Database = {
           id?: string
           last_message_at?: string | null
           last_message_text?: string | null
-          linked_halaxy_client_id?: string | null
           practitioner_id: string
           status?: string
           unread_count_practitioner?: number
@@ -333,7 +331,6 @@ export type Database = {
           id?: string
           last_message_at?: string | null
           last_message_text?: string | null
-          linked_halaxy_client_id?: string | null
           practitioner_id?: string
           status?: string
           unread_count_practitioner?: number
@@ -820,6 +817,7 @@ export type Database = {
           ahpra_profession: string | null
           avatar_url: string | null
           bio: string | null
+          booking_integration: Json | null
           contact_email: string | null
           contact_phone: string | null
           cpd_hours_current_year: number | null
@@ -830,7 +828,6 @@ export type Database = {
           display_name: string | null
           duration_rates: Json
           emergency_contact: Json | null
-          halaxy_integration: Json | null
           id: string
           insurance_expiry: string | null
           insurance_policy_number: string | null
@@ -868,6 +865,7 @@ export type Database = {
           ahpra_profession?: string | null
           avatar_url?: string | null
           bio?: string | null
+          booking_integration?: Json | null
           contact_email?: string | null
           contact_phone?: string | null
           cpd_hours_current_year?: number | null
@@ -878,7 +876,6 @@ export type Database = {
           display_name?: string | null
           duration_rates?: Json
           emergency_contact?: Json | null
-          halaxy_integration?: Json | null
           id?: string
           insurance_expiry?: string | null
           insurance_policy_number?: string | null
@@ -916,6 +913,7 @@ export type Database = {
           ahpra_profession?: string | null
           avatar_url?: string | null
           bio?: string | null
+          booking_integration?: Json | null
           contact_email?: string | null
           contact_phone?: string | null
           cpd_hours_current_year?: number | null
@@ -926,7 +924,6 @@ export type Database = {
           display_name?: string | null
           duration_rates?: Json
           emergency_contact?: Json | null
-          halaxy_integration?: Json | null
           id?: string
           insurance_expiry?: string | null
           insurance_policy_number?: string | null
@@ -1095,8 +1092,8 @@ export type Database = {
         Returns: {
           avatar_url: string
           bio: string
+          booking_integration: Json
           display_name: string
-          halaxy_integration: Json
           practice_location: string
           profession: string
           professional_verified: boolean
