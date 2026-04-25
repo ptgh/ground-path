@@ -157,12 +157,7 @@ const Services = () => {
                   <span className="text-muted-foreground">Format:</span>
                   <span className="font-medium text-foreground">{service.format}</span>
                 </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Rate (AUD):</span>
-                  <span className="font-medium text-primary text-lg">{service.rate}</span>
-                </div>
-                
+
                 <p className="text-muted-foreground text-sm mt-4 pt-4 border-t border-border">
                   {service.description}
                 </p>
