@@ -18,7 +18,7 @@ import { Loader2, ShieldCheck, MapPin, Calendar, MessageCircle, Video, ArrowLeft
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SEO from '@/components/SEO';
@@ -42,7 +42,7 @@ interface ProfileRow {
   verification_status: string | null;
   directory_approved: boolean | null;
   user_type: string | null;
-  halaxy_integration: Record<string, unknown> | null;
+  booking_integration: Record<string, unknown> | null;
   years_experience: number | null;
   aasw_membership_number: string | null;
   swe_registration_number: string | null;
@@ -176,7 +176,7 @@ const PractitionerProfile = () => {
       try {
         const profilePromise = supabase
           .from('profiles')
-          .select('user_id, display_name, avatar_url, profession, bio, specializations, qualifications, practice_location, professional_verified, verification_status, directory_approved, user_type, halaxy_integration, years_experience, aasw_membership_number, swe_registration_number, ahpra_number, contact_email, contact_phone, whatsapp_number, preferred_contact_method')
+          .select('user_id, display_name, avatar_url, profession, bio, specializations, qualifications, practice_location, professional_verified, verification_status, directory_approved, user_type, booking_integration, years_experience, aasw_membership_number, swe_registration_number, ahpra_number, contact_email, contact_phone, whatsapp_number, preferred_contact_method')
           .eq('user_id', userId)
           .maybeSingle();
         const regsPromise = supabase
@@ -222,10 +222,6 @@ const PractitionerProfile = () => {
 
   const handleBook = () => {
     if (!profile) return;
-    if (bookingMode === 'halaxy') {
-      window.open(HALAXY_EXTERNAL_URL, '_blank');
-      return;
-    }
     // Booking lives inline below — just scroll to it.
     document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
@@ -553,51 +549,21 @@ const PractitionerProfile = () => {
                 </Card>
               )}
 
-              {bookingMode !== 'halaxy' && (
-                <Card id="booking" className="scroll-mt-32">
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Calendar className="h-4 w-4" /> Book a session with {displayName.split(' ')[0]}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <InlineBookingPanel
-                      practitionerId={profile.user_id}
-                      practitionerName={displayName}
-                      halaxyIntegration={profile.halaxy_integration}
-                      authRedirectPath={`/practitioner/${profile.user_id}#booking`}
-                    />
-                  </CardContent>
-                </Card>
-              )}
-
-              {bookingMode === 'halaxy' && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Clock className="h-4 w-4" /> Upcoming availability
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {upcoming.length === 0 ? (
-                      <p className="text-sm text-muted-foreground">
-                        No public availability listed in the next two weeks.{' '}
-                        <Link to="/book" className="text-primary underline">Browse all practitioners</Link>{' '}
-                        or <button onClick={handleMessage} className="text-primary underline">send a message</button>.
-                      </p>
-                    ) : (
-                      <div className="space-y-2">
-                        {upcoming.map((s, i) => (
-                          <button
-                            key={i}
-                            onClick={handleBook}
-                            className="w-full text-left flex items-center justify-between gap-3 px-3 py-2.5 rounded-md border border-border hover:border-primary/40 hover:bg-muted/40 transition-colors text-sm"
-                          >
-                            <span className="inline-flex items-center gap-2">
-                              <Calendar className="h-4 w-4 text-primary" />
-                              {s.label}
-                            </span>
-                            <span className="text-xs text-muted-foreground">Book →</span>
+              <Card id="booking" className="scroll-mt-32">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Calendar className="h-4 w-4" /> Book a session with {displayName.split(' ')[0]}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <InlineBookingPanel
+                    practitionerId={profile.user_id}
+                    practitionerName={displayName}
+                    halaxyIntegration={profile.booking_integration}
+                    authRedirectPath={`/practitioner/${profile.user_id}#booking`}
+                  />
+                </CardContent>
+              </Card>
                           </button>
                         ))}
                         <p className="text-[11px] text-muted-foreground/70 pt-1">

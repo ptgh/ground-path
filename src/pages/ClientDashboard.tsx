@@ -106,14 +106,7 @@ const ClientDashboard = () => {
             <Button
               variant="outline"
               className="h-auto py-4 flex flex-col items-center gap-2"
-              onClick={() => {
-                if (bookingMode === 'native_beta') {
-                  navigate('/');
-                  setTimeout(() => scrollToSectionWithOffset('booking', 96), 300);
-                } else {
-                  window.open(HALAXY_EXTERNAL_URL, '_blank');
-                }
-              }}
+              onClick={() => navigate('/book')}
             >
               <User className="h-5 w-5" />
               <span className="text-xs">Book Session</span>
