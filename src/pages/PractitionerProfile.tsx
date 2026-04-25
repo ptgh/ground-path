@@ -223,9 +223,11 @@ const PractitionerProfile = () => {
                           </span>
                         )}
                       </div>
-                      {profile.profession && (
+                      {(identities.length > 0 || profile.profession) && (
                         <p className="text-sm text-muted-foreground mt-1">
-                          {formatProfessionLabel(profile.profession)}
+                          {identities.length > 0
+                            ? formatIdentitiesLine(identities)
+                            : formatProfessionLabel(profile.profession!)}
                           {profile.years_experience ? ` · ${profile.years_experience}+ yrs experience` : ''}
                         </p>
                       )}
@@ -246,7 +248,7 @@ const PractitionerProfile = () => {
                         )}
                       </div>
 
-                      <div className="flex gap-2 mt-5">
+                      <div className="flex flex-wrap gap-2 mt-5">
                         <Button onClick={handleBook} className="gap-1.5">
                           <Calendar className="h-4 w-4" /> Book with {displayName.split(' ')[0]}
                         </Button>
@@ -254,6 +256,52 @@ const PractitionerProfile = () => {
                           <MessageCircle className="h-4 w-4" /> Message
                         </Button>
                       </div>
+
+                      {(profile.contact_email || profile.contact_phone || profile.whatsapp_number) && (
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {profile.contact_email && (
+                            <a
+                              href={`mailto:${profile.contact_email}`}
+                              className={`inline-flex items-center gap-1.5 text-xs rounded-full px-2.5 py-1 border transition-colors ${
+                                isPreferred('email')
+                                  ? 'border-primary/40 bg-primary/5 text-primary'
+                                  : 'border-border text-muted-foreground hover:bg-muted/40'
+                              }`}
+                            >
+                              <Mail className="h-3 w-3" /> Email
+                              {isPreferred('email') && <span className="text-[10px] uppercase tracking-wide">Preferred</span>}
+                            </a>
+                          )}
+                          {profile.contact_phone && (
+                            <a
+                              href={`tel:${profile.contact_phone.replace(/\s/g, '')}`}
+                              className={`inline-flex items-center gap-1.5 text-xs rounded-full px-2.5 py-1 border transition-colors ${
+                                isPreferred('phone')
+                                  ? 'border-primary/40 bg-primary/5 text-primary'
+                                  : 'border-border text-muted-foreground hover:bg-muted/40'
+                              }`}
+                            >
+                              <Phone className="h-3 w-3" /> Call
+                              {isPreferred('phone') && <span className="text-[10px] uppercase tracking-wide">Preferred</span>}
+                            </a>
+                          )}
+                          {whatsappLink && (
+                            <a
+                              href={whatsappLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`inline-flex items-center gap-1.5 text-xs rounded-full px-2.5 py-1 border transition-colors ${
+                                isPreferred('whatsapp')
+                                  ? 'border-primary/40 bg-primary/5 text-primary'
+                                  : 'border-border text-muted-foreground hover:bg-muted/40'
+                              }`}
+                            >
+                              <MessageCircle className="h-3 w-3" /> WhatsApp
+                              {isPreferred('whatsapp') && <span className="text-[10px] uppercase tracking-wide">Preferred</span>}
+                            </a>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CardContent>
