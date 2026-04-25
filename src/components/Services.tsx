@@ -92,6 +92,7 @@ const Services = () => {
     {
       name: "In-Person Support",
       format: "Perth, WA",
+      formatLabel: "Location",
       description: `Face-to-face sessions coming soon — currently all sessions are conducted online via ${bookingMode === 'native_beta' ? 'secure video' : 'Halaxy Telehealth'}`,
       comingSoon: true
     }
@@ -154,7 +155,7 @@ const Services = () => {
               
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Format:</span>
+                  <span className="text-muted-foreground">{(service as { formatLabel?: string }).formatLabel ?? 'Format'}:</span>
                   <span className="font-medium text-foreground">{service.format}</span>
                 </div>
 
