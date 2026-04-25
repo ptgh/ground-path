@@ -115,6 +115,9 @@ const PractitionerProfile = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [myBookings, setMyBookings] = useState<MyBookingRow[]>([]);
+  const [bookingsRefreshTick, setBookingsRefreshTick] = useState(0);
+  const [cancelTarget, setCancelTarget] = useState<MyBookingRow | null>(null);
+  const [actionBusyId, setActionBusyId] = useState<string | null>(null);
 
   // Load the signed-in user's bookings with this practitioner so the hub
   // shows everything in one place (avoids the old need to visit /book).
@@ -132,10 +135,38 @@ const PractitionerProfile = () => {
         .eq('practitioner_id', userId)
         .order('requested_date', { ascending: false })
         .limit(10);
-      if (!cancelled && data) setMyBookings(data as MyBookingRow[]);
+      if (cancelled) return;
+      const safe = (data ?? [])
+        .map(parseMyBooking)
+        .filter((b): b is MyBookingRow => b !== null);
+      setMyBookings(safe);
     })();
     return () => { cancelled = true; };
-  }, [user, userId]);
+  }, [user, userId, bookingsRefreshTick]);
+
+  const handleReschedule = () => {
+    // Reschedule = pick a new slot below; the old request stays visible until
+    // the user cancels it. Keeps the flow simple and avoids data loss.
+    toast.info('Pick a new time below — your existing request will stay visible until you cancel it.');
+    document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const confirmCancel = async () => {
+    if (!cancelTarget) return;
+    setActionBusyId(cancelTarget.id);
+    const { error } = await supabase
+      .from('booking_requests')
+      .update({ status: 'cancelled' })
+      .eq('id', cancelTarget.id);
+    setActionBusyId(null);
+    if (error) {
+      toast.error('Could not cancel — please try again or message your practitioner.');
+      return;
+    }
+    toast.success('Booking request cancelled.');
+    setCancelTarget(null);
+    setBookingsRefreshTick(t => t + 1);
+  };
 
   useEffect(() => {
     if (!userId) return;
