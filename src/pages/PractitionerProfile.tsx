@@ -511,6 +511,15 @@ const PractitionerProfile = () => {
         </div>
       </main>
 
+      {/* Sticky mobile CTA — addresses "user may miss the booking" on long profiles */}
+      {!loading && profile && (
+        <div className="sm:hidden fixed bottom-0 inset-x-0 z-30 border-t bg-background/95 backdrop-blur-sm px-4 py-3 shadow-[0_-4px_12px_-6px_rgba(0,0,0,0.08)]">
+          <Button onClick={handleBook} className="w-full gap-1.5" size="lg">
+            <Calendar className="h-4 w-4" /> Book with {displayName.split(' ')[0]}
+          </Button>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
