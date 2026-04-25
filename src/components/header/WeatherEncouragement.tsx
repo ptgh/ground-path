@@ -97,7 +97,7 @@ const WeatherEncouragement = ({ compact = false }: { compact?: boolean }) => {
       className={
         compact
           ? 'flex items-center gap-2 text-[11px] text-surface-dark-muted/80 truncate min-h-[20px]'
-          : 'hidden lg:flex items-center gap-2 text-xs text-surface-dark-muted/80 truncate min-h-[20px] max-w-[460px]'
+          : 'hidden lg:flex items-center gap-2 text-xs text-surface-dark-muted/80 truncate min-h-[20px] max-w-[280px] xl:max-w-[420px] 2xl:max-w-[600px]'
       }
       aria-label="Today's weather and encouragement"
     >

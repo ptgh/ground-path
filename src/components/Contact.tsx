@@ -141,11 +141,11 @@ const Contact = () => {
                   <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
                 </div>
               ) : bookingMode === 'native_beta' ? (
-                <div className="text-center py-4">
-                  <p className="text-sm text-muted-foreground mb-3">Book a session through our native booking system.</p>
+                <div className="py-4 mb-3">
+                  <p className="text-sm text-muted-foreground mb-3 text-center">Book a session through our native booking system.</p>
                   <button
                     onClick={() => window.location.href = '/book'}
-                    className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                    className="w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors font-medium"
                   >
                     Book a Session
                   </button>

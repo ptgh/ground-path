@@ -120,19 +120,19 @@ const FlipLoginButton = ({ onClick }: { onClick: () => void }) => {
     <button
       ref={containerRef}
       onClick={onClick}
-      className="relative border border-surface-dark-border text-surface-dark-foreground hover:border-surface-dark-foreground hover:bg-surface-dark-foreground/10 px-5 py-2 rounded-lg font-medium text-sm h-10 overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark"
-      style={{ perspective: '400px', minWidth: '80px' }}
+      className="relative border border-surface-dark-border text-surface-dark-foreground hover:border-surface-dark-foreground hover:bg-surface-dark-foreground/10 px-5 py-2 rounded-lg font-medium text-sm h-10 overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark whitespace-nowrap shrink-0"
+      style={{ perspective: '400px', minWidth: '88px' }}
     >
       <span
         ref={frontRef}
-        className="block"
+        className="block whitespace-nowrap"
         style={{ transformOrigin: 'center bottom', backfaceVisibility: 'hidden' }}
       >
         Sign In
       </span>
       <span
         ref={backRef}
-        className="absolute inset-0 flex items-center justify-center"
+        className="absolute inset-0 flex items-center justify-center whitespace-nowrap"
         style={{ transformOrigin: 'center top', backfaceVisibility: 'hidden', opacity: 0 }}
       >
         Sign Up
@@ -278,7 +278,7 @@ const Header = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-surface-dark/95 backdrop-blur-sm border-b border-surface-dark-border z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 2xl:px-12">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <div className="logo-animate cursor-pointer" onClick={() => {
