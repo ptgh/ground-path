@@ -92,6 +92,7 @@ const Services = () => {
     {
       name: "In-Person Support",
       format: "Perth, WA",
+      formatLabel: "Location",
       description: `Face-to-face sessions coming soon — currently all sessions are conducted online via ${bookingMode === 'native_beta' ? 'secure video' : 'Halaxy Telehealth'}`,
       comingSoon: true
     }
