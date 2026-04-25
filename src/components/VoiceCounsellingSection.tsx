@@ -26,9 +26,7 @@ const VoiceCounsellingSection = () => {
             This is AI-powered support and does not replace professional therapy.
             For professional sessions,{' '}
             <a
-              href="https://www.halaxy.com/profile/groundpath/location/1353667"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/book"
               className="text-primary underline"
             >
               book with a practitioner
