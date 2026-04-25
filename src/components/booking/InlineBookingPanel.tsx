@@ -314,8 +314,56 @@ const InlineBookingPanel = ({ practitionerId, practitionerName, halaxyIntegratio
     );
   }
 
+  const quickSlots: UpcomingSlot[] = getNextAvailableSlots(availability, existingBookings, {
+    limit: 4,
+    sessionMinutes: settings.sessionDuration,
+    bufferMinutes: settings.bufferMinutes,
+  });
+
+  const pickQuickSlot = (s: UpcomingSlot) => {
+    setSelectedDate(s.date);
+    setSelectedSlot({ startTime: s.startTime, endTime: s.endTime, label: `${formatTimeLabel(s.startTime)} – ${formatTimeLabel(s.endTime)}` });
+    // Scroll the booking confirmation into view on small screens
+    setTimeout(() => {
+      document.getElementById('inline-booking-confirm')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
+  };
+
   return (
     <>
+      {quickSlots.length > 0 && (
+        <Card className="mb-4 border-primary/20 bg-primary/5">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2.5">
+              <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Clock className="h-4 w-4 text-primary" /> Next available — quick pick
+              </h3>
+              <span className="text-[11px] text-muted-foreground hidden sm:inline">One tap to select</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {quickSlots.map((s, i) => {
+                const isSelected = selectedDate && format(selectedDate, 'yyyy-MM-dd') === format(s.date, 'yyyy-MM-dd') && selectedSlot?.startTime === s.startTime;
+                return (
+                  <button
+                    key={`${s.label}-${i}`}
+                    onClick={() => pickQuickSlot(s)}
+                    className={cn(
+                      'flex flex-col items-start gap-0.5 px-3 py-2 rounded-md border text-xs transition-colors text-left',
+                      isSelected
+                        ? 'border-primary bg-primary/10 ring-1 ring-primary/30'
+                        : 'border-border bg-background hover:border-primary/40 hover:bg-muted/40',
+                    )}
+                  >
+                    <span className="font-medium text-foreground">{format(s.date, 'EEE d MMM')}</span>
+                    <span className="text-muted-foreground">{formatTimeLabel(s.startTime)}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid gap-4 lg:grid-cols-[auto_1fr]">
         <Card className="w-fit">
           <CardContent className="p-4">
