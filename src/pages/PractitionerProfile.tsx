@@ -48,6 +48,21 @@ interface RegistrationRow {
   years_as_practitioner: number | null;
 }
 
+interface MyBookingRow {
+  id: string;
+  requested_date: string;
+  requested_start_time: string;
+  requested_end_time: string;
+  status: string;
+}
+
+const formatTimeLabel = (t: string) => {
+  const [h, m] = t.slice(0, 5).split(':').map(Number);
+  const suffix = h >= 12 ? 'PM' : 'AM';
+  const hour12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  return `${hour12}:${String(m).padStart(2, '0')} ${suffix}`;
+};
+
 const formatProfessionLabel = (profession: string) =>
   profession.replace(/[_-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
