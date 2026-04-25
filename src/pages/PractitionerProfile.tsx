@@ -564,16 +564,6 @@ const PractitionerProfile = () => {
                   />
                 </CardContent>
               </Card>
-                          </button>
-                        ))}
-                        <p className="text-[11px] text-muted-foreground/70 pt-1">
-                          Times shown in your local timezone. Final confirmation by the practitioner.
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
             </div>
           )}
         </div>
