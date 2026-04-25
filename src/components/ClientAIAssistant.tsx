@@ -895,19 +895,39 @@ export const ClientAIAssistant = () => {
                 </Button>
               </div>
               <div className="flex flex-wrap gap-2">
-                {quickQuestions.map((question, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setInput(question)}
-                    className={`text-xs px-3 py-1.5 rounded-full ${
-                      isSessionMode 
-                        ? 'bg-amber-50 text-amber-700 hover:bg-amber-100' 
-                        : 'bg-primary/10 text-primary hover:bg-primary/20'
-                    } transition-colors`}
-                  >
-                    {question}
-                  </button>
-                ))}
+                {quickIntents.map((intent, index) => {
+                  const Icon = intent.icon;
+                  const handleClick = () => {
+                    if (intent.kind === 'navigate') {
+                      setIsOpen(false);
+                      // Hash routes need a small delay so the dialog can close + smooth scroll lands.
+                      if (intent.href.startsWith('/#')) {
+                        setTimeout(() => {
+                          const id = intent.href.slice(2);
+                          document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+                        }, 250);
+                      } else {
+                        navigate(intent.href);
+                      }
+                    } else {
+                      setInput(intent.prompt);
+                    }
+                  };
+                  return (
+                    <button
+                      key={index}
+                      onClick={handleClick}
+                      className={`text-xs px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 ${
+                        isSessionMode
+                          ? 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+                          : 'bg-primary/10 text-primary hover:bg-primary/20'
+                      } transition-colors`}
+                    >
+                      <Icon className="h-3 w-3" />
+                      {intent.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
