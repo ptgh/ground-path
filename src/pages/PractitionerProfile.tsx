@@ -228,10 +228,19 @@ const PractitionerProfile = () => {
     return () => { cancelled = true; };
   }, [userId]);
 
+  const scrollToBooking = () => {
+    const el = document.getElementById('booking');
+    if (!el) return;
+    // Compute offset that accounts for the fixed site header (~64px) plus a
+    // small breathing gap, so the booking card title isn't visually clipped.
+    const headerOffset = 80;
+    const top = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+    window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+  };
+
   const handleBook = () => {
     if (!profile) return;
-    // Booking lives inline below — just scroll to it.
-    document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    scrollToBooking();
   };
 
   const handleMessage = () => {
@@ -430,7 +439,15 @@ const PractitionerProfile = () => {
                   {user && myBookings.length > 0 && (
                     <li><a href="#your-bookings" className="hover:text-primary transition-colors">Your bookings</a></li>
                   )}
-                  <li><a href="#booking" className="font-medium text-primary hover:underline">Book →</a></li>
+                  <li>
+                    <a
+                      href="#booking"
+                      onClick={(e) => { e.preventDefault(); scrollToBooking(); }}
+                      className="font-medium text-primary hover:underline"
+                    >
+                      Book →
+                    </a>
+                  </li>
                 </ul>
               </nav>
 
