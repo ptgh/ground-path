@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Loader2, ShieldCheck, MapPin, Calendar, MessageCircle, Video, ArrowLeft, Clock } from 'lucide-react';
+import { Loader2, ShieldCheck, MapPin, Calendar, MessageCircle, Video, ArrowLeft, Clock, Mail, Phone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
@@ -13,6 +13,10 @@ import Footer from '@/components/Footer';
 import SEO from '@/components/SEO';
 import { getNextAvailableSlots, type UpcomingSlot } from '@/lib/availability';
 import InlineBookingPanel from '@/components/booking/InlineBookingPanel';
+import {
+  buildProfessionalIdentities,
+  formatIdentitiesLine,
+} from '@/lib/professionalIdentities';
 
 interface ProfileRow {
   user_id: string;
@@ -29,6 +33,13 @@ interface ProfileRow {
   user_type: string | null;
   halaxy_integration: Record<string, unknown> | null;
   years_experience: number | null;
+  aasw_membership_number: string | null;
+  swe_registration_number: string | null;
+  ahpra_number: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  whatsapp_number: string | null;
+  preferred_contact_method: string | null;
 }
 
 interface RegistrationRow {
@@ -60,7 +71,7 @@ const PractitionerProfile = () => {
       try {
         const profilePromise = supabase
           .from('profiles')
-          .select('user_id, display_name, avatar_url, profession, bio, specializations, qualifications, practice_location, professional_verified, verification_status, directory_approved, user_type, halaxy_integration, years_experience')
+          .select('user_id, display_name, avatar_url, profession, bio, specializations, qualifications, practice_location, professional_verified, verification_status, directory_approved, user_type, halaxy_integration, years_experience, aasw_membership_number, swe_registration_number, ahpra_number, contact_email, contact_phone, whatsapp_number, preferred_contact_method')
           .eq('user_id', userId)
           .maybeSingle();
         const regsPromise = supabase
@@ -127,6 +138,26 @@ const PractitionerProfile = () => {
   const hasInPerson = !!profile?.practice_location;
   const seoTitle = profile ? `${displayName} — ${profile.profession ? formatProfessionLabel(profile.profession) : 'Practitioner'} | groundpath` : 'Practitioner';
 
+  const identities = profile
+    ? buildProfessionalIdentities({
+        profession: profile.profession,
+        aaswNumber: profile.aasw_membership_number,
+        sweNumber: profile.swe_registration_number,
+        ahpraNumber: profile.ahpra_number,
+        registrations: registrations.map(r => ({
+          body_name: r.body_name,
+          registration_number: r.registration_number,
+        })),
+      })
+    : [];
+
+  const preferredChannel = profile?.preferred_contact_method ?? 'email';
+  const isPreferred = (channel: string) =>
+    preferredChannel === channel || (channel !== 'whatsapp' && preferredChannel === 'both');
+  const whatsappLink = profile?.whatsapp_number
+    ? `https://wa.me/${profile.whatsapp_number.replace(/[^0-9]/g, '')}`
+    : null;
+
   const personJsonLd = profile
     ? {
         '@context': 'https://schema.org',
@@ -192,9 +223,11 @@ const PractitionerProfile = () => {
                           </span>
                         )}
                       </div>
-                      {profile.profession && (
+                      {(identities.length > 0 || profile.profession) && (
                         <p className="text-sm text-muted-foreground mt-1">
-                          {formatProfessionLabel(profile.profession)}
+                          {identities.length > 0
+                            ? formatIdentitiesLine(identities)
+                            : formatProfessionLabel(profile.profession!)}
                           {profile.years_experience ? ` · ${profile.years_experience}+ yrs experience` : ''}
                         </p>
                       )}
@@ -215,7 +248,7 @@ const PractitionerProfile = () => {
                         )}
                       </div>
 
-                      <div className="flex gap-2 mt-5">
+                      <div className="flex flex-wrap gap-2 mt-5">
                         <Button onClick={handleBook} className="gap-1.5">
                           <Calendar className="h-4 w-4" /> Book with {displayName.split(' ')[0]}
                         </Button>
@@ -223,6 +256,52 @@ const PractitionerProfile = () => {
                           <MessageCircle className="h-4 w-4" /> Message
                         </Button>
                       </div>
+
+                      {(profile.contact_email || profile.contact_phone || profile.whatsapp_number) && (
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {profile.contact_email && (
+                            <a
+                              href={`mailto:${profile.contact_email}`}
+                              className={`inline-flex items-center gap-1.5 text-xs rounded-full px-2.5 py-1 border transition-colors ${
+                                isPreferred('email')
+                                  ? 'border-primary/40 bg-primary/5 text-primary'
+                                  : 'border-border text-muted-foreground hover:bg-muted/40'
+                              }`}
+                            >
+                              <Mail className="h-3 w-3" /> Email
+                              {isPreferred('email') && <span className="text-[10px] uppercase tracking-wide">Preferred</span>}
+                            </a>
+                          )}
+                          {profile.contact_phone && (
+                            <a
+                              href={`tel:${profile.contact_phone.replace(/\s/g, '')}`}
+                              className={`inline-flex items-center gap-1.5 text-xs rounded-full px-2.5 py-1 border transition-colors ${
+                                isPreferred('phone')
+                                  ? 'border-primary/40 bg-primary/5 text-primary'
+                                  : 'border-border text-muted-foreground hover:bg-muted/40'
+                              }`}
+                            >
+                              <Phone className="h-3 w-3" /> Call
+                              {isPreferred('phone') && <span className="text-[10px] uppercase tracking-wide">Preferred</span>}
+                            </a>
+                          )}
+                          {whatsappLink && (
+                            <a
+                              href={whatsappLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`inline-flex items-center gap-1.5 text-xs rounded-full px-2.5 py-1 border transition-colors ${
+                                isPreferred('whatsapp')
+                                  ? 'border-primary/40 bg-primary/5 text-primary'
+                                  : 'border-border text-muted-foreground hover:bg-muted/40'
+                              }`}
+                            >
+                              <MessageCircle className="h-3 w-3" /> WhatsApp
+                              {isPreferred('whatsapp') && <span className="text-[10px] uppercase tracking-wide">Preferred</span>}
+                            </a>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CardContent>

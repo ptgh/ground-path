@@ -35,6 +35,11 @@ import AddCardForm from '@/components/billing/AddCardForm';
 import { useSavedCards } from '@/hooks/useSavedCards';
 import { gsap } from 'gsap';
 import { cn } from '@/lib/utils';
+import {
+  buildProfessionalIdentities,
+  formatIdentitiesLine,
+  type ProfessionalIdentity,
+} from '@/lib/professionalIdentities';
 
 interface Practitioner {
   user_id: string;
@@ -123,6 +128,7 @@ const Book = () => {
   const [myBookings, setMyBookings] = useState<Booking[]>([]);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [loadingBooking, setLoadingBooking] = useState(false);
+  const [identities, setIdentities] = useState<ProfessionalIdentity[]>([]);
 
   // Check-in + card capture flow
   const [checkInOpen, setCheckInOpen] = useState(false);
@@ -174,12 +180,12 @@ const Book = () => {
     }
   }, [loading, practitioners.length, selectedPractitioner]);
 
-  // Load availability + bookings when practitioner selected
+  // Load availability + bookings + identity credentials when practitioner selected
   useEffect(() => {
     if (!selectedPractitioner) return;
     const load = async () => {
       setLoadingBooking(true);
-      const [avRes, bkRes] = await Promise.all([
+      const [avRes, bkRes, profileRes, regsRes] = await Promise.all([
         supabase
           .from('practitioner_availability')
           .select('day_of_week, start_time, end_time')
@@ -189,9 +195,27 @@ const Book = () => {
           .select('requested_date, requested_start_time')
           .eq('practitioner_id', selectedPractitioner.user_id)
           .in('status', ['pending', 'confirmed']),
+        supabase
+          .from('profiles')
+          .select('aasw_membership_number, swe_registration_number, ahpra_number')
+          .eq('user_id', selectedPractitioner.user_id)
+          .maybeSingle(),
+        supabase
+          .from('practitioner_registrations')
+          .select('body_name, registration_number')
+          .eq('user_id', selectedPractitioner.user_id),
       ]);
       if (avRes.data) setAvailability(avRes.data);
       if (bkRes.data) setExistingBookings(bkRes.data);
+      setIdentities(
+        buildProfessionalIdentities({
+          profession: selectedPractitioner.profession,
+          aaswNumber: profileRes.data?.aasw_membership_number ?? null,
+          sweNumber: profileRes.data?.swe_registration_number ?? null,
+          ahpraNumber: profileRes.data?.ahpra_number ?? null,
+          registrations: (regsRes.data ?? []) as { body_name: string; registration_number: string | null }[],
+        }),
+      );
       setLoadingBooking(false);
     };
     load();
@@ -240,12 +264,14 @@ const Book = () => {
     setMyBookings([]);
     setAvailability([]);
     setExistingBookings([]);
+    setIdentities([]);
   };
 
   const handleBackToList = () => {
     setSelectedPractitioner(null);
     setSelectedDate(undefined);
     setSelectedSlot(null);
+    setIdentities([]);
   };
 
   const getSettings = () => {
@@ -586,8 +612,12 @@ const Book = () => {
                         <h2 className="text-xl font-bold text-foreground truncate">{selectedPractitioner.display_name}</h2>
                         {selectedPractitioner.professional_verified && <ShieldCheck className="h-5 w-5 text-primary flex-shrink-0" />}
                       </div>
-                      {selectedPractitioner.profession && (
-                        <p className="text-sm text-muted-foreground">{formatProfessionLabel(selectedPractitioner.profession)}</p>
+                      {(identities.length > 0 || selectedPractitioner.profession) && (
+                        <p className="text-sm text-muted-foreground">
+                          {identities.length > 0
+                            ? formatIdentitiesLine(identities)
+                            : formatProfessionLabel(selectedPractitioner.profession!)}
+                        </p>
                       )}
                       {selectedPractitioner.practice_location && (
                         <p className="text-xs text-muted-foreground/70 flex items-center gap-1 mt-0.5">
