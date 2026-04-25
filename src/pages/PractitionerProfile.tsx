@@ -110,7 +110,8 @@ const PractitionerProfile = () => {
       window.open(HALAXY_EXTERNAL_URL, '_blank');
       return;
     }
-    navigate(`/book?practitioner=${profile.user_id}`);
+    // Booking lives inline below — just scroll to it.
+    document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const handleMessage = () => {
