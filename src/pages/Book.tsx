@@ -612,8 +612,12 @@ const Book = () => {
                         <h2 className="text-xl font-bold text-foreground truncate">{selectedPractitioner.display_name}</h2>
                         {selectedPractitioner.professional_verified && <ShieldCheck className="h-5 w-5 text-primary flex-shrink-0" />}
                       </div>
-                      {selectedPractitioner.profession && (
-                        <p className="text-sm text-muted-foreground">{formatProfessionLabel(selectedPractitioner.profession)}</p>
+                      {(identities.length > 0 || selectedPractitioner.profession) && (
+                        <p className="text-sm text-muted-foreground">
+                          {identities.length > 0
+                            ? formatIdentitiesLine(identities)
+                            : formatProfessionLabel(selectedPractitioner.profession!)}
+                        </p>
                       )}
                       {selectedPractitioner.practice_location && (
                         <p className="text-xs text-muted-foreground/70 flex items-center gap-1 mt-0.5">
