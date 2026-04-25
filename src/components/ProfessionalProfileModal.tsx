@@ -129,7 +129,7 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [halaxyVerifying, setHalaxyVerifying] = useState(false);
+  
 
   // Multi-registration state
   const [registrations, setRegistrations] = useState<PractitionerRegistration[]>([]);
