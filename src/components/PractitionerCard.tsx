@@ -7,8 +7,17 @@ import { Badge } from '@/components/ui/badge';
 import { MessageCircle, Calendar, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
 import { gsap } from 'gsap';
+import {
+  buildProfessionalIdentities,
+  formatIdentitiesLine,
+} from '@/lib/professionalIdentities';
+
+interface RegistrationRow {
+  user_id: string;
+  body_name: string;
+  registration_number: string | null;
+}
 
 interface Practitioner {
   user_id: string;
@@ -19,17 +28,15 @@ interface Practitioner {
   specializations: string[] | null;
   practice_location: string | null;
   professional_verified: boolean;
+  aasw_membership_number?: string | null;
+  swe_registration_number?: string | null;
+  ahpra_number?: string | null;
+  registrations?: { body_name: string; registration_number: string | null }[];
 }
-
-const formatProfessionLabel = (profession: string) =>
-  profession
-    .replace(/[_-]+/g, ' ')
-    .replace(/\b\w/g, (character) => character.toUpperCase());
 
 const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { mode: bookingMode } = useBookingMode();
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,12 +49,25 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
     return () => { el.removeEventListener('mouseenter', onEnter); el.removeEventListener('mouseleave', onLeave); };
   }, []);
 
+  const identities = buildProfessionalIdentities({
+    profession: practitioner.profession,
+    aaswNumber: practitioner.aasw_membership_number,
+    sweNumber: practitioner.swe_registration_number,
+    ahpraNumber: practitioner.ahpra_number,
+    registrations: practitioner.registrations ?? [],
+  });
+  const identityLine = identities.length > 0 ? formatIdentitiesLine(identities) : null;
+
   const handleMessage = () => {
     if (!user) {
       navigate(`/practitioner/auth?redirect=/messages?practitioner=${practitioner.user_id}`);
       return;
     }
     navigate(`/messages?practitioner=${practitioner.user_id}`);
+  };
+
+  const goToHub = (anchor?: string) => {
+    navigate(`/practitioner/${practitioner.user_id}${anchor ? `#${anchor}` : ''}`);
   };
 
   return (
@@ -63,7 +83,7 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
           <div className="flex-1 min-w-0">
             <button
               type="button"
-              onClick={() => navigate(`/practitioner/${practitioner.user_id}`)}
+              onClick={() => goToHub()}
               className="flex items-center gap-2 text-left group"
             >
               <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">{practitioner.display_name}</h3>
@@ -71,14 +91,11 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
                 <ShieldCheck className="h-4 w-4 text-primary flex-shrink-0" />
               )}
             </button>
-            {practitioner.profession && (
-              <p className="text-sm text-muted-foreground">{formatProfessionLabel(practitioner.profession)}</p>
+            {identityLine && (
+              <p className="text-sm text-muted-foreground">{identityLine}</p>
             )}
             {practitioner.practice_location && (
               <p className="text-xs text-muted-foreground/70">{practitioner.practice_location}</p>
-            )}
-            {practitioner.bio && (
-              <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{practitioner.bio}</p>
             )}
             {practitioner.specializations && practitioner.specializations.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-2">
@@ -101,13 +118,7 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
             variant="outline"
             size="sm"
             className="flex-1 gap-1.5"
-            onClick={() => {
-              if (bookingMode === 'halaxy') {
-                window.open(HALAXY_EXTERNAL_URL, '_blank');
-              } else {
-                navigate(`/book?practitioner=${practitioner.user_id}`);
-              }
-            }}
+            onClick={() => goToHub('booking')}
           >
             <Calendar className="h-4 w-4" />
             Book
@@ -128,14 +139,31 @@ export const PractitionerList = () => {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('user_id, display_name, avatar_url, profession, bio, specializations, practice_location, professional_verified')
+          .select('user_id, display_name, avatar_url, profession, bio, specializations, practice_location, professional_verified, aasw_membership_number, swe_registration_number, ahpra_number')
           .eq('user_type', 'practitioner')
           .eq('directory_approved', true)
           .in('verification_status', ['verified', 'pending_review'])
           .order('professional_verified', { ascending: false });
 
         if (!error && data) {
-          setPractitioners(data as Practitioner[]);
+          const ids = data.map(p => p.user_id);
+          let regs: RegistrationRow[] = [];
+          if (ids.length > 0) {
+            const { data: regData } = await supabase
+              .from('practitioner_registrations')
+              .select('user_id, body_name, registration_number')
+              .in('user_id', ids);
+            regs = (regData ?? []) as RegistrationRow[];
+          }
+          const byUser = new Map<string, { body_name: string; registration_number: string | null }[]>();
+          for (const r of regs) {
+            const arr = byUser.get(r.user_id) ?? [];
+            arr.push({ body_name: r.body_name, registration_number: r.registration_number });
+            byUser.set(r.user_id, arr);
+          }
+          setPractitioners(
+            data.map(p => ({ ...p, registrations: byUser.get(p.user_id) ?? [] })) as Practitioner[],
+          );
         }
       } catch (err) {
         console.error('Error fetching practitioners:', err);
