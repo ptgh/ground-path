@@ -10,7 +10,6 @@ import Footer from '@/components/Footer';
 import { ClientMessagesPanel } from '@/components/messaging/ClientMessagesPanel';
 import AvatarUpload from '@/components/AvatarUpload';
 import SEO from '@/components/SEO';
-import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
 import { scrollToSectionWithOffset } from '@/lib/utils';
 import MyBookings from '@/components/booking/MyBookings';
 import NextSessionCard from '@/components/booking/NextSessionCard';
