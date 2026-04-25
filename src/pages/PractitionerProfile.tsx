@@ -77,6 +77,28 @@ const PractitionerProfile = () => {
   const [upcoming, setUpcoming] = useState<UpcomingSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [myBookings, setMyBookings] = useState<MyBookingRow[]>([]);
+
+  // Load the signed-in user's bookings with this practitioner so the hub
+  // shows everything in one place (avoids the old need to visit /book).
+  useEffect(() => {
+    if (!user || !userId) {
+      setMyBookings([]);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from('booking_requests')
+        .select('id, requested_date, requested_start_time, requested_end_time, status')
+        .eq('client_user_id', user.id)
+        .eq('practitioner_id', userId)
+        .order('requested_date', { ascending: false })
+        .limit(10);
+      if (!cancelled && data) setMyBookings(data as MyBookingRow[]);
+    })();
+    return () => { cancelled = true; };
+  }, [user, userId]);
 
   useEffect(() => {
     if (!userId) return;
