@@ -496,11 +496,17 @@ export const ClientAIAssistant = () => {
     }
   };
 
-  const quickQuestions = [
-    "What services does groundpath offer?",
-    "How can I access NDIS support?",
-    "How do I book a counselling session?",
-    "What mental health resources are available?"
+  // Quick intents — each one either navigates to a real page (more useful than
+  // dumping the question into the input) or seeds a relevant prompt.
+  type QuickIntent =
+    | { kind: 'navigate'; label: string; icon: typeof Calendar; href: string }
+    | { kind: 'prompt'; label: string; icon: typeof Calendar; prompt: string };
+  const quickIntents: QuickIntent[] = [
+    { kind: 'navigate', label: 'Book a session', icon: Calendar, href: '/book' },
+    { kind: 'navigate', label: 'Pricing & FAQ', icon: DollarSign, href: '/#faq' },
+    { kind: 'navigate', label: 'Resources', icon: BookOpen, href: '/resources' },
+    { kind: 'prompt', label: 'NDIS support?', icon: HelpCircle, prompt: 'How can I access NDIS support through groundpath?' },
+    { kind: 'prompt', label: 'What is groundpath?', icon: Sparkles, prompt: 'What services does groundpath offer?' },
   ];
 
   // Animations
