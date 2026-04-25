@@ -7,6 +7,7 @@ interface SEOProps {
   type?: string;
   image?: string;
   noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const SITE_NAME = 'Groundpath';
@@ -21,6 +22,7 @@ const SEO = ({
   type = 'website',
   image = DEFAULT_IMAGE,
   noindex = false,
+  jsonLd,
 }: SEOProps) => {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} — Mental Health & Social Work Support`;
   const url = `${BASE_URL}${path}`;
@@ -45,6 +47,11 @@ const SEO = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={imageUrl} />
+      {jsonLd && (
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
+      )}
     </Helmet>
   );
 };
