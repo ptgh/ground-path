@@ -468,9 +468,57 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
                         <SelectContent>
                           <SelectItem value="email">Email</SelectItem>
                           <SelectItem value="phone">Phone</SelectItem>
-                          <SelectItem value="both">Both</SelectItem>
+                          <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                          <SelectItem value="both">Email + Phone</SelectItem>
                         </SelectContent>
                       </Select>
+                    </div>
+                  </div>
+
+                  {/* Contact Channels — shown publicly on the practitioner card.
+                      Login email stays private and isn't editable here. */}
+                  <div className="rounded-lg border border-border bg-muted/20 p-4 space-y-3">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Public contact channels</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Shown on your public profile so clients can reach you outside groundpath. Leave blank to hide a channel.
+                        Your sign-in email stays private.
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="contact_email">Public Email</Label>
+                        <Input
+                          id="contact_email"
+                          type="email"
+                          value={formData.contact_email}
+                          onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
+                          placeholder="practice@example.com"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="contact_phone">Phone</Label>
+                        <Input
+                          id="contact_phone"
+                          type="tel"
+                          value={formData.contact_phone}
+                          onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
+                          placeholder="+61 412 345 678"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="whatsapp_number">WhatsApp</Label>
+                        <Input
+                          id="whatsapp_number"
+                          type="tel"
+                          value={formData.whatsapp_number}
+                          onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
+                          placeholder="+61 412 345 678"
+                        />
+                        <p className="text-[11px] text-muted-foreground/80">
+                          Opens a chat via wa.me. Use Messages for clinical conversations — WhatsApp isn't audited by groundpath.
+                        </p>
+                      </div>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
