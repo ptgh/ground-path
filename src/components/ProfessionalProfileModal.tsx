@@ -291,6 +291,9 @@ const ProfessionalProfileModal = ({ children }: ProfessionalProfileModalProps) =
         website_url: profile.website_url || '',
         linkedin_profile: profile.linkedin_profile || '',
         preferred_contact_method: profile.preferred_contact_method || 'email',
+        contact_email: profile.contact_email || '',
+        contact_phone: profile.contact_phone || '',
+        whatsapp_number: profile.whatsapp_number || '',
         bio: profile.bio || '',
         halaxy_profile_url: (profile.halaxy_integration as HalaxyIntegration)?.profile_url || ''
       };
