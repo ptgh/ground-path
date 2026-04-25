@@ -264,12 +264,14 @@ const Book = () => {
     setMyBookings([]);
     setAvailability([]);
     setExistingBookings([]);
+    setIdentities([]);
   };
 
   const handleBackToList = () => {
     setSelectedPractitioner(null);
     setSelectedDate(undefined);
     setSelectedSlot(null);
+    setIdentities([]);
   };
 
   const getSettings = () => {
