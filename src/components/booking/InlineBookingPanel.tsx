@@ -419,7 +419,7 @@ const InlineBookingPanel = ({ practitionerId, practitionerName, halaxyIntegratio
                     ))}
                   </div>
                   {selectedSlot && (
-                    <div className="mb-3 rounded-lg border border-primary/30 bg-primary/5 p-3">
+                    <div id="inline-booking-confirm" className="mb-3 rounded-lg border border-primary/30 bg-primary/5 p-3">
                       <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
                         You're booking
                       </p>
