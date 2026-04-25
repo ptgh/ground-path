@@ -4,7 +4,6 @@ export interface Conversation {
   id: string;
   user_id: string;
   practitioner_id: string;
-  linked_halaxy_client_id: string | null;
   last_message_text: string | null;
   last_message_at: string;
   unread_count_user: number;
@@ -430,14 +429,6 @@ export const messagingService = {
         conversationId,
       },
     });
-  },
-
-  async linkHalaxyClient(conversationId: string, halaxyClientId: string): Promise<void> {
-    const { error } = await supabase
-      .from('conversations')
-      .update({ linked_halaxy_client_id: halaxyClientId })
-      .eq('id', conversationId);
-    if (error) throw error;
   },
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

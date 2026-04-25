@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { scrollToSectionWithOffset } from '@/lib/utils';
-import { useBookingMode } from '@/hooks/useBookingMode';
+
 import { supabase } from '@/integrations/supabase/client';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -24,7 +24,6 @@ const formatRateLabel = (range: RateRange | null): string => {
 };
 
 const Services = () => {
-  const { mode: bookingMode } = useBookingMode();
   const sectionRef = useRef<HTMLDivElement>(null);
   const [rateRange, setRateRange] = useState<RateRange | null>(null);
 
@@ -64,13 +63,13 @@ const Services = () => {
       card.addEventListener('mouseleave', leave);
     });
   }, []);
-  const videoLabel = bookingMode === 'native_beta' ? 'Online via Secure Video' : 'Online via Halaxy Telehealth';
+  const videoLabel = 'Online via Secure Video';
   const rateLabel = formatRateLabel(rateRange);
   const services = [
     {
       name: "Mental Health Support",
       format: videoLabel,
-      description: `Social Worker providing professional support via secure ${bookingMode === 'native_beta' ? 'video' : 'Halaxy Telehealth video'} calls`
+      description: `Social Worker providing professional support via secure video calls`
     },
     {
       name: "Psychosocial Recovery Coaching",
@@ -93,7 +92,7 @@ const Services = () => {
       name: "In-Person Support",
       format: "Perth, WA",
       formatLabel: "Location",
-      description: `Face-to-face sessions coming soon — currently all sessions are conducted online via ${bookingMode === 'native_beta' ? 'secure video' : 'Halaxy Telehealth'}`,
+      description: `Face-to-face sessions coming soon — currently all sessions are conducted online via secure video`,
       comingSoon: true
     }
   ];

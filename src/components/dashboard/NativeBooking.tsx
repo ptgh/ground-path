@@ -252,7 +252,7 @@ const NativeBooking = () => {
           .order('requested_date', { ascending: true }),
         supabase
           .from('profiles')
-          .select('halaxy_integration, session_rate_cents, currency')
+          .select('booking_integration, session_rate_cents, currency')
           .eq('user_id', user.id)
           .single(),
       ]);
@@ -295,8 +295,8 @@ const NativeBooking = () => {
       }
 
       // Load persisted settings from profile
-      if (profileRes.data?.halaxy_integration) {
-        const integration = profileRes.data.halaxy_integration as Record<string, unknown>;
+      if (profileRes.data?.booking_integration) {
+        const integration = profileRes.data.booking_integration as Record<string, unknown>;
         const saved = integration.availability_settings as Record<string, unknown> | undefined;
         if (saved) {
           setSettings(migrateSettings(saved));
@@ -570,15 +570,15 @@ const NativeBooking = () => {
       // 1. Persist settings to profile JSONB
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('halaxy_integration')
+        .select('booking_integration')
         .eq('user_id', user.id)
         .single();
 
-      const existing = (profileData?.halaxy_integration as Record<string, unknown>) ?? {};
+      const existing = (profileData?.booking_integration as Record<string, unknown>) ?? {};
       const { error: profileErr } = await supabase
         .from('profiles')
         .update({
-          halaxy_integration: {
+          booking_integration: {
             ...existing,
             availability_settings: {
               workingDays: settings.workingDays,

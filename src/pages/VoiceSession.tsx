@@ -30,7 +30,7 @@ const VoiceSessionPage = () => {
           </p>
           <p className="text-muted-foreground text-sm mb-8 italic">
             This is AI-powered support and does not replace professional therapy. 
-            For professional sessions, <a href="https://www.halaxy.com/profile/groundpath/location/1353667" target="_blank" rel="noopener noreferrer" className="text-primary underline">book with a practitioner</a>.
+            For professional sessions, <a href="/book" className="text-primary underline">book with a practitioner</a>.
           </p>
 
           <button

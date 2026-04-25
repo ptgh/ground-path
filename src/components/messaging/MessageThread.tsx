@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Paperclip, Link2, ArrowLeft, ExternalLink, CheckCircle2, Trash2, RotateCcw } from 'lucide-react';
+import { Send, Paperclip, Link2, ArrowLeft, Trash2, RotateCcw } from 'lucide-react';
 import { Conversation, Message, MessageStatus as MsgStatusType, messagingService } from '@/services/messagingService';
 import { MessageAttachment } from '@/components/messaging/MessageAttachment';
 import { MessageStatus } from '@/components/messaging/MessageStatus';
@@ -26,9 +26,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [showResourceForm, setShowResourceForm] = useState(false);
-  const [halaxyId, setHalaxyId] = useState(conversation.linked_halaxy_client_id || '');
-  const [showHalaxyLink, setShowHalaxyLink] = useState(false);
-  const [linkedHalaxy, setLinkedHalaxy] = useState(conversation.linked_halaxy_client_id || '');
+  
   const [deletingId, setDeletingId] = useState<string | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [failedMessages, setFailedMessages] = useState<Map<string, { text: string; options?: any }>>(new Map());
@@ -46,8 +44,6 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
     loadMessages();
     messagingService.markMessagesAsRead(conversation.id);
     messagingService.markMessagesAsDelivered(conversation.id);
-    setLinkedHalaxy(conversation.linked_halaxy_client_id || '');
-    setHalaxyId(conversation.linked_halaxy_client_id || '');
 
     const channel = messagingService.subscribeToMessages(conversation.id, (payload) => {
       if (payload._deleted) {
@@ -267,18 +263,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
     }
   };
 
-  const handleLinkHalaxy = async () => {
-    const trimmed = halaxyId.trim();
-    if (!trimmed) { toast.error('Please enter a valid Halaxy Client ID'); return; }
-    try {
-      await messagingService.linkHalaxyClient(conversation.id, trimmed);
-      setLinkedHalaxy(trimmed);
-      toast.success('Linked to Halaxy client record');
-      setShowHalaxyLink(false);
-    } catch {
-      toast.error('Failed to link Halaxy client');
-    }
-  };
+  
 
   const groupMessagesByDate = useCallback((msgs: Message[]) => {
     const groups: { date: string; messages: Message[] }[] = [];
@@ -308,46 +293,8 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
         </Avatar>
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-semibold truncate">{conversation.other_party_name}</h3>
-          {linkedHalaxy && (
-            <div className="flex items-center gap-1">
-              <CheckCircle2 className="h-3 w-3 text-primary" />
-              <span className="text-[10px] text-primary font-medium">Halaxy Linked · {linkedHalaxy}</span>
-            </div>
-          )}
         </div>
-        {isPractitioner && (
-          <div className="flex items-center gap-1">
-            {!linkedHalaxy ? (
-              <Button variant="ghost" size="sm" className="text-xs text-primary hover:text-primary/80" onClick={() => setShowHalaxyLink(!showHalaxyLink)}>
-                <Link2 className="h-3.5 w-3.5 mr-1" />
-                Link Halaxy
-              </Button>
-            ) : (
-              <Button variant="ghost" size="sm" className="text-xs text-primary" onClick={() => window.open(`https://www.halaxy.com/clients/${linkedHalaxy}`, '_blank')}>
-                <ExternalLink className="h-3.5 w-3.5 mr-1" />
-                Halaxy
-              </Button>
-            )}
-          </div>
-        )}
       </div>
-
-      {/* Halaxy link input */}
-      {showHalaxyLink && isPractitioner && (
-        <div className="flex items-center gap-2 p-2 bg-primary/5 dark:bg-sage-900/20 border-b border-border">
-          <Input placeholder="Halaxy Client ID..." value={halaxyId} onChange={(e) => setHalaxyId(e.target.value)} className="h-8 text-sm flex-1" />
-          <Button size="sm" className="h-8 bg-primary hover:bg-primary/90 text-white" onClick={handleLinkHalaxy} disabled={!halaxyId.trim()}>Link</Button>
-          <Button size="sm" variant="ghost" className="h-8" onClick={() => { setShowHalaxyLink(false); setHalaxyId(linkedHalaxy || ''); }}>Cancel</Button>
-        </div>
-      )}
-
-      {linkedHalaxy && isPractitioner && (
-        <div className="px-3 py-1.5 bg-muted/50 border-b border-border">
-          <p className="text-[10px] text-muted-foreground text-center">
-            Groundpath messages are separate from Halaxy clinical records. Do not store clinical notes here.
-          </p>
-        </div>
-      )}
 
       {/* Resource share form — practitioner only */}
       {showResourceForm && isPractitioner && (
