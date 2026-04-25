@@ -214,6 +214,8 @@ const App = () => {
                 <Route path="/dashboard" element={<AuthenticatedRoute><ClientDashboard /></AuthenticatedRoute>} />
                 <Route path="/session/:bookingId" element={<AuthenticatedRoute><JoinSession /></AuthenticatedRoute>} />
                 <Route path="/account/billing" element={<AuthenticatedRoute><BillingPage /></AuthenticatedRoute>} />
+                {/* Public practitioner profile — must come after all specific /practitioner/* routes */}
+                <Route path="/practitioner/:userId" element={<PractitionerProfile />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
