@@ -59,14 +59,38 @@ const WeatherEncouragement = ({ compact = false }: { compact?: boolean }) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 4000);
 
+    // Try a sequence of free geo-IP providers — first that succeeds wins.
+    const geoLookup = async (): Promise<{ city?: string; lat: number; lon: number } | null> => {
+      const providers = [
+        async () => {
+          const r = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+          if (!r.ok) throw new Error('ipapi');
+          const j = await r.json() as { city?: string; latitude?: number; longitude?: number };
+          if (!j.latitude || !j.longitude) throw new Error('ipapi-empty');
+          return { city: j.city, lat: j.latitude, lon: j.longitude };
+        },
+        async () => {
+          const r = await fetch('https://get.geojs.io/v1/ip/geo.json', { signal: controller.signal });
+          if (!r.ok) throw new Error('geojs');
+          const j = await r.json() as { city?: string; latitude?: string; longitude?: string };
+          const lat = Number(j.latitude); const lon = Number(j.longitude);
+          if (!lat || !lon) throw new Error('geojs-empty');
+          return { city: j.city, lat, lon };
+        },
+      ];
+      for (const p of providers) {
+        try { return await p(); } catch { /* try next */ }
+      }
+      return null;
+    };
+
     (async () => {
       try {
-        const ipRes = await fetch('https://ipapi.co/json/', { signal: controller.signal });
-        if (!ipRes.ok) return;
-        const ip = await ipRes.json() as { city?: string; latitude?: number; longitude?: number };
-        if (!ip.latitude || !ip.longitude) return;
+        const geo = await geoLookup();
+        // Fallback to Sydney if geo fails so the strip still feels alive.
+        const loc = geo ?? { city: 'Sydney', lat: -33.8688, lon: 151.2093 };
         const wRes = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${ip.latitude}&longitude=${ip.longitude}&current=temperature_2m,weather_code`,
+          `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,weather_code`,
           { signal: controller.signal },
         );
         if (!wRes.ok) return;
@@ -74,7 +98,7 @@ const WeatherEncouragement = ({ compact = false }: { compact?: boolean }) => {
         const t = w.current?.temperature_2m;
         const c = w.current?.weather_code;
         if (cancelled || typeof t !== 'number' || typeof c !== 'number') return;
-        const city = ip.city ?? '';
+        const city = loc.city ?? '';
         writeCache(city, Math.round(t), c);
         const { icon, label } = codeToIcon(c);
         setInfo({ city, temp: Math.round(t), icon, label });
