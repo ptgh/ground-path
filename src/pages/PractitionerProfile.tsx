@@ -344,8 +344,27 @@ const PractitionerProfile = () => {
                 </CardContent>
               </Card>
 
+              {/* Anchor nav — quick jumps within the hub */}
+              <nav aria-label="On this page" className="sticky top-20 z-10 -mx-4 px-4 sm:mx-0 sm:px-0 bg-background/85 backdrop-blur-sm border-y sm:border sm:rounded-md py-2">
+                <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs sm:text-sm text-muted-foreground">
+                  {profile.bio && (
+                    <li><a href="#about" className="hover:text-primary transition-colors">About</a></li>
+                  )}
+                  {(profile.specializations?.length || profile.qualifications?.length) ? (
+                    <li><a href="#areas" className="hover:text-primary transition-colors">Areas & qualifications</a></li>
+                  ) : null}
+                  {registrations.length > 0 && (
+                    <li><a href="#registrations" className="hover:text-primary transition-colors">Registrations</a></li>
+                  )}
+                  {user && myBookings.length > 0 && (
+                    <li><a href="#your-bookings" className="hover:text-primary transition-colors">Your bookings</a></li>
+                  )}
+                  <li><a href="#booking" className="font-medium text-primary hover:underline">Book →</a></li>
+                </ul>
+              </nav>
+
               {profile.bio && (
-                <Card>
+                <Card id="about" className="scroll-mt-32">
                   <CardHeader><CardTitle className="text-lg">About</CardTitle></CardHeader>
                   <CardContent>
                     <p className="text-sm text-foreground/80 whitespace-pre-line leading-relaxed">{profile.bio}</p>
@@ -354,7 +373,7 @@ const PractitionerProfile = () => {
               )}
 
               {(profile.specializations?.length || profile.qualifications?.length) && (
-                <Card>
+                <Card id="areas" className="scroll-mt-32">
                   <CardHeader><CardTitle className="text-lg">Areas & qualifications</CardTitle></CardHeader>
                   <CardContent className="space-y-3">
                     {profile.specializations?.length ? (
@@ -380,7 +399,7 @@ const PractitionerProfile = () => {
               )}
 
               {registrations.length > 0 && (
-                <Card>
+                <Card id="registrations" className="scroll-mt-32">
                   <CardHeader><CardTitle className="text-lg">Registrations</CardTitle></CardHeader>
                   <CardContent>
                     <ul className="text-sm text-foreground/80 space-y-1">
@@ -391,6 +410,42 @@ const PractitionerProfile = () => {
                           {r.years_as_practitioner ? <span className="text-muted-foreground"> · {r.years_as_practitioner} yrs</span> : null}
                         </li>
                       ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
+
+              {user && myBookings.length > 0 && (
+                <Card id="your-bookings" className="scroll-mt-32">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Clock className="h-4 w-4" /> Your bookings with {displayName.split(' ')[0]}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2">
+                      {myBookings.slice(0, 5).map(b => {
+                        const dateLabel = new Date(`${b.requested_date}T00:00:00`).toLocaleDateString(undefined, {
+                          weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+                        });
+                        const statusColor =
+                          b.status === 'confirmed' ? 'text-primary border-primary/40 bg-primary/5'
+                          : b.status === 'pending' ? 'text-amber-700 border-amber-300 bg-amber-50'
+                          : 'text-muted-foreground border-border bg-muted/40';
+                        return (
+                          <li key={b.id} className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-3 py-2 text-sm">
+                            <div className="min-w-0">
+                              <p className="font-medium text-foreground truncate">{dateLabel}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {formatTimeLabel(b.requested_start_time)} – {formatTimeLabel(b.requested_end_time)}
+                              </p>
+                            </div>
+                            <span className={`text-[11px] uppercase tracking-wide rounded-full px-2 py-0.5 border ${statusColor}`}>
+                              {b.status}
+                            </span>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </CardContent>
                 </Card>
