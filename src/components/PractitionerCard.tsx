@@ -61,12 +61,16 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-foreground truncate">{practitioner.display_name}</h3>
+            <button
+              type="button"
+              onClick={() => navigate(`/practitioner/${practitioner.user_id}`)}
+              className="flex items-center gap-2 text-left group"
+            >
+              <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">{practitioner.display_name}</h3>
               {practitioner.professional_verified && (
                 <ShieldCheck className="h-4 w-4 text-primary flex-shrink-0" />
               )}
-            </div>
+            </button>
             {practitioner.profession && (
               <p className="text-sm text-muted-foreground">{formatProfessionLabel(practitioner.profession)}</p>
             )}
@@ -98,11 +102,10 @@ const PractitionerCard = ({ practitioner }: { practitioner: Practitioner }) => {
             size="sm"
             className="flex-1 gap-1.5"
             onClick={() => {
-              // Always route through /book — it handles auth + native/halaxy fork.
               if (bookingMode === 'halaxy') {
                 window.open(HALAXY_EXTERNAL_URL, '_blank');
               } else {
-                navigate('/book');
+                navigate(`/book?practitioner=${practitioner.user_id}`);
               }
             }}
           >
