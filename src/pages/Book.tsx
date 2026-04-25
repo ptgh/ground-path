@@ -180,12 +180,12 @@ const Book = () => {
     }
   }, [loading, practitioners.length, selectedPractitioner]);
 
-  // Load availability + bookings when practitioner selected
+  // Load availability + bookings + identity credentials when practitioner selected
   useEffect(() => {
     if (!selectedPractitioner) return;
     const load = async () => {
       setLoadingBooking(true);
-      const [avRes, bkRes] = await Promise.all([
+      const [avRes, bkRes, profileRes, regsRes] = await Promise.all([
         supabase
           .from('practitioner_availability')
           .select('day_of_week, start_time, end_time')
@@ -195,9 +195,27 @@ const Book = () => {
           .select('requested_date, requested_start_time')
           .eq('practitioner_id', selectedPractitioner.user_id)
           .in('status', ['pending', 'confirmed']),
+        supabase
+          .from('profiles')
+          .select('aasw_membership_number, swe_registration_number, ahpra_number')
+          .eq('user_id', selectedPractitioner.user_id)
+          .maybeSingle(),
+        supabase
+          .from('practitioner_registrations')
+          .select('body_name, registration_number')
+          .eq('user_id', selectedPractitioner.user_id),
       ]);
       if (avRes.data) setAvailability(avRes.data);
       if (bkRes.data) setExistingBookings(bkRes.data);
+      setIdentities(
+        buildProfessionalIdentities({
+          profession: selectedPractitioner.profession,
+          aaswNumber: profileRes.data?.aasw_membership_number ?? null,
+          sweNumber: profileRes.data?.swe_registration_number ?? null,
+          ahpraNumber: profileRes.data?.ahpra_number ?? null,
+          registrations: (regsRes.data ?? []) as { body_name: string; registration_number: string | null }[],
+        }),
+      );
       setLoadingBooking(false);
     };
     load();
