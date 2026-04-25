@@ -6,15 +6,10 @@ import { useContactFormSubmission } from '@/hooks/useMailingList';
 import { contactFormSchema, checkRateLimit } from '@/lib/validation';
 import { useToast } from '@/hooks/use-toast';
 import MailingListModal from './MailingListModal';
-import HalaxyEmbed from './booking/HalaxyEmbed';
 
 import { scrollToSectionWithOffset } from '@/lib/utils';
-import { useBookingMode, HALAXY_EXTERNAL_URL } from '@/hooks/useBookingMode';
-
-const HALAXY_EMBED_URL = import.meta.env.VITE_HALAXY_EMBED_URL as string | undefined;
 
 const Contact = () => {
-  const { mode: bookingMode, loading: bookingModeLoading } = useBookingMode();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -105,82 +100,21 @@ const Contact = () => {
             </h2>
             <div className="fade-in w-20 h-1 bg-primary mx-auto mb-6"></div>
             <p className="fade-in text-lg text-muted-foreground max-w-2xl mx-auto">
-              {bookingModeLoading
-                ? 'All sessions are conducted online via secure video — simple, safe, and accessible from anywhere.'
-                : bookingMode === 'native_beta'
-                ? 'Select an available time to request a session. Our native booking system is in early beta.'
-                : 'All sessions are currently conducted online via Halaxy Telehealth. Book a time that suits you and receive your meeting link automatically.'}
+              Select an available time to request a session through our secure booking system.
             </p>
-            {!bookingModeLoading && bookingMode === 'halaxy' && (
-              <div className="fade-in flex justify-center mt-6">
-                <a 
-                  href={HALAXY_EXTERNAL_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
-                >
-                  <img 
-                    src="https://cdn.halaxy.com/h/images/logo.png" 
-                    alt="Halaxy booking system logo"
-                    width="96"
-                    height="24"
-                    className="h-6 w-auto"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <span className="text-sm font-medium">Book Online via Halaxy Telehealth</span>
-                </a>
-              </div>
-            )}
           </div>
 
           <div className="max-w-2xl mx-auto">
             <div className="bg-card rounded-xl p-6 shadow-sm mb-6">
-              {bookingModeLoading ? (
-                <div className="flex justify-center py-12">
-                  <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
-                </div>
-              ) : bookingMode === 'native_beta' ? (
-                <div className="py-4 mb-3">
-                  <p className="text-sm text-muted-foreground mb-3 text-center">Book a session through our native booking system.</p>
-                  <button
-                    onClick={() => window.location.href = '/book'}
-                    className="w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                  >
-                    Book a Session
-                  </button>
-                </div>
-              ) : HALAXY_EMBED_URL ? (
-                <div className="mb-4">
-                  <HalaxyEmbed embedUrl={HALAXY_EMBED_URL} fallbackUrl={HALAXY_EXTERNAL_URL} />
-                </div>
-              ) : (
-                <div className="flex items-center gap-3 mb-4">
-                  <button 
-                    onClick={() => window.open(HALAXY_EXTERNAL_URL, '_blank')}
-                    className="flex-1 bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                    aria-label="Book online session via Halaxy"
-                  >
-                    Book Online Session
-                  </button>
-                  <a 
-                    href={HALAXY_EXTERNAL_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-shrink-0 cursor-pointer"
-                  >
-                    <img 
-                      src="https://cdn.halaxy.com/h/images/logo.png" 
-                      alt="Halaxy Profile"
-                      width="160"
-                      height="40"
-                      className="h-10 w-auto hover:opacity-80 transition-opacity cursor-pointer"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </a>
-                </div>
-              )}
+              <div className="py-4 mb-3">
+                <p className="text-sm text-muted-foreground mb-3 text-center">Book a session through our secure online booking.</p>
+                <button
+                  onClick={() => window.location.href = '/book'}
+                  className="w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                >
+                  Book a Session
+                </button>
+              </div>
 
               <div className="space-y-3">
                 <button 
@@ -269,15 +203,13 @@ const Contact = () => {
                   
                   <div className="flex items-start space-x-4">
                     <div className="h-5 w-5 text-primary mt-0.5">📍</div>
-                     <div>
-                       <div className="font-medium text-foreground">Service Delivery</div>
-                       <div className="text-muted-foreground">
-                         {bookingMode === 'native_beta'
-                           ? 'All sessions online via secure video'
-                           : 'All sessions online via Halaxy Telehealth'}<br />
-                         In-person sessions coming soon (Perth, WA)
+                       <div>
+                         <div className="font-medium text-foreground">Service Delivery</div>
+                         <div className="text-muted-foreground">
+                           All sessions online via secure video<br />
+                           In-person sessions coming soon (Perth, WA)
+                         </div>
                        </div>
-                     </div>
                   </div>
                 </div>
               </div>
