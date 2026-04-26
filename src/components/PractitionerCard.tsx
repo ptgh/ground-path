@@ -162,7 +162,7 @@ export const PractitionerList = () => {
             byUser.set(r.user_id, arr);
           }
           setPractitioners(
-            data.map(p => ({ ...p, registrations: byUser.get(p.user_id) ?? [] })) as Practitioner[],
+            rows.map(p => ({ ...p, registrations: byUser.get(p.user_id) ?? [] })) as Practitioner[],
           );
         }
       } catch (err) {
