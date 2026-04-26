@@ -471,6 +471,33 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
               ))}
             </div>
 
+            {/* Focus topic chooser */}
+            <div className="text-left mb-5">
+              <p className="text-xs font-medium text-foreground/80 mb-2 text-center">What would you like to focus on?</p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {FOCUS_TOPICS.map((t) => {
+                  const Icon = t.icon;
+                  const active = selectedTopic === t.id;
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setSelectedTopic(t.id)}
+                      className={`inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-all ${
+                        active
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-border text-muted-foreground hover:border-primary/40 hover:text-foreground'
+                      }`}
+                      aria-pressed={active}
+                    >
+                      <Icon className="h-3 w-3" />
+                      {t.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <button
               onClick={handleStartSession}
               disabled={!selectedCounsellor}
@@ -479,8 +506,84 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
               Start Voice Session
             </button>
 
+            {/* Trust strip */}
+            <div className="grid grid-cols-3 gap-2 mt-4 text-[10px] text-muted-foreground">
+              <div className="flex flex-col items-center gap-0.5"><span className="font-semibold text-foreground/80">Free</span><span>No signup</span></div>
+              <div className="flex flex-col items-center gap-0.5"><span className="font-semibold text-foreground/80">Private</span><span>Not recorded</span></div>
+              <div className="flex flex-col items-center gap-0.5"><span className="font-semibold text-foreground/80">24/7</span><span>Anytime</span></div>
+            </div>
+
             <p className="text-muted-foreground text-[10px] mt-4 pb-2">
-              By starting, you consent to microphone access. All conversations are private and not recorded.
+              By starting, you consent to microphone access. Conversations are private and not stored on our servers.
+            </p>
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+  }
+
+  // Reflection screen — shown after a meaningful session ends
+  if (showReflection) {
+    const minutes = Math.floor(elapsedSeconds / 60);
+    const seconds = elapsedSeconds % 60;
+    const handleSaveAndClose = () => { saveReflection(); onClose(); };
+    const handleSkip = () => onClose();
+    const handleBookHuman = () => { saveReflection(); onClose(); navigate('/book'); };
+
+    return createPortal(
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+        <div className="relative max-w-md w-[calc(100%-2rem)] max-h-[90vh] bg-card border-2 border-border rounded-2xl shadow-2xl overflow-y-auto">
+          <div className="p-6 pt-7 text-center">
+            <div className="mx-auto mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <NotebookPen className="h-6 w-6 text-primary" />
+            </div>
+            <h2 className="text-xl font-semibold text-foreground mb-1">Session ended</h2>
+            <p className="text-xs text-muted-foreground mb-4">
+              {minutes > 0 ? `${minutes} min ${seconds}s` : `${seconds}s`} with {selectedCounsellor?.name} · {focusTopic.label}
+            </p>
+
+            <div className="text-left mb-4">
+              <label htmlFor="reflection" className="text-xs font-medium text-foreground/80 mb-1.5 block">
+                One thing to take with you (optional)
+              </label>
+              <textarea
+                id="reflection"
+                value={reflectionNote}
+                onChange={(e) => setReflectionNote(e.target.value)}
+                placeholder="A thought, feeling, or insight from the conversation…"
+                rows={4}
+                maxLength={500}
+                className="w-full text-sm bg-background border border-border rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">Saved privately to this device only · {reflectionNote.length}/500</p>
+            </div>
+
+            <div className="space-y-2">
+              <button
+                onClick={handleSaveAndClose}
+                disabled={!reflectionNote.trim()}
+                className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Save reflection
+              </button>
+              <button
+                onClick={handleBookHuman}
+                className="w-full py-2.5 rounded-xl border border-primary/30 bg-primary/5 text-primary text-sm font-medium hover:bg-primary/10 transition-colors inline-flex items-center justify-center gap-2"
+              >
+                <CalendarCheck className="h-4 w-4" />
+                Book a human practitioner
+              </button>
+              <button
+                onClick={handleSkip}
+                className="w-full py-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Close without saving
+              </button>
+            </div>
+
+            <p className="text-[10px] text-muted-foreground italic mt-4">
+              If anything came up that feels heavy, please reach out — Lifeline 13 11 14, Beyond Blue 1300 22 4636, or 000 in an emergency.
             </p>
           </div>
         </div>
