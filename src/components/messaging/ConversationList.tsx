@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
-import { MessageSquare, Search } from 'lucide-react';
+import { MessageSquare, Search, NotebookPen } from 'lucide-react';
 import { Conversation, messagingService } from '@/services/messagingService';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDistanceToNow } from 'date-fns';
@@ -19,9 +19,17 @@ export const ConversationList = ({ conversations, selectedId, onSelect, loading 
   const [search, setSearch] = useState('');
   const { user } = useAuth();
 
-  const filtered = conversations.filter(c =>
-    (c.other_party_name || '').toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    const list = conversations.filter(c =>
+      (c.other_party_name || '').toLowerCase().includes(search.toLowerCase())
+    );
+    // Pin Personal Notes (self-conversation) to the top
+    return list.sort((a, b) => {
+      if (a.is_self_conversation && !b.is_self_conversation) return -1;
+      if (!a.is_self_conversation && b.is_self_conversation) return 1;
+      return new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime();
+    });
+  }, [conversations, search]);
 
   const getUnreadCount = (c: Conversation) => {
     if (!user) return 0;
@@ -77,15 +85,21 @@ export const ConversationList = ({ conversations, selectedId, onSelect, loading 
                   onClick={() => onSelect(conversation)}
                   className={`w-full text-left p-3 hover:bg-accent/50 transition-colors ${
                     isSelected ? 'bg-primary/5 dark:bg-primary/10 border-l-2 border-primary' : ''
-                  }`}
+                  } ${conversation.is_self_conversation ? 'bg-amber-50/40' : ''}`}
                 >
                   <div className="flex items-start gap-3">
-                    <Avatar className="h-10 w-10 flex-shrink-0">
-                      <AvatarImage src={conversation.other_party_avatar} />
-                      <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                        {(conversation.other_party_name || '?')[0]?.toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    {conversation.is_self_conversation ? (
+                      <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 flex-shrink-0">
+                        <NotebookPen className="h-4 w-4" />
+                      </div>
+                    ) : (
+                      <Avatar className="h-10 w-10 flex-shrink-0">
+                        <AvatarImage src={conversation.other_party_avatar} />
+                        <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                          {(conversation.other_party_name || '?')[0]?.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <span className={`text-sm font-medium truncate ${unread > 0 ? 'text-foreground' : 'text-foreground/80'}`}>
@@ -95,9 +109,20 @@ export const ConversationList = ({ conversations, selectedId, onSelect, loading 
                           {formatDistanceToNow(new Date(conversation.last_message_at), { addSuffix: true })}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between mt-0.5">
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        {conversation.is_self_conversation ? (
+                          <Badge variant="outline" className="h-4 px-1.5 text-[9px] border-amber-300 text-amber-700 font-normal">
+                            Private notes
+                          </Badge>
+                        ) : conversation.other_party_role && (
+                          <Badge variant="outline" className="h-4 px-1.5 text-[9px] border-sage-300 text-sage-700 font-normal capitalize">
+                            {conversation.other_party_role}
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between mt-1">
                         <p className={`text-xs truncate ${unread > 0 ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
-                          {conversation.last_message_text || 'Start a conversation'}
+                          {conversation.last_message_text || (conversation.is_self_conversation ? 'Tap to add your first note' : 'Start a conversation')}
                         </p>
                         {unread > 0 && (
                           <Badge className="ml-2 h-5 min-w-[20px] flex items-center justify-center text-[10px] bg-primary hover:bg-primary text-primary-foreground">

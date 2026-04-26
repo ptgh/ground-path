@@ -13,6 +13,9 @@ export interface Conversation {
   updated_at: string;
   other_party_name?: string;
   other_party_avatar?: string;
+  other_party_role?: 'practitioner' | 'client';
+  other_party_user_id?: string;
+  is_self_conversation?: boolean;
 }
 
 export type MessageStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
@@ -113,26 +116,37 @@ export const messagingService = {
     );
     const uniqueIds = [...new Set(otherIds)];
 
-    const profileMap: Record<string, { display_name: string | null; avatar_url: string | null }> = {};
+    const profileMap: Record<string, { display_name: string | null; avatar_url: string | null; user_type: string | null }> = {};
     if (uniqueIds.length > 0) {
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('user_id, display_name, avatar_url')
+        .select('user_id, display_name, avatar_url, user_type')
         .in('user_id', uniqueIds);
       if (profiles) {
         profiles.forEach(p => {
-          profileMap[p.user_id] = { display_name: p.display_name, avatar_url: p.avatar_url };
+          profileMap[p.user_id] = {
+            display_name: p.display_name,
+            avatar_url: p.avatar_url,
+            user_type: p.user_type,
+          };
         });
       }
     }
 
     return (data || []).map(c => {
+      const isSelf = c.user_id === c.practitioner_id;
       const otherId = c.user_id === userId ? c.practitioner_id : c.user_id;
       const profile = profileMap[otherId];
+      const role: 'practitioner' | 'client' =
+        profile?.user_type === 'practitioner' ? 'practitioner' : 'client';
+      const fallbackName = role === 'practitioner' ? 'Practitioner' : 'Client';
       return {
         ...c,
-        other_party_name: profile?.display_name || 'User',
+        other_party_user_id: otherId,
+        other_party_name: isSelf ? 'Personal Notes' : (profile?.display_name?.trim() || fallbackName),
         other_party_avatar: profile?.avatar_url || undefined,
+        other_party_role: role,
+        is_self_conversation: isSelf,
       };
     }) as Conversation[];
   },
@@ -178,18 +192,19 @@ export const messagingService = {
     if (senderIds.length > 0) {
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('user_id, display_name')
+        .select('user_id, display_name, user_type')
         .in('user_id', senderIds);
       if (profiles) {
         profiles.forEach(p => {
-          nameMap[p.user_id] = p.display_name || 'User';
+          const name = p.display_name?.trim();
+          nameMap[p.user_id] = name || (p.user_type === 'practitioner' ? 'Practitioner' : 'Client');
         });
       }
     }
 
     const messages = (data || []).map(m => ({
       ...m,
-      sender_name: nameMap[m.sender_id] || 'User',
+      sender_name: nameMap[m.sender_id] || 'Client',
       _status: currentUserId ? getMessageStatus(m as Message, currentUserId) : ('sent' as MessageStatus),
     })) as Message[];
 
