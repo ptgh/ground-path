@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  BIMI logo for groundpath - SVG Tiny Portable/Secure (SVG Tiny 1.2 PS) profile.
+  Required by the BIMI specification (see https://bimigroup.org/).
+  Hosted at: https://groundpath.com.au/bimi-logo.svg
+  Referenced from DNS TXT: default._bimi.groundpath.com.au
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     version="1.2"
+     baseProfile="tiny-ps"
+     viewBox="0 0 512 512">
+  <title>groundpath</title>
+  <rect width="512" height="512" fill="#ffffff"/>
+  <path d="M256 77 C 358 102, 410 205, 384 307 C 358 384, 282 410, 205 384 C 154 358, 128 307, 154 256 C 167 230, 192 218, 218 230 C 230 237, 237 243, 230 250"
+        fill="none"
+        stroke="#7B9B85"
+        stroke-width="32"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+</svg>
