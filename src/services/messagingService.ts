@@ -192,18 +192,19 @@ export const messagingService = {
     if (senderIds.length > 0) {
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('user_id, display_name')
+        .select('user_id, display_name, user_type')
         .in('user_id', senderIds);
       if (profiles) {
         profiles.forEach(p => {
-          nameMap[p.user_id] = p.display_name || 'User';
+          const name = p.display_name?.trim();
+          nameMap[p.user_id] = name || (p.user_type === 'practitioner' ? 'Practitioner' : 'Client');
         });
       }
     }
 
     const messages = (data || []).map(m => ({
       ...m,
-      sender_name: nameMap[m.sender_id] || 'User',
+      sender_name: nameMap[m.sender_id] || 'Client',
       _status: currentUserId ? getMessageStatus(m as Message, currentUserId) : ('sent' as MessageStatus),
     })) as Message[];
 
