@@ -288,8 +288,15 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
     return groups;
   }, []);
 
+  const NOTE_QUICK_STARTS = [
+    { label: 'Reflection', text: "Reflection — \nWhat I noticed: \nWhat I'm sitting with: \nNext step: " },
+    { label: 'Supervision prompt', text: 'For supervision — case theme:\nQuestion to bring:\n' },
+    { label: 'Reminder', text: 'Reminder: ' },
+  ];
+
   return (
-    <div className="flex flex-col h-full">
+    <div className={`flex h-full ${isSelf ? 'bg-gradient-to-b from-amber-50/30 to-background' : ''}`}>
+      <div className="flex flex-col flex-1 min-w-0">
       {/* Header */}
       <div className="flex items-center gap-3 p-3 border-b border-border bg-card">
         {onBack && (
@@ -297,19 +304,79 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         )}
-        <Avatar className="h-9 w-9">
-          <AvatarImage src={conversation.other_party_avatar} />
-          <AvatarFallback className="text-xs bg-primary/10 text-primary">
-            {(conversation.other_party_name || '?')[0]?.toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold truncate">{conversation.other_party_name}</h3>
+        {isSelf ? (
+          <>
+            <div className="h-9 w-9 rounded-full bg-amber-100 flex items-center justify-center text-amber-700">
+              <NotebookPen className="h-4 w-4" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-semibold truncate">Personal Notes</h3>
+              <p className="text-[11px] text-muted-foreground truncate">Private space — only you can see this</p>
+            </div>
+          </>
+        ) : isPractitioner && conversation.other_party_user_id ? (
+          <>
+            <ClientPreviewPopover
+              clientUserId={conversation.other_party_user_id}
+              trigger={
+                <button className="flex items-center gap-3 min-w-0 hover:opacity-90 transition-opacity">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src={conversation.other_party_avatar} />
+                    <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                      {(otherPartyName || '?')[0]?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="text-left min-w-0">
+                    <h3 className="text-sm font-semibold truncate">{otherPartyName}</h3>
+                    <Badge variant="outline" className="h-4 mt-0.5 px-1.5 text-[9px] border-sage-300 text-sage-700 font-normal">
+                      Client · click for details
+                    </Badge>
+                  </div>
+                </button>
+              }
+            />
+          </>
+        ) : (
+          <>
+            <Avatar className="h-9 w-9">
+              <AvatarImage src={conversation.other_party_avatar} />
+              <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                {(otherPartyName || '?')[0]?.toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-semibold truncate">{otherPartyName}</h3>
+              <Badge variant="outline" className="h-4 mt-0.5 px-1.5 text-[9px] border-primary/30 text-primary font-normal">
+                {otherPartyRole === 'practitioner' ? 'Practitioner' : 'Client'}
+              </Badge>
+            </div>
+          </>
+        )}
+
+        <div className="flex items-center gap-1 ml-auto">
+          {isPractitioner && !isSelf && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`h-8 w-8 ${showAIAssist ? 'text-sage-700 bg-sage-100' : 'text-muted-foreground hover:text-foreground'}`}
+              onClick={() => setShowAIAssist(v => !v)}
+              title="AI assist"
+              aria-label="Toggle AI assist"
+            >
+              <Sparkles className="h-4 w-4" />
+            </Button>
+          )}
+          <MessageExportMenu
+            messages={messages}
+            ownerName={profile?.display_name || 'You'}
+            otherPartyName={otherPartyName}
+            isSelfConversation={isSelf}
+          />
         </div>
       </div>
 
-      {/* Resource share form — practitioner only */}
-      {showResourceForm && isPractitioner && (
+      {/* Resource share form — practitioner only, not in self mode */}
+      {showResourceForm && isPractitioner && !isSelf && (
         <ResourceShareForm onSubmit={handleResourceShare} onCancel={() => setShowResourceForm(false)} />
       )}
 
@@ -320,8 +387,35 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
             <div className="animate-spin h-6 w-6 border-2 border-sage-600 border-t-transparent rounded-full" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-sm text-muted-foreground">No messages yet. Start the conversation!</p>
+          <div className="flex flex-col items-center justify-center py-12 text-center px-4">
+            {isSelf ? (
+              <>
+                <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center mb-3">
+                  <NotebookPen className="h-5 w-5 text-amber-700" />
+                </div>
+                <h4 className="text-sm font-semibold mb-1">Your Personal Notes</h4>
+                <p className="text-xs text-muted-foreground mb-4 max-w-xs">
+                  A private journal for clinical reflections, supervision prompts and reminders. Only you can see this.
+                </p>
+                <div className="flex flex-wrap gap-1.5 justify-center">
+                  {NOTE_QUICK_STARTS.map((q, i) => (
+                    <button
+                      key={i}
+                      onClick={() => { setNewMessage(q.text); inputRef.current?.focus(); }}
+                      className="text-xs px-3 py-1.5 rounded-full border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors"
+                    >
+                      + {q.label}
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <ShieldCheck className="h-8 w-8 text-sage-600/40 mb-2" />
+                <p className="text-sm text-muted-foreground">No messages yet. Start the conversation!</p>
+                <p className="text-[11px] text-muted-foreground/70 mt-1">Messages are private between you and {otherPartyName}.</p>
+              </>
+            )}
           </div>
         ) : (
           groupMessagesByDate(messages).map(group => (
