@@ -19,9 +19,17 @@ export const ConversationList = ({ conversations, selectedId, onSelect, loading 
   const [search, setSearch] = useState('');
   const { user } = useAuth();
 
-  const filtered = conversations.filter(c =>
-    (c.other_party_name || '').toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    const list = conversations.filter(c =>
+      (c.other_party_name || '').toLowerCase().includes(search.toLowerCase())
+    );
+    // Pin Personal Notes (self-conversation) to the top
+    return list.sort((a, b) => {
+      if (a.is_self_conversation && !b.is_self_conversation) return -1;
+      if (!a.is_self_conversation && b.is_self_conversation) return 1;
+      return new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime();
+    });
+  }, [conversations, search]);
 
   const getUnreadCount = (c: Conversation) => {
     if (!user) return 0;
