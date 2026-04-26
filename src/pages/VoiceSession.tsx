@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -11,6 +11,12 @@ const COUNTRY_KEY = 'groundpath_client_country';
 const VoiceSessionPage = () => {
   const [showSession, setShowSession] = useState(false);
   const navigate = useNavigate();
+
+  // Auto-open the chooser when navigated here directly (e.g. from header)
+  useEffect(() => {
+    const t = setTimeout(() => setShowSession(true), 200);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
