@@ -12,6 +12,7 @@ import { VoiceRecorder } from '@/components/messaging/VoiceRecorder';
 import { ResourceShareForm } from '@/components/messaging/ResourceShareForm';
 import { MessageExportMenu } from '@/components/messaging/MessageExportMenu';
 import { ClientPreviewPopover } from '@/components/messaging/ClientPreviewPopover';
+import { ClientIdentityHeader } from '@/components/messaging/ClientIdentityHeader';
 import { AIAssistPanel } from '@/components/messaging/AIAssistPanel';
 import { messageExportService } from '@/services/messageExportService';
 import { useAuth } from '@/hooks/useAuth';
@@ -322,42 +323,33 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
             </div>
           </>
         ) : isPractitioner && conversation.other_party_user_id ? (
-          <>
-            <ClientPreviewPopover
-              clientUserId={conversation.other_party_user_id}
-              trigger={
-                <button className="flex items-center gap-3 min-w-0 hover:opacity-90 transition-opacity">
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage src={conversation.other_party_avatar} />
-                    <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                      {(otherPartyShortName || '?')[0]?.toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="text-left min-w-0">
-                    <h3 className="text-sm font-semibold truncate">{otherPartyShortName}</h3>
-                    <Badge variant="outline" className="h-4 mt-0.5 px-1.5 text-[9px] border-sage-300 text-sage-700 font-normal">
-                      Client · click for details
-                    </Badge>
-                  </div>
-                </button>
-              }
-            />
-          </>
+          <ClientPreviewPopover
+            clientUserId={conversation.other_party_user_id}
+            trigger={
+              <button
+                type="button"
+                className="min-w-0 hover:opacity-90 transition-opacity"
+                aria-label={`Open client details for ${otherPartyShortName}`}
+              >
+                <ClientIdentityHeader
+                  displayName={conversation.other_party_display_name}
+                  userId={conversation.other_party_user_id}
+                  avatarUrl={conversation.other_party_avatar}
+                  role="client"
+                  size="sm"
+                  hint="Click for client details"
+                />
+              </button>
+            }
+          />
         ) : (
-          <>
-            <Avatar className="h-9 w-9">
-              <AvatarImage src={conversation.other_party_avatar} />
-              <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                {(otherPartyShortName || '?')[0]?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-semibold truncate">{otherPartyShortName}</h3>
-              <Badge variant="outline" className="h-4 mt-0.5 px-1.5 text-[9px] border-primary/30 text-primary font-normal">
-                {otherPartyRole === 'practitioner' ? 'Practitioner' : 'Client'}
-              </Badge>
-            </div>
-          </>
+          <ClientIdentityHeader
+            displayName={conversation.other_party_display_name}
+            userId={conversation.other_party_user_id || conversation.id}
+            avatarUrl={conversation.other_party_avatar}
+            role={otherPartyRole}
+            size="sm"
+          />
         )}
 
         <div className="flex items-center gap-1 ml-auto">
