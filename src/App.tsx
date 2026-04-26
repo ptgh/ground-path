@@ -53,6 +53,7 @@ const JoinSession = lazy(() => import("./pages/JoinSession"));
 const BillingPage = lazy(() => import("./pages/BillingPage"));
 const AdminMailingList = lazy(() => import("./pages/AdminMailingList"));
 const PractitionerProfile = lazy(() => import("./pages/PractitionerProfile"));
+const SecureResources = lazy(() => import("./pages/SecureResources"));
 
 const queryClient = new QueryClient();
 
@@ -214,6 +215,7 @@ const App = () => {
                 <Route path="/dashboard" element={<AuthenticatedRoute><ClientDashboard /></AuthenticatedRoute>} />
                 <Route path="/session/:bookingId" element={<AuthenticatedRoute><JoinSession /></AuthenticatedRoute>} />
                 <Route path="/account/billing" element={<AuthenticatedRoute><BillingPage /></AuthenticatedRoute>} />
+                <Route path="/secure-resources" element={<AuthenticatedRoute><SecureResources /></AuthenticatedRoute>} />
                 {/* Public practitioner profile — must come after all specific /practitioner/* routes */}
                 <Route path="/practitioner/:userId" element={<PractitionerProfile />} />
                 <Route path="*" element={<NotFound />} />
