@@ -434,7 +434,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
                   <div key={msg.id} className={`flex flex-col mb-2 group ${isOwn ? 'items-end' : 'items-start'}`}>
                     {showName && (
                       <span className={`text-[10px] font-medium text-muted-foreground mb-0.5 px-1 ${isOwn ? 'text-right' : 'text-left'}`}>
-                        {isOwn ? (profile?.display_name || 'You') : conversation.other_party_name}
+                        {isSelf ? 'Note' : (isOwn ? 'You' : (conversation.other_party_name || msg.sender_name || 'Client'))}
                       </span>
                     )}
                     <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
