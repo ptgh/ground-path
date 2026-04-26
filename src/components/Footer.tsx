@@ -82,6 +82,13 @@ const Footer = () => {
               <li><button type="button" onClick={() => handleSectionNavigation('about')} className={linkClass}>About</button></li>
               <li><button type="button" onClick={() => handleSectionNavigation('services')} className={linkClass}>Services & Rates</button></li>
               <li><button type="button" onClick={() => navigate('/resources')} className={linkClass}>Resources</button></li>
+              <li><button type="button" onClick={() => navigate('/voice-session')} className={`${linkClass} inline-flex items-center gap-1.5`}>
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-60 animate-ping" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+                </span>
+                AI Counselling <span className="text-[10px] uppercase tracking-wider text-primary/70">Free</span>
+              </button></li>
               <li><button type="button" onClick={() => handleSectionNavigation('newsletter')} className={linkClass}>Newsletter</button></li>
               <li><button type="button" onClick={() => handleSectionNavigation('contact')} className={linkClass}>Contact</button></li>
             </ul>
