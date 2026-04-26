@@ -12,6 +12,7 @@ import { VoiceRecorder } from '@/components/messaging/VoiceRecorder';
 import { ResourceShareForm } from '@/components/messaging/ResourceShareForm';
 import { MessageExportMenu } from '@/components/messaging/MessageExportMenu';
 import { ClientPreviewPopover } from '@/components/messaging/ClientPreviewPopover';
+import { ClientIdentityHeader } from '@/components/messaging/ClientIdentityHeader';
 import { AIAssistPanel } from '@/components/messaging/AIAssistPanel';
 import { messageExportService } from '@/services/messageExportService';
 import { useAuth } from '@/hooks/useAuth';
