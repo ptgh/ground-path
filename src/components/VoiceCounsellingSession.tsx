@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { Loader2, X, Globe, CheckCircle2 } from "lucide-react";
+import { Loader2, X, Globe, CheckCircle2, Heart, Brain, Users, CloudRain, Briefcase, Sparkles, NotebookPen, CalendarCheck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useConversation } from "@elevenlabs/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import sarahAvatar from "@/assets/counsellor-sarah.jpg";
@@ -43,6 +44,16 @@ const COUNSELLORS: CounsellorPersona[] = [
   },
 ];
 
+// Focus topics — pre-frame the session so the counsellor opens with relevant context
+const FOCUS_TOPICS: { id: string; label: string; icon: typeof Heart; prompt: string }[] = [
+  { id: 'open', label: 'Just talk', icon: Sparkles, prompt: 'The user wants an open, exploratory conversation. Begin by gently asking what is on their mind today.' },
+  { id: 'anxiety', label: 'Anxiety', icon: Brain, prompt: 'The user wants to talk about anxiety. Open with warmth and validate that anxiety is common and manageable. Use grounding techniques if helpful.' },
+  { id: 'low-mood', label: 'Low mood', icon: CloudRain, prompt: 'The user wants to talk about low mood or sadness. Open with empathy, validate their feelings, and gently explore what has been going on.' },
+  { id: 'relationships', label: 'Relationships', icon: Heart, prompt: 'The user wants to talk about a relationship — partner, family, or friend. Open with curiosity and a non-judgemental stance.' },
+  { id: 'work-stress', label: 'Work / study', icon: Briefcase, prompt: 'The user wants to talk about work or study stress. Open by asking what is feeling most overwhelming right now.' },
+  { id: 'grief', label: 'Grief or loss', icon: Users, prompt: 'The user wants to talk about grief or loss. Open with deep empathy, allow space, and avoid rushing toward solutions.' },
+];
+
 // Countries kept for future admin toggle - currently AU only
 const COUNTRIES: { value: Country; label: string }[] = [
   { value: "AU", label: "Australia" },
@@ -72,14 +83,19 @@ const detectCountryFromTimezone = (): Country => {
 };
 
 const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSessionProps) => {
+  const navigate = useNavigate();
   const [voiceState, setVoiceState] = useState<VoiceState>("setup");
   const [selectedCounsellor, setSelectedCounsellor] = useState<CounsellorPersona | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<string>('open');
   const [country, setCountry] = useState<Country>("AU");
   const [countryOpen, setCountryOpen] = useState(false);
   const [lastTranscript, setLastTranscript] = useState("");
   const [lastReply, setLastReply] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [pulseScale, setPulseScale] = useState(1);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [showReflection, setShowReflection] = useState(false);
+  const [reflectionNote, setReflectionNote] = useState("");
 
   const animFrameRef = useRef<number>(0);
   const sessionStartedRef = useRef(false);
@@ -93,9 +109,14 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
   const convRef = useRef<any>(null);
   const contextSentRef = useRef(false);
   const countryRef = useRef<HTMLDivElement>(null);
+  const sessionStartTimeRef = useRef<number>(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const transcriptBufferRef = useRef<string[]>([]);
+
+  const focusTopic = FOCUS_TOPICS.find((t) => t.id === selectedTopic) ?? FOCUS_TOPICS[0];
 
   const counsellorContext = selectedCounsellor
-    ? `You are ${selectedCounsellor.name}, a compassionate and professional AI counsellor for groundpath. You provide supportive, non-judgmental mental health guidance. You are NOT a replacement for professional therapy — always recommend professional help for serious concerns. ${getCountryResources(country)} Keep responses conversational and brief (2-4 sentences) for voice. Be warm, use active listening, and validate emotions. If you detect crisis indicators (suicidal ideation, self-harm), immediately provide crisis resources. Never diagnose or prescribe medication. Introduce yourself naturally as ${selectedCounsellor.name} from groundpath.`
+    ? `You are ${selectedCounsellor.name}, a compassionate and professional AI counsellor for groundpath. You provide supportive, non-judgmental mental health guidance. You are NOT a replacement for professional therapy — always recommend professional help for serious concerns. ${getCountryResources(country)} Keep responses conversational and brief (2-4 sentences) for voice. Be warm, use active listening, and validate emotions. If you detect crisis indicators (suicidal ideation, self-harm), immediately provide crisis resources. Never diagnose or prescribe medication. Introduce yourself naturally as ${selectedCounsellor.name} from groundpath. SESSION FOCUS: ${focusTopic.prompt}`
     : "";
 
   const counsellorContextRef = useRef(counsellorContext);
@@ -121,6 +142,14 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
         wasConnectedRef.current = true;
         clearConnectionTimeout();
         setVoiceState("connected");
+        sessionStartTimeRef.current = Date.now();
+        setElapsedSeconds(0);
+        if (timerRef.current) clearInterval(timerRef.current);
+        timerRef.current = setInterval(() => {
+          if (mountedRef.current && sessionStartTimeRef.current) {
+            setElapsedSeconds(Math.floor((Date.now() - sessionStartTimeRef.current) / 1000));
+          }
+        }, 1000);
       }
     },
     onDisconnect: () => {
@@ -145,10 +174,16 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
     onMessage: (message: any) => {
       if (message?.type === "user_transcript") {
         const transcript = message?.user_transcription_event?.user_transcript;
-        if (transcript) setLastTranscript(transcript);
+        if (transcript) {
+          setLastTranscript(transcript);
+          transcriptBufferRef.current.push(`You: ${transcript}`);
+        }
       } else if (message?.type === "agent_response" || message?.role === "agent") {
         const response = message?.agent_response_event?.agent_response || message?.message;
-        if (response) setLastReply(response);
+        if (response) {
+          setLastReply(response);
+          transcriptBufferRef.current.push(`${selectedCounsellor?.name ?? 'Counsellor'}: ${response}`);
+        }
 
         if (!greetingReceivedRef.current) {
           greetingReceivedRef.current = true;
@@ -284,9 +319,33 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
     userInitiatedEndRef.current = true;
     clearConnectionTimeout();
     clearKeepalive();
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     try { await conversation.endSession(); } catch { /* ignore cleanup error */ }
-    onClose();
-  }, [conversation, onClose, clearConnectionTimeout, clearKeepalive]);
+    // If session had real engagement (>30s), offer reflection screen; otherwise close.
+    if (wasConnectedRef.current && elapsedSeconds >= 30) {
+      setShowReflection(true);
+    } else {
+      onClose();
+    }
+  }, [conversation, onClose, clearConnectionTimeout, clearKeepalive, elapsedSeconds]);
+
+  const saveReflection = useCallback(() => {
+    try {
+      const key = 'groundpath_ai_reflections';
+      const existing = JSON.parse(localStorage.getItem(key) || '[]');
+      const entry = {
+        id: `r-${Date.now()}`,
+        date: new Date().toISOString(),
+        counsellor: selectedCounsellor?.name,
+        topic: focusTopic.label,
+        durationSeconds: elapsedSeconds,
+        note: reflectionNote.trim(),
+      };
+      existing.unshift(entry);
+      // Keep last 25 reflections only
+      localStorage.setItem(key, JSON.stringify(existing.slice(0, 25)));
+    } catch { /* ignore storage failure */ }
+  }, [reflectionNote, selectedCounsellor, focusTopic, elapsedSeconds]);
 
   const retryConnection = useCallback(() => {
     sessionStartedRef.current = false;
@@ -303,6 +362,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
       mountedRef.current = false;
       clearConnectionTimeout();
       clearKeepalive();
+      if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     };
   }, [clearConnectionTimeout, clearKeepalive]);
 
@@ -411,6 +471,33 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
               ))}
             </div>
 
+            {/* Focus topic chooser */}
+            <div className="text-left mb-5">
+              <p className="text-xs font-medium text-foreground/80 mb-2 text-center">What would you like to focus on?</p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {FOCUS_TOPICS.map((t) => {
+                  const Icon = t.icon;
+                  const active = selectedTopic === t.id;
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setSelectedTopic(t.id)}
+                      className={`inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-all ${
+                        active
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-border text-muted-foreground hover:border-primary/40 hover:text-foreground'
+                      }`}
+                      aria-pressed={active}
+                    >
+                      <Icon className="h-3 w-3" />
+                      {t.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <button
               onClick={handleStartSession}
               disabled={!selectedCounsellor}
@@ -419,8 +506,84 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
               Start Voice Session
             </button>
 
+            {/* Trust strip */}
+            <div className="grid grid-cols-3 gap-2 mt-4 text-[10px] text-muted-foreground">
+              <div className="flex flex-col items-center gap-0.5"><span className="font-semibold text-foreground/80">Free</span><span>No signup</span></div>
+              <div className="flex flex-col items-center gap-0.5"><span className="font-semibold text-foreground/80">Private</span><span>Not recorded</span></div>
+              <div className="flex flex-col items-center gap-0.5"><span className="font-semibold text-foreground/80">24/7</span><span>Anytime</span></div>
+            </div>
+
             <p className="text-muted-foreground text-[10px] mt-4 pb-2">
-              By starting, you consent to microphone access. All conversations are private and not recorded.
+              By starting, you consent to microphone access. Conversations are private and not stored on our servers.
+            </p>
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+  }
+
+  // Reflection screen — shown after a meaningful session ends
+  if (showReflection) {
+    const minutes = Math.floor(elapsedSeconds / 60);
+    const seconds = elapsedSeconds % 60;
+    const handleSaveAndClose = () => { saveReflection(); onClose(); };
+    const handleSkip = () => onClose();
+    const handleBookHuman = () => { saveReflection(); onClose(); navigate('/book'); };
+
+    return createPortal(
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+        <div className="relative max-w-md w-[calc(100%-2rem)] max-h-[90vh] bg-card border-2 border-border rounded-2xl shadow-2xl overflow-y-auto">
+          <div className="p-6 pt-7 text-center">
+            <div className="mx-auto mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <NotebookPen className="h-6 w-6 text-primary" />
+            </div>
+            <h2 className="text-xl font-semibold text-foreground mb-1">Session ended</h2>
+            <p className="text-xs text-muted-foreground mb-4">
+              {minutes > 0 ? `${minutes} min ${seconds}s` : `${seconds}s`} with {selectedCounsellor?.name} · {focusTopic.label}
+            </p>
+
+            <div className="text-left mb-4">
+              <label htmlFor="reflection" className="text-xs font-medium text-foreground/80 mb-1.5 block">
+                One thing to take with you (optional)
+              </label>
+              <textarea
+                id="reflection"
+                value={reflectionNote}
+                onChange={(e) => setReflectionNote(e.target.value)}
+                placeholder="A thought, feeling, or insight from the conversation…"
+                rows={4}
+                maxLength={500}
+                className="w-full text-sm bg-background border border-border rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">Saved privately to this device only · {reflectionNote.length}/500</p>
+            </div>
+
+            <div className="space-y-2">
+              <button
+                onClick={handleSaveAndClose}
+                disabled={!reflectionNote.trim()}
+                className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Save reflection
+              </button>
+              <button
+                onClick={handleBookHuman}
+                className="w-full py-2.5 rounded-xl border border-primary/30 bg-primary/5 text-primary text-sm font-medium hover:bg-primary/10 transition-colors inline-flex items-center justify-center gap-2"
+              >
+                <CalendarCheck className="h-4 w-4" />
+                Book a human practitioner
+              </button>
+              <button
+                onClick={handleSkip}
+                className="w-full py-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Close without saving
+              </button>
+            </div>
+
+            <p className="text-[10px] text-muted-foreground italic mt-4">
+              If anything came up that feels heavy, please reach out — Lifeline 13 11 14, Beyond Blue 1300 22 4636, or 000 in an emergency.
             </p>
           </div>
         </div>
@@ -470,12 +633,27 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
         <span>End Session</span>
       </button>
 
+      {/* Session timer (top-left) */}
+      {voiceState === 'connected' && (
+        <div className="absolute top-6 left-6 flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/60 border border-border text-muted-foreground text-xs font-mono tabular-nums">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-60 animate-ping" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+          </span>
+          {String(Math.floor(elapsedSeconds / 60)).padStart(2, '0')}:{String(elapsedSeconds % 60).padStart(2, '0')}
+        </div>
+      )}
+
       <p className="text-muted-foreground text-xs mb-2 tracking-wider uppercase">
         AI Counselling
       </p>
       <h2 className="text-foreground text-lg font-medium mb-1">{selectedCounsellor?.name}</h2>
-      <p className="text-muted-foreground text-[11px] mb-8">
+      <p className="text-muted-foreground text-[11px] mb-1">
         groundpath • {country === "AU" ? "Australia" : country === "UK" ? "United Kingdom" : "International"}
+      </p>
+      <p className="text-muted-foreground/70 text-[10px] mb-8 inline-flex items-center gap-1">
+        {(() => { const TopicIcon = focusTopic.icon; return <TopicIcon className="h-3 w-3" />; })()}
+        Focus: {focusTopic.label}
       </p>
 
       {/* Avatar with pulse rings */}

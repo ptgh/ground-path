@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { CalendarCheck, Video, MessageSquare, ShieldCheck } from 'lucide-react';
+import { CalendarCheck, Video, MessageSquare, ShieldCheck, Mic } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -91,7 +91,7 @@ const HowSessionsWork = () => {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-10">
+        <div className="text-center mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
             onClick={() => navigate('/book')}
             className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-lg"
@@ -99,7 +99,19 @@ const HowSessionsWork = () => {
             <CalendarCheck className="h-4 w-4" />
             Book an Online Session
           </button>
+          <span className="hidden sm:inline text-muted-foreground/60 text-sm">or</span>
+          <button
+            onClick={() => navigate('/voice-session')}
+            className="inline-flex items-center gap-2 text-primary border border-primary/30 bg-primary/5 hover:bg-primary/10 px-6 py-3 rounded-lg transition-colors font-medium"
+            title="Free AI voice counselling — available 24/7"
+          >
+            <Mic className="h-4 w-4" />
+            Try Free AI Counselling
+          </button>
         </div>
+        <p className="text-center text-xs text-muted-foreground mt-3 italic">
+          Need someone now? Free AI counselling is available anytime — no signup required.
+        </p>
       </div>
     </section>
   );
