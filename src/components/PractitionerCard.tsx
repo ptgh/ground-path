@@ -140,13 +140,13 @@ export const PractitionerList = () => {
         const { data, error } = await supabase
           // Read from the public-safe view; the underlying profiles table
           // is now locked down by RLS to protect practitioner PII.
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .from('profiles_public' as any)
+          .from('profiles_public')
           .select('user_id, display_name, avatar_url, profession, bio, specializations, practice_location, professional_verified, aasw_membership_number, swe_registration_number, ahpra_number')
           .order('professional_verified', { ascending: false });
 
         if (!error && data) {
-          const ids = data.map(p => p.user_id);
+          const rows = (data ?? []).filter((p): p is typeof p & { user_id: string } => !!p?.user_id);
+          const ids = rows.map(p => p.user_id);
           let regs: RegistrationRow[] = [];
           if (ids.length > 0) {
             const { data: regData } = await supabase
@@ -162,7 +162,7 @@ export const PractitionerList = () => {
             byUser.set(r.user_id, arr);
           }
           setPractitioners(
-            data.map(p => ({ ...p, registrations: byUser.get(p.user_id) ?? [] })) as Practitioner[],
+            rows.map(p => ({ ...p, registrations: byUser.get(p.user_id) ?? [] })) as Practitioner[],
           );
         }
       } catch (err) {
