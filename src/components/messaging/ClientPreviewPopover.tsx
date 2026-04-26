@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Calendar, FileText, Loader2, User as UserIcon } from 'lucide-react';
 import { gsap } from 'gsap';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
-import { fullName, shortName, initials, isProfileIncomplete } from '@/lib/displayName';
+import { fullName, shortName, isProfileIncomplete } from '@/lib/displayName';
+import { ClientIdentityHeader } from '@/components/messaging/ClientIdentityHeader';
 
 interface ClientPreviewPopoverProps {
   clientUserId: string;
