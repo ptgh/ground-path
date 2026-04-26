@@ -13,6 +13,9 @@ export interface Conversation {
   updated_at: string;
   other_party_name?: string;
   other_party_avatar?: string;
+  other_party_role?: 'practitioner' | 'client';
+  other_party_user_id?: string;
+  is_self_conversation?: boolean;
 }
 
 export type MessageStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
