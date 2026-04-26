@@ -1061,9 +1061,73 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      profiles_public: {
+        Row: {
+          ahpra_profession: string | null
+          avatar_url: string | null
+          bio: string | null
+          booking_integration: Json | null
+          created_at: string | null
+          display_name: string | null
+          practice_location: string | null
+          profession: string | null
+          professional_verified: boolean | null
+          qualifications: string[] | null
+          registration_country: string | null
+          specializations: string[] | null
+          user_id: string | null
+          user_type: string | null
+          years_experience: number | null
+        }
+        Insert: {
+          ahpra_profession?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          booking_integration?: Json | null
+          created_at?: string | null
+          display_name?: string | null
+          practice_location?: string | null
+          profession?: string | null
+          professional_verified?: boolean | null
+          qualifications?: string[] | null
+          registration_country?: string | null
+          specializations?: string[] | null
+          user_id?: string | null
+          user_type?: string | null
+          years_experience?: number | null
+        }
+        Update: {
+          ahpra_profession?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          booking_integration?: Json | null
+          created_at?: string | null
+          display_name?: string | null
+          practice_location?: string | null
+          profession?: string | null
+          professional_verified?: boolean | null
+          qualifications?: string[] | null
+          registration_country?: string | null
+          specializations?: string[] | null
+          user_id?: string | null
+          user_type?: string | null
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      confirm_mailing_subscription: { Args: { _token: string }; Returns: Json }
+      get_messaging_profile: {
+        Args: { _user_id: string }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          profession: string
+          user_id: string
+          user_type: string
+        }[]
+      }
       get_practitioner_rate_range: {
         Args: { p_duration?: number }
         Returns: {
@@ -1101,6 +1165,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      unsubscribe_mailing: { Args: { _token: string }; Returns: Json }
       upgrade_practitioner_role: {
         Args: { p_user_id: string }
         Returns: undefined
