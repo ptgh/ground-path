@@ -633,12 +633,27 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
         <span>End Session</span>
       </button>
 
+      {/* Session timer (top-left) */}
+      {voiceState === 'connected' && (
+        <div className="absolute top-6 left-6 flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/60 border border-border text-muted-foreground text-xs font-mono tabular-nums">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-60 animate-ping" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+          </span>
+          {String(Math.floor(elapsedSeconds / 60)).padStart(2, '0')}:{String(elapsedSeconds % 60).padStart(2, '0')}
+        </div>
+      )}
+
       <p className="text-muted-foreground text-xs mb-2 tracking-wider uppercase">
         AI Counselling
       </p>
       <h2 className="text-foreground text-lg font-medium mb-1">{selectedCounsellor?.name}</h2>
-      <p className="text-muted-foreground text-[11px] mb-8">
+      <p className="text-muted-foreground text-[11px] mb-1">
         groundpath • {country === "AU" ? "Australia" : country === "UK" ? "United Kingdom" : "International"}
+      </p>
+      <p className="text-muted-foreground/70 text-[10px] mb-8 inline-flex items-center gap-1">
+        <focusTopic.icon className="h-3 w-3" />
+        Focus: {focusTopic.label}
       </p>
 
       {/* Avatar with pulse rings */}
