@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, NotebookPen } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
@@ -37,6 +37,8 @@ export const MessagePractitionerButton = ({
     navigate(`/messages?practitioner=${practitionerId}`);
   };
 
+  const isSelf = user?.id === practitionerId;
+
   return (
     <Button
       variant={variant}
@@ -44,8 +46,10 @@ export const MessagePractitionerButton = ({
       onClick={handleClick}
       className={`border-primary/40 text-primary hover:bg-primary/5 hover:text-primary ${className}`}
     >
-      <MessageSquare className="h-4 w-4 mr-2" />
-      {practitionerName ? `Message ${practitionerName}` : 'Message Practitioner'}
+      {isSelf ? <NotebookPen className="h-4 w-4 mr-2" /> : <MessageSquare className="h-4 w-4 mr-2" />}
+      {isSelf
+        ? 'Open Personal Notes'
+        : practitionerName ? `Message ${practitionerName}` : 'Message Practitioner'}
     </Button>
   );
 };
