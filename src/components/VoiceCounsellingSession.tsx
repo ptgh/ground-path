@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { Loader2, X, Globe, CheckCircle2 } from "lucide-react";
+import { Loader2, X, Globe, CheckCircle2, Heart, Brain, Users, CloudRain, Briefcase, Sparkles, NotebookPen, CalendarCheck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useConversation } from "@elevenlabs/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import sarahAvatar from "@/assets/counsellor-sarah.jpg";
