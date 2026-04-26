@@ -3,10 +3,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
-import { MessageSquare, Search, NotebookPen } from 'lucide-react';
-import { Conversation, messagingService } from '@/services/messagingService';
+import { MessageSquare, Search, NotebookPen, AlertCircle } from 'lucide-react';
+import { Conversation } from '@/services/messagingService';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDistanceToNow } from 'date-fns';
+import { shortName, initials, isProfileIncomplete } from '@/lib/displayName';
 
 interface ConversationListProps {
   conversations: Conversation[];
@@ -20,9 +21,16 @@ export const ConversationList = ({ conversations, selectedId, onSelect, loading 
   const { user } = useAuth();
 
   const filtered = useMemo(() => {
-    const list = conversations.filter(c =>
-      (c.other_party_name || '').toLowerCase().includes(search.toLowerCase())
-    );
+    const list = conversations.filter(c => {
+      const name = c.is_self_conversation
+        ? 'Personal Notes'
+        : shortName({
+            displayName: c.other_party_display_name,
+            userId: c.other_party_user_id || c.id,
+            role: c.other_party_role,
+          });
+      return name.toLowerCase().includes(search.toLowerCase());
+    });
     // Pin Personal Notes (self-conversation) to the top
     return list.sort((a, b) => {
       if (a.is_self_conversation && !b.is_self_conversation) return -1;
@@ -79,6 +87,15 @@ export const ConversationList = ({ conversations, selectedId, onSelect, loading 
             {filtered.map((conversation) => {
               const isSelected = selectedId === conversation.id;
               const unread = getUnreadCount(conversation);
+              const incomplete = !conversation.is_self_conversation
+                && isProfileIncomplete(conversation.other_party_display_name);
+              const displayLabel = conversation.is_self_conversation
+                ? 'Personal Notes'
+                : shortName({
+                    displayName: conversation.other_party_display_name,
+                    userId: conversation.other_party_user_id || conversation.id,
+                    role: conversation.other_party_role,
+                  });
               return (
                 <button
                   key={conversation.id}
@@ -96,20 +113,20 @@ export const ConversationList = ({ conversations, selectedId, onSelect, loading 
                       <Avatar className="h-10 w-10 flex-shrink-0">
                         <AvatarImage src={conversation.other_party_avatar} />
                         <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                          {(conversation.other_party_name || '?')[0]?.toUpperCase()}
+                          {initials(conversation.other_party_display_name)}
                         </AvatarFallback>
                       </Avatar>
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <span className={`text-sm font-medium truncate ${unread > 0 ? 'text-foreground' : 'text-foreground/80'}`}>
-                          {conversation.other_party_name}
+                          {displayLabel}
                         </span>
                         <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
                           {formatDistanceToNow(new Date(conversation.last_message_at), { addSuffix: true })}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1.5 mt-0.5">
+                      <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                         {conversation.is_self_conversation ? (
                           <Badge variant="outline" className="h-4 px-1.5 text-[9px] border-amber-300 text-amber-700 font-normal">
                             Private notes
@@ -117,6 +134,11 @@ export const ConversationList = ({ conversations, selectedId, onSelect, loading 
                         ) : conversation.other_party_role && (
                           <Badge variant="outline" className="h-4 px-1.5 text-[9px] border-sage-300 text-sage-700 font-normal capitalize">
                             {conversation.other_party_role}
+                          </Badge>
+                        )}
+                        {incomplete && (
+                          <Badge variant="outline" className="h-4 px-1.5 text-[9px] border-amber-300 text-amber-700 font-normal gap-0.5">
+                            <AlertCircle className="h-2.5 w-2.5" /> Profile incomplete
                           </Badge>
                         )}
                       </div>

@@ -11,7 +11,11 @@ export interface Conversation {
   status: string;
   created_at: string;
   updated_at: string;
-  other_party_name?: string;
+  // Raw display_name from the other party's profile (may be null if they
+  // haven't completed their profile). Use src/lib/displayName.ts helpers
+  // (shortName / fullName / initials) at render time — never display the raw
+  // value directly.
+  other_party_display_name?: string | null;
   other_party_avatar?: string;
   other_party_role?: 'practitioner' | 'client';
   other_party_user_id?: string;
@@ -116,22 +120,23 @@ export const messagingService = {
     );
     const uniqueIds = [...new Set(otherIds)];
 
+    // Resolve names/avatars via the SECURITY DEFINER RPC, which only returns
+    // data for users the caller is permitted to see (own conversations/bookings).
     const profileMap: Record<string, { display_name: string | null; avatar_url: string | null; user_type: string | null }> = {};
-    if (uniqueIds.length > 0) {
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, display_name, avatar_url, user_type')
-        .in('user_id', uniqueIds);
-      if (profiles) {
-        profiles.forEach(p => {
-          profileMap[p.user_id] = {
-            display_name: p.display_name,
-            avatar_url: p.avatar_url,
-            user_type: p.user_type,
+    await Promise.all(
+      uniqueIds.map(async (id) => {
+        const { data: rpcData } = await supabase
+          .rpc('get_messaging_profile', { _user_id: id });
+        const row = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+        if (row) {
+          profileMap[id] = {
+            display_name: row.display_name,
+            avatar_url: row.avatar_url,
+            user_type: row.user_type,
           };
-        });
-      }
-    }
+        }
+      })
+    );
 
     return (data || []).map(c => {
       const isSelf = c.user_id === c.practitioner_id;
@@ -139,11 +144,10 @@ export const messagingService = {
       const profile = profileMap[otherId];
       const role: 'practitioner' | 'client' =
         profile?.user_type === 'practitioner' ? 'practitioner' : 'client';
-      const fallbackName = role === 'practitioner' ? 'Practitioner' : 'Client';
       return {
         ...c,
         other_party_user_id: otherId,
-        other_party_name: isSelf ? 'Personal Notes' : (profile?.display_name?.trim() || fallbackName),
+        other_party_display_name: profile?.display_name ?? null,
         other_party_avatar: profile?.avatar_url || undefined,
         other_party_role: role,
         is_self_conversation: isSelf,

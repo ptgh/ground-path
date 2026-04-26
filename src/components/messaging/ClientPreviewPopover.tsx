@@ -4,10 +4,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, FileText, Loader2, Mail, Phone, User as UserIcon } from 'lucide-react';
+import { AlertCircle, Calendar, FileText, Loader2, User as UserIcon } from 'lucide-react';
 import { gsap } from 'gsap';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
+import { fullName, shortName, initials, isProfileIncomplete } from '@/lib/displayName';
 
 interface ClientPreviewPopoverProps {
   clientUserId: string;
@@ -18,8 +19,6 @@ interface ClientPreviewPopoverProps {
 interface PreviewData {
   display_name: string | null;
   avatar_url: string | null;
-  contact_email: string | null;
-  contact_phone: string | null;
   lastBooking: { date: string; time: string } | null;
   nextBooking: { date: string; time: string } | null;
   recentForms: { type: string; date: string }[];
@@ -38,11 +37,12 @@ export const ClientPreviewPopover = ({ clientUserId, trigger, align = 'start' }:
     (async () => {
       try {
         setLoading(true);
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('display_name, avatar_url, contact_email, contact_phone')
-          .eq('user_id', clientUserId)
-          .maybeSingle();
+        // Use safe RPC — only returns name/avatar if caller has a conversation
+        // or booking with this user. Sensitive PII (contact info, AHPRA, etc.)
+        // is never exposed via messaging context.
+        const { data: rpcData } = await supabase
+          .rpc('get_messaging_profile', { _user_id: clientUserId });
+        const profile = Array.isArray(rpcData) ? rpcData[0] : rpcData;
 
         const today = new Date().toISOString().split('T')[0];
         const { data: pastB } = await supabase
@@ -60,7 +60,7 @@ export const ClientPreviewPopover = ({ clientUserId, trigger, align = 'start' }:
           .order('requested_date', { ascending: true })
           .limit(1);
 
-        // Pull recent form submissions for the practitioner viewing this client
+        // Recent form submissions linked by client record (practitioner-owned)
         const { data: { user } } = await supabase.auth.getUser();
         let forms: { type: string; date: string }[] = [];
         if (user) {
@@ -68,7 +68,6 @@ export const ClientPreviewPopover = ({ clientUserId, trigger, align = 'start' }:
             .from('clients')
             .select('id')
             .eq('practitioner_id', user.id)
-            .eq('contact_email', profile?.contact_email || '')
             .maybeSingle();
           if (clientRow) {
             const { data: subs } = await supabase
@@ -89,8 +88,6 @@ export const ClientPreviewPopover = ({ clientUserId, trigger, align = 'start' }:
         setData({
           display_name: profile?.display_name || null,
           avatar_url: profile?.avatar_url || null,
-          contact_email: profile?.contact_email || null,
-          contact_phone: profile?.contact_phone || null,
           lastBooking: pastB?.[0]
             ? { date: format(new Date(pastB[0].requested_date), 'PP'), time: pastB[0].requested_start_time }
             : null,
@@ -118,7 +115,10 @@ export const ClientPreviewPopover = ({ clientUserId, trigger, align = 'start' }:
     }
   }, [open, data]);
 
-  const initials = (data?.display_name || '?')[0]?.toUpperCase();
+  const incomplete = isProfileIncomplete(data?.display_name);
+  const fullDisplay = fullName({ displayName: data?.display_name, userId: clientUserId, role: 'client' });
+  const shortDisplay = shortName({ displayName: data?.display_name, userId: clientUserId, role: 'client' });
+  const initialsLabel = initials(data?.display_name);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -129,15 +129,18 @@ export const ClientPreviewPopover = ({ clientUserId, trigger, align = 'start' }:
             <div className="flex items-start gap-3">
               <Avatar className="h-12 w-12">
                 <AvatarImage src={data?.avatar_url || undefined} />
-                <AvatarFallback className="bg-primary/10 text-primary">{initials}</AvatarFallback>
+                <AvatarFallback className="bg-primary/10 text-primary">{initialsLabel}</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-semibold text-sm truncate">{data?.display_name || 'Client'}</h4>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="font-semibold text-sm truncate">{fullDisplay}</h4>
                   <Badge variant="outline" className="h-5 text-[10px] border-sage-300 text-sage-700">
                     Client
                   </Badge>
                 </div>
+                {!incomplete && data?.display_name && shortDisplay !== fullDisplay && (
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Shown in chat as “{shortDisplay}”</p>
+                )}
                 {loading && (
                   <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                     <Loader2 className="h-3 w-3 animate-spin" /> Loading details…
@@ -149,20 +152,15 @@ export const ClientPreviewPopover = ({ clientUserId, trigger, align = 'start' }:
 
           {!loading && data && (
             <div className="p-4 space-y-3 text-xs">
-              {(data.contact_email || data.contact_phone) && (
-                <div className="space-y-1">
-                  {data.contact_email && (
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Mail className="h-3 w-3" />
-                      <span className="truncate">{data.contact_email}</span>
-                    </div>
-                  )}
-                  {data.contact_phone && (
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Phone className="h-3 w-3" />
-                      <span>{data.contact_phone}</span>
-                    </div>
-                  )}
+              {incomplete && (
+                <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-2 text-amber-800">
+                  <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">Profile incomplete</p>
+                    <p className="text-[11px] text-amber-700/90">
+                      This client hasn't filled in their name yet. They appear as <span className="font-mono">{shortDisplay}</span> in your inbox.
+                    </p>
+                  </div>
                 </div>
               )}
 
