@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { MessageSquare, ArrowRight } from 'lucide-react';
 import { Conversation, messagingService } from '@/services/messagingService';
 import { formatDistanceToNow } from 'date-fns';
+import { shortName, initials } from '@/lib/displayName';
 
 export const ClientMessagesPanel = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -59,7 +60,15 @@ export const ClientMessagesPanel = () => {
           </p>
         ) : (
           <div className="space-y-3">
-            {conversations.slice(0, 5).map((conv) => (
+            {conversations.slice(0, 5).map((conv) => {
+              const label = conv.is_self_conversation
+                ? 'Personal Notes'
+                : shortName({
+                    displayName: conv.other_party_display_name,
+                    userId: conv.other_party_user_id || conv.id,
+                    role: conv.other_party_role,
+                  });
+              return (
               <button
                 key={conv.id}
                 onClick={() => navigate(`/messages?open=${conv.id}`)}
@@ -68,12 +77,12 @@ export const ClientMessagesPanel = () => {
                 <Avatar className="h-9 w-9 flex-shrink-0">
                   <AvatarImage src={conv.other_party_avatar} />
                   <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                    {(conv.other_party_name || '?')[0]?.toUpperCase()}
+                    {initials(conv.other_party_display_name)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium truncate">{conv.other_party_name}</span>
+                    <span className="text-sm font-medium truncate">{label}</span>
                     <span className="text-[10px] text-muted-foreground">
                       {formatDistanceToNow(new Date(conv.last_message_at), { addSuffix: true })}
                     </span>
@@ -83,7 +92,8 @@ export const ClientMessagesPanel = () => {
                   </p>
                 </div>
               </button>
-            ))}
+              );
+            })}
             <Button
               variant="ghost"
               className="w-full mt-2"
