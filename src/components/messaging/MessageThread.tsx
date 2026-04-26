@@ -440,15 +440,43 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
                     <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
                     {/* Delete button for own messages (not optimistic) */}
                     {isOwn && !msg._tempId && (
+                      <div className="flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity self-center mr-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                          onClick={async () => {
+                            await messageExportService.copyMessage(msg, false);
+                            toast.success('Message copied');
+                          }}
+                          title="Copy message"
+                        >
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                          onClick={() => handleDeleteMessage(msg.id)}
+                          disabled={deletingId === msg.id}
+                          title="Delete message"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    )}
+                    {!isOwn && (
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity self-center mr-1 text-muted-foreground hover:text-destructive"
-                        onClick={() => handleDeleteMessage(msg.id)}
-                        disabled={deletingId === msg.id}
-                        title="Delete message"
+                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity self-center ml-1 text-muted-foreground hover:text-foreground"
+                        onClick={async () => {
+                          await messageExportService.copyMessage(msg, true);
+                          toast.success('Copied with timestamp');
+                        }}
+                        title="Copy with timestamp"
                       >
-                        <Trash2 className="h-3 w-3" />
+                        <Copy className="h-3 w-3" />
                       </Button>
                     )}
                     <div
@@ -456,9 +484,9 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
                         isFailed
                           ? 'bg-destructive/10 text-foreground border border-destructive/30 rounded-br-md'
                           : isSending
-                            ? 'bg-sage-600/70 text-white rounded-br-md'
+                            ? (isSelf ? 'bg-amber-500/70 text-white rounded-br-md' : 'bg-sage-600/70 text-white rounded-br-md')
                             : isOwn
-                              ? 'bg-sage-600 text-white rounded-br-md'
+                              ? (isSelf ? 'bg-amber-500 text-white rounded-br-md' : 'bg-sage-600 text-white rounded-br-md')
                               : 'bg-muted text-foreground rounded-bl-md'
                       }`}
                       onClick={isFailed && msg._tempId ? () => handleSend(msg._tempId) : undefined}
@@ -478,7 +506,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
                             format(new Date(msg.created_at), 'h:mm a')
                           )}
                         </span>
-                        {isOwn && !isFailed && (
+                        {isOwn && !isFailed && !isSelf && (
                           <MessageStatus status={msg._status || 'sent'} />
                         )}
                       </div>
