@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Mail, Phone, Linkedin, MessageCircle } from 'lucide-react';
+import { Mail, Phone, Linkedin, MessageCircle, MessageSquare } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useContactFormSubmission } from '@/hooks/useMailingList';
 import { contactFormSchema, checkRateLimit } from '@/lib/validation';
@@ -186,6 +186,16 @@ const Contact = () => {
                     <div>
                       <div className="font-medium text-foreground">Phone</div>
                       <a href="tel:+61410883659" className="text-primary hover:text-primary">
+                        +61 410 883 659
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-4">
+                    <MessageSquare className="h-5 w-5 text-primary" />
+                    <div>
+                      <div className="font-medium text-foreground">WhatsApp</div>
+                      <a href="https://wa.me/61410883659" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary">
                         +61 410 883 659
                       </a>
                     </div>
