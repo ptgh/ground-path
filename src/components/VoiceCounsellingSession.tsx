@@ -83,14 +83,19 @@ const detectCountryFromTimezone = (): Country => {
 };
 
 const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSessionProps) => {
+  const navigate = useNavigate();
   const [voiceState, setVoiceState] = useState<VoiceState>("setup");
   const [selectedCounsellor, setSelectedCounsellor] = useState<CounsellorPersona | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<string>('open');
   const [country, setCountry] = useState<Country>("AU");
   const [countryOpen, setCountryOpen] = useState(false);
   const [lastTranscript, setLastTranscript] = useState("");
   const [lastReply, setLastReply] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [pulseScale, setPulseScale] = useState(1);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [showReflection, setShowReflection] = useState(false);
+  const [reflectionNote, setReflectionNote] = useState("");
 
   const animFrameRef = useRef<number>(0);
   const sessionStartedRef = useRef(false);
@@ -104,9 +109,14 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
   const convRef = useRef<any>(null);
   const contextSentRef = useRef(false);
   const countryRef = useRef<HTMLDivElement>(null);
+  const sessionStartTimeRef = useRef<number>(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const transcriptBufferRef = useRef<string[]>([]);
+
+  const focusTopic = FOCUS_TOPICS.find((t) => t.id === selectedTopic) ?? FOCUS_TOPICS[0];
 
   const counsellorContext = selectedCounsellor
-    ? `You are ${selectedCounsellor.name}, a compassionate and professional AI counsellor for groundpath. You provide supportive, non-judgmental mental health guidance. You are NOT a replacement for professional therapy — always recommend professional help for serious concerns. ${getCountryResources(country)} Keep responses conversational and brief (2-4 sentences) for voice. Be warm, use active listening, and validate emotions. If you detect crisis indicators (suicidal ideation, self-harm), immediately provide crisis resources. Never diagnose or prescribe medication. Introduce yourself naturally as ${selectedCounsellor.name} from groundpath.`
+    ? `You are ${selectedCounsellor.name}, a compassionate and professional AI counsellor for groundpath. You provide supportive, non-judgmental mental health guidance. You are NOT a replacement for professional therapy — always recommend professional help for serious concerns. ${getCountryResources(country)} Keep responses conversational and brief (2-4 sentences) for voice. Be warm, use active listening, and validate emotions. If you detect crisis indicators (suicidal ideation, self-harm), immediately provide crisis resources. Never diagnose or prescribe medication. Introduce yourself naturally as ${selectedCounsellor.name} from groundpath. SESSION FOCUS: ${focusTopic.prompt}`
     : "";
 
   const counsellorContextRef = useRef(counsellorContext);
