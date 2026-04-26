@@ -29,10 +29,9 @@ export const MessagePractitionerButton = ({
       return;
     }
 
-    // Don't let practitioners message themselves
+    // Practitioner messaging themselves opens their Personal Notes thread
     if (user.id === practitionerId) {
-      toast.info("You can't message yourself");
-      return;
+      toast.info('Opening your Personal Notes — a private space for record-keeping.');
     }
 
     navigate(`/messages?practitioner=${practitionerId}`);
