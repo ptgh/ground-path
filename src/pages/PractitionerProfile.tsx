@@ -404,10 +404,9 @@ const PractitionerProfile = () => {
                             </a>
                           )}
                           {whatsappLink && (
-                            <a
-                              href={whatsappLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <button
+                              type="button"
+                              onClick={() => window.open(whatsappLink, '_blank', 'noopener,noreferrer')}
                               className={`inline-flex items-center gap-1.5 text-xs rounded-full px-2.5 py-1 border transition-colors ${
                                 isPreferred('whatsapp')
                                   ? 'border-primary/40 bg-primary/5 text-primary'
@@ -415,7 +414,7 @@ const PractitionerProfile = () => {
                               }`}
                             >
                               <MessageCircle className="h-3 w-3" /> WhatsApp
-                            </a>
+                            </button>
                           )}
                         </div>
                       )}
