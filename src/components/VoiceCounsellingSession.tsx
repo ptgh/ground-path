@@ -652,7 +652,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
         groundpath • {country === "AU" ? "Australia" : country === "UK" ? "United Kingdom" : "International"}
       </p>
       <p className="text-muted-foreground/70 text-[10px] mb-8 inline-flex items-center gap-1">
-        <focusTopic.icon className="h-3 w-3" />
+        {(() => { const TopicIcon = focusTopic.icon; return <TopicIcon className="h-3 w-3" />; })()}
         Focus: {focusTopic.label}
       </p>
 
