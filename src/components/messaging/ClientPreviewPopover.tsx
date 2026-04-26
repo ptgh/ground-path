@@ -117,7 +117,6 @@ export const ClientPreviewPopover = ({ clientUserId, trigger, align = 'start' }:
   const incomplete = isProfileIncomplete(data?.display_name);
   const fullDisplay = fullName({ displayName: data?.display_name, userId: clientUserId, role: 'client' });
   const shortDisplay = shortName({ displayName: data?.display_name, userId: clientUserId, role: 'client' });
-  const initialsLabel = initials(data?.display_name);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -125,28 +124,24 @@ export const ClientPreviewPopover = ({ clientUserId, trigger, align = 'start' }:
       <PopoverContent align={align} className="w-80 p-0 overflow-hidden" sideOffset={8}>
         <div ref={contentRef}>
           <div className="bg-gradient-to-br from-sage-50 to-background p-4 border-b border-border">
-            <div className="flex items-start gap-3">
-              <Avatar className="h-12 w-12">
-                <AvatarImage src={data?.avatar_url || undefined} />
-                <AvatarFallback className="bg-primary/10 text-primary">{initialsLabel}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className="font-semibold text-sm truncate">{fullDisplay}</h4>
-                  <Badge variant="outline" className="h-5 text-[10px] border-sage-300 text-sage-700">
-                    Client
-                  </Badge>
-                </div>
-                {!incomplete && data?.display_name && shortDisplay !== fullDisplay && (
-                  <p className="text-[11px] text-muted-foreground mt-0.5">Shown in chat as “{shortDisplay}”</p>
-                )}
-                {loading && (
-                  <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                    <Loader2 className="h-3 w-3 animate-spin" /> Loading details…
-                  </div>
-                )}
+            <ClientIdentityHeader
+              displayName={data?.display_name}
+              userId={clientUserId}
+              avatarUrl={data?.avatar_url}
+              role="client"
+              hint={
+                loading
+                  ? 'Loading details…'
+                  : !incomplete && data?.display_name && shortDisplay !== fullDisplay
+                    ? `Full name: ${fullDisplay}`
+                    : undefined
+              }
+            />
+            {loading && (
+              <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                <Loader2 className="h-3 w-3 animate-spin" /> Loading details…
               </div>
-            </div>
+            )}
           </div>
 
           {!loading && data && (
