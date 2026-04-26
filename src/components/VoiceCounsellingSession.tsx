@@ -142,6 +142,14 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
         wasConnectedRef.current = true;
         clearConnectionTimeout();
         setVoiceState("connected");
+        sessionStartTimeRef.current = Date.now();
+        setElapsedSeconds(0);
+        if (timerRef.current) clearInterval(timerRef.current);
+        timerRef.current = setInterval(() => {
+          if (mountedRef.current && sessionStartTimeRef.current) {
+            setElapsedSeconds(Math.floor((Date.now() - sessionStartTimeRef.current) / 1000));
+          }
+        }, 1000);
       }
     },
     onDisconnect: () => {
@@ -166,10 +174,16 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
     onMessage: (message: any) => {
       if (message?.type === "user_transcript") {
         const transcript = message?.user_transcription_event?.user_transcript;
-        if (transcript) setLastTranscript(transcript);
+        if (transcript) {
+          setLastTranscript(transcript);
+          transcriptBufferRef.current.push(`You: ${transcript}`);
+        }
       } else if (message?.type === "agent_response" || message?.role === "agent") {
         const response = message?.agent_response_event?.agent_response || message?.message;
-        if (response) setLastReply(response);
+        if (response) {
+          setLastReply(response);
+          transcriptBufferRef.current.push(`${selectedCounsellor?.name ?? 'Counsellor'}: ${response}`);
+        }
 
         if (!greetingReceivedRef.current) {
           greetingReceivedRef.current = true;
