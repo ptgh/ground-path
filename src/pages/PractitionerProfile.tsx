@@ -485,22 +485,50 @@ const PractitionerProfile = () => {
                 </Card>
               )}
 
-              {registrations.length > 0 && (
-                <Card id="registrations" className="scroll-mt-32">
-                  <CardHeader><CardTitle className="text-lg">Registrations</CardTitle></CardHeader>
-                  <CardContent>
-                    <ul className="text-sm text-foreground/80 space-y-1">
-                      {registrations.map((r, i) => (
-                        <li key={`${r.body_name}-${i}`}>
-                          <span className="font-medium">{r.body_name}</span>
-                          {r.registration_number ? <span className="text-muted-foreground"> · {r.registration_number}</span> : null}
-                          {r.years_as_practitioner ? <span className="text-muted-foreground"> · {r.years_as_practitioner} yrs</span> : null}
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              )}
+              {(() => {
+                const BODY_LABELS: Record<string, string> = {
+                  AASW: 'Australian Association of Social Workers (AASW)',
+                  ACA: 'Australian Counselling Association (ACA)',
+                  AHPRA: 'Australian Health Practitioner Regulation Agency (AHPRA)',
+                  SWE: 'Social Work England (SWE)',
+                  PACFA: 'Psychotherapy and Counselling Federation of Australia (PACFA)',
+                };
+                const formatBody = (name: string) => BODY_LABELS[name.toUpperCase()] ?? name;
+
+                const merged: { body_name: string; registration_number: string | null; years_as_practitioner: number | null }[] = [];
+                if (profile.aasw_membership_number) {
+                  merged.push({ body_name: 'AASW', registration_number: profile.aasw_membership_number, years_as_practitioner: null });
+                }
+                if (profile.ahpra_number) {
+                  merged.push({ body_name: 'AHPRA', registration_number: profile.ahpra_number, years_as_practitioner: null });
+                }
+                if (profile.swe_registration_number) {
+                  merged.push({ body_name: 'SWE', registration_number: profile.swe_registration_number, years_as_practitioner: null });
+                }
+                for (const r of registrations) {
+                  if (!merged.some(m => m.body_name.toUpperCase() === r.body_name.toUpperCase())) {
+                    merged.push(r);
+                  }
+                }
+
+                if (merged.length === 0) return null;
+                return (
+                  <Card id="registrations" className="scroll-mt-32">
+                    <CardHeader><CardTitle className="text-lg">Registrations</CardTitle></CardHeader>
+                    <CardContent>
+                      <ul className="text-sm text-foreground/80 space-y-1">
+                        {merged.map((r, i) => (
+                          <li key={`${r.body_name}-${i}`}>
+                            <span className="font-medium">{formatBody(r.body_name)}</span>
+                            {r.registration_number ? <span className="text-muted-foreground"> · {r.registration_number}</span> : null}
+                            {r.years_as_practitioner ? <span className="text-muted-foreground"> · {r.years_as_practitioner} yrs</span> : null}
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                );
+              })()}
 
               {user && myBookings.length > 0 && (
                 <Card id="your-bookings" className="scroll-mt-32">
