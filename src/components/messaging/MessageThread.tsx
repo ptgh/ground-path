@@ -93,7 +93,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
 
       const newMsg: Message = {
         ...payload,
-        sender_name: payload.sender_id === user?.id ? (profile?.display_name || 'You') : conversation.other_party_name,
+        sender_name: payload.sender_id === user?.id ? (profile?.display_name || 'You') : otherPartyShortName,
         _status: payload.sender_id === user?.id ? 'sent' : 'read',
       };
 
@@ -330,11 +330,11 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
                   <Avatar className="h-9 w-9">
                     <AvatarImage src={conversation.other_party_avatar} />
                     <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                      {(otherPartyName || '?')[0]?.toUpperCase()}
+                      {(otherPartyShortName || '?')[0]?.toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="text-left min-w-0">
-                    <h3 className="text-sm font-semibold truncate">{otherPartyName}</h3>
+                    <h3 className="text-sm font-semibold truncate">{otherPartyShortName}</h3>
                     <Badge variant="outline" className="h-4 mt-0.5 px-1.5 text-[9px] border-sage-300 text-sage-700 font-normal">
                       Client · click for details
                     </Badge>
@@ -348,11 +348,11 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
             <Avatar className="h-9 w-9">
               <AvatarImage src={conversation.other_party_avatar} />
               <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                {(otherPartyName || '?')[0]?.toUpperCase()}
+                {(otherPartyShortName || '?')[0]?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-semibold truncate">{otherPartyName}</h3>
+              <h3 className="text-sm font-semibold truncate">{otherPartyShortName}</h3>
               <Badge variant="outline" className="h-4 mt-0.5 px-1.5 text-[9px] border-primary/30 text-primary font-normal">
                 {otherPartyRole === 'practitioner' ? 'Practitioner' : 'Client'}
               </Badge>
@@ -376,7 +376,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
           <MessageExportMenu
             messages={messages}
             ownerName={profile?.display_name || 'You'}
-            otherPartyName={otherPartyName}
+            otherPartyShortName={otherPartyShortName}
             isSelfConversation={isSelf}
           />
         </div>
@@ -420,7 +420,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
               <>
                 <ShieldCheck className="h-8 w-8 text-sage-600/40 mb-2" />
                 <p className="text-sm text-muted-foreground">No messages yet. Start the conversation!</p>
-                <p className="text-[11px] text-muted-foreground/70 mt-1">Messages are private between you and {otherPartyName}.</p>
+                <p className="text-[11px] text-muted-foreground/70 mt-1">Messages are private between you and {otherPartyShortName}.</p>
               </>
             )}
           </div>
@@ -441,7 +441,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
                   <div key={msg.id} className={`flex flex-col mb-2 group ${isOwn ? 'items-end' : 'items-start'}`}>
                     {showName && (
                       <span className={`text-[10px] font-medium text-muted-foreground mb-0.5 px-1 ${isOwn ? 'text-right' : 'text-left'}`}>
-                        {isSelf ? 'Note' : (isOwn ? 'You' : (conversation.other_party_name || msg.sender_name || 'Client'))}
+                        {isSelf ? 'Note' : (isOwn ? 'You' : (otherPartyShortName || msg.sender_name || 'Client'))}
                       </span>
                     )}
                     <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
