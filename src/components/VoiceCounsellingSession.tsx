@@ -44,6 +44,16 @@ const COUNSELLORS: CounsellorPersona[] = [
   },
 ];
 
+// Focus topics — pre-frame the session so the counsellor opens with relevant context
+const FOCUS_TOPICS: { id: string; label: string; icon: typeof Heart; prompt: string }[] = [
+  { id: 'open', label: 'Just talk', icon: Sparkles, prompt: 'The user wants an open, exploratory conversation. Begin by gently asking what is on their mind today.' },
+  { id: 'anxiety', label: 'Anxiety', icon: Brain, prompt: 'The user wants to talk about anxiety. Open with warmth and validate that anxiety is common and manageable. Use grounding techniques if helpful.' },
+  { id: 'low-mood', label: 'Low mood', icon: CloudRain, prompt: 'The user wants to talk about low mood or sadness. Open with empathy, validate their feelings, and gently explore what has been going on.' },
+  { id: 'relationships', label: 'Relationships', icon: Heart, prompt: 'The user wants to talk about a relationship — partner, family, or friend. Open with curiosity and a non-judgemental stance.' },
+  { id: 'work-stress', label: 'Work / study', icon: Briefcase, prompt: 'The user wants to talk about work or study stress. Open by asking what is feeling most overwhelming right now.' },
+  { id: 'grief', label: 'Grief or loss', icon: Users, prompt: 'The user wants to talk about grief or loss. Open with deep empathy, allow space, and avoid rushing toward solutions.' },
+];
+
 // Countries kept for future admin toggle - currently AU only
 const COUNTRIES: { value: Country; label: string }[] = [
   { value: "AU", label: "Australia" },
