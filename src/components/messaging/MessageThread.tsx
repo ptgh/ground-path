@@ -31,6 +31,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [showResourceForm, setShowResourceForm] = useState(false);
+  const [showAIAssist, setShowAIAssist] = useState(false);
   
   const [deletingId, setDeletingId] = useState<string | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,10 +39,16 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messageIdsRef = useRef<Set<string>>(new Set());
+  const inputRef = useRef<HTMLInputElement>(null);
   const { user, profile } = useAuth();
 
+  const isSelf = conversation.user_id === conversation.practitioner_id;
   const isPractitioner = user?.id === conversation.practitioner_id;
-  const receiverId = isPractitioner ? conversation.user_id : conversation.practitioner_id;
+  const receiverId = isSelf
+    ? user?.id || conversation.user_id
+    : isPractitioner ? conversation.user_id : conversation.practitioner_id;
+  const otherPartyName = isSelf ? 'Personal Notes' : (conversation.other_party_name || 'Conversation');
+  const otherPartyRole = conversation.other_party_role || (isPractitioner ? 'client' : 'practitioner');
 
   const { othersTyping, sendTyping, stopTyping } = useTypingIndicator(conversation.id, user?.id);
 
