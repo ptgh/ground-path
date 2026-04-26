@@ -1063,6 +1063,8 @@ export type Database = {
     Views: {
       profiles_public: {
         Row: {
+          aasw_membership_number: string | null
+          ahpra_number: string | null
           ahpra_profession: string | null
           avatar_url: string | null
           bio: string | null
@@ -1073,13 +1075,18 @@ export type Database = {
           profession: string | null
           professional_verified: boolean | null
           qualifications: string[] | null
+          registration_body: string | null
           registration_country: string | null
+          registration_number: string | null
           specializations: string[] | null
+          swe_registration_number: string | null
           user_id: string | null
           user_type: string | null
           years_experience: number | null
         }
         Insert: {
+          aasw_membership_number?: string | null
+          ahpra_number?: string | null
           ahpra_profession?: string | null
           avatar_url?: string | null
           bio?: string | null
@@ -1090,13 +1097,18 @@ export type Database = {
           profession?: string | null
           professional_verified?: boolean | null
           qualifications?: string[] | null
+          registration_body?: string | null
           registration_country?: string | null
+          registration_number?: string | null
           specializations?: string[] | null
+          swe_registration_number?: string | null
           user_id?: string | null
           user_type?: string | null
           years_experience?: number | null
         }
         Update: {
+          aasw_membership_number?: string | null
+          ahpra_number?: string | null
           ahpra_profession?: string | null
           avatar_url?: string | null
           bio?: string | null
@@ -1107,8 +1119,11 @@ export type Database = {
           profession?: string | null
           professional_verified?: boolean | null
           qualifications?: string[] | null
+          registration_body?: string | null
           registration_country?: string | null
+          registration_number?: string | null
           specializations?: string[] | null
+          swe_registration_number?: string | null
           user_id?: string | null
           user_type?: string | null
           years_experience?: number | null
