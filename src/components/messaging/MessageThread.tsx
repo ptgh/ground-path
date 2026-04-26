@@ -376,7 +376,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
           <MessageExportMenu
             messages={messages}
             ownerName={profile?.display_name || 'You'}
-            otherPartyShortName={otherPartyShortName}
+            otherPartyName={otherPartyShortName}
             isSelfConversation={isSelf}
           />
         </div>
