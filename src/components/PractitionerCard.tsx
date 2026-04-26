@@ -138,11 +138,11 @@ export const PractitionerList = () => {
     const fetchPractitioners = async () => {
       try {
         const { data, error } = await supabase
-          .from('profiles')
+          // Read from the public-safe view; the underlying profiles table
+          // is now locked down by RLS to protect practitioner PII.
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .from('profiles_public' as any)
           .select('user_id, display_name, avatar_url, profession, bio, specializations, practice_location, professional_verified, aasw_membership_number, swe_registration_number, ahpra_number')
-          .eq('user_type', 'practitioner')
-          .eq('directory_approved', true)
-          .in('verification_status', ['verified', 'pending_review'])
           .order('professional_verified', { ascending: false });
 
         if (!error && data) {
