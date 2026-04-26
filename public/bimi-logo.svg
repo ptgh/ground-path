@@ -4,6 +4,9 @@
   Required by the BIMI specification (see https://bimigroup.org/).
   Hosted at: https://groundpath.com.au/bimi-logo.svg
   Referenced from DNS TXT: default._bimi.groundpath.com.au
+
+  Path mirrors src/components/Logo.tsx (viewBox 0 0 40 40) scaled 12.8x
+  into the BIMI-required 512x512 viewBox, centered with safe padding.
 -->
 <svg xmlns="http://www.w3.org/2000/svg"
      version="1.2"
@@ -11,10 +14,12 @@
      viewBox="0 0 512 512">
   <title>groundpath</title>
   <rect width="512" height="512" fill="#ffffff"/>
-  <path d="M256 77 C 358 102, 410 205, 384 307 C 358 384, 282 410, 205 384 C 154 358, 128 307, 154 256 C 167 230, 192 218, 218 230 C 230 237, 237 243, 230 250"
-        fill="none"
-        stroke="#7B9B85"
-        stroke-width="32"
-        stroke-linecap="round"
-        stroke-linejoin="round"/>
+  <g transform="translate(256,256) scale(8.5) translate(-20,-20)">
+    <path d="M20 6 C 28 8, 32 16, 30 24 C 28 30, 22 32, 16 30 C 12 28, 10 24, 12 20 C 13 18, 15 17, 17 18 C 18 18.5, 18.5 19, 18 19.5"
+          fill="none"
+          stroke="#7B9B85"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+  </g>
 </svg>
