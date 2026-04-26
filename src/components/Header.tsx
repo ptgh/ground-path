@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Menu, X, User, LogOut, FileText, BookOpen, LayoutDashboard, Newspaper, MessageSquare } from 'lucide-react';
+import { Menu, X, User, LogOut, FileText, BookOpen, LayoutDashboard, Newspaper, MessageSquare, Mic } from 'lucide-react';
 import WeatherEncouragement from './header/WeatherEncouragement';
 import { useAuth } from '@/hooks/useAuth';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
@@ -333,6 +333,21 @@ const Header = () => {
                     {item.label}
                   </button>
                 ))}
+                {/* AI Counselling — subtle but discoverable */}
+                <button
+                  onClick={() => navigate('/voice-session')}
+                  className="group relative flex items-center gap-1.5 text-primary/90 hover:text-primary transition-colors font-medium px-3 py-2 rounded-md hover:bg-primary/10 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark"
+                  title="Free, private AI voice counselling — available 24/7"
+                  aria-label="Start a free AI counselling session"
+                >
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-60 animate-ping" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+                  </span>
+                  <Mic className="h-3.5 w-3.5" />
+                  AI Counselling
+                  <span className="hidden xl:inline text-[10px] uppercase tracking-wider text-primary/60 ml-0.5">Free</span>
+                </button>
                 {/* Nav items for logged-in users on public pages */}
                 {isLoggedIn && (
                   <>
@@ -438,6 +453,14 @@ const Header = () => {
                       {item.label}
                     </button>
                   ))}
+                  <button
+                    onClick={() => { navigate('/voice-session'); setIsMenuOpen(false); }}
+                    className="flex items-center gap-2 text-left text-primary hover:text-primary transition-colors font-medium px-3 py-2.5 rounded-md hover:bg-primary/10 text-sm"
+                  >
+                    <Mic className="h-4 w-4" />
+                    AI Counselling
+                    <span className="ml-auto text-[10px] uppercase tracking-wider text-primary/60">Free</span>
+                  </button>
                   {isLoggedIn && (
                     <>
                       <button
