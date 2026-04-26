@@ -18,6 +18,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { shortName } from '@/lib/displayName';
 
 interface MessageThreadProps {
   conversation: Conversation;
@@ -47,8 +48,14 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
   const receiverId = isSelf
     ? user?.id || conversation.user_id
     : isPractitioner ? conversation.user_id : conversation.practitioner_id;
-  const otherPartyName = isSelf ? 'Personal Notes' : (conversation.other_party_name || 'Conversation');
   const otherPartyRole = conversation.other_party_role || (isPractitioner ? 'client' : 'practitioner');
+  const otherPartyShortName = isSelf
+    ? 'Personal Notes'
+    : shortName({
+        displayName: conversation.other_party_display_name,
+        userId: conversation.other_party_user_id || conversation.id,
+        role: otherPartyRole,
+      });
 
   const { othersTyping, sendTyping, stopTyping } = useTypingIndicator(conversation.id, user?.id);
 
