@@ -550,7 +550,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
             <Paperclip className="h-4 w-4" />
           </Button>
           <VoiceRecorder onRecorded={handleVoiceRecorded} disabled={uploading || sending} />
-          {isPractitioner && (
+          {isPractitioner && !isSelf && (
             <Button
               variant="ghost"
               size="icon"
@@ -563,7 +563,8 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
             </Button>
           )}
           <Input
-            placeholder="Type a message..."
+            ref={inputRef}
+            placeholder={isSelf ? 'Add a note…' : 'Type a message...'}
             value={newMessage}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
@@ -572,7 +573,7 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
           />
           <Button
             size="icon"
-            className="h-9 w-9 bg-primary hover:bg-primary/90 text-white"
+            className={`h-9 w-9 text-white ${isSelf ? 'bg-amber-500 hover:bg-amber-600' : 'bg-primary hover:bg-primary/90'}`}
             onClick={() => handleSend()}
             disabled={!newMessage.trim() || uploading}
           >
@@ -580,6 +581,17 @@ export const MessageThread = ({ conversation, onBack }: MessageThreadProps) => {
           </Button>
         </div>
       </div>
+      </div>
+      {showAIAssist && isPractitioner && !isSelf && (
+        <div className="hidden md:flex">
+          <AIAssistPanel
+            messages={messages}
+            isPractitioner={isPractitioner}
+            onClose={() => setShowAIAssist(false)}
+            onInsertDraft={(text) => { setNewMessage(text); inputRef.current?.focus(); }}
+          />
+        </div>
+      )}
     </div>
   );
 };
