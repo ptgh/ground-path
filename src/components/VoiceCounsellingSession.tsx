@@ -319,9 +319,33 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
     userInitiatedEndRef.current = true;
     clearConnectionTimeout();
     clearKeepalive();
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     try { await conversation.endSession(); } catch { /* ignore cleanup error */ }
-    onClose();
-  }, [conversation, onClose, clearConnectionTimeout, clearKeepalive]);
+    // If session had real engagement (>30s), offer reflection screen; otherwise close.
+    if (wasConnectedRef.current && elapsedSeconds >= 30) {
+      setShowReflection(true);
+    } else {
+      onClose();
+    }
+  }, [conversation, onClose, clearConnectionTimeout, clearKeepalive, elapsedSeconds]);
+
+  const saveReflection = useCallback(() => {
+    try {
+      const key = 'groundpath_ai_reflections';
+      const existing = JSON.parse(localStorage.getItem(key) || '[]');
+      const entry = {
+        id: `r-${Date.now()}`,
+        date: new Date().toISOString(),
+        counsellor: selectedCounsellor?.name,
+        topic: focusTopic.label,
+        durationSeconds: elapsedSeconds,
+        note: reflectionNote.trim(),
+      };
+      existing.unshift(entry);
+      // Keep last 25 reflections only
+      localStorage.setItem(key, JSON.stringify(existing.slice(0, 25)));
+    } catch { /* ignore storage failure */ }
+  }, [reflectionNote, selectedCounsellor, focusTopic, elapsedSeconds]);
 
   const retryConnection = useCallback(() => {
     sessionStartedRef.current = false;
@@ -338,6 +362,7 @@ const VoiceCounsellingSession = ({ onClose, initialCountry }: VoiceCounsellingSe
       mountedRef.current = false;
       clearConnectionTimeout();
       clearKeepalive();
+      if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     };
   }, [clearConnectionTimeout, clearKeepalive]);
 
