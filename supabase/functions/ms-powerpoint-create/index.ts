@@ -80,7 +80,7 @@ Deno.serve(async (req: Request) => {
       },
       req,
     );
-    await appendOpsLog(guard.caller!, {
+    fireAndForgetOpsLog(guard.caller!.serviceClient, guard.caller!, {
       function_name: 'ms-powerpoint-create',
       action: 'create_pptx',
       target: fullPath,
@@ -105,7 +105,7 @@ Deno.serve(async (req: Request) => {
       },
       req,
     );
-    await appendOpsLog(guard.caller!, {
+    fireAndForgetOpsLog(guard.caller!.serviceClient, guard.caller!, {
       function_name: 'ms-powerpoint-create',
       action: 'create_pptx',
       target: fullPath,
