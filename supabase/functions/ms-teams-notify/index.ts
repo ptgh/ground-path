@@ -18,6 +18,7 @@ import {
   jsonResponse,
   requireM365Caller,
   writeAudit,
+  appendOpsLog,
   gatewayFetch,
 } from '../_shared/m365.ts';
 
@@ -72,6 +73,7 @@ Deno.serve(async (req: Request) => {
     }
   }
 
+  const startedAt = Date.now();
   try {
     const payload = {
       subject: subject ?? null,
@@ -85,6 +87,7 @@ Deno.serve(async (req: Request) => {
       { method: 'POST', body: JSON.stringify(payload) },
     );
 
+    const duration = Date.now() - startedAt;
     await writeAudit(
       guard.caller!.serviceClient,
       guard.caller!,
@@ -93,14 +96,23 @@ Deno.serve(async (req: Request) => {
         action: 'post_message',
         target: `${teamId}/${channelId}`,
         status: 'success',
-        request_metadata: { messageId: result.id, importance },
+        request_metadata: { messageId: result.id, importance, duration_ms: duration },
       },
       req,
     );
+    await appendOpsLog(guard.caller!, {
+      function_name: 'ms-teams-notify',
+      action: 'post_message',
+      target: `${teamId}/${channelId}`,
+      status: 'success',
+      duration_ms: duration,
+      notes: `messageId=${result.id} importance=${importance}${subject ? ` subject="${subject}"` : ''}`,
+    });
 
     return jsonResponse({ ok: true, messageId: result.id, webUrl: result.webUrl ?? null });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
+    const duration = Date.now() - startedAt;
     await writeAudit(
       guard.caller!.serviceClient,
       guard.caller!,
@@ -113,6 +125,14 @@ Deno.serve(async (req: Request) => {
       },
       req,
     );
+    await appendOpsLog(guard.caller!, {
+      function_name: 'ms-teams-notify',
+      action: 'post_message',
+      target: `${teamId}/${channelId}`,
+      status: 'error',
+      duration_ms: duration,
+      notes: msg.slice(0, 400),
+    });
     return jsonResponse({ error: msg }, 502);
   }
 });
