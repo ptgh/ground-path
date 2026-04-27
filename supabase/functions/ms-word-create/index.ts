@@ -14,6 +14,7 @@ import {
   jsonResponse,
   requireM365Caller,
   writeAudit,
+  appendOpsLog,
   gatewayUrl,
   gatewayHeaders,
 } from '../_shared/m365.ts';
@@ -42,6 +43,7 @@ Deno.serve(async (req: Request) => {
   const finalName = filename.endsWith('.docx') ? filename : `${filename}.docx`;
   const fullPath = `${cleanFolder}/${finalName}`;
 
+  const startedAt = Date.now();
   try {
     const docxBytes = buildDocx(title, bodyMarkdown);
 
@@ -58,6 +60,7 @@ Deno.serve(async (req: Request) => {
     if (!res.ok) throw new Error(`OneDrive upload failed [${res.status}]: ${respText.slice(0, 300)}`);
     const item = JSON.parse(respText) as { id: string; webUrl: string; name: string };
 
+    const duration = Date.now() - startedAt;
     await writeAudit(
       guard.caller!.serviceClient,
       guard.caller!,
@@ -66,14 +69,23 @@ Deno.serve(async (req: Request) => {
         action: 'create_docx',
         target: fullPath,
         status: 'success',
-        request_metadata: { itemId: item.id, bytes: docxBytes.length },
+        request_metadata: { itemId: item.id, bytes: docxBytes.length, duration_ms: duration },
       },
       req,
     );
+    await appendOpsLog(guard.caller!, {
+      function_name: 'ms-word-create',
+      action: 'create_docx',
+      target: fullPath,
+      status: 'success',
+      duration_ms: duration,
+      notes: `itemId=${item.id} bytes=${docxBytes.length} title="${title}"`,
+    });
 
     return jsonResponse({ ok: true, itemId: item.id, name: item.name, webUrl: item.webUrl, path: fullPath });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
+    const duration = Date.now() - startedAt;
     await writeAudit(
       guard.caller!.serviceClient,
       guard.caller!,
@@ -86,6 +98,14 @@ Deno.serve(async (req: Request) => {
       },
       req,
     );
+    await appendOpsLog(guard.caller!, {
+      function_name: 'ms-word-create',
+      action: 'create_docx',
+      target: fullPath,
+      status: 'error',
+      duration_ms: duration,
+      notes: msg.slice(0, 400),
+    });
     return jsonResponse({ error: msg }, 502);
   }
 });
