@@ -221,10 +221,61 @@ export async function writeAudit(
  *  OpsLog (Excel) append — canonical audit destination for
  *  Teams / Word / PowerPoint functions. Failures are swallowed
  *  so OpsLog problems never break the user's actual request.
+ *
+ *  Config-driven (read from m365_integration_config, cached 5 min):
+ *    - opslog.enabled    ('true'|'false') master kill switch
+ *    - opslog.file_path  OneDrive path to workbook
+ *    - opslog.table_name Excel table name within workbook
+ *
  *  Schema (OpsLog table columns, in order):
  *    timestamp | function_name | action | target | status | caller | duration_ms | notes
  * ============================================================ */
+
+interface OpsLogConfig {
+  enabled: boolean;
+  filePath: string;
+  tableName: string;
+}
+
+const OPSLOG_CACHE_TTL_MS = 5 * 60 * 1000;
+let opsLogConfigCache: { value: OpsLogConfig; expiresAt: number } | null = null;
+
+const OPSLOG_DEFAULTS: OpsLogConfig = {
+  enabled: true,
+  filePath: 'Groundpath/Logs/ops.xlsx',
+  tableName: 'OpsLog',
+};
+
+async function loadOpsLogConfig(serviceClient: SupabaseClient): Promise<OpsLogConfig> {
+  const now = Date.now();
+  if (opsLogConfigCache && opsLogConfigCache.expiresAt > now) {
+    return opsLogConfigCache.value;
+  }
+  try {
+    const { data, error } = await serviceClient
+      .from('m365_integration_config')
+      .select('key, value')
+      .in('key', ['opslog.enabled', 'opslog.file_path', 'opslog.table_name']);
+    if (error) throw error;
+    const map = new Map((data ?? []).map((r: { key: string; value: string }) => [r.key, r.value]));
+    const value: OpsLogConfig = {
+      enabled: (map.get('opslog.enabled') ?? 'true').toLowerCase() !== 'false',
+      filePath: map.get('opslog.file_path') ?? OPSLOG_DEFAULTS.filePath,
+      tableName: map.get('opslog.table_name') ?? OPSLOG_DEFAULTS.tableName,
+    };
+    opsLogConfigCache = { value, expiresAt: now + OPSLOG_CACHE_TTL_MS };
+    return value;
+  } catch (err) {
+    console.error('loadOpsLogConfig failed, using defaults (non-fatal):', err);
+    // Cache defaults briefly so we don't hammer the table while it's down
+    const value = OPSLOG_DEFAULTS;
+    opsLogConfigCache = { value, expiresAt: now + 30_000 };
+    return value;
+  }
+}
+
 export async function appendOpsLog(
+  serviceClient: SupabaseClient,
   caller: { email?: string | null } | null,
   entry: {
     function_name: string;
@@ -236,9 +287,12 @@ export async function appendOpsLog(
   },
 ): Promise<void> {
   try {
+    const cfg = await loadOpsLogConfig(serviceClient);
+    if (!cfg.enabled) return; // kill switch
+    const cleanPath = cfg.filePath.replace(/^\/+/, '');
     await gatewayFetch(
       'microsoft_excel',
-      `/me/drive/root:/Groundpath/Logs/ops.xlsx:/workbook/tables/OpsLog/rows/add`,
+      `/me/drive/root:/${encodeURI(cleanPath)}:/workbook/tables/${encodeURIComponent(cfg.tableName)}/rows/add`,
       {
         method: 'POST',
         body: JSON.stringify({
