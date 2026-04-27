@@ -217,6 +217,49 @@ export async function writeAudit(
   }
 }
 
+/* ============================================================
+ *  OpsLog (Excel) append — canonical audit destination for
+ *  Teams / Word / PowerPoint functions. Failures are swallowed
+ *  so OpsLog problems never break the user's actual request.
+ *  Schema (OpsLog table columns, in order):
+ *    timestamp | function_name | action | target | status | caller | duration_ms | notes
+ * ============================================================ */
+export async function appendOpsLog(
+  caller: { email?: string | null } | null,
+  entry: {
+    function_name: string;
+    action: string;
+    target: string;
+    status: 'success' | 'error' | 'denied';
+    duration_ms?: number;
+    notes?: string;
+  },
+): Promise<void> {
+  try {
+    await gatewayFetch(
+      'microsoft_excel',
+      `/me/drive/root:/Groundpath/Logs/ops.xlsx:/workbook/tables/OpsLog/rows/add`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          values: [[
+            new Date().toISOString(),
+            entry.function_name,
+            entry.action,
+            entry.target,
+            entry.status,
+            caller?.email ?? 'system',
+            entry.duration_ms ?? 0,
+            entry.notes ?? '',
+          ]],
+        }),
+      },
+    );
+  } catch (err) {
+    console.error('appendOpsLog failed (non-fatal):', err);
+  }
+}
+
 async function sha256(input: string): Promise<string | null> {
   if (!input) return null;
   const data = new TextEncoder().encode(input);
