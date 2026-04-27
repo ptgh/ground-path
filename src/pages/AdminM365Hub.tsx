@@ -433,6 +433,35 @@ const AdminM365Hub = () => {
                 </pre>
               )}
             </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3 border-b border-border/60 pb-2">
+                <h3 className="text-sm font-semibold">Teams — ms-teams-notify</h3>
+                <span className="text-xs text-muted-foreground">
+                  Posts to <code className="text-xs px-1 bg-muted rounded">teams.alerts</code> (ops-alerts channel)
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button size="sm" onClick={runTeamsTest} disabled={teamsTesting}>
+                  {teamsTesting
+                    ? <><Loader2 className="h-3 w-3 mr-2 animate-spin" /> Running…</>
+                    : <><FlaskConical className="h-3 w-3 mr-2" /> Test channel post</>}
+                </Button>
+                {teamsResult && (
+                  <span className="text-xs text-muted-foreground flex items-center gap-2">
+                    {teamsResult.ok
+                      ? <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                      : <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                    Last run {new Date(teamsResult.at).toLocaleString('en-AU')} · HTTP {teamsResult.status ?? 'n/a'} · {teamsResult.ok ? 'success' : 'failed'}
+                  </span>
+                )}
+              </div>
+              {teamsResult && (
+                <pre className="text-xs p-3 rounded-md border border-border/60 bg-muted/40 overflow-x-auto whitespace-pre-wrap break-words max-h-96">
+{JSON.stringify({ status: teamsResult.status, ok: teamsResult.ok, body: teamsResult.body }, null, 2)}
+                </pre>
+              )}
+            </div>
           </CardContent>
         </Card>
 
