@@ -148,6 +148,51 @@ const AdminM365Hub = () => {
     finally { setInboxLoading(false); }
   };
 
+  const runExcelTest = async () => {
+    setExcelTesting(true);
+    const nowIso = new Date().toISOString();
+    const callerEmail = user?.email ?? 'unknown';
+    const payload = {
+      filePath: 'Groundpath/Logs/ops.xlsx',
+      tableName: 'OpsLog',
+      values: [[
+        nowIso,
+        'test',
+        'smoke_test',
+        'Groundpath/Logs/ops.xlsx#OpsLog',
+        'success',
+        callerEmail,
+        0,
+        `Smoke test from AdminM365Hub at ${nowIso}`,
+      ]],
+    };
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const url = `https://vzwhccciarvirzqmvldl.supabase.co/functions/v1/ms-excel-log`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token ?? ''}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? '',
+        },
+        body: JSON.stringify(payload),
+      });
+      const text = await res.text();
+      let parsed: unknown = text;
+      try { parsed = JSON.parse(text); } catch { /* keep raw text */ }
+      setExcelResult({ at: nowIso, ok: res.ok, status: res.status, body: parsed });
+      if (res.ok) toast.success('OpsLog append succeeded');
+      else toast.error(`OpsLog append failed (HTTP ${res.status})`);
+    } catch (e) {
+      setExcelResult({ at: nowIso, ok: false, status: null, body: { error: e instanceof Error ? e.message : String(e) } });
+      toast.error('Network error invoking ms-excel-log');
+    } finally {
+      setExcelTesting(false);
+    }
+  };
+
+
   useEffect(() => {
     if (authorised) { loadHealth(); loadFolder(); loadKbStatus(); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
