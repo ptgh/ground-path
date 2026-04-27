@@ -52,6 +52,7 @@ const Book = lazy(() => import("./pages/Book"));
 const JoinSession = lazy(() => import("./pages/JoinSession"));
 const BillingPage = lazy(() => import("./pages/BillingPage"));
 const AdminMailingList = lazy(() => import("./pages/AdminMailingList"));
+const AdminM365Hub = lazy(() => import("./pages/AdminM365Hub"));
 const PractitionerProfile = lazy(() => import("./pages/PractitionerProfile"));
 const SecureResources = lazy(() => import("./pages/SecureResources"));
 
@@ -211,6 +212,7 @@ const App = () => {
                 <Route path="/practitioner/dashboard" element={<VerifiedPractitionerRoute><Dashboard /></VerifiedPractitionerRoute>} />
                 <Route path="/practitioner/messages" element={<VerifiedPractitionerRoute><Messages /></VerifiedPractitionerRoute>} />
                 <Route path="/practitioner/admin/mailing-list" element={<VerifiedPractitionerRoute><AdminMailingList /></VerifiedPractitionerRoute>} />
+                <Route path="/practitioner/admin/m365" element={<VerifiedPractitionerRoute><AdminM365Hub /></VerifiedPractitionerRoute>} />
                 <Route path="/messages" element={<AuthenticatedRoute><Messages /></AuthenticatedRoute>} />
                 <Route path="/dashboard" element={<AuthenticatedRoute><ClientDashboard /></AuthenticatedRoute>} />
                 <Route path="/session/:bookingId" element={<AuthenticatedRoute><JoinSession /></AuthenticatedRoute>} />
