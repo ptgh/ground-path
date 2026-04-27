@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   CheckCircle2, XCircle, AlertTriangle, RefreshCw, FolderTree, Search,
-  Mail, Loader2, BookOpen, ExternalLink, Database,
+  Mail, Loader2, BookOpen, ExternalLink, Database, FlaskConical,
 } from 'lucide-react';
 
 interface ConnectorStatus {
