@@ -21,13 +21,24 @@ import {
   gatewayFetch,
 } from '../_shared/m365.ts';
 
+/**
+ * Body accepts either explicit teamId/channelId, OR a configKey prefix that
+ * resolves both from the m365_integration_config table. Example:
+ *   { configKey: 'teams.alerts', subject, bodyHtml }
+ * Resolves to keys `teams.alerts.team_id` and `teams.alerts.channel_id`.
+ * This keeps channel routing out of the codebase and editable via the DB.
+ */
 const BodySchema = z.object({
-  teamId: z.string().min(1).max(120),
-  channelId: z.string().min(1).max(120),
+  teamId: z.string().min(1).max(120).optional(),
+  channelId: z.string().min(1).max(200).optional(),
+  configKey: z.string().min(1).max(120).optional(),
   subject: z.string().max(200).optional(),
   bodyHtml: z.string().min(1).max(20000),
   importance: z.enum(['normal', 'high', 'urgent']).default('normal'),
-});
+}).refine(
+  (v) => (v.teamId && v.channelId) || v.configKey,
+  { message: 'Provide either { teamId + channelId } or { configKey }' },
+);
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders });
