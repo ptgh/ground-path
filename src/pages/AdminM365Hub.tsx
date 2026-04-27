@@ -524,11 +524,43 @@ const AdminM365Hub = () => {
                 </pre>
               )}
             </div>
+
+            {([
+              { key: 'word', title: 'Word — ms-word-create', sub: <>Uploads to <code className="text-xs px-1 bg-muted rounded">Groundpath/Generated/SmokeTests/</code></>, label: 'Test docx create', busy: wordTesting, result: wordResult, run: runWordTest },
+              { key: 'ppt', title: 'PowerPoint — ms-powerpoint-create', sub: <>Uploads to <code className="text-xs px-1 bg-muted rounded">Groundpath/Generated/SmokeTests/</code></>, label: 'Test pptx create', busy: pptTesting, result: pptResult, run: runPptTest },
+            ] as const).map((s) => (
+              <div key={s.key} className="space-y-3">
+                <div className="flex items-center justify-between gap-3 border-b border-border/60 pb-2">
+                  <h3 className="text-sm font-semibold">{s.title}</h3>
+                  <span className="text-xs text-muted-foreground">{s.sub}</span>
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button size="sm" onClick={s.run} disabled={s.busy}>
+                    {s.busy
+                      ? <><Loader2 className="h-3 w-3 mr-2 animate-spin" /> Running…</>
+                      : <><FlaskConical className="h-3 w-3 mr-2" /> {s.label}</>}
+                  </Button>
+                  {s.result && (
+                    <span className="text-xs text-muted-foreground flex items-center gap-2">
+                      {s.result.ok
+                        ? <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                        : <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                      Last run {new Date(s.result.at).toLocaleString('en-AU')} · HTTP {s.result.status ?? 'n/a'} · {s.result.ok ? 'success' : 'failed'}
+                    </span>
+                  )}
+                </div>
+                {s.result && (
+                  <pre className="text-xs p-3 rounded-md border border-border/60 bg-muted/40 overflow-x-auto whitespace-pre-wrap break-words max-h-96">
+{JSON.stringify({ status: s.result.status, ok: s.result.ok, body: s.result.body }, null, 2)}
+                  </pre>
+                )}
+              </div>
+            ))}
           </CardContent>
         </Card>
 
         <p className="text-xs text-muted-foreground text-center pt-4">
-          All actions on this page are logged to the M365 audit trail. PowerPoint generation, Word drafting, and Excel snapshots ship in the next iteration.
+          All M365 actions write to the m365_audit_log table AND to the Excel OpsLog (Groundpath/Logs/ops.xlsx#OpsLog) for cross-system forensic visibility.
         </p>
       </main>
       <Footer />
