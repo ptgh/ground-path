@@ -81,7 +81,7 @@ Deno.serve(async (req: Request) => {
 
     const result = await gatewayFetch<{ id: string; webUrl?: string }>(
       'microsoft_teams',
-      `/teams/${teamId}/channels/${channelId}/messages`,
+      `/teams/${encodeURIComponent(teamId!)}/channels/${encodeURIComponent(channelId!)}/messages`,
       { method: 'POST', body: JSON.stringify(payload) },
     );
 
