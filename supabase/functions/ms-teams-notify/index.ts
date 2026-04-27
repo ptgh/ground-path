@@ -21,13 +21,24 @@ import {
   gatewayFetch,
 } from '../_shared/m365.ts';
 
+/**
+ * Body accepts either explicit teamId/channelId, OR a configKey prefix that
+ * resolves both from the m365_integration_config table. Example:
+ *   { configKey: 'teams.alerts', subject, bodyHtml }
+ * Resolves to keys `teams.alerts.team_id` and `teams.alerts.channel_id`.
+ * This keeps channel routing out of the codebase and editable via the DB.
+ */
 const BodySchema = z.object({
-  teamId: z.string().min(1).max(120),
-  channelId: z.string().min(1).max(120),
+  teamId: z.string().min(1).max(120).optional(),
+  channelId: z.string().min(1).max(200).optional(),
+  configKey: z.string().min(1).max(120).optional(),
   subject: z.string().max(200).optional(),
   bodyHtml: z.string().min(1).max(20000),
   importance: z.enum(['normal', 'high', 'urgent']).default('normal'),
-});
+}).refine(
+  (v) => (v.teamId && v.channelId) || v.configKey,
+  { message: 'Provide either { teamId + channelId } or { configKey }' },
+);
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders });
@@ -39,7 +50,27 @@ Deno.serve(async (req: Request) => {
   try { body = await req.json(); } catch { return jsonResponse({ error: 'Invalid JSON' }, 400); }
   const parsed = BodySchema.safeParse(body);
   if (!parsed.success) return jsonResponse({ error: parsed.error.flatten() }, 400);
-  const { teamId, channelId, subject, bodyHtml, importance } = parsed.data;
+  let { teamId, channelId } = parsed.data;
+  const { configKey, subject, bodyHtml, importance } = parsed.data;
+
+  // Resolve from config table when configKey is provided.
+  if (configKey && (!teamId || !channelId)) {
+    const teamKey = `${configKey}.team_id`;
+    const channelKey = `${configKey}.channel_id`;
+    const { data: rows, error: cfgErr } = await guard.caller!.serviceClient
+      .from('m365_integration_config')
+      .select('key, value')
+      .in('key', [teamKey, channelKey]);
+    if (cfgErr) return jsonResponse({ error: `Config lookup failed: ${cfgErr.message}` }, 500);
+    teamId = rows?.find((r) => r.key === teamKey)?.value;
+    channelId = rows?.find((r) => r.key === channelKey)?.value;
+    if (!teamId || !channelId) {
+      return jsonResponse(
+        { error: `Missing config rows for ${teamKey} and/or ${channelKey}` },
+        400,
+      );
+    }
+  }
 
   try {
     const payload = {
@@ -50,7 +81,7 @@ Deno.serve(async (req: Request) => {
 
     const result = await gatewayFetch<{ id: string; webUrl?: string }>(
       'microsoft_teams',
-      `/teams/${teamId}/channels/${channelId}/messages`,
+      `/teams/${encodeURIComponent(teamId!)}/channels/${encodeURIComponent(channelId!)}/messages`,
       { method: 'POST', body: JSON.stringify(payload) },
     );
 

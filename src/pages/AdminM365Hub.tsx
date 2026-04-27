@@ -69,13 +69,11 @@ const AdminM365Hub = () => {
   const [inboxLoading, setInboxLoading] = useState(false);
 
   // Integration smoke tests
+  type SmokeResult = { at: string; ok: boolean; status: number | null; body: unknown };
   const [excelTesting, setExcelTesting] = useState(false);
-  const [excelResult, setExcelResult] = useState<{
-    at: string;
-    ok: boolean;
-    status: number | null;
-    body: unknown;
-  } | null>(null);
+  const [excelResult, setExcelResult] = useState<SmokeResult | null>(null);
+  const [teamsTesting, setTeamsTesting] = useState(false);
+  const [teamsResult, setTeamsResult] = useState<SmokeResult | null>(null);
 
   // Authorisation gate
   useEffect(() => {
@@ -189,6 +187,41 @@ const AdminM365Hub = () => {
       toast.error('Network error invoking ms-excel-log');
     } finally {
       setExcelTesting(false);
+    }
+  };
+
+  const runTeamsTest = async () => {
+    setTeamsTesting(true);
+    const nowIso = new Date().toISOString();
+    const payload = {
+      configKey: 'teams.alerts',
+      subject: 'Smoke test',
+      bodyHtml: `<p>Test message from AdminM365Hub at ${nowIso}</p>`,
+      importance: 'normal' as const,
+    };
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const url = `https://vzwhccciarvirzqmvldl.supabase.co/functions/v1/ms-teams-notify`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token ?? ''}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? '',
+        },
+        body: JSON.stringify(payload),
+      });
+      const text = await res.text();
+      let parsed: unknown = text;
+      try { parsed = JSON.parse(text); } catch { /* keep raw */ }
+      setTeamsResult({ at: nowIso, ok: res.ok, status: res.status, body: parsed });
+      if (res.ok) toast.success('Teams channel post succeeded');
+      else toast.error(`Teams channel post failed (HTTP ${res.status})`);
+    } catch (e) {
+      setTeamsResult({ at: nowIso, ok: false, status: null, body: { error: e instanceof Error ? e.message : String(e) } });
+      toast.error('Network error invoking ms-teams-notify');
+    } finally {
+      setTeamsTesting(false);
     }
   };
 
@@ -397,6 +430,35 @@ const AdminM365Hub = () => {
               {excelResult && (
                 <pre className="text-xs p-3 rounded-md border border-border/60 bg-muted/40 overflow-x-auto whitespace-pre-wrap break-words max-h-96">
 {JSON.stringify({ status: excelResult.status, ok: excelResult.ok, body: excelResult.body }, null, 2)}
+                </pre>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3 border-b border-border/60 pb-2">
+                <h3 className="text-sm font-semibold">Teams — ms-teams-notify</h3>
+                <span className="text-xs text-muted-foreground">
+                  Posts to <code className="text-xs px-1 bg-muted rounded">teams.alerts</code> (ops-alerts channel)
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button size="sm" onClick={runTeamsTest} disabled={teamsTesting}>
+                  {teamsTesting
+                    ? <><Loader2 className="h-3 w-3 mr-2 animate-spin" /> Running…</>
+                    : <><FlaskConical className="h-3 w-3 mr-2" /> Test channel post</>}
+                </Button>
+                {teamsResult && (
+                  <span className="text-xs text-muted-foreground flex items-center gap-2">
+                    {teamsResult.ok
+                      ? <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                      : <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                    Last run {new Date(teamsResult.at).toLocaleString('en-AU')} · HTTP {teamsResult.status ?? 'n/a'} · {teamsResult.ok ? 'success' : 'failed'}
+                  </span>
+                )}
+              </div>
+              {teamsResult && (
+                <pre className="text-xs p-3 rounded-md border border-border/60 bg-muted/40 overflow-x-auto whitespace-pre-wrap break-words max-h-96">
+{JSON.stringify({ status: teamsResult.status, ok: teamsResult.ok, body: teamsResult.body }, null, 2)}
                 </pre>
               )}
             </div>
