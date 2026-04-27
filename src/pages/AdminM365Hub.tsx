@@ -190,6 +190,41 @@ const AdminM365Hub = () => {
     }
   };
 
+  const runTeamsTest = async () => {
+    setTeamsTesting(true);
+    const nowIso = new Date().toISOString();
+    const payload = {
+      configKey: 'teams.alerts',
+      subject: 'Smoke test',
+      bodyHtml: `<p>Test message from AdminM365Hub at ${nowIso}</p>`,
+      importance: 'normal' as const,
+    };
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const url = `https://vzwhccciarvirzqmvldl.supabase.co/functions/v1/ms-teams-notify`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token ?? ''}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? '',
+        },
+        body: JSON.stringify(payload),
+      });
+      const text = await res.text();
+      let parsed: unknown = text;
+      try { parsed = JSON.parse(text); } catch { /* keep raw */ }
+      setTeamsResult({ at: nowIso, ok: res.ok, status: res.status, body: parsed });
+      if (res.ok) toast.success('Teams channel post succeeded');
+      else toast.error(`Teams channel post failed (HTTP ${res.status})`);
+    } catch (e) {
+      setTeamsResult({ at: nowIso, ok: false, status: null, body: { error: e instanceof Error ? e.message : String(e) } });
+      toast.error('Network error invoking ms-teams-notify');
+    } finally {
+      setTeamsTesting(false);
+    }
+  };
+
 
   useEffect(() => {
     if (authorised) { loadHealth(); loadFolder(); loadKbStatus(); }
