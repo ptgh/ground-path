@@ -69,13 +69,11 @@ const AdminM365Hub = () => {
   const [inboxLoading, setInboxLoading] = useState(false);
 
   // Integration smoke tests
+  type SmokeResult = { at: string; ok: boolean; status: number | null; body: unknown };
   const [excelTesting, setExcelTesting] = useState(false);
-  const [excelResult, setExcelResult] = useState<{
-    at: string;
-    ok: boolean;
-    status: number | null;
-    body: unknown;
-  } | null>(null);
+  const [excelResult, setExcelResult] = useState<SmokeResult | null>(null);
+  const [teamsTesting, setTeamsTesting] = useState(false);
+  const [teamsResult, setTeamsResult] = useState<SmokeResult | null>(null);
 
   // Authorisation gate
   useEffect(() => {
