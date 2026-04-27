@@ -288,6 +288,7 @@ const AdminM365Hub = () => {
     }, setPptResult, setPptTesting, 'PowerPoint deck created');
   };
 
+  useEffect(() => {
     if (authorised) { loadHealth(); loadFolder(); loadKbStatus(); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authorised]);
