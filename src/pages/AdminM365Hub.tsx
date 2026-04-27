@@ -192,6 +192,49 @@ const AdminM365Hub = () => {
     }
   };
 
+        {/* Integration smoke tests */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <FlaskConical className="h-4 w-4 text-primary" /> Integration smoke tests
+            </CardTitle>
+            <CardDescription>
+              Single-row round-trip checks for each Microsoft connector. Use these after any config or
+              credential change to confirm Graph path resolution and the gateway are healthy.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3 border-b border-border/60 pb-2">
+                <h3 className="text-sm font-semibold">Excel — ms-excel-log</h3>
+                <span className="text-xs text-muted-foreground">
+                  Appends to <code className="text-xs px-1 bg-muted rounded">Groundpath/Logs/ops.xlsx#OpsLog</code>
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button size="sm" onClick={runExcelTest} disabled={excelTesting}>
+                  {excelTesting
+                    ? <><Loader2 className="h-3 w-3 mr-2 animate-spin" /> Running…</>
+                    : <><FlaskConical className="h-3 w-3 mr-2" /> Test OpsLog append</>}
+                </Button>
+                {excelResult && (
+                  <span className="text-xs text-muted-foreground flex items-center gap-2">
+                    {excelResult.ok
+                      ? <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                      : <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                    Last run {new Date(excelResult.at).toLocaleString('en-AU')} · HTTP {excelResult.status ?? 'n/a'} · {excelResult.ok ? 'success' : 'failed'}
+                  </span>
+                )}
+              </div>
+              {excelResult && (
+                <pre className="text-xs p-3 rounded-md border border-border/60 bg-muted/40 overflow-x-auto whitespace-pre-wrap break-words max-h-96">
+{JSON.stringify({ status: excelResult.status, ok: excelResult.ok, body: excelResult.body }, null, 2)}
+                </pre>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
 
   useEffect(() => {
     if (authorised) { loadHealth(); loadFolder(); loadKbStatus(); }
