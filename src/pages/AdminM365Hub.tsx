@@ -68,6 +68,15 @@ const AdminM365Hub = () => {
   const [inbox, setInbox] = useState<InboxItem[]>([]);
   const [inboxLoading, setInboxLoading] = useState(false);
 
+  // Integration smoke tests
+  const [excelTesting, setExcelTesting] = useState(false);
+  const [excelResult, setExcelResult] = useState<{
+    at: string;
+    ok: boolean;
+    status: number | null;
+    body: unknown;
+  } | null>(null);
+
   // Authorisation gate
   useEffect(() => {
     if (authLoading) return;
