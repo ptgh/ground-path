@@ -73,7 +73,7 @@ Deno.serve(async (req: Request) => {
       },
       req,
     );
-    await appendOpsLog(guard.caller!, {
+    fireAndForgetOpsLog(guard.caller!.serviceClient, guard.caller!, {
       function_name: 'ms-word-create',
       action: 'create_docx',
       target: fullPath,
@@ -98,7 +98,7 @@ Deno.serve(async (req: Request) => {
       },
       req,
     );
-    await appendOpsLog(guard.caller!, {
+    fireAndForgetOpsLog(guard.caller!.serviceClient, guard.caller!, {
       function_name: 'ms-word-create',
       action: 'create_docx',
       target: fullPath,
