@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   CheckCircle2, XCircle, AlertTriangle, RefreshCw, FolderTree, Search,
-  Mail, Loader2, BookOpen, ExternalLink, Database,
+  Mail, Loader2, BookOpen, ExternalLink, Database, FlaskConical,
 } from 'lucide-react';
 
 interface ConnectorStatus {
@@ -67,6 +67,15 @@ const AdminM365Hub = () => {
 
   const [inbox, setInbox] = useState<InboxItem[]>([]);
   const [inboxLoading, setInboxLoading] = useState(false);
+
+  // Integration smoke tests
+  const [excelTesting, setExcelTesting] = useState(false);
+  const [excelResult, setExcelResult] = useState<{
+    at: string;
+    ok: boolean;
+    status: number | null;
+    body: unknown;
+  } | null>(null);
 
   // Authorisation gate
   useEffect(() => {
@@ -138,6 +147,51 @@ const AdminM365Hub = () => {
     } catch (e) { toast.error(e instanceof Error ? e.message : 'Inbox load failed'); }
     finally { setInboxLoading(false); }
   };
+
+  const runExcelTest = async () => {
+    setExcelTesting(true);
+    const nowIso = new Date().toISOString();
+    const callerEmail = user?.email ?? 'unknown';
+    const payload = {
+      filePath: 'Groundpath/Logs/ops.xlsx',
+      tableName: 'OpsLog',
+      values: [[
+        nowIso,
+        'test',
+        'smoke_test',
+        'Groundpath/Logs/ops.xlsx#OpsLog',
+        'success',
+        callerEmail,
+        0,
+        `Smoke test from AdminM365Hub at ${nowIso}`,
+      ]],
+    };
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const url = `https://vzwhccciarvirzqmvldl.supabase.co/functions/v1/ms-excel-log`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token ?? ''}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? '',
+        },
+        body: JSON.stringify(payload),
+      });
+      const text = await res.text();
+      let parsed: unknown = text;
+      try { parsed = JSON.parse(text); } catch { /* keep raw text */ }
+      setExcelResult({ at: nowIso, ok: res.ok, status: res.status, body: parsed });
+      if (res.ok) toast.success('OpsLog append succeeded');
+      else toast.error(`OpsLog append failed (HTTP ${res.status})`);
+    } catch (e) {
+      setExcelResult({ at: nowIso, ok: false, status: null, body: { error: e instanceof Error ? e.message : String(e) } });
+      toast.error('Network error invoking ms-excel-log');
+    } finally {
+      setExcelTesting(false);
+    }
+  };
+
 
   useEffect(() => {
     if (authorised) { loadHealth(); loadFolder(); loadKbStatus(); }
@@ -303,6 +357,49 @@ const AdminM365Hub = () => {
                 ))}
               </ul>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Integration smoke tests */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <FlaskConical className="h-4 w-4 text-primary" /> Integration smoke tests
+            </CardTitle>
+            <CardDescription>
+              Single-row round-trip checks for each Microsoft connector. Use these after any config or
+              credential change to confirm Graph path resolution and the gateway are healthy.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3 border-b border-border/60 pb-2">
+                <h3 className="text-sm font-semibold">Excel — ms-excel-log</h3>
+                <span className="text-xs text-muted-foreground">
+                  Appends to <code className="text-xs px-1 bg-muted rounded">Groundpath/Logs/ops.xlsx#OpsLog</code>
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button size="sm" onClick={runExcelTest} disabled={excelTesting}>
+                  {excelTesting
+                    ? <><Loader2 className="h-3 w-3 mr-2 animate-spin" /> Running…</>
+                    : <><FlaskConical className="h-3 w-3 mr-2" /> Test OpsLog append</>}
+                </Button>
+                {excelResult && (
+                  <span className="text-xs text-muted-foreground flex items-center gap-2">
+                    {excelResult.ok
+                      ? <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                      : <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                    Last run {new Date(excelResult.at).toLocaleString('en-AU')} · HTTP {excelResult.status ?? 'n/a'} · {excelResult.ok ? 'success' : 'failed'}
+                  </span>
+                )}
+              </div>
+              {excelResult && (
+                <pre className="text-xs p-3 rounded-md border border-border/60 bg-muted/40 overflow-x-auto whitespace-pre-wrap break-words max-h-96">
+{JSON.stringify({ status: excelResult.status, ok: excelResult.ok, body: excelResult.body }, null, 2)}
+                </pre>
+              )}
+            </div>
           </CardContent>
         </Card>
 
