@@ -390,6 +390,137 @@ export type Database = {
           },
         ]
       }
+      kb_chunks: {
+        Row: {
+          chunk_index: number
+          content: string
+          created_at: string
+          document_id: string
+          embedding: string | null
+          id: string
+          tokens: number | null
+        }
+        Insert: {
+          chunk_index: number
+          content: string
+          created_at?: string
+          document_id: string
+          embedding?: string | null
+          id?: string
+          tokens?: number | null
+        }
+        Update: {
+          chunk_index?: number
+          content?: string
+          created_at?: string
+          document_id?: string
+          embedding?: string | null
+          id?: string
+          tokens?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_chunks_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "kb_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_documents: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          etag: string | null
+          external_id: string
+          id: string
+          last_modified_at: string | null
+          last_synced_at: string | null
+          mime_type: string | null
+          name: string
+          path: string | null
+          size_bytes: number | null
+          source: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          etag?: string | null
+          external_id: string
+          id?: string
+          last_modified_at?: string | null
+          last_synced_at?: string | null
+          mime_type?: string | null
+          name: string
+          path?: string | null
+          size_bytes?: number | null
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          etag?: string | null
+          external_id?: string
+          id?: string
+          last_modified_at?: string | null
+          last_synced_at?: string | null
+          mime_type?: string | null
+          name?: string
+          path?: string | null
+          size_bytes?: number | null
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      kb_sync_runs: {
+        Row: {
+          error_message: string | null
+          files_changed: number
+          files_failed: number
+          files_seen: number
+          finished_at: string | null
+          id: string
+          source: string
+          started_at: string
+          status: string
+          trigger_kind: string
+          triggered_by: string | null
+        }
+        Insert: {
+          error_message?: string | null
+          files_changed?: number
+          files_failed?: number
+          files_seen?: number
+          finished_at?: string | null
+          id?: string
+          source?: string
+          started_at?: string
+          status?: string
+          trigger_kind?: string
+          triggered_by?: string | null
+        }
+        Update: {
+          error_message?: string | null
+          files_changed?: number
+          files_failed?: number
+          files_seen?: number
+          finished_at?: string | null
+          id?: string
+          source?: string
+          started_at?: string
+          status?: string
+          trigger_kind?: string
+          triggered_by?: string | null
+        }
+        Relationships: []
+      }
       link_health: {
         Row: {
           category: string
@@ -429,6 +560,72 @@ export type Database = {
           status_code?: number | null
           updated_at?: string
           url?: string
+        }
+        Relationships: []
+      }
+      m365_audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          error_message: string | null
+          function_name: string
+          id: string
+          ip_hash: string | null
+          request_metadata: Json | null
+          status: string
+          target: string | null
+          user_agent_hash: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          error_message?: string | null
+          function_name: string
+          id?: string
+          ip_hash?: string | null
+          request_metadata?: Json | null
+          status: string
+          target?: string | null
+          user_agent_hash?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          error_message?: string | null
+          function_name?: string
+          id?: string
+          ip_hash?: string | null
+          request_metadata?: Json | null
+          status?: string
+          target?: string | null
+          user_agent_hash?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      m365_authorised_emails: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          note: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          note?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          note?: string | null
         }
         Relationships: []
       }
@@ -1245,9 +1442,26 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_m365_authorised: { Args: { _user_id: string }; Returns: boolean }
       is_practitioner_connect_ready: {
         Args: { _user_id: string }
         Returns: boolean
+      }
+      kb_search: {
+        Args: {
+          match_count?: number
+          min_similarity?: number
+          query_embedding: string
+        }
+        Returns: {
+          chunk_id: string
+          chunk_index: number
+          content: string
+          document_id: string
+          document_name: string
+          document_path: string
+          similarity: number
+        }[]
       }
       list_bookable_practitioners: {
         Args: never
