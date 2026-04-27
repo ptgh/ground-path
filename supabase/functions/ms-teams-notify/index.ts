@@ -18,7 +18,7 @@ import {
   jsonResponse,
   requireM365Caller,
   writeAudit,
-  appendOpsLog,
+  fireAndForgetOpsLog,
   gatewayFetch,
 } from '../_shared/m365.ts';
 
