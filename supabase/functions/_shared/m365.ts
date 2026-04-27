@@ -314,6 +314,36 @@ export async function appendOpsLog(
   }
 }
 
+/**
+ * Fire-and-forget wrapper around appendOpsLog. Spawns the write as a
+ * background promise with its own try/catch so callers can return their
+ * response immediately without paying the Graph round-trip cost.
+ *
+ * Uses EdgeRuntime.waitUntil when available (keeps the worker alive until
+ * the promise settles); falls back to a detached promise otherwise.
+ */
+export function fireAndForgetOpsLog(
+  serviceClient: SupabaseClient,
+  caller: { email?: string | null } | null,
+  entry: {
+    function_name: string;
+    action: string;
+    target: string;
+    status: 'success' | 'error' | 'denied';
+    duration_ms?: number;
+    notes?: string;
+  },
+): void {
+  const p = appendOpsLog(serviceClient, caller, entry).catch((err) => {
+    console.error('fireAndForgetOpsLog swallowed error:', err);
+  });
+  // deno-lint-ignore no-explicit-any
+  const er = (globalThis as any).EdgeRuntime;
+  if (er && typeof er.waitUntil === 'function') {
+    try { er.waitUntil(p); } catch { /* ignore */ }
+  }
+}
+
 async function sha256(input: string): Promise<string | null> {
   if (!input) return null;
   const data = new TextEncoder().encode(input);
