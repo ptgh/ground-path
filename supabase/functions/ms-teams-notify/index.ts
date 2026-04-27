@@ -50,7 +50,27 @@ Deno.serve(async (req: Request) => {
   try { body = await req.json(); } catch { return jsonResponse({ error: 'Invalid JSON' }, 400); }
   const parsed = BodySchema.safeParse(body);
   if (!parsed.success) return jsonResponse({ error: parsed.error.flatten() }, 400);
-  const { teamId, channelId, subject, bodyHtml, importance } = parsed.data;
+  let { teamId, channelId } = parsed.data;
+  const { configKey, subject, bodyHtml, importance } = parsed.data;
+
+  // Resolve from config table when configKey is provided.
+  if (configKey && (!teamId || !channelId)) {
+    const teamKey = `${configKey}.team_id`;
+    const channelKey = `${configKey}.channel_id`;
+    const { data: rows, error: cfgErr } = await guard.caller!.serviceClient
+      .from('m365_integration_config')
+      .select('key, value')
+      .in('key', [teamKey, channelKey]);
+    if (cfgErr) return jsonResponse({ error: `Config lookup failed: ${cfgErr.message}` }, 500);
+    teamId = rows?.find((r) => r.key === teamKey)?.value;
+    channelId = rows?.find((r) => r.key === channelKey)?.value;
+    if (!teamId || !channelId) {
+      return jsonResponse(
+        { error: `Missing config rows for ${teamKey} and/or ${channelKey}` },
+        400,
+      );
+    }
+  }
 
   try {
     const payload = {
