@@ -100,7 +100,8 @@ Deno.serve(async (req: Request) => {
       },
       req,
     );
-    await appendOpsLog(guard.caller!, {
+    // Fire-and-forget: OpsLog is a secondary audit, not on critical path.
+    fireAndForgetOpsLog(guard.caller!.serviceClient, guard.caller!, {
       function_name: 'ms-teams-notify',
       action: 'post_message',
       target: `${teamId}/${channelId}`,
@@ -125,7 +126,7 @@ Deno.serve(async (req: Request) => {
       },
       req,
     );
-    await appendOpsLog(guard.caller!, {
+    fireAndForgetOpsLog(guard.caller!.serviceClient, guard.caller!, {
       function_name: 'ms-teams-notify',
       action: 'post_message',
       target: `${teamId}/${channelId}`,
