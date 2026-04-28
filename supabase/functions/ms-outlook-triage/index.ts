@@ -315,18 +315,23 @@ Deno.serve(async (req: Request) => {
               console.error(`Mark-as-read failed for deduped ${m.id}:`, markErr);
             }
           } else {
-            // Insert the contact_forms row.
-            const { error: insertErr } = await serviceClient.from('contact_forms').insert({
-              name: fromName || fromAddress || 'Unknown sender',
-              email: fromAddress || 'unknown@unknown',
-              subject: subject,
-              message: bodyPreview || '(empty body)',
-              status: 'new',
-              intake_type: classification,
-              intake_source: 'inbox',
-              external_message_id: m.id,
-            });
+            // Insert the contact_forms row (return id for ack invoke).
+            const { data: insertedRow, error: insertErr } = await serviceClient
+              .from('contact_forms')
+              .insert({
+                name: fromName || fromAddress || 'Unknown sender',
+                email: fromAddress || 'unknown@unknown',
+                subject: subject,
+                message: bodyPreview || '(empty body)',
+                status: 'new',
+                intake_type: classification,
+                intake_source: 'inbox',
+                external_message_id: m.id,
+              })
+              .select('id')
+              .single();
             if (insertErr) throw new Error(`Insert failed: ${insertErr.message}`);
+            const newContactFormId = insertedRow?.id as string | undefined;
 
             // Teams notify (must succeed before we mark-as-read).
             teamsNotified = await postTeamsAlert({
@@ -338,6 +343,16 @@ Deno.serve(async (req: Request) => {
               receivedDateTime: m.receivedDateTime,
               webLink: m.webLink,
             });
+
+            // Auto-ack: fire-and-forget invoke via cron-secret-authenticated
+            // call (same pattern as Teams notify above). Failures must not
+            // block mark-as-read; the row's acknowledgement_status stays
+            // 'pending' for later retry.
+            if (newContactFormId) {
+              triggerAckInvoke(newContactFormId).catch((err) =>
+                console.error(`Ack invoke threw for ${newContactFormId} (non-fatal):`, err),
+              );
+            }
 
             if (teamsNotified) {
               try {
