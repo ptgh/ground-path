@@ -54,6 +54,7 @@ const BillingPage = lazy(() => import("./pages/BillingPage"));
 const AdminMailingList = lazy(() => import("./pages/AdminMailingList"));
 const AdminM365Hub = lazy(() => import("./pages/AdminM365Hub"));
 const AdminIntake = lazy(() => import("./pages/AdminIntake"));
+const AdminCompliance = lazy(() => import("./pages/AdminCompliance"));
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
 const PractitionerProfile = lazy(() => import("./pages/PractitionerProfile"));
 const SecureResources = lazy(() => import("./pages/SecureResources"));
