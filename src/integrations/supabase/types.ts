@@ -268,6 +268,51 @@ export type Database = {
         }
         Relationships: []
       }
+      compliance_items: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          kind: string
+          last_alerted_at: string | null
+          last_alerted_tier: number | null
+          name: string
+          notes: string | null
+          owner: string
+          renewed_at: string | null
+          snoozed_until: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          kind: string
+          last_alerted_at?: string | null
+          last_alerted_tier?: number | null
+          name: string
+          notes?: string | null
+          owner?: string
+          renewed_at?: string | null
+          snoozed_until?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          kind?: string
+          last_alerted_at?: string | null
+          last_alerted_tier?: number | null
+          name?: string
+          notes?: string | null
+          owner?: string
+          renewed_at?: string | null
+          snoozed_until?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_forms: {
         Row: {
           acknowledged_at: string | null
@@ -1548,6 +1593,52 @@ export type Database = {
           specializations: string[]
           user_id: string
         }[]
+      }
+      renew_compliance_item: {
+        Args: { _id: string; _new_expires_at: string }
+        Returns: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          kind: string
+          last_alerted_at: string | null
+          last_alerted_tier: number | null
+          name: string
+          notes: string | null
+          owner: string
+          renewed_at: string | null
+          snoozed_until: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "compliance_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      snooze_compliance_item: {
+        Args: { _id: string; _snooze_until: string }
+        Returns: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          kind: string
+          last_alerted_at: string | null
+          last_alerted_tier: number | null
+          name: string
+          notes: string | null
+          owner: string
+          renewed_at: string | null
+          snoozed_until: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "compliance_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       unsubscribe_mailing: { Args: { _token: string }; Returns: Json }
       upgrade_practitioner_role: {
