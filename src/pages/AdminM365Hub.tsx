@@ -565,7 +565,7 @@ const AdminM365Hub = () => {
         <p className="text-xs text-muted-foreground text-center pt-4">
           All M365 actions write to the m365_audit_log table AND to the Excel OpsLog (Groundpath/Logs/ops.xlsx#OpsLog) for cross-system forensic visibility.
         </p>
-      </main>
+      </div>
     </>
   );
 };
