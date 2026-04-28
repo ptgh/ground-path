@@ -60,21 +60,20 @@ export async function submitContactForm(
   }
 
   const submittedAt = new Date().toISOString();
+  // Generate the id client-side so we have it for the ack-email invoke
+  // without needing a SELECT-after-INSERT (anon role has INSERT but not
+  // SELECT on contact_forms).
+  const insertedId = crypto.randomUUID();
   const submission: ContactFormSubmission = {
     ...data,
+    id: insertedId,
     status: 'new',
     intake_source: 'form',
     created_at: submittedAt,
     updated_at: submittedAt,
   };
 
-  // Insert and capture id so we can trigger the ack-email pipeline.
-  // Anonymous users have INSERT but not SELECT on contact_forms; the SELECT
-  // on the returning row is permitted because the row is the one we just
-  // inserted (PostgREST returns the inserted row pre-RLS-filter when the
-  // insert succeeds via the RETURNING clause). If RLS blocks it, we fall
-  // back to a uuid-less submission and skip the ack invoke gracefully.
-  const { data: inserted, error } = await supabase!
+  const { error } = await supabase!
     .from('contact_forms')
     .insert([
       {
@@ -84,9 +83,7 @@ export async function submitContactForm(
         created_at: submittedAt,
         updated_at: submittedAt,
       },
-    ])
-    .select('id')
-    .maybeSingle();
+    ]);
 
   if (error) {
     throw new Error('Your message could not be sent just now. Please try again in a moment.');
