@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { Loader2, AlertTriangle, Inbox, Database } from 'lucide-react';
+import { Loader2, AlertTriangle, Inbox, Database, Shield } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const ADMIN_NAV = [
@@ -13,7 +15,7 @@ const ADMIN_NAV = [
 ];
 
 const AdminLayout = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [authorised, setAuthorised] = useState<boolean | null>(null);
 
@@ -38,7 +40,7 @@ const AdminLayout = () => {
     return (
       <div className="flex min-h-screen flex-col">
         <Header />
-        <main className="flex-1 container max-w-2xl py-16">
+        <main className="flex-1 container max-w-2xl pt-24 pb-16">
           <Card className="border-destructive/40">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -61,15 +63,36 @@ const AdminLayout = () => {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <div className="border-b border-border/60 bg-muted/30">
-        <div className="container max-w-6xl py-4 space-y-3">
-          <div className="space-y-0.5">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Admin</h2>
-            <p className="text-xs text-muted-foreground">
-              Practice-wide tools and configuration. Visible only to allow-listed admins.
-            </p>
+      <main className="flex-1 pt-24 pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* ─── Administrator header (mirrors Dashboard) ─── */}
+          <div className="mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <Avatar className="h-12 w-12 sm:h-14 sm:w-14 mx-auto sm:mx-0 ring-2 ring-primary/30 ring-offset-2 ring-offset-background">
+                <AvatarImage src={profile?.avatar_url} />
+                <AvatarFallback className="text-sm sm:text-lg bg-primary/10 text-primary">
+                  {profile?.display_name?.[0] || user?.email?.[0] || 'A'}
+                </AvatarFallback>
+              </Avatar>
+              <div className="text-center sm:text-left">
+                <h1 className="text-xl sm:text-2xl font-semibold text-foreground leading-tight tracking-tight flex items-center gap-2 justify-center sm:justify-start">
+                  <Shield className="h-5 w-5 text-primary" />
+                  Administrator
+                </h1>
+                <p className="text-muted-foreground text-sm mt-0.5">
+                  {profile?.display_name || user?.email}
+                </p>
+                <div className="flex flex-wrap gap-1.5 mt-2 justify-center sm:justify-start">
+                  <Badge variant="secondary" className="bg-destructive/10 text-destructive text-[11px] font-medium">
+                    Admin
+                  </Badge>
+                </div>
+              </div>
+            </div>
           </div>
-          <nav className="flex flex-wrap items-center gap-1.5">
+
+          {/* ─── Sub-nav pills ─── */}
+          <nav className="flex flex-wrap items-center gap-1.5 mb-6 pb-4 border-b border-border/60">
             {ADMIN_NAV.map((item) => (
               <NavLink
                 key={item.to}
@@ -87,10 +110,10 @@ const AdminLayout = () => {
               </NavLink>
             ))}
           </nav>
+
+          {/* ─── Child page ─── */}
+          <Outlet />
         </div>
-      </div>
-      <main className="flex-1">
-        <Outlet />
       </main>
       <Footer />
     </div>
