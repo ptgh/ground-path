@@ -232,14 +232,56 @@ Deno.serve(async (req: Request) => {
     );
 
     const rawMessages = data.value ?? [];
+    const filters = await loadInboxFilters(serviceClient);
 
-    // Process each message: summarise + classify in parallel, then persist + notify + mark-read sequentially per message.
+    // Process each message: filter check first; if matched, mark-as-read + audit and skip.
+    // Otherwise summarise + classify in parallel, then persist + notify + mark-read.
     const items = await Promise.all(
       rawMessages.map(async (m) => {
         const subject = m.subject ?? '(no subject)';
         const fromAddress = m.from?.emailAddress?.address ?? '';
         const fromName = m.from?.emailAddress?.name ?? fromAddress ?? 'Unknown sender';
         const bodyPreview = m.bodyPreview ?? '';
+
+        // ----- Sender filter: drop noise before paying for AI tokens -----
+        const matched = matchFilter(fromAddress, filters);
+        if (matched) {
+          try {
+            await gatewayFetch('microsoft_outlook', `/me/messages/${encodeURIComponent(m.id)}`, {
+              method: 'PATCH',
+              body: JSON.stringify({ isRead: true }),
+            });
+          } catch (markErr) {
+            console.error(`Mark-as-read failed for filtered ${m.id}:`, markErr);
+          }
+          await writeAudit(
+            serviceClient,
+            caller,
+            {
+              function_name: 'ms-outlook-triage',
+              action: 'filtered_inbound',
+              target: fromAddress || '(unknown)',
+              status: 'success',
+              request_metadata: {
+                messageId: m.id,
+                matchedPattern: matched.pattern,
+                patternType: matched.pattern_type,
+                reason: matched.reason,
+              },
+            },
+            req,
+          );
+          return {
+            id: m.id,
+            subject,
+            from: fromAddress || null,
+            fromName,
+            receivedAt: m.receivedDateTime,
+            webLink: m.webLink,
+            filtered: true,
+            filterReason: matched.reason ?? `Matched ${matched.pattern_type} pattern: ${matched.pattern}`,
+          };
+        }
 
         // Run summary + classification in parallel.
         const [summary, classification] = await Promise.all([
