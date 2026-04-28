@@ -217,6 +217,39 @@ ${link}
   }
 }
 
+/**
+ * Fire the per-row acknowledgement-email invoke. Cron-secret authenticated
+ * so it works without a JWT (we're calling internally from another edge
+ * function). Errors logged only — never block the calling pipeline.
+ */
+async function triggerAckInvoke(contactFormId: string): Promise<void> {
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const cronSecret = Deno.env.get('CRON_TRIGGER_SECRET');
+    if (!supabaseUrl || !anonKey || !cronSecret) {
+      console.error('Ack invoke: missing env (SUPABASE_URL/ANON_KEY/CRON_TRIGGER_SECRET)');
+      return;
+    }
+    const res = await fetch(`${supabaseUrl}/functions/v1/send-contact-acknowledgement`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${anonKey}`,
+        'X-Cron-Trigger': 'ms-outlook-triage',
+        'X-Cron-Secret': cronSecret,
+      },
+      body: JSON.stringify({ contact_form_id: contactFormId }),
+    });
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      console.error(`Ack invoke HTTP ${res.status} for ${contactFormId}: ${errText.slice(0, 300)}`);
+    }
+  } catch (err) {
+    console.error(`Ack invoke threw for ${contactFormId}:`, err);
+  }
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders });
 
