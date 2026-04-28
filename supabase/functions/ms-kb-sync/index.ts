@@ -410,6 +410,54 @@ Deno.serve(async (req: Request) => {
       request_metadata: { filesSeen, filesChanged, filesFailed },
     }, req);
 
+    // Teams summary + audit row for the run itself (fire-and-forget)
+    const runtimeMs = Date.now() - startedAt;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const cronSecret = Deno.env.get('CRON_TRIGGER_SECRET');
+    const teamsStatusLabel = status === 'success' ? 'OK' : status === 'partial' ? 'Partial' : 'Failed';
+    const importance = status === 'success' ? 'normal' : 'high';
+    const summary = `${filesChanged} changed, ${filesFailed} failed of ${filesSeen} seen`;
+    const completedAt = new Date().toISOString();
+    const errorList = errors.length
+      ? `<p><b>First errors:</b></p><ul>${errors.slice(0, 5).map((e) => `<li>${escapeHtml(e)}</li>`).join('')}</ul>`
+      : '';
+    const bodyHtml = `
+<p><b>Status:</b> ${teamsStatusLabel} &middot; <b>Trigger:</b> ${triggeredBy}</p>
+<p><b>Runtime:</b> ${runtimeMs} ms</p>
+<p><b>Files seen:</b> ${filesSeen} &middot; <b>changed:</b> ${filesChanged} &middot; <b>failed:</b> ${filesFailed}</p>
+${errorList}
+<p><i>Completed at ${escapeHtml(completedAt)}</i></p>`.trim();
+
+    if (supabaseUrl && anonKey && cronSecret) {
+      fireAndForget(invokeTeamsNotify({
+        configKey: 'teams.alerts',
+        subject: `KB sync — ${teamsStatusLabel}: ${summary}`,
+        bodyHtml,
+        importance,
+      }, { supabaseUrl, anonKey, cronSecret }));
+    } else {
+      console.error('[ms-kb-sync] missing env for Teams notify; skipping');
+    }
+
+    fireAndForget(svc.from('m365_audit_log').insert({
+      user_id: guard.caller!.userId,
+      user_email: guard.caller!.email,
+      function_name: 'ms-kb-sync',
+      action: 'sync_complete',
+      target: null,
+      status: status === 'failed' ? 'error' : 'success',
+      request_metadata: {
+        runtime_ms: runtimeMs,
+        docs_processed: filesSeen,
+        chunks_created: filesChanged,
+        chunks_updated: filesChanged,
+        chunks_deleted: 0,
+        chunks_failed: filesFailed,
+        triggered_by: triggeredBy,
+      },
+    }));
+
     return jsonResponse({
       ok: status !== 'failed',
       runId,
