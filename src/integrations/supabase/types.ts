@@ -638,6 +638,30 @@ export type Database = {
         }
         Relationships: []
       }
+      m365_inbox_filters: {
+        Row: {
+          created_at: string
+          id: string
+          pattern: string
+          pattern_type: string
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          pattern: string
+          pattern_type: string
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          pattern?: string
+          pattern_type?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
       m365_integration_config: {
         Row: {
           created_at: string

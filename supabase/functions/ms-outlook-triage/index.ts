@@ -40,6 +40,59 @@ interface MessagesResponse { value: OutlookMessage[] }
 
 type IntakeType = 'client' | 'practitioner' | 'other';
 
+/* ============================================================
+ *  Inbox sender filter (cached 5 min)
+ *  Drops automated/non-human noise before classification.
+ * ============================================================ */
+
+interface InboxFilter {
+  pattern: string;
+  pattern_type: 'exact' | 'domain' | 'prefix';
+  reason: string | null;
+}
+
+const FILTER_CACHE_TTL_MS = 5 * 60 * 1000;
+let inboxFilterCache: { value: InboxFilter[]; expiresAt: number } | null = null;
+
+async function loadInboxFilters(serviceClient: ReturnType<typeof Object>): Promise<InboxFilter[]> {
+  const now = Date.now();
+  if (inboxFilterCache && inboxFilterCache.expiresAt > now) {
+    return inboxFilterCache.value;
+  }
+  try {
+    // deno-lint-ignore no-explicit-any
+    const { data, error } = await (serviceClient as any)
+      .from('m365_inbox_filters')
+      .select('pattern, pattern_type, reason');
+    if (error) throw error;
+    const value: InboxFilter[] = (data ?? []).map((r: InboxFilter) => ({
+      pattern: r.pattern.toLowerCase(),
+      pattern_type: r.pattern_type,
+      reason: r.reason,
+    }));
+    inboxFilterCache = { value, expiresAt: now + FILTER_CACHE_TTL_MS };
+    return value;
+  } catch (err) {
+    console.error('loadInboxFilters failed (non-fatal, returning empty):', err);
+    inboxFilterCache = { value: [], expiresAt: now + 30_000 };
+    return [];
+  }
+}
+
+function matchFilter(fromAddress: string, filters: InboxFilter[]): InboxFilter | null {
+  const addr = (fromAddress ?? '').trim().toLowerCase();
+  if (!addr) return null;
+  const at = addr.indexOf('@');
+  const local = at >= 0 ? addr.slice(0, at) : addr;
+  const domain = at >= 0 ? addr.slice(at + 1) : '';
+  for (const f of filters) {
+    if (f.pattern_type === 'exact' && addr === f.pattern) return f;
+    if (f.pattern_type === 'domain' && domain && domain === f.pattern) return f;
+    if (f.pattern_type === 'prefix' && local === f.pattern) return f;
+  }
+  return null;
+}
+
 function escapeHtml(s: string): string {
   return (s ?? '')
     .replace(/&/g, '&amp;')
@@ -179,14 +232,56 @@ Deno.serve(async (req: Request) => {
     );
 
     const rawMessages = data.value ?? [];
+    const filters = await loadInboxFilters(serviceClient);
 
-    // Process each message: summarise + classify in parallel, then persist + notify + mark-read sequentially per message.
+    // Process each message: filter check first; if matched, mark-as-read + audit and skip.
+    // Otherwise summarise + classify in parallel, then persist + notify + mark-read.
     const items = await Promise.all(
       rawMessages.map(async (m) => {
         const subject = m.subject ?? '(no subject)';
         const fromAddress = m.from?.emailAddress?.address ?? '';
         const fromName = m.from?.emailAddress?.name ?? fromAddress ?? 'Unknown sender';
         const bodyPreview = m.bodyPreview ?? '';
+
+        // ----- Sender filter: drop noise before paying for AI tokens -----
+        const matched = matchFilter(fromAddress, filters);
+        if (matched) {
+          try {
+            await gatewayFetch('microsoft_outlook', `/me/messages/${encodeURIComponent(m.id)}`, {
+              method: 'PATCH',
+              body: JSON.stringify({ isRead: true }),
+            });
+          } catch (markErr) {
+            console.error(`Mark-as-read failed for filtered ${m.id}:`, markErr);
+          }
+          await writeAudit(
+            serviceClient,
+            caller,
+            {
+              function_name: 'ms-outlook-triage',
+              action: 'filtered_inbound',
+              target: fromAddress || '(unknown)',
+              status: 'success',
+              request_metadata: {
+                messageId: m.id,
+                matchedPattern: matched.pattern,
+                patternType: matched.pattern_type,
+                reason: matched.reason,
+              },
+            },
+            req,
+          );
+          return {
+            id: m.id,
+            subject,
+            from: fromAddress || null,
+            fromName,
+            receivedAt: m.receivedDateTime,
+            webLink: m.webLink,
+            filtered: true,
+            filterReason: matched.reason ?? `Matched ${matched.pattern_type} pattern: ${matched.pattern}`,
+          };
+        }
 
         // Run summary + classification in parallel.
         const [summary, classification] = await Promise.all([
