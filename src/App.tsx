@@ -54,6 +54,7 @@ const BillingPage = lazy(() => import("./pages/BillingPage"));
 const AdminMailingList = lazy(() => import("./pages/AdminMailingList"));
 const AdminM365Hub = lazy(() => import("./pages/AdminM365Hub"));
 const AdminIntake = lazy(() => import("./pages/AdminIntake"));
+const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
 const PractitionerProfile = lazy(() => import("./pages/PractitionerProfile"));
 const SecureResources = lazy(() => import("./pages/SecureResources"));
 
@@ -212,9 +213,11 @@ const App = () => {
                 <Route path="/auth/callback" element={<LinkedInCallback />} />
                 <Route path="/practitioner/dashboard" element={<VerifiedPractitionerRoute><Dashboard /></VerifiedPractitionerRoute>} />
                 <Route path="/practitioner/messages" element={<VerifiedPractitionerRoute><Messages /></VerifiedPractitionerRoute>} />
-                <Route path="/practitioner/admin/mailing-list" element={<VerifiedPractitionerRoute><AdminMailingList /></VerifiedPractitionerRoute>} />
-                <Route path="/practitioner/admin/m365" element={<VerifiedPractitionerRoute><AdminM365Hub /></VerifiedPractitionerRoute>} />
-                <Route path="/practitioner/admin/intake" element={<VerifiedPractitionerRoute><AdminIntake /></VerifiedPractitionerRoute>} />
+                <Route path="/practitioner/admin" element={<VerifiedPractitionerRoute><AdminLayout /></VerifiedPractitionerRoute>}>
+                  <Route index element={<Navigate to="intake" replace />} />
+                  <Route path="intake" element={<AdminIntake />} />
+                  <Route path="m365" element={<AdminM365Hub />} />
+                </Route>
                 <Route path="/messages" element={<AuthenticatedRoute><Messages /></AuthenticatedRoute>} />
                 <Route path="/dashboard" element={<AuthenticatedRoute><ClientDashboard /></AuthenticatedRoute>} />
                 <Route path="/session/:bookingId" element={<AuthenticatedRoute><JoinSession /></AuthenticatedRoute>} />
