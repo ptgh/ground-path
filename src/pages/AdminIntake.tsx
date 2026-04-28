@@ -481,7 +481,7 @@ const AdminIntake = () => {
             )}
           </CardContent>
         </Card>
-      </main>
+      </div>
 
       {/* Drawer */}
       <Sheet open={!!selected} onOpenChange={(o) => { if (!o) { setSelected(null); setAuditRows([]); } }}>
