@@ -280,6 +280,48 @@ const Contact = () => {
                 </div>
 
                 <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    I'm reaching out because *
+                  </label>
+                  <RadioGroup
+                    value={formData.intake_type}
+                    onValueChange={(v) =>
+                      setFormData((prev) => ({ ...prev, intake_type: v as IntakeType }))
+                    }
+                    className="space-y-2"
+                  >
+                    <label
+                      htmlFor="intake-client"
+                      className="flex items-start gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/40"
+                    >
+                      <RadioGroupItem value="client" id="intake-client" className="mt-1" />
+                      <span className="text-sm text-foreground">
+                        I'm seeking social work, counselling or NDIS mental health support
+                      </span>
+                    </label>
+                    <label
+                      htmlFor="intake-practitioner"
+                      className="flex items-start gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/40"
+                    >
+                      <RadioGroupItem value="practitioner" id="intake-practitioner" className="mt-1" />
+                      <span className="text-sm text-foreground">
+                        I'm a clinician interested in joining the platform
+                      </span>
+                    </label>
+                    <label
+                      htmlFor="intake-other"
+                      className="flex items-start gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/40"
+                    >
+                      <RadioGroupItem value="other" id="intake-other" className="mt-1" />
+                      <span className="text-sm text-foreground">Something else</span>
+                    </label>
+                  </RadioGroup>
+                  {errors.intake_type && (
+                    <p className="text-red-500 text-sm mt-1">{errors.intake_type}</p>
+                  )}
+                </div>
+
+                <div>
                   <label htmlFor="subject" className="block text-sm font-medium text-foreground mb-2">
                     Subject
                   </label>
