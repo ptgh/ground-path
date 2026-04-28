@@ -40,9 +40,8 @@ export const useContactFormSubmission = () => {
     },
     onError: (error: Error) => {
       toast({
-        title: "Failed to send message",
+        title: "Message not sent",
         description: error.message,
-        variant: "destructive",
       });
     },
   });
