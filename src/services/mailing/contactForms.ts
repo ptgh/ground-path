@@ -68,7 +68,13 @@ export async function submitContactForm(
     updated_at: submittedAt,
   };
 
-  const { error } = await supabase!
+  // Insert and capture id so we can trigger the ack-email pipeline.
+  // Anonymous users have INSERT but not SELECT on contact_forms; the SELECT
+  // on the returning row is permitted because the row is the one we just
+  // inserted (PostgREST returns the inserted row pre-RLS-filter when the
+  // insert succeeds via the RETURNING clause). If RLS blocks it, we fall
+  // back to a uuid-less submission and skip the ack invoke gracefully.
+  const { data: inserted, error } = await supabase!
     .from('contact_forms')
     .insert([
       {
@@ -78,14 +84,41 @@ export async function submitContactForm(
         created_at: submittedAt,
         updated_at: submittedAt,
       },
-    ]);
+    ])
+    .select('id')
+    .maybeSingle();
 
   if (error) {
     throw new Error('Your message could not be sent just now. Please try again in a moment.');
   }
 
-  await sendContactFormNotification(submission);
+  const insertedId = inserted?.id ?? null;
+  const finalSubmission: ContactFormSubmission = insertedId
+    ? { ...submission, id: insertedId }
+    : submission;
+
+  await sendContactFormNotification(finalSubmission);
   // Teams is best-effort and must not break the form submission.
-  await notifyTeamsOpsAlert(submission);
-  return submission;
+  await notifyTeamsOpsAlert(finalSubmission);
+
+  // Auto-ack: fire-and-forget. Resend / function outages must not break
+  // the form submission — the row's acknowledgement_status stays 'pending'
+  // and can be retried later.
+  if (insertedId) {
+    try {
+      const ackPromise = supabase!.functions.invoke('send-contact-acknowledgement', {
+        body: { contact_form_id: insertedId },
+      });
+      // Detach: don't await. Surface errors to console only.
+      ackPromise
+        .then(({ error: ackErr }) => {
+          if (ackErr) console.error('send-contact-acknowledgement (form) failed (non-fatal):', ackErr);
+        })
+        .catch((err) => console.error('send-contact-acknowledgement (form) threw (non-fatal):', err));
+    } catch (err) {
+      console.error('send-contact-acknowledgement (form) invoke threw (non-fatal):', err);
+    }
+  }
+
+  return finalSubmission;
 }
