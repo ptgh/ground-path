@@ -35,6 +35,8 @@ project_id = "vzwhccciarvirzqmvldl"
     verify_jwt = false
   [functions.send-email]
     verify_jwt = true
+  [functions.contact-form-submit]
+    verify_jwt = false
   [functions.message-notification]
     verify_jwt = false
   [functions.weekly-newsletter]
