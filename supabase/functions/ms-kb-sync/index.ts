@@ -181,10 +181,58 @@ async function embedBatch(texts: string[]): Promise<number[][]> {
 }
 
 /* ============================================================
+ *  Fire-and-forget helper (mirrors contact-form-submit pattern)
+ * ============================================================ */
+function fireAndForget(p: Promise<unknown> | PromiseLike<unknown>): void {
+  const wrapped = Promise.resolve(p).catch((err) =>
+    console.error('ms-kb-sync fire-and-forget swallowed:', err),
+  );
+  // deno-lint-ignore no-explicit-any
+  const er = (globalThis as any).EdgeRuntime;
+  if (er && typeof er.waitUntil === 'function') {
+    try { er.waitUntil(wrapped); } catch { /* ignore */ }
+  }
+}
+
+async function invokeTeamsNotify(
+  body: unknown,
+  ctx: { supabaseUrl: string; anonKey: string; cronSecret: string },
+): Promise<void> {
+  try {
+    const res = await fetch(`${ctx.supabaseUrl}/functions/v1/ms-teams-notify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ctx.anonKey}`,
+        'X-Cron-Trigger': 'ms-kb-sync',
+        'X-Cron-Secret': ctx.cronSecret,
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      console.error(`[ms-kb-sync] ms-teams-notify HTTP ${res.status}: ${text.slice(0, 300)}`);
+    }
+  } catch (err) {
+    console.error('[ms-kb-sync] ms-teams-notify threw:', err);
+  }
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+/* ============================================================
  *  Main handler
  * ============================================================ */
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders });
+
+  const startedAt = Date.now();
+  const cronTrigger = req.headers.get('X-Cron-Trigger');
+  const triggeredBy: 'cron' | 'manual' = cronTrigger ? 'cron' : 'manual';
 
   const guard = await requireM365Caller(req);
   if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500);
@@ -361,6 +409,54 @@ Deno.serve(async (req: Request) => {
       status: status === 'failed' ? 'error' : 'success',
       request_metadata: { filesSeen, filesChanged, filesFailed },
     }, req);
+
+    // Teams summary + audit row for the run itself (fire-and-forget)
+    const runtimeMs = Date.now() - startedAt;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const cronSecret = Deno.env.get('CRON_TRIGGER_SECRET');
+    const teamsStatusLabel = status === 'success' ? 'OK' : status === 'partial' ? 'Partial' : 'Failed';
+    const importance = status === 'success' ? 'normal' : 'high';
+    const summary = `${filesChanged} changed, ${filesFailed} failed of ${filesSeen} seen`;
+    const completedAt = new Date().toISOString();
+    const errorList = errors.length
+      ? `<p><b>First errors:</b></p><ul>${errors.slice(0, 5).map((e) => `<li>${escapeHtml(e)}</li>`).join('')}</ul>`
+      : '';
+    const bodyHtml = `
+<p><b>Status:</b> ${teamsStatusLabel} &middot; <b>Trigger:</b> ${triggeredBy}</p>
+<p><b>Runtime:</b> ${runtimeMs} ms</p>
+<p><b>Files seen:</b> ${filesSeen} &middot; <b>changed:</b> ${filesChanged} &middot; <b>failed:</b> ${filesFailed}</p>
+${errorList}
+<p><i>Completed at ${escapeHtml(completedAt)}</i></p>`.trim();
+
+    if (supabaseUrl && anonKey && cronSecret) {
+      fireAndForget(invokeTeamsNotify({
+        configKey: 'teams.alerts',
+        subject: `KB sync — ${teamsStatusLabel}: ${summary}`,
+        bodyHtml,
+        importance,
+      }, { supabaseUrl, anonKey, cronSecret }));
+    } else {
+      console.error('[ms-kb-sync] missing env for Teams notify; skipping');
+    }
+
+    fireAndForget(svc.from('m365_audit_log').insert({
+      user_id: guard.caller!.userId,
+      user_email: guard.caller!.email,
+      function_name: 'ms-kb-sync',
+      action: 'sync_complete',
+      target: null,
+      status: status === 'failed' ? 'error' : 'success',
+      request_metadata: {
+        runtime_ms: runtimeMs,
+        docs_processed: filesSeen,
+        chunks_created: filesChanged,
+        chunks_updated: filesChanged,
+        chunks_deleted: 0,
+        chunks_failed: filesFailed,
+        triggered_by: triggeredBy,
+      },
+    }));
 
     return jsonResponse({
       ok: status !== 'failed',
