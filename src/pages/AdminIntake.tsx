@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+// Header/Footer retained for the defence-in-depth Access denied fallback only.
+// AdminLayout supplies the outer chrome for the authorised render path.
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -354,9 +356,8 @@ const AdminIntake = () => {
     : '#';
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <Header />
-      <main className="flex-1 container max-w-6xl py-8 space-y-6">
+    <>
+      <main className="container max-w-6xl py-8 space-y-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="space-y-1">
             <h1 className="text-3xl font-semibold tracking-tight flex items-center gap-2">
@@ -481,7 +482,6 @@ const AdminIntake = () => {
           </CardContent>
         </Card>
       </main>
-      <Footer />
 
       {/* Drawer */}
       <Sheet open={!!selected} onOpenChange={(o) => { if (!o) { setSelected(null); setAuditRows([]); } }}>
@@ -598,7 +598,7 @@ const AdminIntake = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 };
 
