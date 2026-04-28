@@ -96,8 +96,10 @@ function clientIp(req: Request): string {
 }
 
 // ----- Internal invokes (cron-secret pattern) -----
-function fireAndForget(p: Promise<unknown>): void {
-  const wrapped = p.catch((err) => console.error('contact-form-submit fire-and-forget swallowed:', err));
+function fireAndForget(p: Promise<unknown> | PromiseLike<unknown>): void {
+  const wrapped = Promise.resolve(p).catch((err) =>
+    console.error('contact-form-submit fire-and-forget swallowed:', err),
+  );
   // deno-lint-ignore no-explicit-any
   const er = (globalThis as any).EdgeRuntime;
   if (er && typeof er.waitUntil === 'function') {
