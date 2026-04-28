@@ -4,6 +4,48 @@ import { sendContactFormNotification } from './emailHelpers';
 
 const isSupabaseAvailable = (): boolean => supabase !== null;
 
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
+ * Fire a Teams ops-alerts notification for a new contact-form submission.
+ * Failures are swallowed so Teams problems never break the form submission
+ * or the email notification (which has already fired by the time this runs).
+ */
+async function notifyTeamsOpsAlert(submission: ContactFormSubmission) {
+  if (!supabase) return;
+  try {
+    const intakeType = submission.intake_type;
+    const importance = intakeType === 'client' || intakeType === 'practitioner' ? 'high' : 'normal';
+    const submittedAt = submission.created_at ?? new Date().toISOString();
+    const bodyHtml = `
+<p><b>From:</b> ${escapeHtml(submission.name)} (${escapeHtml(submission.email)})</p>
+<p><b>Type:</b> ${escapeHtml(intakeType)} &middot; <b>Source:</b> form</p>
+<p><b>Subject:</b> ${escapeHtml(submission.subject)}</p>
+<p><b>Message:</b></p>
+<p>${escapeHtml(submission.message).replace(/\n/g, '<br>')}</p>
+<p><i>Submitted at ${escapeHtml(submittedAt)}</i></p>`.trim();
+
+    const { error } = await supabase.functions.invoke('ms-teams-notify', {
+      body: {
+        configKey: 'teams.alerts',
+        subject: `New ${intakeType} via form — ${submission.subject}`,
+        bodyHtml,
+        importance,
+      },
+    });
+    if (error) console.error('Teams ops-alert notify failed (non-fatal):', error);
+  } catch (err) {
+    console.error('Teams ops-alert notify threw (non-fatal):', err);
+  }
+}
+
 export async function submitContactForm(
   data: Omit<ContactFormSubmission, 'id' | 'created_at' | 'updated_at'>,
 ) {
@@ -23,6 +65,7 @@ export async function submitContactForm(
       {
         ...data,
         status: 'new',
+        intake_source: 'form',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       },
@@ -34,6 +77,9 @@ export async function submitContactForm(
     throw new Error('Failed to submit contact form. Please try again.');
   }
 
-  await sendContactFormNotification(result as unknown as ContactFormSubmission);
+  const submission = result as unknown as ContactFormSubmission;
+  await sendContactFormNotification(submission);
+  // Teams is best-effort and must not break the form submission.
+  await notifyTeamsOpsAlert(submission);
   return result;
 }
