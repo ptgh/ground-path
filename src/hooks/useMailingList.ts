@@ -38,12 +38,6 @@ export const useContactFormSubmission = () => {
         description: "Thank you for contacting us. We'll get back to you soon.",
       });
     },
-    onError: (error: Error) => {
-      toast({
-        title: "Message not sent",
-        description: error.message,
-      });
-    },
   });
 };
 
