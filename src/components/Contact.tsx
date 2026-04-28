@@ -52,7 +52,8 @@ const Contact = () => {
         name: formData.name,
         email: formData.email,
         subject: formData.subject || 'General Enquiry',
-        message: formData.message
+        message: formData.message,
+        intake_type: formData.intake_type
       });
 
       await contactFormMutation.mutateAsync({
@@ -60,12 +61,14 @@ const Contact = () => {
         email: validatedData.email,
         subject: validatedData.subject,
         message: validatedData.message,
+        intake_type: validatedData.intake_type,
+        intake_source: 'form',
         status: 'new'
       });
 
       // Reset form on success
       if (!contactFormMutation.error) {
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        setFormData({ name: '', email: '', subject: '', message: '', intake_type: '' });
       }
     } catch (error) {
       if (error.errors) {
