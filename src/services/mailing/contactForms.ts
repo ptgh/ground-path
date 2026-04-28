@@ -89,33 +89,25 @@ export async function submitContactForm(
     throw new Error('Your message could not be sent just now. Please try again in a moment.');
   }
 
-  const insertedId = inserted?.id ?? null;
-  const finalSubmission: ContactFormSubmission = insertedId
-    ? { ...submission, id: insertedId }
-    : submission;
-
-  await sendContactFormNotification(finalSubmission);
+  await sendContactFormNotification(submission);
   // Teams is best-effort and must not break the form submission.
-  await notifyTeamsOpsAlert(finalSubmission);
+  await notifyTeamsOpsAlert(submission);
 
   // Auto-ack: fire-and-forget. Resend / function outages must not break
   // the form submission — the row's acknowledgement_status stays 'pending'
   // and can be retried later.
-  if (insertedId) {
-    try {
-      const ackPromise = supabase!.functions.invoke('send-contact-acknowledgement', {
-        body: { contact_form_id: insertedId },
-      });
-      // Detach: don't await. Surface errors to console only.
-      ackPromise
-        .then(({ error: ackErr }) => {
-          if (ackErr) console.error('send-contact-acknowledgement (form) failed (non-fatal):', ackErr);
-        })
-        .catch((err) => console.error('send-contact-acknowledgement (form) threw (non-fatal):', err));
-    } catch (err) {
-      console.error('send-contact-acknowledgement (form) invoke threw (non-fatal):', err);
-    }
+  try {
+    const ackPromise = supabase!.functions.invoke('send-contact-acknowledgement', {
+      body: { contact_form_id: insertedId },
+    });
+    ackPromise
+      .then(({ error: ackErr }) => {
+        if (ackErr) console.error('send-contact-acknowledgement (form) failed (non-fatal):', ackErr);
+      })
+      .catch((err) => console.error('send-contact-acknowledgement (form) threw (non-fatal):', err));
+  } catch (err) {
+    console.error('send-contact-acknowledgement (form) invoke threw (non-fatal):', err);
   }
 
-  return finalSubmission;
+  return submission;
 }
