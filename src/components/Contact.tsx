@@ -39,9 +39,8 @@ const Contact = () => {
     const clientIdentifier = `contact_${formData.email}_${Date.now().toString().slice(0, -3)}`;
     if (!checkRateLimit(clientIdentifier, 3, 300000)) { // 3 requests per 5 minutes
       toast({
-        title: "Too many requests",
-        description: "Please wait a few minutes before submitting again.",
-        variant: "destructive"
+        title: "Please wait a few minutes",
+        description: "You can send another message shortly.",
       });
       return;
     }
@@ -88,9 +87,8 @@ const Contact = () => {
     } catch (error) {
       console.error('Contact form submission failed:', error);
       toast({
-        title: "Couldn't send your message",
+        title: "Message not sent",
         description: error instanceof Error ? error.message : "Please try again in a moment.",
-        variant: "destructive",
       });
     }
   };

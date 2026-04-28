@@ -59,27 +59,33 @@ export async function submitContactForm(
     };
   }
 
-  const { data: result, error } = await supabase!
+  const submittedAt = new Date().toISOString();
+  const submission: ContactFormSubmission = {
+    ...data,
+    status: 'new',
+    intake_source: 'form',
+    created_at: submittedAt,
+    updated_at: submittedAt,
+  };
+
+  const { error } = await supabase!
     .from('contact_forms')
     .insert([
       {
-        ...data,
+        ...submission,
         status: 'new',
         intake_source: 'form',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        created_at: submittedAt,
+        updated_at: submittedAt,
       },
-    ])
-    .select()
-    .single();
+    ]);
 
   if (error) {
-    throw new Error('Failed to submit contact form. Please try again.');
+    throw new Error('Your message could not be sent just now. Please try again in a moment.');
   }
 
-  const submission = result as unknown as ContactFormSubmission;
   await sendContactFormNotification(submission);
   // Teams is best-effort and must not break the form submission.
   await notifyTeamsOpsAlert(submission);
-  return result;
+  return submission;
 }
