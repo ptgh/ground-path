@@ -105,7 +105,6 @@ async function classify(subject: string, body: string): Promise<IntakeType> {
 }
 
 async function postTeamsAlert(
-  serviceClient: ReturnType<typeof createClientStub>,
   args: {
     intakeType: IntakeType;
     subject: string;
@@ -130,20 +129,32 @@ async function postTeamsAlert(
 ${link}
 <p><i>Received at ${escapeHtml(args.receivedDateTime ?? '')}</i></p>`.trim();
 
-    const { data, error } = await serviceClient.functions.invoke('ms-teams-notify', {
-      body: {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const cronSecret = Deno.env.get('CRON_TRIGGER_SECRET');
+    if (!supabaseUrl || !anonKey || !cronSecret) {
+      console.error('Teams notify: missing env (SUPABASE_URL/ANON_KEY/CRON_TRIGGER_SECRET)');
+      return false;
+    }
+
+    const res = await fetch(`${supabaseUrl}/functions/v1/ms-teams-notify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${anonKey}`,
+        'X-Cron-Trigger': 'ms-outlook-triage',
+        'X-Cron-Secret': cronSecret,
+      },
+      body: JSON.stringify({
         configKey: 'teams.alerts',
         subject: `New ${args.intakeType} via inbox — ${subj}`,
         bodyHtml,
         importance,
-      },
+      }),
     });
-    if (error) {
-      console.error('Teams notify failed:', error);
-      return false;
-    }
-    if (data && typeof data === 'object' && 'error' in data) {
-      console.error('Teams notify returned error payload:', data);
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      console.error(`Teams notify HTTP ${res.status}: ${errText.slice(0, 300)}`);
       return false;
     }
     return true;
@@ -152,9 +163,6 @@ ${link}
     return false;
   }
 }
-
-// Just for typing convenience without importing SupabaseClient
-function createClientStub() { return null as never; }
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders });
