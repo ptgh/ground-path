@@ -216,6 +216,12 @@ const MobileAuthIndicator = () => {
           <LayoutDashboard className="mr-2 h-4 w-4" />
           <span>Dashboard</span>
         </DropdownMenuItem>
+        {isAdmin && (
+          <DropdownMenuItem onClick={() => navigate('/practitioner/admin')}>
+            <Shield className="mr-2 h-4 w-4" />
+            <span>Admin</span>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Sign out</span>
