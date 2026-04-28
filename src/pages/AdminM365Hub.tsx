@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+// Header/Footer retained for the defence-in-depth Access denied fallback only.
+// AdminLayout supplies the outer chrome for the authorised render path.
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -317,9 +319,8 @@ const AdminM365Hub = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <Header />
-      <main className="flex-1 container max-w-6xl py-8 space-y-6">
+    <>
+      <main className="container max-w-6xl py-8 space-y-6">
         <div className="space-y-1">
           <h1 className="text-3xl font-semibold tracking-tight">Microsoft 365 Hub</h1>
           <p className="text-sm text-muted-foreground">
@@ -563,8 +564,7 @@ const AdminM365Hub = () => {
           All M365 actions write to the m365_audit_log table AND to the Excel OpsLog (Groundpath/Logs/ops.xlsx#OpsLog) for cross-system forensic visibility.
         </p>
       </main>
-      <Footer />
-    </div>
+    </>
   );
 };
 
