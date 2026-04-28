@@ -272,7 +272,10 @@ export type Database = {
         Row: {
           created_at: string | null
           email: string
+          external_message_id: string | null
           id: string
+          intake_source: string
+          intake_type: string
           message: string
           name: string
           status: string | null
@@ -282,7 +285,10 @@ export type Database = {
         Insert: {
           created_at?: string | null
           email: string
+          external_message_id?: string | null
           id?: string
+          intake_source?: string
+          intake_type?: string
           message: string
           name: string
           status?: string | null
@@ -292,7 +298,10 @@ export type Database = {
         Update: {
           created_at?: string | null
           email?: string
+          external_message_id?: string | null
           id?: string
+          intake_source?: string
+          intake_type?: string
           message?: string
           name?: string
           status?: string | null
