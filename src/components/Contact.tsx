@@ -2,19 +2,28 @@
 import { useState } from 'react';
 import { Mail, Phone, Linkedin, MessageCircle, MessageSquare } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useContactFormSubmission } from '@/hooks/useMailingList';
 import { contactFormSchema, checkRateLimit } from '@/lib/validation';
 import { useToast } from '@/hooks/use-toast';
 import MailingListModal from './MailingListModal';
+import type { IntakeType } from '@/services/mailing/types';
 
 import { scrollToSectionWithOffset } from '@/lib/utils';
 
 const Contact = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    intake_type: IntakeType | '';
+  }>({
     name: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
+    intake_type: ''
   });
   const [isMailingListOpen, setIsMailingListOpen] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
