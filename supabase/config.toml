@@ -47,3 +47,5 @@ project_id = "vzwhccciarvirzqmvldl"
     verify_jwt = false
   [functions.get-stripe-config]
     verify_jwt = false
+  [functions.compliance-daily-check]
+    verify_jwt = false
