@@ -2,19 +2,28 @@
 import { useState } from 'react';
 import { Mail, Phone, Linkedin, MessageCircle, MessageSquare } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useContactFormSubmission } from '@/hooks/useMailingList';
 import { contactFormSchema, checkRateLimit } from '@/lib/validation';
 import { useToast } from '@/hooks/use-toast';
 import MailingListModal from './MailingListModal';
+import type { IntakeType } from '@/services/mailing/types';
 
 import { scrollToSectionWithOffset } from '@/lib/utils';
 
 const Contact = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    intake_type: IntakeType | '';
+  }>({
     name: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
+    intake_type: ''
   });
   const [isMailingListOpen, setIsMailingListOpen] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -43,7 +52,8 @@ const Contact = () => {
         name: formData.name,
         email: formData.email,
         subject: formData.subject || 'General Enquiry',
-        message: formData.message
+        message: formData.message,
+        intake_type: formData.intake_type
       });
 
       await contactFormMutation.mutateAsync({
@@ -51,12 +61,14 @@ const Contact = () => {
         email: validatedData.email,
         subject: validatedData.subject,
         message: validatedData.message,
+        intake_type: validatedData.intake_type,
+        intake_source: 'form',
         status: 'new'
       });
 
       // Reset form on success
       if (!contactFormMutation.error) {
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        setFormData({ name: '', email: '', subject: '', message: '', intake_type: '' });
       }
     } catch (error) {
       if (error.errors) {
@@ -265,6 +277,48 @@ const Contact = () => {
                     }`}
                   />
                   {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    I'm reaching out because *
+                  </label>
+                  <RadioGroup
+                    value={formData.intake_type}
+                    onValueChange={(v) =>
+                      setFormData((prev) => ({ ...prev, intake_type: v as IntakeType }))
+                    }
+                    className="space-y-2"
+                  >
+                    <label
+                      htmlFor="intake-client"
+                      className="flex items-start gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/40"
+                    >
+                      <RadioGroupItem value="client" id="intake-client" className="mt-1" />
+                      <span className="text-sm text-foreground">
+                        I'm seeking social work, counselling or NDIS mental health support
+                      </span>
+                    </label>
+                    <label
+                      htmlFor="intake-practitioner"
+                      className="flex items-start gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/40"
+                    >
+                      <RadioGroupItem value="practitioner" id="intake-practitioner" className="mt-1" />
+                      <span className="text-sm text-foreground">
+                        I'm a clinician interested in joining the platform
+                      </span>
+                    </label>
+                    <label
+                      htmlFor="intake-other"
+                      className="flex items-start gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/40"
+                    >
+                      <RadioGroupItem value="other" id="intake-other" className="mt-1" />
+                      <span className="text-sm text-foreground">Something else</span>
+                    </label>
+                  </RadioGroup>
+                  {errors.intake_type && (
+                    <p className="text-red-500 text-sm mt-1">{errors.intake_type}</p>
+                  )}
                 </div>
 
                 <div>

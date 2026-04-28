@@ -142,6 +142,21 @@ export async function requireM365Caller(req: Request): Promise<M365GuardResult> 
     return { ok: false, status: 500, error: 'Supabase env not configured' };
   }
 
+  const serviceClient = createClient(supabaseUrl, serviceKey);
+
+  // Cron / system caller branch: pg_cron sends `X-Cron-Trigger` plus a shared
+  // secret in `X-Cron-Secret`. We trust this combination and synthesise a
+  // system caller so audit rows still get a sensible attribution.
+  const cronTrigger = req.headers.get('X-Cron-Trigger');
+  const cronSecret = req.headers.get('X-Cron-Secret');
+  const expectedCronSecret = Deno.env.get('CRON_TRIGGER_SECRET');
+  if (cronTrigger && expectedCronSecret && cronSecret === expectedCronSecret) {
+    return {
+      ok: true,
+      caller: { userId: '00000000-0000-0000-0000-000000000000', email: `cron@system (${cronTrigger})`, serviceClient },
+    };
+  }
+
   const authHeader = req.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     return { ok: false, status: 401, error: 'Missing or malformed Authorization header' };
@@ -153,8 +168,6 @@ export async function requireM365Caller(req: Request): Promise<M365GuardResult> 
   });
   const { data: { user }, error: authErr } = await userClient.auth.getUser();
   if (authErr || !user) return { ok: false, status: 401, error: 'Invalid or expired token' };
-
-  const serviceClient = createClient(supabaseUrl, serviceKey);
 
   // is_m365_authorised checks both admin role AND allow-list in one query
   const { data: authorised, error: rpcErr } = await serviceClient.rpc(

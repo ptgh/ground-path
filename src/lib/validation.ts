@@ -56,7 +56,11 @@ export const contactFormSchema = z.object({
   message: z.string()
     .min(10, 'Message must be at least 10 characters')
     .max(2000, 'Message must not exceed 2000 characters')
-    .transform(sanitizeHtml)
+    .transform(sanitizeHtml),
+  intake_type: z.enum(['client', 'practitioner', 'other'], {
+    required_error: 'Please tell us why you are reaching out',
+    invalid_type_error: 'Please tell us why you are reaching out',
+  })
 });
 
 export const mailingListSchema = z.object({

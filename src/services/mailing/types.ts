@@ -10,6 +10,9 @@ export interface MailingListSubscriber {
   preferences?: Record<string, any>;
 }
 
+export type IntakeType = 'client' | 'practitioner' | 'other';
+export type IntakeSource = 'form' | 'inbox';
+
 export interface ContactFormSubmission {
   id?: string;
   name: string;
@@ -17,6 +20,9 @@ export interface ContactFormSubmission {
   subject: string;
   message: string;
   status: 'new' | 'in_progress' | 'resolved';
+  intake_type: IntakeType;
+  intake_source?: IntakeSource;
+  external_message_id?: string | null;
   created_at?: string;
   updated_at?: string;
 }
