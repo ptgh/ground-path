@@ -672,11 +672,13 @@ const AuthPage = ({ defaultUserType }: AuthPageProps = {}) => {
   );
 
   const renderSignIn = () => (
-    <form onSubmit={handleSignIn} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="email">Email address</Label>
-        <Input id="email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-      </div>
+    <div className="space-y-5">
+      {renderOAuthSection('signin')}
+      <form onSubmit={handleSignIn} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email address</Label>
+          <Input id="email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        </div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="password">Password</Label>
