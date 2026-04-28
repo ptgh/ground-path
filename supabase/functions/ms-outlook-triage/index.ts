@@ -234,7 +234,7 @@ Deno.serve(async (req: Request) => {
             if (insertErr) throw new Error(`Insert failed: ${insertErr.message}`);
 
             // Teams notify (must succeed before we mark-as-read).
-            teamsNotified = await postTeamsAlert(serviceClient, {
+            teamsNotified = await postTeamsAlert({
               intakeType: classification,
               subject,
               fromName,
