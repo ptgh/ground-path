@@ -81,7 +81,7 @@ const AuthAwareSection = () => {
           {roles.some(r => r.role === 'admin') && (
             <DropdownMenuItem onClick={() => navigate('/practitioner/admin')}>
               <Shield className="mr-2 h-4 w-4" />
-              <span>Admin</span>
+              <span>Admin 365</span>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem onClick={handleSignOut}>
@@ -219,7 +219,7 @@ const MobileAuthIndicator = () => {
         {isAdmin && (
           <DropdownMenuItem onClick={() => navigate('/practitioner/admin')}>
             <Shield className="mr-2 h-4 w-4" />
-            <span>Admin</span>
+            <span>Admin 365</span>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem onClick={handleSignOut}>
