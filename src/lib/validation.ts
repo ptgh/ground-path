@@ -54,7 +54,7 @@ export const contactFormSchema = z.object({
     .max(200, 'Subject must not exceed 200 characters')
     .transform(sanitizeHtml),
   message: z.string()
-    .min(10, 'Message must be at least 10 characters')
+    .min(1, 'Please enter a message')
     .max(2000, 'Message must not exceed 2000 characters')
     .transform(sanitizeHtml),
   intake_type: z.enum(['client', 'practitioner', 'other'], {

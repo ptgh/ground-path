@@ -47,15 +47,33 @@ const Contact = () => {
     }
 
     // Validate form data
+    let validatedData;
     try {
-      const validatedData = contactFormSchema.parse({
+      validatedData = contactFormSchema.parse({
         name: formData.name,
         email: formData.email,
         subject: formData.subject || 'General Enquiry',
         message: formData.message,
         intake_type: formData.intake_type
       });
+    } catch (error) {
+      if (error?.errors) {
+        const newErrors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          const field = err.path[0];
+          newErrors[field] = err.message;
+        });
+        setErrors(newErrors);
+      }
+      // Inline field errors are shown — keep toast subtle.
+      toast({
+        title: "Please check the highlighted fields",
+        description: "A couple of details need adjusting before we can send.",
+      });
+      return;
+    }
 
+    try {
       await contactFormMutation.mutateAsync({
         name: validatedData.name,
         email: validatedData.email,
@@ -66,23 +84,13 @@ const Contact = () => {
         status: 'new'
       });
 
-      // Reset form on success
-      if (!contactFormMutation.error) {
-        setFormData({ name: '', email: '', subject: '', message: '', intake_type: '' });
-      }
+      setFormData({ name: '', email: '', subject: '', message: '', intake_type: '' });
     } catch (error) {
-      if (error.errors) {
-        const newErrors: Record<string, string> = {};
-        error.errors.forEach((err) => {
-          const field = err.path[0];
-          newErrors[field] = err.message;
-        });
-        setErrors(newErrors);
-      }
+      console.error('Contact form submission failed:', error);
       toast({
-        title: "Validation Error",
-        description: "Please check your input and try again.",
-        variant: "destructive"
+        title: "Couldn't send your message",
+        description: error instanceof Error ? error.message : "Please try again in a moment.",
+        variant: "destructive",
       });
     }
   };
