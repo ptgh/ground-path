@@ -219,6 +219,7 @@ const App = () => {
                   <Route index element={<Navigate to="intake" replace />} />
                   <Route path="intake" element={<AdminIntake />} />
                   <Route path="m365" element={<AdminM365Hub />} />
+                  <Route path="compliance" element={<AdminCompliance />} />
                 </Route>
                 <Route path="/messages" element={<AuthenticatedRoute><Messages /></AuthenticatedRoute>} />
                 <Route path="/dashboard" element={<AuthenticatedRoute><ClientDashboard /></AuthenticatedRoute>} />
