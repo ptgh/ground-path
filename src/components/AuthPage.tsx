@@ -430,6 +430,115 @@ const AuthPage = ({ defaultUserType }: AuthPageProps = {}) => {
     setPassword('');
   };
 
+  const handleOAuthSignIn = async (provider: 'apple' | 'google', isSignup: boolean) => {
+    try {
+      if (isSignup) {
+        sessionStorage.setItem('pending_oauth_flow', 'signup');
+        sessionStorage.setItem(
+          'pending_oauth_user_type',
+          userType === 'practitioner' ? 'practitioner' : 'user',
+        );
+      } else {
+        sessionStorage.removeItem('pending_oauth_flow');
+        sessionStorage.removeItem('pending_oauth_user_type');
+      }
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/practitioner/auth/callback?flow=oauth`,
+          ...(provider === 'google'
+            ? { queryParams: { access_type: 'offline', prompt: 'consent' } }
+            : {}),
+        },
+      });
+      if (error) {
+        sessionStorage.removeItem('pending_oauth_flow');
+        sessionStorage.removeItem('pending_oauth_user_type');
+        toast({
+          title: 'Sign-in failed',
+          description: error.message,
+          variant: 'destructive',
+        });
+      }
+    } catch {
+      sessionStorage.removeItem('pending_oauth_flow');
+      sessionStorage.removeItem('pending_oauth_user_type');
+      toast({
+        title: 'Sign-in failed',
+        description: 'An unexpected error occurred.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const GoogleIcon = () => (
+    <svg className="h-4 w-4" viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+      <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+      <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+      <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+    </svg>
+  );
+
+  const AppleIcon = () => (
+    <svg className="h-4 w-4" viewBox="0 0 384 512" aria-hidden="true" fill="currentColor">
+      <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zM256.6 105.1c20.5-24.3 18.6-46.4 18-54.4-18.1 1-39 12.3-50.9 26.2-13.1 14.9-20.8 33.3-19.1 53.9 19.6 1.5 37.5-8.6 52-25.7z"/>
+    </svg>
+  );
+
+  const renderOAuthSection = (mode: 'signin' | 'signup') => {
+    const isSignup = mode === 'signup';
+    // On signup tab, hide OAuth when practitioner is selected
+    if (isSignup && userType === 'practitioner') {
+      return (
+        <div className="rounded-lg border border-primary/10 bg-primary/5 px-3.5 py-2.5 flex items-start gap-2.5">
+          <ShieldCheck className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Practitioners: please use email/password. You'll complete LinkedIn verification after signup.
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-3">
+        <div className="space-y-2">
+          <Button
+            type="button"
+            onClick={() => handleOAuthSignIn('apple', isSignup)}
+            className="w-full bg-foreground text-background hover:bg-foreground/90"
+            size="lg"
+          >
+            <AppleIcon />
+            <span className="ml-2">Continue with Apple</span>
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleOAuthSignIn('google', isSignup)}
+            className="w-full"
+            size="lg"
+          >
+            <GoogleIcon />
+            <span className="ml-2">Continue with Google</span>
+          </Button>
+        </div>
+        <p className="text-[11px] text-muted-foreground text-center leading-relaxed px-2">
+          We only receive your name and email. We never receive your contacts, calendar, or browsing data.
+        </p>
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-border" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-card px-3 text-muted-foreground">or continue with email</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
 
   const renderVerificationContent = () => (
     <div className="space-y-5">
@@ -563,42 +672,45 @@ const AuthPage = ({ defaultUserType }: AuthPageProps = {}) => {
   );
 
   const renderSignIn = () => (
-    <form onSubmit={handleSignIn} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="email">Email address</Label>
-        <Input id="email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-      </div>
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="password">Password</Label>
-          <button
-            type="button"
-            onClick={() => setShowResetForm(true)}
-            className="text-xs text-primary hover:text-primary/80 transition-colors font-medium"
-          >
-            Forgot password?
-          </button>
+    <div className="space-y-5">
+      {renderOAuthSection('signin')}
+      <form onSubmit={handleSignIn} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email address</Label>
+          <Input id="email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
-        <PasswordInput
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          show={showPassword}
-          onToggle={() => setShowPassword(!showPassword)}
-        />
-      </div>
-      <Button type="submit" className="w-full" size="lg" disabled={loading}>
-        {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lock className="mr-2 h-4 w-4" />}
-        Sign In
-      </Button>
-      <p className="text-center text-sm text-muted-foreground">
-        Don't have an account?{' '}
-        <button type="button" onClick={() => setAuthMode('signup')} className="text-primary font-medium hover:underline">
-          Create one
-        </button>
-      </p>
-    </form>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Password</Label>
+            <button
+              type="button"
+              onClick={() => setShowResetForm(true)}
+              className="text-xs text-primary hover:text-primary/80 transition-colors font-medium"
+            >
+              Forgot password?
+            </button>
+          </div>
+          <PasswordInput
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            show={showPassword}
+            onToggle={() => setShowPassword(!showPassword)}
+          />
+        </div>
+        <Button type="submit" className="w-full" size="lg" disabled={loading}>
+          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lock className="mr-2 h-4 w-4" />}
+          Sign In
+        </Button>
+        <p className="text-center text-sm text-muted-foreground">
+          Don't have an account?{' '}
+          <button type="button" onClick={() => setAuthMode('signup')} className="text-primary font-medium hover:underline">
+            Create one
+          </button>
+        </p>
+      </form>
+    </div>
   );
 
   const renderSignUp = () => (
@@ -651,6 +763,7 @@ const AuthPage = ({ defaultUserType }: AuthPageProps = {}) => {
 
       {userType && (
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          {renderOAuthSection('signup')}
           {userType === 'practitioner' && (
             <div className="rounded-lg border border-primary/10 bg-primary/5 px-3.5 py-2.5 flex items-start gap-2.5">
               <ShieldCheck className="h-4 w-4 text-primary mt-0.5 shrink-0" />

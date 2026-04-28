@@ -19,16 +19,72 @@ const AuthCallback = () => {
           return;
         }
 
-        const userType = session.user.user_metadata?.user_type === 'practitioner' ? 'practitioner' : 'user';
+        const provider = session.user.app_metadata?.provider;
 
-        if (flow === 'signup' || session.user.app_metadata?.provider === 'email') {
+        // Email signup flow (existing behaviour)
+        if (flow === 'signup' || provider === 'email') {
+          const userType = session.user.user_metadata?.user_type === 'practitioner' ? 'practitioner' : 'user';
           sessionStorage.setItem('pending_signup_email', session.user.email || '');
           sessionStorage.setItem('pending_signup_user_type', userType);
           navigate(`/practitioner/auth?signup=complete&type=${userType}`, { replace: true });
           return;
         }
 
-        navigate('/practitioner/dashboard', { replace: true });
+        // OAuth flow (Apple/Google)
+        if (flow === 'oauth' || (provider && provider !== 'email')) {
+          const pendingFlow = sessionStorage.getItem('pending_oauth_flow');
+          const pendingUserType = sessionStorage.getItem('pending_oauth_user_type');
+          const isSignup = pendingFlow === 'signup';
+          const intendedUserType: 'user' | 'practitioner' =
+            pendingUserType === 'practitioner' ? 'practitioner' : 'user';
+
+          if (isSignup) {
+            const meta = session.user.user_metadata || {};
+            const resolvedName: string =
+              (meta.full_name as string) ||
+              (meta.name as string) ||
+              [meta.given_name, meta.family_name].filter(Boolean).join(' ').trim() ||
+              (session.user.email ? session.user.email.split('@')[0] : '');
+
+            try {
+              const { data: existing } = await supabase
+                .from('profiles')
+                .select('user_type, display_name')
+                .eq('user_id', session.user.id)
+                .single();
+
+              const updates: Record<string, string> = {};
+              if (!existing?.user_type || existing.user_type === 'user') {
+                updates.user_type = intendedUserType;
+              }
+              if (!existing?.display_name && resolvedName) {
+                updates.display_name = resolvedName;
+              }
+              if (Object.keys(updates).length > 0) {
+                await supabase.from('profiles').update(updates).eq('user_id', session.user.id);
+              }
+            } catch (err) {
+              console.warn('[AuthCallback] OAuth profile sync failed:', err);
+            }
+          }
+
+          sessionStorage.removeItem('pending_oauth_flow');
+          sessionStorage.removeItem('pending_oauth_user_type');
+
+          // Determine destination from current profile
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('user_type')
+            .eq('user_id', session.user.id)
+            .single();
+          const effectiveUserType = profileData?.user_type || intendedUserType;
+          navigate(effectiveUserType === 'practitioner' ? '/practitioner/dashboard' : '/dashboard', {
+            replace: true,
+          });
+          return;
+        }
+
+        navigate('/dashboard', { replace: true });
       } catch {
         navigate('/practitioner/auth', { replace: true });
       }
