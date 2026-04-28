@@ -679,37 +679,38 @@ const AuthPage = ({ defaultUserType }: AuthPageProps = {}) => {
           <Label htmlFor="email">Email address</Label>
           <Input id="email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="password">Password</Label>
-          <button
-            type="button"
-            onClick={() => setShowResetForm(true)}
-            className="text-xs text-primary hover:text-primary/80 transition-colors font-medium"
-          >
-            Forgot password?
-          </button>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Password</Label>
+            <button
+              type="button"
+              onClick={() => setShowResetForm(true)}
+              className="text-xs text-primary hover:text-primary/80 transition-colors font-medium"
+            >
+              Forgot password?
+            </button>
+          </div>
+          <PasswordInput
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            show={showPassword}
+            onToggle={() => setShowPassword(!showPassword)}
+          />
         </div>
-        <PasswordInput
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          show={showPassword}
-          onToggle={() => setShowPassword(!showPassword)}
-        />
-      </div>
-      <Button type="submit" className="w-full" size="lg" disabled={loading}>
-        {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lock className="mr-2 h-4 w-4" />}
-        Sign In
-      </Button>
-      <p className="text-center text-sm text-muted-foreground">
-        Don't have an account?{' '}
-        <button type="button" onClick={() => setAuthMode('signup')} className="text-primary font-medium hover:underline">
-          Create one
-        </button>
-      </p>
-    </form>
+        <Button type="submit" className="w-full" size="lg" disabled={loading}>
+          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lock className="mr-2 h-4 w-4" />}
+          Sign In
+        </Button>
+        <p className="text-center text-sm text-muted-foreground">
+          Don't have an account?{' '}
+          <button type="button" onClick={() => setAuthMode('signup')} className="text-primary font-medium hover:underline">
+            Create one
+          </button>
+        </p>
+      </form>
+    </div>
   );
 
   const renderSignUp = () => (
