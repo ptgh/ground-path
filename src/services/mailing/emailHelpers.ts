@@ -1,5 +1,4 @@
 import { supabase } from '@/integrations/supabase/client';
-import type { ContactFormSubmission } from './types';
 
 /**
  * Send the double opt-in confirmation email to a new subscriber.
