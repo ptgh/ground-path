@@ -320,9 +320,11 @@ const AdminM365Hub = () => {
 
   return (
     <>
-      <main className="container max-w-6xl py-8 space-y-6">
+      <div className="space-y-6">
         <div className="space-y-1">
-          <h1 className="text-3xl font-semibold tracking-tight">Microsoft 365 Hub</h1>
+          <h2 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
+            <Database className="h-6 w-6 text-primary" /> Microsoft 365 Hub
+          </h2>
           <p className="text-sm text-muted-foreground">
             Operations layer for the <code className="text-xs px-1 py-0.5 bg-muted rounded">connect@groundpath.com.au</code> account.
             Knowledge base, inbox triage, and content management — all admin-only and audited.
@@ -563,7 +565,7 @@ const AdminM365Hub = () => {
         <p className="text-xs text-muted-foreground text-center pt-4">
           All M365 actions write to the m365_audit_log table AND to the Excel OpsLog (Groundpath/Logs/ops.xlsx#OpsLog) for cross-system forensic visibility.
         </p>
-      </main>
+      </div>
     </>
   );
 };
