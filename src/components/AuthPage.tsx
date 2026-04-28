@@ -763,6 +763,7 @@ const AuthPage = ({ defaultUserType }: AuthPageProps = {}) => {
 
       {userType && (
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          {renderOAuthSection('signup')}
           {userType === 'practitioner' && (
             <div className="rounded-lg border border-primary/10 bg-primary/5 px-3.5 py-2.5 flex items-start gap-2.5">
               <ShieldCheck className="h-4 w-4 text-primary mt-0.5 shrink-0" />
