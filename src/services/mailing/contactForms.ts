@@ -60,8 +60,13 @@ export async function submitContactForm(
   }
 
   const submittedAt = new Date().toISOString();
+  // Generate the id client-side so we have it for the ack-email invoke
+  // without needing a SELECT-after-INSERT (anon role has INSERT but not
+  // SELECT on contact_forms).
+  const insertedId = crypto.randomUUID();
   const submission: ContactFormSubmission = {
     ...data,
+    id: insertedId,
     status: 'new',
     intake_source: 'form',
     created_at: submittedAt,
@@ -87,5 +92,22 @@ export async function submitContactForm(
   await sendContactFormNotification(submission);
   // Teams is best-effort and must not break the form submission.
   await notifyTeamsOpsAlert(submission);
+
+  // Auto-ack: fire-and-forget. Resend / function outages must not break
+  // the form submission — the row's acknowledgement_status stays 'pending'
+  // and can be retried later.
+  try {
+    const ackPromise = supabase!.functions.invoke('send-contact-acknowledgement', {
+      body: { contact_form_id: insertedId },
+    });
+    ackPromise
+      .then(({ error: ackErr }) => {
+        if (ackErr) console.error('send-contact-acknowledgement (form) failed (non-fatal):', ackErr);
+      })
+      .catch((err) => console.error('send-contact-acknowledgement (form) threw (non-fatal):', err));
+  } catch (err) {
+    console.error('send-contact-acknowledgement (form) invoke threw (non-fatal):', err);
+  }
+
   return submission;
 }

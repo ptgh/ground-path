@@ -217,6 +217,39 @@ ${link}
   }
 }
 
+/**
+ * Fire the per-row acknowledgement-email invoke. Cron-secret authenticated
+ * so it works without a JWT (we're calling internally from another edge
+ * function). Errors logged only — never block the calling pipeline.
+ */
+async function triggerAckInvoke(contactFormId: string): Promise<void> {
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const cronSecret = Deno.env.get('CRON_TRIGGER_SECRET');
+    if (!supabaseUrl || !anonKey || !cronSecret) {
+      console.error('Ack invoke: missing env (SUPABASE_URL/ANON_KEY/CRON_TRIGGER_SECRET)');
+      return;
+    }
+    const res = await fetch(`${supabaseUrl}/functions/v1/send-contact-acknowledgement`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${anonKey}`,
+        'X-Cron-Trigger': 'ms-outlook-triage',
+        'X-Cron-Secret': cronSecret,
+      },
+      body: JSON.stringify({ contact_form_id: contactFormId }),
+    });
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      console.error(`Ack invoke HTTP ${res.status} for ${contactFormId}: ${errText.slice(0, 300)}`);
+    }
+  } catch (err) {
+    console.error(`Ack invoke threw for ${contactFormId}:`, err);
+  }
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders });
 
@@ -315,18 +348,23 @@ Deno.serve(async (req: Request) => {
               console.error(`Mark-as-read failed for deduped ${m.id}:`, markErr);
             }
           } else {
-            // Insert the contact_forms row.
-            const { error: insertErr } = await serviceClient.from('contact_forms').insert({
-              name: fromName || fromAddress || 'Unknown sender',
-              email: fromAddress || 'unknown@unknown',
-              subject: subject,
-              message: bodyPreview || '(empty body)',
-              status: 'new',
-              intake_type: classification,
-              intake_source: 'inbox',
-              external_message_id: m.id,
-            });
+            // Insert the contact_forms row (return id for ack invoke).
+            const { data: insertedRow, error: insertErr } = await serviceClient
+              .from('contact_forms')
+              .insert({
+                name: fromName || fromAddress || 'Unknown sender',
+                email: fromAddress || 'unknown@unknown',
+                subject: subject,
+                message: bodyPreview || '(empty body)',
+                status: 'new',
+                intake_type: classification,
+                intake_source: 'inbox',
+                external_message_id: m.id,
+              })
+              .select('id')
+              .single();
             if (insertErr) throw new Error(`Insert failed: ${insertErr.message}`);
+            const newContactFormId = insertedRow?.id as string | undefined;
 
             // Teams notify (must succeed before we mark-as-read).
             teamsNotified = await postTeamsAlert({
@@ -338,6 +376,16 @@ Deno.serve(async (req: Request) => {
               receivedDateTime: m.receivedDateTime,
               webLink: m.webLink,
             });
+
+            // Auto-ack: fire-and-forget invoke via cron-secret-authenticated
+            // call (same pattern as Teams notify above). Failures must not
+            // block mark-as-read; the row's acknowledgement_status stays
+            // 'pending' for later retry.
+            if (newContactFormId) {
+              triggerAckInvoke(newContactFormId).catch((err) =>
+                console.error(`Ack invoke threw for ${newContactFormId} (non-fatal):`, err),
+              );
+            }
 
             if (teamsNotified) {
               try {

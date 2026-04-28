@@ -270,6 +270,9 @@ export type Database = {
       }
       contact_forms: {
         Row: {
+          acknowledged_at: string | null
+          acknowledgement_error: string | null
+          acknowledgement_status: string | null
           created_at: string | null
           email: string
           external_message_id: string | null
@@ -283,6 +286,9 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          acknowledged_at?: string | null
+          acknowledgement_error?: string | null
+          acknowledgement_status?: string | null
           created_at?: string | null
           email: string
           external_message_id?: string | null
@@ -296,6 +302,9 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          acknowledged_at?: string | null
+          acknowledgement_error?: string | null
+          acknowledgement_status?: string | null
           created_at?: string | null
           email?: string
           external_message_id?: string | null
