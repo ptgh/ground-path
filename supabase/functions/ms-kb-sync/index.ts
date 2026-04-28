@@ -181,10 +181,58 @@ async function embedBatch(texts: string[]): Promise<number[][]> {
 }
 
 /* ============================================================
+ *  Fire-and-forget helper (mirrors contact-form-submit pattern)
+ * ============================================================ */
+function fireAndForget(p: Promise<unknown> | PromiseLike<unknown>): void {
+  const wrapped = Promise.resolve(p).catch((err) =>
+    console.error('ms-kb-sync fire-and-forget swallowed:', err),
+  );
+  // deno-lint-ignore no-explicit-any
+  const er = (globalThis as any).EdgeRuntime;
+  if (er && typeof er.waitUntil === 'function') {
+    try { er.waitUntil(wrapped); } catch { /* ignore */ }
+  }
+}
+
+async function invokeTeamsNotify(
+  body: unknown,
+  ctx: { supabaseUrl: string; anonKey: string; cronSecret: string },
+): Promise<void> {
+  try {
+    const res = await fetch(`${ctx.supabaseUrl}/functions/v1/ms-teams-notify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ctx.anonKey}`,
+        'X-Cron-Trigger': 'ms-kb-sync',
+        'X-Cron-Secret': ctx.cronSecret,
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      console.error(`[ms-kb-sync] ms-teams-notify HTTP ${res.status}: ${text.slice(0, 300)}`);
+    }
+  } catch (err) {
+    console.error('[ms-kb-sync] ms-teams-notify threw:', err);
+  }
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+/* ============================================================
  *  Main handler
  * ============================================================ */
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders });
+
+  const startedAt = Date.now();
+  const cronTrigger = req.headers.get('X-Cron-Trigger');
+  const triggeredBy: 'cron' | 'manual' = cronTrigger ? 'cron' : 'manual';
 
   const guard = await requireM365Caller(req);
   if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500);
