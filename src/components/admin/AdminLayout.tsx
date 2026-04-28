@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { Loader2, AlertTriangle, Inbox, Database, Shield } from 'lucide-react';
+import { Loader2, AlertTriangle, Inbox, Database, Shield, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/Header';
@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 const ADMIN_NAV = [
   { to: '/practitioner/admin/intake', label: 'Intake', icon: Inbox },
   { to: '/practitioner/admin/m365', label: 'M365 Hub', icon: Database },
+  { to: '/practitioner/admin/compliance', label: 'Compliance', icon: ShieldCheck },
 ];
 
 const AdminLayout = () => {
