@@ -281,6 +281,7 @@ export type Database = {
           intake_type: string
           message: string
           name: string
+          responded_at: string | null
           status: string | null
           subject: string
           updated_at: string | null
@@ -297,6 +298,7 @@ export type Database = {
           intake_type?: string
           message: string
           name: string
+          responded_at?: string | null
           status?: string | null
           subject: string
           updated_at?: string | null
@@ -313,6 +315,7 @@ export type Database = {
           intake_type?: string
           message?: string
           name?: string
+          responded_at?: string | null
           status?: string | null
           subject?: string
           updated_at?: string | null
