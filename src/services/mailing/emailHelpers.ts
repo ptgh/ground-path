@@ -27,26 +27,9 @@ export async function sendConfirmationEmail(email: string, token: string) {
   }
 }
 
-/**
- * Notify the inbox owner that a new contact-form submission arrived.
- */
-export async function sendContactFormNotification(submission: ContactFormSubmission) {
-  if (!supabase) return;
-  try {
-    const { error } = await supabase.functions.invoke('send-email', {
-      body: {
-        type: 'contact_form',
-        to: 'admin@groundpath.com.au',
-        data: submission,
-      },
-    });
-    if (error) {
-      console.error('Failed to send contact form notification:', error);
-    }
-  } catch (error) {
-    console.error('Error sending contact form notification:', error);
-  }
-}
+// sendContactFormNotification has moved server-side: the public
+// `contact-form-submit` edge function now invokes `send-email` internally
+// using the cron-secret pattern, so the browser never needs to call it.
 
 export function generateConfirmationToken(): string {
   return (
