@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Menu, X, User, LogOut, FileText, BookOpen, LayoutDashboard, Newspaper, MessageSquare, Mic } from 'lucide-react';
+import { Menu, X, User, LogOut, FileText, BookOpen, LayoutDashboard, Newspaper, MessageSquare, Mic, Shield } from 'lucide-react';
 import WeatherEncouragement from './header/WeatherEncouragement';
 import { useAuth } from '@/hooks/useAuth';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
@@ -78,6 +78,12 @@ const AuthAwareSection = () => {
             <User className="mr-2 h-4 w-4" />
             <span>Dashboard</span>
           </DropdownMenuItem>
+          {roles.some(r => r.role === 'admin') && (
+            <DropdownMenuItem onClick={() => navigate('/practitioner/admin')}>
+              <Shield className="mr-2 h-4 w-4" />
+              <span>Admin</span>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Sign out</span>
