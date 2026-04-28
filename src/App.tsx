@@ -213,6 +213,7 @@ const App = () => {
                 <Route path="/auth/callback" element={<LinkedInCallback />} />
                 <Route path="/practitioner/dashboard" element={<VerifiedPractitionerRoute><Dashboard /></VerifiedPractitionerRoute>} />
                 <Route path="/practitioner/messages" element={<VerifiedPractitionerRoute><Messages /></VerifiedPractitionerRoute>} />
+                <Route path="/practitioner/admin/mailing-list" element={<VerifiedPractitionerRoute><AdminMailingList /></VerifiedPractitionerRoute>} />
                 <Route path="/practitioner/admin" element={<VerifiedPractitionerRoute><AdminLayout /></VerifiedPractitionerRoute>}>
                   <Route index element={<Navigate to="intake" replace />} />
                   <Route path="intake" element={<AdminIntake />} />
