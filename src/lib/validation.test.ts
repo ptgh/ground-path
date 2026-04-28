@@ -64,6 +64,7 @@ describe('contactFormSchema', () => {
       email: 'jane@example.com',
       subject: 'Enquiry',
       message: 'This is a test message that is long enough.',
+      intake_type: 'client',
     });
     expect(result.success).toBe(true);
   });
@@ -74,6 +75,7 @@ describe('contactFormSchema', () => {
       email: 'jane@example.com',
       subject: 'Subject',
       message: 'A message long enough to pass validation.',
+      intake_type: 'client',
     });
     expect(result.success).toBe(false);
   });
@@ -84,18 +86,20 @@ describe('contactFormSchema', () => {
       email: 'not-an-email',
       subject: 'Subject',
       message: 'A message long enough to pass validation.',
+      intake_type: 'client',
     });
     expect(result.success).toBe(false);
   });
 
-  it('rejects a message that is too short', () => {
+  it('accepts a one-character message', () => {
     const result = contactFormSchema.safeParse({
       name: 'Jane Doe',
       email: 'jane@example.com',
       subject: 'Subject',
-      message: 'Short',
+      message: 'x',
+      intake_type: 'client',
     });
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
   });
 });
 
