@@ -59,15 +59,34 @@ export function forbiddenResponse(
   });
 }
 
+/** Sentinel user id used when a request is authenticated via the cron-secret
+ * pattern (system-to-system call) rather than a real user JWT. Mirrors the
+ * value used by `requireM365Caller` in `_shared/m365.ts` so audit rows
+ * remain attributable. */
+export const SYSTEM_CALLER_USER_ID = '00000000-0000-0000-0000-000000000000';
+
 /**
  * Verifies the Bearer JWT in the Authorization header via supabase.auth.getUser().
  * Returns the authenticated user's ID on success, or null + error message on failure.
+ *
+ * Also accepts the cron-secret pattern (X-Cron-Trigger + X-Cron-Secret matching
+ * the CRON_TRIGGER_SECRET env var). When that pair is present and valid, returns
+ * the SYSTEM_CALLER_USER_ID — keeping the trust pattern in sync with
+ * `requireM365Caller` so internal edge-to-edge calls work uniformly.
  */
 export async function verifyAuth(
   req: Request,
   supabaseUrl: string,
   supabaseAnonKey: string,
 ): Promise<{ userId: string | null; error: string | null }> {
+  // Cron / system caller branch (mirrors requireM365Caller in _shared/m365.ts).
+  const cronTrigger = req.headers.get('X-Cron-Trigger');
+  const cronSecret = req.headers.get('X-Cron-Secret');
+  const expectedCronSecret = Deno.env.get('CRON_TRIGGER_SECRET');
+  if (cronTrigger && expectedCronSecret && cronSecret === expectedCronSecret) {
+    return { userId: SYSTEM_CALLER_USER_ID, error: null };
+  }
+
   const authHeader = req.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     return { userId: null, error: 'Missing or malformed Authorization header' };
