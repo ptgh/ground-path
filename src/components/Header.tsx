@@ -326,10 +326,10 @@ const Header = () => {
                   );
                 })}
                 {/* Separator + public links */}
-                <div className="w-px h-5 bg-surface-dark-border mx-2" />
+                <div className="w-px h-5 bg-surface-dark-border mx-2 shrink-0" />
                 <button
                   onClick={() => navigate('/')}
-                  className="text-surface-dark-muted hover:text-surface-dark-foreground transition-colors text-sm font-medium px-3 py-2"
+                  className="text-surface-dark-muted hover:text-surface-dark-foreground transition-colors text-sm font-medium px-3 py-2 whitespace-nowrap shrink-0"
                 >
                   View Site
                 </button>
