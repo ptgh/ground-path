@@ -23,6 +23,7 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   AlertTriangle, RefreshCw, Loader2, Inbox, Mail, CheckCircle2, Send,
   ChevronLeft, ChevronRight,
@@ -143,6 +144,7 @@ const AdminIntake = () => {
   const [marking, setMarking] = useState(false);
   const [resending, setResending] = useState(false);
   const [confirmResend, setConfirmResend] = useState(false);
+  const [forceResend, setForceResend] = useState(false);
 
   // Auth gate (mirrors AdminM365Hub)
   useEffect(() => {
@@ -256,7 +258,7 @@ const AdminIntake = () => {
     void loadAudit(row);
   };
 
-  const writeAdminAudit = async (action: 'mark_responded' | 'resend_acknowledgement', row: ContactRow, status: 'success' | 'error', errorMessage?: string) => {
+  const writeAdminAudit = async (action: 'mark_responded' | 'resend_acknowledgement' | 'force_resend_acknowledgement', row: ContactRow, status: 'success' | 'error', errorMessage?: string) => {
     await supabase.from('m365_audit_log').insert({
       function_name: 'admin-intake',
       action,
@@ -298,14 +300,15 @@ const AdminIntake = () => {
 
   const resendAck = async () => {
     if (!selected) return;
+    const force = forceResend;
     setResending(true);
     setConfirmResend(false);
     try {
       const { data, error } = await supabase.functions.invoke('send-contact-acknowledgement', {
-        body: { contact_form_id: selected.id },
+        body: { contact_form_id: selected.id, force },
       });
       if (error) throw error;
-      await writeAdminAudit('resend_acknowledgement', selected, 'success');
+      await writeAdminAudit(force ? 'force_resend_acknowledgement' : 'resend_acknowledgement', selected, 'success');
       // Re-fetch the row
       const { data: refreshed } = await supabase
         .from('contact_forms').select('*').eq('id', selected.id).single();
@@ -316,13 +319,27 @@ const AdminIntake = () => {
       }
       void loadStats();
       void loadAudit(selected);
-      toast.success(data?.skipped ? `Acknowledgement skipped (${data.reason ?? 'already sent'})` : 'Acknowledgement re-sent');
+
+      // Toast copy distinguishes the three success states.
+      if (data?.skipped && data?.reason === 'already_acknowledged') {
+        const ackedAt = data?.acknowledged_at
+          ? new Date(data.acknowledged_at).toLocaleString()
+          : 'a previous date';
+        toast(`Already acknowledged on ${ackedAt}. Use 'Force resend' if you need to send again.`);
+      } else if (data?.skipped) {
+        toast(`Acknowledgement skipped (${data.reason ?? 'already sent'})`);
+      } else if (data?.forced) {
+        toast.success('Acknowledgement force-resent');
+      } else {
+        toast.success('Acknowledgement resent successfully');
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Failed to resend acknowledgement';
-      await writeAdminAudit('resend_acknowledgement', selected, 'error', msg);
+      await writeAdminAudit(force ? 'force_resend_acknowledgement' : 'resend_acknowledgement', selected, 'error', msg);
       toast.error(msg);
     } finally {
       setResending(false);
+      setForceResend(false);
     }
   };
 
@@ -584,7 +601,13 @@ const AdminIntake = () => {
         </SheetContent>
       </Sheet>
 
-      <AlertDialog open={confirmResend} onOpenChange={setConfirmResend}>
+      <AlertDialog
+        open={confirmResend}
+        onOpenChange={(open) => {
+          setConfirmResend(open);
+          if (!open) setForceResend(false);
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Resend acknowledgement?</AlertDialogTitle>
@@ -592,9 +615,28 @@ const AdminIntake = () => {
               This will re-send the acknowledgement email to <span className="font-medium text-foreground">{selected?.email}</span>. They will receive a new message in their inbox.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          <div className="space-y-2 pt-1">
+            <label className="flex items-start gap-2 cursor-pointer select-none">
+              <Checkbox
+                checked={forceResend}
+                onCheckedChange={(v) => setForceResend(v === true)}
+                className="mt-0.5"
+              />
+              <span className="text-xs text-muted-foreground leading-relaxed">
+                Force resend even if already sent
+              </span>
+            </label>
+            {forceResend && (
+              <p className="text-xs text-muted-foreground pl-6 leading-relaxed">
+                This will send a second acknowledgement email. The recipient will receive it again.
+              </p>
+            )}
+          </div>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={resendAck}>Resend</AlertDialogAction>
+            <AlertDialogAction onClick={resendAck}>
+              {forceResend ? 'Force resend' : 'Resend'}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

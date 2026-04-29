@@ -16,7 +16,7 @@ import { renderAsync } from 'npm:@react-email/components@0.0.22';
 import * as React from 'npm:react@18.3.1';
 
 import {
-  m365CorsHeaders, jsonResponse, requireM365Caller, writeAudit,
+  m365CorsHeaders, jsonResponse, requireM365Caller, writeAudit, fireAndForgetOpsLog,
 } from '../_shared/m365.ts';
 
 import { ClientAckEmail, clientAckText, clientAckSubject } from './_templates/client.tsx';
@@ -32,6 +32,7 @@ interface ContactRow {
   intake_type: IntakeType;
   intake_source: string | null;
   acknowledgement_status: 'pending' | 'sent' | 'failed' | 'skipped' | null;
+  acknowledged_at: string | null;
 }
 
 const FROM = 'Groundpath <connect@groundpath.com.au>';
@@ -59,9 +60,11 @@ Deno.serve(async (req: Request) => {
   const serviceClient = caller.serviceClient;
 
   let contactFormId: string;
+  let force = false;
   try {
     const body = await req.json();
     contactFormId = String(body?.contact_form_id ?? '').trim();
+    force = body?.force === true;
     if (!contactFormId || !/^[0-9a-f-]{36}$/i.test(contactFormId)) {
       return jsonResponse({ error: 'contact_form_id (uuid) required' }, 400, req);
     }
@@ -72,7 +75,7 @@ Deno.serve(async (req: Request) => {
   // Look up the row first so we know intake_type / recipient.
   const { data: row, error: fetchErr } = await serviceClient
     .from('contact_forms')
-    .select('id, name, email, intake_type, intake_source, acknowledgement_status')
+    .select('id, name, email, intake_type, intake_source, acknowledgement_status, acknowledged_at')
     .eq('id', contactFormId)
     .maybeSingle<ContactRow>();
 
@@ -83,7 +86,7 @@ Deno.serve(async (req: Request) => {
     return jsonResponse({ error: 'contact_forms row not found' }, 404, req);
   }
 
-  if (row.acknowledgement_status && row.acknowledgement_status !== 'pending') {
+  if (!force && row.acknowledgement_status && row.acknowledgement_status !== 'pending') {
     await writeAudit(serviceClient, caller, {
       function_name: 'send-contact-acknowledgement',
       action: 'send_ack',
@@ -95,43 +98,45 @@ Deno.serve(async (req: Request) => {
         intake_source: row.intake_source,
         skipped: true,
         reason: `already ${row.acknowledgement_status}`,
+        forced_resend: false,
       },
     }, req);
     return jsonResponse({
       ok: true,
       skipped: true,
+      forced: false,
       contact_form_id: row.id,
       status: row.acknowledgement_status,
-      reason: `already ${row.acknowledgement_status}`,
+      reason: 'already_acknowledged',
+      acknowledged_at: row.acknowledged_at,
     }, req);
   }
 
   // Atomic claim: only one caller can flip pending -> in-flight. We use
   // 'sent' provisionally to win the race, then revert to 'failed' if Resend
-  // call fails. Using a conditional .eq('acknowledgement_status','pending')
-  // gives us race-free idempotency without raw SQL or a custom RPC.
-  // First mark in-flight via a temporary value? Status enum doesn't allow
-  // it, so we instead claim by updating to 'sent' but with acknowledged_at
-  // = null until success. Actually safer: use a probe UPDATE that sets
-  // acknowledged_at to a sentinel and check rowCount.
+  // call fails. Force mode bypasses the claim entirely — the admin has
+  // already acknowledged via the UI confirmation that they want to send a
+  // duplicate, and the row is already in a terminal state ('sent'/'failed').
   const probeAt = new Date().toISOString();
-  const { data: claimed, error: claimErr } = await serviceClient
-    .from('contact_forms')
-    .update({ acknowledged_at: probeAt })
-    .eq('id', row.id)
-    .eq('acknowledgement_status', 'pending')
-    .is('acknowledged_at', null)
-    .select('id');
+  if (!force) {
+    const { data: claimed, error: claimErr } = await serviceClient
+      .from('contact_forms')
+      .update({ acknowledged_at: probeAt })
+      .eq('id', row.id)
+      .eq('acknowledgement_status', 'pending')
+      .is('acknowledged_at', null)
+      .select('id');
 
-  if (claimErr) {
-    return jsonResponse({ error: `Claim failed: ${claimErr.message}` }, 500, req);
-  }
-  if (!claimed || claimed.length === 0) {
-    // Lost the race or status changed under us.
-    return jsonResponse({
-      ok: true, skipped: true, contact_form_id: row.id,
-      status: 'pending', reason: 'lost-race-or-already-claimed',
-    }, req);
+    if (claimErr) {
+      return jsonResponse({ error: `Claim failed: ${claimErr.message}` }, 500, req);
+    }
+    if (!claimed || claimed.length === 0) {
+      // Lost the race or status changed under us.
+      return jsonResponse({
+        ok: true, skipped: true, forced: false, contact_form_id: row.id,
+        status: 'pending', reason: 'lost-race-or-already-claimed',
+      }, req);
+    }
   }
 
   // Render + send.
@@ -205,11 +210,21 @@ Deno.serve(async (req: Request) => {
       intake_type: intakeType,
       intake_source: row.intake_source,
       resend_id: resendId,
+      forced_resend: force,
     },
   }, req);
 
+  fireAndForgetOpsLog(serviceClient, caller, {
+    function_name: 'send-contact-acknowledgement',
+    action: 'send_ack',
+    target: row.email,
+    status: sendOk ? 'success' : 'error',
+    notes: `${force ? 'forced_resend; ' : ''}intake_id=${row.id}`,
+  });
+
   return jsonResponse({
     ok: sendOk,
+    forced: force,
     contact_form_id: row.id,
     status: finalStatus,
     error: sendErr,
