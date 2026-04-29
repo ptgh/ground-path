@@ -40,6 +40,7 @@ import FormHistory from './FormHistory';
 import NoteModal from './NoteModal';
 import ProfessionalResources from './dashboard/ProfessionalResources';
 import NotesPanel from './dashboard/NotesPanel';
+import AIConversationViewModal from './AIConversationViewModal';
 import ArticleManager from './dashboard/ArticleManager';
 import PractitionerApprovals from './dashboard/PractitionerApprovals';
 import { NotificationPreferencesCard } from './dashboard/NotificationPreferencesCard';
@@ -782,6 +783,12 @@ const Dashboard = () => {
         onOpenChange={setIsNoteModalOpen}
         note={selectedNote}
         onSave={handleNoteSave}
+      />
+      <AIConversationViewModal
+        open={isAIConvOpen}
+        onOpenChange={setIsAIConvOpen}
+        note={selectedAIConv}
+        onDelete={handleDeleteNote}
       />
     </div>
   );
