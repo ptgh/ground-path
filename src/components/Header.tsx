@@ -385,7 +385,7 @@ const Header = () => {
           </nav>
 
           {/* Right side */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-3 shrink-0">
             <WeatherEncouragement />
             {isLoggedIn ? (
               <AuthAwareSection />
