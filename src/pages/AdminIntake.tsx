@@ -23,6 +23,7 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   AlertTriangle, RefreshCw, Loader2, Inbox, Mail, CheckCircle2, Send,
   ChevronLeft, ChevronRight,
