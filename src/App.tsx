@@ -58,6 +58,7 @@ const AdminCompliance = lazy(() => import("./pages/AdminCompliance"));
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
 const PractitionerProfile = lazy(() => import("./pages/PractitionerProfile"));
 const SecureResources = lazy(() => import("./pages/SecureResources"));
+const Privacy = lazy(() => import("./pages/Privacy"));
 
 const queryClient = new QueryClient();
 
@@ -187,6 +188,7 @@ const App = () => {
                 <Route path="/voice-session" element={<VoiceSessionPage />} />
                 <Route path="/confirm" element={<ConfirmPage />} />
                 <Route path="/unsubscribe" element={<UnsubscribePage />} />
+                <Route path="/privacy" element={<Privacy />} />
                 <Route path="/verify-email" element={<Navigate to="/practitioner/auth" replace />} />
                 <Route path="/professional-forms" element={<VerifiedPractitionerRoute><ProfessionalForms /></VerifiedPractitionerRoute>} />
                 <Route path="/practitioner/forms" element={<VerifiedPractitionerRoute><ProfessionalForms /></VerifiedPractitionerRoute>} />
