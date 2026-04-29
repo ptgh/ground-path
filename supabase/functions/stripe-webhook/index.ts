@@ -1,5 +1,11 @@
 // Stripe webhook handler — keeps local payment_methods + session_charges in sync.
 // Public endpoint (no JWT). Validates Stripe signature.
+//
+// CORS: intentionally none. Stripe webhooks come from Stripe's servers (not a
+// browser) and carry no Origin header — they're not subject to the CORS check.
+// Trust is established via the `stripe-signature` HMAC verification below, NOT
+// via origin allowlisting. Do not "tighten" this with corsHeadersFor — it
+// would have no effect on the only legitimate caller (Stripe).
 import Stripe from 'npm:stripe@17.5.0';
 import { getStripe, getServiceClient } from '../_shared/stripe.ts';
 
