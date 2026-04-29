@@ -299,14 +299,15 @@ const AdminIntake = () => {
 
   const resendAck = async () => {
     if (!selected) return;
+    const force = forceResend;
     setResending(true);
     setConfirmResend(false);
     try {
       const { data, error } = await supabase.functions.invoke('send-contact-acknowledgement', {
-        body: { contact_form_id: selected.id },
+        body: { contact_form_id: selected.id, force },
       });
       if (error) throw error;
-      await writeAdminAudit('resend_acknowledgement', selected, 'success');
+      await writeAdminAudit(force ? 'force_resend_acknowledgement' : 'resend_acknowledgement', selected, 'success');
       // Re-fetch the row
       const { data: refreshed } = await supabase
         .from('contact_forms').select('*').eq('id', selected.id).single();
@@ -317,13 +318,27 @@ const AdminIntake = () => {
       }
       void loadStats();
       void loadAudit(selected);
-      toast.success(data?.skipped ? `Acknowledgement skipped (${data.reason ?? 'already sent'})` : 'Acknowledgement re-sent');
+
+      // Toast copy distinguishes the three success states.
+      if (data?.skipped && data?.reason === 'already_acknowledged') {
+        const ackedAt = data?.acknowledged_at
+          ? new Date(data.acknowledged_at).toLocaleString()
+          : 'a previous date';
+        toast(`Already acknowledged on ${ackedAt}. Use 'Force resend' if you need to send again.`);
+      } else if (data?.skipped) {
+        toast(`Acknowledgement skipped (${data.reason ?? 'already sent'})`);
+      } else if (data?.forced) {
+        toast.success('Acknowledgement force-resent');
+      } else {
+        toast.success('Acknowledgement resent successfully');
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Failed to resend acknowledgement';
-      await writeAdminAudit('resend_acknowledgement', selected, 'error', msg);
+      await writeAdminAudit(force ? 'force_resend_acknowledgement' : 'resend_acknowledgement', selected, 'error', msg);
       toast.error(msg);
     } finally {
       setResending(false);
+      setForceResend(false);
     }
   };
 
