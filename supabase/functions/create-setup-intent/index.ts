@@ -1,12 +1,9 @@
 // Creates a Stripe SetupIntent so the client can save a card without being charged.
 import { getStripe, getOrCreateStripeCustomer, getUserClient } from '../_shared/stripe.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
+import { corsHeadersFor } from '../_shared/cors.ts';
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {

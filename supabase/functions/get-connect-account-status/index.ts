@@ -2,12 +2,9 @@
 // Refreshes from Stripe so the UI sees the latest charges_enabled / payouts_enabled.
 import { getStripe, getServiceClient, getUserClient } from '../_shared/stripe.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
+import { corsHeadersFor } from '../_shared/cors.ts';
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
