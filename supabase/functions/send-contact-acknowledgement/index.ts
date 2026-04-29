@@ -16,7 +16,7 @@ import { renderAsync } from 'npm:@react-email/components@0.0.22';
 import * as React from 'npm:react@18.3.1';
 
 import {
-  m365CorsHeaders, jsonResponse, requireM365Caller, writeAudit,
+  m365CorsHeaders, jsonResponse, requireM365Caller, writeAudit, fireAndForgetOpsLog,
 } from '../_shared/m365.ts';
 
 import { ClientAckEmail, clientAckText, clientAckSubject } from './_templates/client.tsx';
