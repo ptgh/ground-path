@@ -105,6 +105,46 @@ const renderMessageWithLinks = (text: string): React.ReactNode => {
   return parts.length > 0 ? parts : cleanText;
 };
 
+// Tiny GSAP-animated copy button shown on each assistant message.
+// Strips markdown asterisks before copying so users get clean plain text.
+const CopyMessageButton: React.FC<{ text: string }> = ({ text }) => {
+  const [copied, setCopied] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  const handleCopy = async () => {
+    const clean = text.replace(/\*\*/g, '').replace(/\*/g, '').trim();
+    try {
+      await navigator.clipboard.writeText(clean);
+      setCopied(true);
+      if (btnRef.current) {
+        gsap.fromTo(
+          btnRef.current,
+          { scale: 0.8, rotate: -8 },
+          { scale: 1, rotate: 0, duration: 0.45, ease: 'back.out(2)' }
+        );
+      }
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      // clipboard blocked — silently no-op
+    }
+  };
+
+  return (
+    <button
+      ref={btnRef}
+      type="button"
+      onClick={handleCopy}
+      aria-label={copied ? 'Copied' : 'Copy message'}
+      title={copied ? 'Copied' : 'Copy message'}
+      className={`mt-2 inline-flex items-center justify-center h-7 w-7 rounded-md border border-border/60 bg-white/80 hover:bg-white shadow-sm transition-colors ${
+        copied ? 'text-primary border-primary/40' : 'text-muted-foreground hover:text-foreground'
+      }`}
+    >
+      {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+    </button>
+  );
+};
+
 export const ClientAIAssistant = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
