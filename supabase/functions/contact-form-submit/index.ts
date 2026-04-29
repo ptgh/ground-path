@@ -20,6 +20,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.5';
 
 // ----- CORS (public endpoint — uses shared allowlist + *.lovable.app preview match) -----
 import { corsHeadersFor } from '../_shared/cors.ts';
+import { writeAudit, fireAndForgetOpsLog } from '../_shared/m365.ts';
+import { SYSTEM_CALLER_USER_ID } from '../_shared/auth.ts';
 
 function jsonResponse(body: unknown, status: number, cors: Record<string, string>): Response {
   return new Response(JSON.stringify(body), {
