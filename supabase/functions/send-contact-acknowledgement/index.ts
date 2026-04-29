@@ -210,11 +210,21 @@ Deno.serve(async (req: Request) => {
       intake_type: intakeType,
       intake_source: row.intake_source,
       resend_id: resendId,
+      forced_resend: force,
     },
   }, req);
 
+  fireAndForgetOpsLog(serviceClient, caller, {
+    function_name: 'send-contact-acknowledgement',
+    action: 'send_ack',
+    target: row.email,
+    status: sendOk ? 'success' : 'error',
+    notes: `${force ? 'forced_resend; ' : ''}intake_id=${row.id}`,
+  });
+
   return jsonResponse({
     ok: sendOk,
+    forced: force,
     contact_form_id: row.id,
     status: finalStatus,
     error: sendErr,
