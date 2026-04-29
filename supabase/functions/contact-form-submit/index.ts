@@ -120,6 +120,10 @@ function escapeHtml(s: string): string {
 }
 
 Deno.serve(async (req: Request) => {
+  // Capture latency clock BEFORE any awaits / DB calls so audit reflects
+  // total wall-clock time from request entry to response dispatch.
+  const startedAt = Date.now();
+
   const origin = req.headers.get('origin');
   const cors = corsHeadersFor(origin);
 
