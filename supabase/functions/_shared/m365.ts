@@ -13,6 +13,8 @@
  *      `connect@groundpath.com.au` — the org Microsoft account).
  */
 import { createClient, SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.50.5';
+import { isKnownCronTrigger } from './cron.ts';
+export { KNOWN_CRON_TRIGGERS, isKnownCronTrigger } from './cron.ts';
 
 export const M365_GATEWAY_BASE = 'https://connector-gateway.lovable.dev';
 
