@@ -85,7 +85,7 @@ Deno.serve(async (req: Request) => {
     return jsonResponse({ error: 'contact_forms row not found' }, 404, req);
   }
 
-  if (row.acknowledgement_status && row.acknowledgement_status !== 'pending') {
+  if (!force && row.acknowledgement_status && row.acknowledgement_status !== 'pending') {
     await writeAudit(serviceClient, caller, {
       function_name: 'send-contact-acknowledgement',
       action: 'send_ack',
@@ -97,43 +97,45 @@ Deno.serve(async (req: Request) => {
         intake_source: row.intake_source,
         skipped: true,
         reason: `already ${row.acknowledgement_status}`,
+        forced_resend: false,
       },
     }, req);
     return jsonResponse({
       ok: true,
       skipped: true,
+      forced: false,
       contact_form_id: row.id,
       status: row.acknowledgement_status,
-      reason: `already ${row.acknowledgement_status}`,
+      reason: 'already_acknowledged',
+      acknowledged_at: row.acknowledgement_status === 'sent' ? (row as ContactRow & { acknowledged_at?: string | null }).acknowledged_at ?? null : null,
     }, req);
   }
 
   // Atomic claim: only one caller can flip pending -> in-flight. We use
   // 'sent' provisionally to win the race, then revert to 'failed' if Resend
-  // call fails. Using a conditional .eq('acknowledgement_status','pending')
-  // gives us race-free idempotency without raw SQL or a custom RPC.
-  // First mark in-flight via a temporary value? Status enum doesn't allow
-  // it, so we instead claim by updating to 'sent' but with acknowledged_at
-  // = null until success. Actually safer: use a probe UPDATE that sets
-  // acknowledged_at to a sentinel and check rowCount.
+  // call fails. Force mode bypasses the claim entirely — the admin has
+  // already acknowledged via the UI confirmation that they want to send a
+  // duplicate, and the row is already in a terminal state ('sent'/'failed').
   const probeAt = new Date().toISOString();
-  const { data: claimed, error: claimErr } = await serviceClient
-    .from('contact_forms')
-    .update({ acknowledged_at: probeAt })
-    .eq('id', row.id)
-    .eq('acknowledgement_status', 'pending')
-    .is('acknowledged_at', null)
-    .select('id');
+  if (!force) {
+    const { data: claimed, error: claimErr } = await serviceClient
+      .from('contact_forms')
+      .update({ acknowledged_at: probeAt })
+      .eq('id', row.id)
+      .eq('acknowledgement_status', 'pending')
+      .is('acknowledged_at', null)
+      .select('id');
 
-  if (claimErr) {
-    return jsonResponse({ error: `Claim failed: ${claimErr.message}` }, 500, req);
-  }
-  if (!claimed || claimed.length === 0) {
-    // Lost the race or status changed under us.
-    return jsonResponse({
-      ok: true, skipped: true, contact_form_id: row.id,
-      status: 'pending', reason: 'lost-race-or-already-claimed',
-    }, req);
+    if (claimErr) {
+      return jsonResponse({ error: `Claim failed: ${claimErr.message}` }, 500, req);
+    }
+    if (!claimed || claimed.length === 0) {
+      // Lost the race or status changed under us.
+      return jsonResponse({
+        ok: true, skipped: true, forced: false, contact_form_id: row.id,
+        status: 'pending', reason: 'lost-race-or-already-claimed',
+      }, req);
+    }
   }
 
   // Render + send.
