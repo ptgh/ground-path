@@ -102,12 +102,27 @@ async function invokeTeamsNotify(
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
+  // Capture latency clock BEFORE any awaits so audit reflects total
+  // wall-clock time from request entry to response dispatch.
   const startedAt = Date.now();
+
+  // Resolve triggered_by up front (before guard) so we can attribute the
+  // audit row even on auth failures down the line. Cron header > admin user
+  // email lookup > null. Mirrors the pattern in send-email/index.ts.
+  const cronTrigger = req.headers.get('X-Cron-Trigger');
+  let triggeredBy: string | null = cronTrigger ?? null;
 
   const guard = await requireM365Caller(req);
   if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500, req);
   const svc = guard.caller!.serviceClient;
   const caller = guard.caller!;
+
+  // If no cron trigger header (manual admin invocation), look up the caller's
+  // email via the service client. caller.email is already populated by
+  // requireM365Caller for both cron and JWT branches, so use it directly.
+  if (!triggeredBy) {
+    triggeredBy = caller.email ?? null;
+  }
 
   // today (UTC) as YYYY-MM-DD
   const today = new Date();
