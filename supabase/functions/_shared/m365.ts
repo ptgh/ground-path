@@ -384,18 +384,29 @@ async function sha256(input: string): Promise<string | null> {
 
 /* ============================================================
  *  CORS
+ *
+ *  These helpers reflect the request Origin via the shared
+ *  `_shared/cors.ts` allowlist (production domains + *.lovable.app
+ *  previews). For internal edge-to-edge invokes that send no Origin,
+ *  no `Access-Control-Allow-Origin` is emitted — that's safe because
+ *  those calls don't traverse the browser CORS check.
  * ============================================================ */
 
-export const m365CorsHeaders: Record<string, string> = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-};
+import { corsHeadersFor } from './cors.ts';
 
-export function jsonResponse(body: unknown, status = 200): Response {
+/**
+ * Build CORS headers for an M365 function response.
+ * Pass the inbound `Request` so we can reflect its Origin if allowlisted.
+ * If called with no argument (legacy edge-to-edge contexts), returns the
+ * safe header set with no Allow-Origin.
+ */
+export function m365CorsHeaders(req?: Request): Record<string, string> {
+  return corsHeadersFor(req?.headers.get('origin') ?? null);
+}
+
+export function jsonResponse(body: unknown, status = 200, req?: Request): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...m365CorsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...m365CorsHeaders(req), 'Content-Type': 'application/json' },
   });
 }
