@@ -291,7 +291,7 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 bg-surface-dark/95 backdrop-blur-sm border-b border-surface-dark-border z-50">
       <div className="w-full px-4 sm:px-6 lg:px-8 2xl:px-12">
-        <div className="flex justify-between items-center py-4">
+        <div className="flex justify-between items-center py-4 gap-3">
           {/* Logo */}
           <div className="logo-animate cursor-pointer" onClick={() => {
             if (location.pathname === '/') {
@@ -304,7 +304,7 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 min-w-0 flex-shrink overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {isPractitionerRoute ? (
               <>
                 {practitionerNavItems.map((item) => {
@@ -313,7 +313,7 @@ const Header = () => {
                     <button
                       key={item.label}
                       onClick={() => { navigate(item.path); setIsMenuOpen(false); }}
-                      className={`relative flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      className={`relative flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
                         isActive
                           ? 'text-surface-dark-foreground bg-surface-dark-foreground/10'
                           : 'text-surface-dark-muted hover:text-surface-dark-foreground hover:bg-surface-dark-foreground/5'
@@ -326,10 +326,10 @@ const Header = () => {
                   );
                 })}
                 {/* Separator + public links */}
-                <div className="w-px h-5 bg-surface-dark-border mx-2" />
+                <div className="w-px h-5 bg-surface-dark-border mx-2 shrink-0" />
                 <button
                   onClick={() => navigate('/')}
-                  className="text-surface-dark-muted hover:text-surface-dark-foreground transition-colors text-sm font-medium px-3 py-2"
+                  className="text-surface-dark-muted hover:text-surface-dark-foreground transition-colors text-sm font-medium px-3 py-2 whitespace-nowrap shrink-0"
                 >
                   View Site
                 </button>
@@ -340,7 +340,7 @@ const Header = () => {
                   <button
                     key={item.label}
                     onClick={item.action}
-                    className="text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2 rounded-md hover:bg-surface-dark-foreground/5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark"
+                    className="text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2 rounded-md hover:bg-surface-dark-foreground/5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark whitespace-nowrap shrink-0"
                   >
                     {item.label}
                   </button>
@@ -385,7 +385,7 @@ const Header = () => {
           </nav>
 
           {/* Right side */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-3 shrink-0">
             <WeatherEncouragement />
             {isLoggedIn ? (
               <AuthAwareSection />
