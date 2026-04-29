@@ -32,6 +32,7 @@ interface ContactRow {
   intake_type: IntakeType;
   intake_source: string | null;
   acknowledgement_status: 'pending' | 'sent' | 'failed' | 'skipped' | null;
+  acknowledged_at: string | null;
 }
 
 const FROM = 'Groundpath <connect@groundpath.com.au>';
