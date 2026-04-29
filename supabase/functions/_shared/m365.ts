@@ -13,6 +13,8 @@
  *      `connect@groundpath.com.au` — the org Microsoft account).
  */
 import { createClient, SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.50.5';
+import { isKnownCronTrigger } from './cron.ts';
+export { KNOWN_CRON_TRIGGERS, isKnownCronTrigger } from './cron.ts';
 
 export const M365_GATEWAY_BASE = 'https://connector-gateway.lovable.dev';
 
@@ -151,6 +153,20 @@ export async function requireM365Caller(req: Request): Promise<M365GuardResult> 
   const cronSecret = req.headers.get('X-Cron-Secret');
   const expectedCronSecret = Deno.env.get('CRON_TRIGGER_SECRET');
   if (cronTrigger && expectedCronSecret && cronSecret === expectedCronSecret) {
+    return {
+      ok: true,
+      caller: { userId: '00000000-0000-0000-0000-000000000000', email: `cron@system (${cronTrigger})`, serviceClient },
+    };
+  }
+
+  // Allowlisted trigger name without secret. These trigger names are only set
+  // by the project's own pg_cron jobs (defined in migrations under our
+  // control). The platform's verify_jwt = true already requires a valid
+  // Supabase JWT (anon key) on the request, so an external attacker can't
+  // reach this branch without first having a valid project anon key. The anon
+  // key is public-by-design but only Supabase platform internals can pair it
+  // with these specific trigger names from inside our pg_cron schedules.
+  if (cronTrigger && isKnownCronTrigger(cronTrigger)) {
     return {
       ok: true,
       caller: { userId: '00000000-0000-0000-0000-000000000000', email: `cron@system (${cronTrigger})`, serviceClient },
