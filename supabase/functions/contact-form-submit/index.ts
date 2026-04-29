@@ -119,6 +119,74 @@ function escapeHtml(s: string): string {
     .replace(/\"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+/**
+ * Fire-and-forget audit writer for contact-form-submit.
+ *
+ * Mirrors the canonical pattern in send-email/index.ts: one m365_audit_log
+ * row + one OpsLog Excel row per invocation, both via EdgeRuntime.waitUntil.
+ *
+ * PII discipline: only `email`, `intake_type`, and the form UUID are logged.
+ * The form's name / subject / message body are NEVER passed in here — the
+ * full payload already lives in the contact_forms table; the audit log is
+ * observability metadata, not data duplication.
+ */
+function emitContactFormAudit(args: {
+  // deno-lint-ignore no-explicit-any
+  serviceClient: any;
+  req: Request;
+  triggeredBy: string;
+  status: 'success' | 'error';
+  email: string;
+  intakeType: string;
+  contactFormId: string;
+  latencyMs: number;
+  errorMessage?: string;
+}): void {
+  const truncatedError = (args.errorMessage ?? '').slice(0, 500);
+
+  const p = writeAudit(
+    args.serviceClient,
+    { userId: SYSTEM_CALLER_USER_ID, email: args.triggeredBy },
+    {
+      function_name: 'contact-form-submit',
+      action: 'intake',
+      target: args.email,
+      status: args.status,
+      error_message: args.status === 'error' ? truncatedError : null,
+      request_metadata: {
+        intake_id: args.contactFormId,
+        intake_type: args.intakeType,
+        intake_source: 'form',
+        triggered_by: args.triggeredBy,
+        latency_ms: args.latencyMs,
+      },
+    },
+    args.req,
+  ).catch((err) => console.error('contact-form-submit audit write failed (non-fatal):', err));
+
+  // deno-lint-ignore no-explicit-any
+  const er = (globalThis as any).EdgeRuntime;
+  if (er && typeof er.waitUntil === 'function') {
+    try { er.waitUntil(p); } catch { /* ignore */ }
+  }
+
+  // Mirror to OpsLog Excel (also fire-and-forget, swallows its own errors).
+  fireAndForgetOpsLog(
+    args.serviceClient,
+    { email: args.triggeredBy },
+    {
+      function_name: 'contact-form-submit',
+      action: 'intake',
+      target: `${args.intakeType}:${args.email}`,
+      status: args.status,
+      duration_ms: args.latencyMs,
+      notes: args.status === 'success'
+        ? `intake_id=${args.contactFormId}`
+        : `error=${truncatedError.slice(0, 200)}`,
+    },
+  );
+}
+
 Deno.serve(async (req: Request) => {
   // Capture latency clock BEFORE any awaits / DB calls so audit reflects
   // total wall-clock time from request entry to response dispatch.
