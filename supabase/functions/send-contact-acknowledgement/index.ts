@@ -59,9 +59,11 @@ Deno.serve(async (req: Request) => {
   const serviceClient = caller.serviceClient;
 
   let contactFormId: string;
+  let force = false;
   try {
     const body = await req.json();
     contactFormId = String(body?.contact_form_id ?? '').trim();
+    force = body?.force === true;
     if (!contactFormId || !/^[0-9a-f-]{36}$/i.test(contactFormId)) {
       return jsonResponse({ error: 'contact_form_id (uuid) required' }, 400, req);
     }
