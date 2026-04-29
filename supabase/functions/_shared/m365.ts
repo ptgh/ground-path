@@ -404,7 +404,14 @@ export function m365CorsHeaders(req?: Request): Record<string, string> {
   return corsHeadersFor(req?.headers.get('origin') ?? null);
 }
 
-export function jsonResponse(body: unknown, status = 200, req?: Request): Response {
+/**
+ * Build a JSON response with CORS headers.
+ * Overloaded: pass `(body, req)` or `(body, status, req)`. The `req` lets us
+ * reflect the request Origin via the shared allowlist.
+ */
+export function jsonResponse(body: unknown, statusOrReq?: number | Request, maybeReq?: Request): Response {
+  const status = typeof statusOrReq === 'number' ? statusOrReq : 200;
+  const req = statusOrReq instanceof Request ? statusOrReq : maybeReq;
   return new Response(JSON.stringify(body), {
     status,
     headers: { ...m365CorsHeaders(req), 'Content-Type': 'application/json' },
