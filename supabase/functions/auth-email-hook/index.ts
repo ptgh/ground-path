@@ -10,6 +10,12 @@ import { RecoveryEmail } from '../_shared/email-templates/recovery.tsx'
 import { EmailChangeEmail } from '../_shared/email-templates/email-change.tsx'
 import { ReauthenticationEmail } from '../_shared/email-templates/reauthentication.tsx'
 
+// CORS: wildcard intentionally retained. This function is invoked by the
+// Supabase Auth service (server-to-server, no browser Origin header), and by
+// the Lovable scaffolding tool for previewing email templates. It is NOT
+// callable from the application frontend, so the shared origin allowlist in
+// `_shared/cors.ts` does not apply. Trust is established via
+// `verifyWebhookRequest` (HMAC) below.
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers':
