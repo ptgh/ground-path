@@ -58,6 +58,7 @@ const AdminCompliance = lazy(() => import("./pages/AdminCompliance"));
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
 const PractitionerProfile = lazy(() => import("./pages/PractitionerProfile"));
 const SecureResources = lazy(() => import("./pages/SecureResources"));
+const Privacy = lazy(() => import("./pages/Privacy"));
 
 const queryClient = new QueryClient();
 
