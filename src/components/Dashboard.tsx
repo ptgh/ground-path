@@ -57,17 +57,61 @@ interface BookingIntegration {
 }
 
 /* ─── Stat card for the overview ─── */
-const StatCard = ({ label, value, icon: Icon }: { label: string; value: string | number; icon: React.ElementType }) => (
-  <div className="flex items-center gap-3 rounded-lg border border-border/60 bg-card p-4">
-    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-      <Icon className="h-5 w-5" />
+const StatCard = ({
+  label,
+  value,
+  icon: Icon,
+  onClick,
+}: {
+  label: string;
+  value: string | number;
+  icon: React.ElementType;
+  onClick?: () => void;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const handleClick = () => {
+    if (!onClick) return;
+    if (ref.current) {
+      gsap.fromTo(
+        ref.current,
+        { scale: 0.94 },
+        { scale: 1, duration: 0.45, ease: 'back.out(2.2)' }
+      );
+    }
+    onClick();
+  };
+
+  const interactive = Boolean(onClick);
+
+  return (
+    <div
+      ref={ref}
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (interactive && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      role={interactive ? 'button' : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      className={`flex items-center gap-3 rounded-lg border border-border/60 bg-card p-4 transition-all ${
+        interactive
+          ? 'cursor-pointer hover:border-primary/60 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-primary/40'
+          : ''
+      }`}
+    >
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <Icon className="h-5 w-5" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-2xl font-semibold leading-tight text-foreground">{value}</p>
+        <p className="text-xs text-muted-foreground truncate">{label}</p>
+      </div>
     </div>
-    <div className="min-w-0">
-      <p className="text-2xl font-semibold leading-tight text-foreground">{value}</p>
-      <p className="text-xs text-muted-foreground truncate">{label}</p>
-    </div>
-  </div>
-);
+  );
+};
 
 /* ─── Loading skeleton for cards ─── */
 const CardSkeleton = () => (
@@ -388,7 +432,7 @@ const Dashboard = () => {
             <TabsContent value="overview" className="space-y-6">
               {/* Stats row */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <StatCard label="Total Notes" value={notes.length} icon={StickyNote} />
+                <StatCard label="Total Notes" value={notes.length} icon={StickyNote} onClick={() => setActiveTab('notes')} />
                 <StatCard label="Unread Messages" value={unreadCount} icon={MessageSquare} />
                 <StatCard label="Profession" value={formatProfession(profile?.profession)} icon={User} />
                 <StatCard label="Active Since" value={new Date(user.created_at).toLocaleDateString('en-AU', { month: 'short', year: 'numeric' })} icon={Calendar} />
