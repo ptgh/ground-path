@@ -44,7 +44,7 @@ import AIConversationViewModal from './AIConversationViewModal';
 import ArticleManager from './dashboard/ArticleManager';
 import PractitionerApprovals from './dashboard/PractitionerApprovals';
 import { NotificationPreferencesCard } from './dashboard/NotificationPreferencesCard';
-import { notesService, Note } from '@/services/notesService';
+import { notesService, isAIConversationNote, Note } from '@/services/notesService';
 import { ClientMessagesPanel } from './messaging/ClientMessagesPanel';
 import NativeBooking from './dashboard/NativeBooking';
 import Microsoft365Card from './dashboard/Microsoft365Card';
@@ -202,17 +202,10 @@ const Dashboard = () => {
   };
 
   const handleNoteModal = (note?: Note) => {
-    if (note) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data = note.conversation_data as any;
-      const isAI =
-        note.title?.toLowerCase().startsWith('ai conversation') ||
-        (Array.isArray(data?.messages) && data.messages.length > 0);
-      if (isAI) {
-        setSelectedAIConv(note);
-        setIsAIConvOpen(true);
-        return;
-      }
+    if (note && isAIConversationNote(note)) {
+      setSelectedAIConv(note);
+      setIsAIConvOpen(true);
+      return;
     }
     setSelectedNote(note || null);
     setIsNoteModalOpen(true);
