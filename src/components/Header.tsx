@@ -340,7 +340,7 @@ const Header = () => {
                   <button
                     key={item.label}
                     onClick={item.action}
-                    className="text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2 rounded-md hover:bg-surface-dark-foreground/5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark"
+                    className="text-surface-dark-muted hover:text-surface-dark-foreground transition-colors font-medium px-3 py-2 rounded-md hover:bg-surface-dark-foreground/5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark whitespace-nowrap shrink-0"
                   >
                     {item.label}
                   </button>
