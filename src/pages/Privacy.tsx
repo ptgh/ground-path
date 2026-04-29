@@ -8,7 +8,6 @@ const Privacy = () => {
       <SEO
         title="Privacy Policy | groundpath"
         description="How groundpath collects, uses, stores and discloses your personal information under the Australian Privacy Principles."
-        canonical="https://groundpath.com.au/privacy"
       />
 
       <div className="max-w-4xl mx-auto px-6 py-12">
