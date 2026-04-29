@@ -202,17 +202,10 @@ const Dashboard = () => {
   };
 
   const handleNoteModal = (note?: Note) => {
-    if (note) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data = note.conversation_data as any;
-      const isAI =
-        note.title?.toLowerCase().startsWith('ai conversation') ||
-        (Array.isArray(data?.messages) && data.messages.length > 0);
-      if (isAI) {
-        setSelectedAIConv(note);
-        setIsAIConvOpen(true);
-        return;
-      }
+    if (note && isAIConversationNote(note)) {
+      setSelectedAIConv(note);
+      setIsAIConvOpen(true);
+      return;
     }
     setSelectedNote(note || null);
     setIsNoteModalOpen(true);
