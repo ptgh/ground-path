@@ -104,7 +104,7 @@ Deno.serve(async (req: Request) => {
   const startedAt = Date.now();
 
   const guard = await requireM365Caller(req);
-  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500);
+  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500, req);
   const svc = guard.caller!.serviceClient;
   const caller = guard.caller!;
 
@@ -119,7 +119,7 @@ Deno.serve(async (req: Request) => {
 
   if (itemsErr) {
     console.error('[compliance-daily-check] load failed:', itemsErr);
-    return jsonResponse({ error: itemsErr.message }, 500);
+    return jsonResponse({ error: itemsErr.message }, 500, req);
   }
 
   const todayMs = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
@@ -235,5 +235,5 @@ Deno.serve(async (req: Request) => {
     items_alerted: candidates.length,
     tiers_hit: tiersHit,
     runtime_ms: runtimeMs,
-  });
+  }, req);
 });

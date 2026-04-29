@@ -39,14 +39,14 @@ Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
   const guard = await requireM365Caller(req);
-  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500);
+  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500, req);
 
   const url = new URL(req.url);
   const parsed = QuerySchema.safeParse({
     path: url.searchParams.get('path') ?? undefined,
     top: url.searchParams.get('top') ? Number(url.searchParams.get('top')) : undefined,
   });
-  if (!parsed.success) return jsonResponse({ error: parsed.error.flatten() }, 400);
+  if (!parsed.success) return jsonResponse({ error: parsed.error.flatten() }, 400, req);
   const { path, top } = parsed.data;
 
   // Normalise path for OneDrive Graph: must look like /Groundpath
@@ -84,7 +84,7 @@ Deno.serve(async (req: Request) => {
       req,
     );
 
-    return jsonResponse({ path: cleanPath, items, hasMore: !!data['@odata.nextLink'] });
+    return jsonResponse({ path: cleanPath, items, hasMore: !!data['@odata.nextLink'] }, req);
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     await writeAudit(
@@ -107,7 +107,7 @@ Deno.serve(async (req: Request) => {
           ? `Folder "${cleanPath}" not found in OneDrive. Create it under the connect@groundpath.com.au account.`
           : message,
       },
-      isMissing ? 404 : 502,
+      isMissing ? 404 : 502, req
     );
   }
 });

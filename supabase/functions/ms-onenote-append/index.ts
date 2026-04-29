@@ -61,12 +61,12 @@ Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
   const guard = await requireM365Caller(req);
-  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500);
+  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500, req);
 
   let body: unknown;
-  try { body = await req.json(); } catch { return jsonResponse({ error: 'Invalid JSON' }, 400); }
+  try { body = await req.json(); } catch { return jsonResponse({ error: 'Invalid JSON' }, 400, req); }
   const parsed = BodySchema.safeParse(body);
-  if (!parsed.success) return jsonResponse({ error: parsed.error.flatten() }, 400);
+  if (!parsed.success) return jsonResponse({ error: parsed.error.flatten() }, 400, req);
   const { title, contentHtml, notebook, section } = parsed.data;
 
   try {
@@ -104,7 +104,7 @@ Deno.serve(async (req: Request) => {
       },
       req,
     );
-    return jsonResponse({ ok: true, pageId: page.id, links: page.links });
+    return jsonResponse({ ok: true, pageId: page.id, links: page.links }, req);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     await writeAudit(
@@ -119,7 +119,7 @@ Deno.serve(async (req: Request) => {
       },
       req,
     );
-    return jsonResponse({ error: msg }, 502);
+    return jsonResponse({ error: msg }, 502, req);
   }
 });
 

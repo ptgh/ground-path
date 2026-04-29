@@ -31,12 +31,12 @@ Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
   const guard = await requireM365Caller(req);
-  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500);
+  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500, req);
 
   let body: unknown;
-  try { body = await req.json(); } catch { return jsonResponse({ error: 'Invalid JSON' }, 400); }
+  try { body = await req.json(); } catch { return jsonResponse({ error: 'Invalid JSON' }, 400, req); }
   const parsed = BodySchema.safeParse(body);
-  if (!parsed.success) return jsonResponse({ error: parsed.error.flatten() }, 400);
+  if (!parsed.success) return jsonResponse({ error: parsed.error.flatten() }, 400, req);
   const { filename, title, bodyMarkdown, folderPath } = parsed.data;
 
   const cleanFolder = folderPath.replace(/^\/+|\/+$/g, '');
@@ -82,7 +82,7 @@ Deno.serve(async (req: Request) => {
       notes: `itemId=${item.id} bytes=${docxBytes.length} title="${title}"`,
     });
 
-    return jsonResponse({ ok: true, itemId: item.id, name: item.name, webUrl: item.webUrl, path: fullPath });
+    return jsonResponse({ ok: true, itemId: item.id, name: item.name, webUrl: item.webUrl, path: fullPath }, req);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     const duration = Date.now() - startedAt;
@@ -106,7 +106,7 @@ Deno.serve(async (req: Request) => {
       duration_ms: duration,
       notes: msg.slice(0, 400),
     });
-    return jsonResponse({ error: msg }, 502);
+    return jsonResponse({ error: msg }, 502, req);
   }
 });
 

@@ -54,7 +54,7 @@ Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
   const guard = await requireM365Caller(req);
-  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500);
+  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500, req);
   const caller = guard.caller!;
   const serviceClient = caller.serviceClient;
 
@@ -63,10 +63,10 @@ Deno.serve(async (req: Request) => {
     const body = await req.json();
     contactFormId = String(body?.contact_form_id ?? '').trim();
     if (!contactFormId || !/^[0-9a-f-]{36}$/i.test(contactFormId)) {
-      return jsonResponse({ error: 'contact_form_id (uuid) required' }, 400);
+      return jsonResponse({ error: 'contact_form_id (uuid) required' }, 400, req);
     }
   } catch {
-    return jsonResponse({ error: 'Invalid JSON body' }, 400);
+    return jsonResponse({ error: 'Invalid JSON body' }, 400, req);
   }
 
   // Look up the row first so we know intake_type / recipient.
@@ -77,10 +77,10 @@ Deno.serve(async (req: Request) => {
     .maybeSingle<ContactRow>();
 
   if (fetchErr) {
-    return jsonResponse({ error: `Lookup failed: ${fetchErr.message}` }, 500);
+    return jsonResponse({ error: `Lookup failed: ${fetchErr.message}` }, 500, req);
   }
   if (!row) {
-    return jsonResponse({ error: 'contact_forms row not found' }, 404);
+    return jsonResponse({ error: 'contact_forms row not found' }, 404, req);
   }
 
   if (row.acknowledgement_status && row.acknowledgement_status !== 'pending') {
@@ -103,7 +103,7 @@ Deno.serve(async (req: Request) => {
       contact_form_id: row.id,
       status: row.acknowledgement_status,
       reason: `already ${row.acknowledgement_status}`,
-    });
+    }, req);
   }
 
   // Atomic claim: only one caller can flip pending -> in-flight. We use
@@ -124,14 +124,14 @@ Deno.serve(async (req: Request) => {
     .select('id');
 
   if (claimErr) {
-    return jsonResponse({ error: `Claim failed: ${claimErr.message}` }, 500);
+    return jsonResponse({ error: `Claim failed: ${claimErr.message}` }, 500, req);
   }
   if (!claimed || claimed.length === 0) {
     // Lost the race or status changed under us.
     return jsonResponse({
       ok: true, skipped: true, contact_form_id: row.id,
       status: 'pending', reason: 'lost-race-or-already-claimed',
-    });
+    }, req);
   }
 
   // Render + send.
@@ -213,5 +213,5 @@ Deno.serve(async (req: Request) => {
     contact_form_id: row.id,
     status: finalStatus,
     error: sendErr,
-  }, sendOk ? 200 : 502);
+  }, sendOk ? 200 : 502, req);
 });

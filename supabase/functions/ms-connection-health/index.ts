@@ -77,7 +77,7 @@ Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
   const guard = await requireM365Caller(req);
-  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500);
+  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500, req);
 
   const results = await Promise.all(
     CONNECTORS.map(({ connector, envKey }) => verifyOne(connector, envKey)),
@@ -99,5 +99,5 @@ Deno.serve(async (req: Request) => {
     req,
   );
 
-  return jsonResponse({ ok: overallOk, connectors: results, checked_at: new Date().toISOString() });
+  return jsonResponse({ ok: overallOk, connectors: results, checked_at: new Date().toISOString() }, req);
 });
