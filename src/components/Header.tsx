@@ -313,7 +313,7 @@ const Header = () => {
                     <button
                       key={item.label}
                       onClick={() => { navigate(item.path); setIsMenuOpen(false); }}
-                      className={`relative flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      className={`relative flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
                         isActive
                           ? 'text-surface-dark-foreground bg-surface-dark-foreground/10'
                           : 'text-surface-dark-muted hover:text-surface-dark-foreground hover:bg-surface-dark-foreground/5'
