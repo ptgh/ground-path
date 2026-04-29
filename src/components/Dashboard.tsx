@@ -143,6 +143,8 @@ const Dashboard = () => {
   });
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [isAIConvOpen, setIsAIConvOpen] = useState(false);
+  const [selectedAIConv, setSelectedAIConv] = useState<Note | null>(null);
   const buttonsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -199,8 +201,31 @@ const Dashboard = () => {
   };
 
   const handleNoteModal = (note?: Note) => {
+    if (note) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const data = note.conversation_data as any;
+      const isAI =
+        note.title?.toLowerCase().startsWith('ai conversation') ||
+        (Array.isArray(data?.messages) && data.messages.length > 0);
+      if (isAI) {
+        setSelectedAIConv(note);
+        setIsAIConvOpen(true);
+        return;
+      }
+    }
     setSelectedNote(note || null);
     setIsNoteModalOpen(true);
+  };
+
+  const handleDeleteNote = async (id: string) => {
+    try {
+      await notesService.deleteNote(id);
+      setNotes((prev) => prev.filter((n) => n.id !== id));
+      toast.success('Deleted');
+    } catch (error) {
+      console.error('Error deleting note:', error);
+      toast.error('Failed to delete');
+    }
   };
 
   const handleNoteSave = (savedNote: Note) => {
