@@ -75,7 +75,7 @@ Deno.serve(async (req: Request) => {
   // Look up the row first so we know intake_type / recipient.
   const { data: row, error: fetchErr } = await serviceClient
     .from('contact_forms')
-    .select('id, name, email, intake_type, intake_source, acknowledgement_status')
+    .select('id, name, email, intake_type, intake_source, acknowledgement_status, acknowledged_at')
     .eq('id', contactFormId)
     .maybeSingle<ContactRow>();
 
