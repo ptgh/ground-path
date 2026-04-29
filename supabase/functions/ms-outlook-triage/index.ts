@@ -251,7 +251,7 @@ async function triggerAckInvoke(contactFormId: string): Promise<void> {
 }
 
 Deno.serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders });
+  if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
   const guard = await requireM365Caller(req);
   if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500);

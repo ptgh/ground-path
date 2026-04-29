@@ -228,7 +228,7 @@ function escapeHtml(s: string): string {
  *  Main handler
  * ============================================================ */
 Deno.serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders });
+  if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
   const startedAt = Date.now();
   const cronTrigger = req.headers.get('X-Cron-Trigger');
