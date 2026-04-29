@@ -143,6 +143,7 @@ const AdminIntake = () => {
   const [marking, setMarking] = useState(false);
   const [resending, setResending] = useState(false);
   const [confirmResend, setConfirmResend] = useState(false);
+  const [forceResend, setForceResend] = useState(false);
 
   // Auth gate (mirrors AdminM365Hub)
   useEffect(() => {
