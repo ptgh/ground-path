@@ -291,7 +291,7 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 bg-surface-dark/95 backdrop-blur-sm border-b border-surface-dark-border z-50">
       <div className="w-full px-4 sm:px-6 lg:px-8 2xl:px-12">
-        <div className="flex justify-between items-center py-4">
+        <div className="flex justify-between items-center py-4 gap-3">
           {/* Logo */}
           <div className="logo-animate cursor-pointer" onClick={() => {
             if (location.pathname === '/') {
