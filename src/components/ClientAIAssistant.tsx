@@ -932,7 +932,7 @@ export const ClientAIAssistant = () => {
                 <p className="text-xs text-gray-500">Quick questions:</p>
                 <Button
                   size="sm"
-                  onClick={() => { setIsOpen(false); setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 300); }}
+                  onClick={() => { setIsOpen(false); setTimeout(() => navigate('/book'), 200); }}
                   className="text-xs bg-primary hover:bg-primary/90 h-7 px-3"
                 >
                   <Calendar className="h-3 w-3 mr-1" />
