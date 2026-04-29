@@ -304,7 +304,7 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 min-w-0 flex-shrink overflow-x-auto scrollbar-none">
+          <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 min-w-0 flex-shrink overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {isPractitionerRoute ? (
               <>
                 {practitionerNavItems.map((item) => {
