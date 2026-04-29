@@ -600,7 +600,13 @@ const AdminIntake = () => {
         </SheetContent>
       </Sheet>
 
-      <AlertDialog open={confirmResend} onOpenChange={setConfirmResend}>
+      <AlertDialog
+        open={confirmResend}
+        onOpenChange={(open) => {
+          setConfirmResend(open);
+          if (!open) setForceResend(false);
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Resend acknowledgement?</AlertDialogTitle>
@@ -608,9 +614,28 @@ const AdminIntake = () => {
               This will re-send the acknowledgement email to <span className="font-medium text-foreground">{selected?.email}</span>. They will receive a new message in their inbox.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          <div className="space-y-2 pt-1">
+            <label className="flex items-start gap-2 cursor-pointer select-none">
+              <Checkbox
+                checked={forceResend}
+                onCheckedChange={(v) => setForceResend(v === true)}
+                className="mt-0.5"
+              />
+              <span className="text-xs text-muted-foreground leading-relaxed">
+                Force resend even if already sent
+              </span>
+            </label>
+            {forceResend && (
+              <p className="text-xs text-muted-foreground pl-6 leading-relaxed">
+                This will send a second acknowledgement email. The recipient will receive it again.
+              </p>
+            )}
+          </div>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={resendAck}>Resend</AlertDialogAction>
+            <AlertDialogAction onClick={resendAck}>
+              {forceResend ? 'Force resend' : 'Resend'}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
