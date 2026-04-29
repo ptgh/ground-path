@@ -41,7 +41,11 @@ export const aiConversationService = {
         user_id: userData.user.id,
         title: title,
         content: transcriptText, // Full transcript in content
-        conversation_data: { messages: messagesJson }
+        conversation_data: {
+          type: 'ai_conversation',
+          messages: messagesJson,
+          pinned: false,
+        },
       }])
       .select('id')
       .single();
@@ -66,12 +70,26 @@ export const aiConversationService = {
       return `${role}: ${m.content}`;
     }).join('\n\n---\n\n');
 
+    // Preserve existing conversation_data fields (e.g. pinned) when updating
+    const { data: existing } = await supabase
+      .from('notes')
+      .select('conversation_data')
+      .eq('id', conversationId)
+      .single();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const existingData = (existing?.conversation_data as any) || {};
+
     const { error } = await supabase
       .from('notes')
       .update({
         content: transcriptText, // Full transcript in content
-        conversation_data: { messages: messagesJson },
-        updated_at: new Date().toISOString()
+        conversation_data: {
+          ...existingData,
+          type: 'ai_conversation',
+          messages: messagesJson,
+        },
+        updated_at: new Date().toISOString(),
       })
       .eq('id', conversationId);
 
