@@ -628,7 +628,7 @@ export const ClientAIAssistant = () => {
         
         <DialogContent 
           ref={dialogRef}
-          className="max-w-md lg:max-w-2xl w-[calc(100%-2rem)] max-h-[90vh] min-h-[520px] flex flex-col p-0 border-2 border-border shadow-2xl bg-card backdrop-blur-md rounded-2xl overflow-hidden"
+          className="max-w-md lg:max-w-2xl w-[calc(100%-2rem)] h-[85vh] max-h-[85vh] sm:h-auto sm:max-h-[85vh] sm:min-h-[520px] flex flex-col p-0 border-2 border-border shadow-2xl bg-card backdrop-blur-md rounded-2xl overflow-hidden"
         >
           {/* Crisis Banner - Shows when crisis keywords detected */}
           {showCrisisBanner && (
