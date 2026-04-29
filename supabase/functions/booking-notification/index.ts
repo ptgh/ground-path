@@ -5,11 +5,7 @@ const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
-
+import { corsHeadersFor } from '../_shared/cors.ts';
 type NotificationType = 'new_request' | 'status_change' | 'client_cancellation' | 'client_request_received' | 'meeting_ready' | 'session_reminder';
 
 interface BookingNotificationRequest {
@@ -666,6 +662,7 @@ async function sendTeamsNotification(payload: {
 /* ─── Main handler ─── */
 
 serve(async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }

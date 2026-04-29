@@ -42,15 +42,15 @@ const BodySchema = z.object({
 );
 
 Deno.serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders });
+  if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
   const guard = await requireM365Caller(req);
-  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500);
+  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500, req);
 
   let body: unknown;
-  try { body = await req.json(); } catch { return jsonResponse({ error: 'Invalid JSON' }, 400); }
+  try { body = await req.json(); } catch { return jsonResponse({ error: 'Invalid JSON' }, 400, req); }
   const parsed = BodySchema.safeParse(body);
-  if (!parsed.success) return jsonResponse({ error: parsed.error.flatten() }, 400);
+  if (!parsed.success) return jsonResponse({ error: parsed.error.flatten() }, 400, req);
   let { teamId, channelId } = parsed.data;
   const { configKey, subject, bodyHtml, importance } = parsed.data;
 
@@ -62,13 +62,13 @@ Deno.serve(async (req: Request) => {
       .from('m365_integration_config')
       .select('key, value')
       .in('key', [teamKey, channelKey]);
-    if (cfgErr) return jsonResponse({ error: `Config lookup failed: ${cfgErr.message}` }, 500);
+    if (cfgErr) return jsonResponse({ error: `Config lookup failed: ${cfgErr.message}` }, 500, req);
     teamId = rows?.find((r) => r.key === teamKey)?.value;
     channelId = rows?.find((r) => r.key === channelKey)?.value;
     if (!teamId || !channelId) {
       return jsonResponse(
         { error: `Missing config rows for ${teamKey} and/or ${channelKey}` },
-        400,
+        400, req
       );
     }
   }
@@ -110,7 +110,7 @@ Deno.serve(async (req: Request) => {
       notes: `messageId=${result.id} importance=${importance}${subject ? ` subject="${subject}"` : ''}`,
     });
 
-    return jsonResponse({ ok: true, messageId: result.id, webUrl: result.webUrl ?? null });
+    return jsonResponse({ ok: true, messageId: result.id, webUrl: result.webUrl ?? null }, req);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     const duration = Date.now() - startedAt;
@@ -134,6 +134,6 @@ Deno.serve(async (req: Request) => {
       duration_ms: duration,
       notes: msg.slice(0, 400),
     });
-    return jsonResponse({ error: msg }, 502);
+    return jsonResponse({ error: msg }, 502, req);
   }
 });

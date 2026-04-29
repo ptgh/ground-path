@@ -1,10 +1,7 @@
 // Returns the Stripe publishable key (safe to expose to the browser).
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
+import { corsHeadersFor } from '../_shared/cors.ts';
 Deno.serve((req) => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
   const key = Deno.env.get('STRIPE_PUBLISHABLE_KEY');
   if (!key) {

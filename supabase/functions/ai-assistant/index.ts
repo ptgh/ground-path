@@ -8,11 +8,7 @@ const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
 const supabase = createClient(supabaseUrl!, supabaseServiceRoleKey!);
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
+import { corsHeadersFor } from '../_shared/cors.ts';
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
@@ -110,6 +106,7 @@ RESPONSE STYLE:
 Always prioritize ethical practice and evidence-based guidance.`;
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });

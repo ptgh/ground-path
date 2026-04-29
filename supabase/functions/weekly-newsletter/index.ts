@@ -12,11 +12,7 @@ const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
 const supabase = createClient(supabaseUrl!, supabaseServiceRoleKey!);
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
+import { corsHeadersFor } from '../_shared/cors.ts';
 interface Article {
   title: string;
   summary: string;
@@ -198,6 +194,7 @@ const sendNewsletterToSubscribers = async () => {
 };
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }

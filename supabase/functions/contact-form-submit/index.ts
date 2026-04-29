@@ -18,29 +18,8 @@
 import { z } from 'https://esm.sh/zod@3.23.8';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.5';
 
-// ----- CORS (public endpoint — reflect allow-listed origins) -----
-const ALLOWED_ORIGINS = [
-  'https://groundpath.com.au',
-  'https://www.groundpath.com.au',
-  'https://ground-path.lovable.app',
-  'http://localhost:8080',
-];
-
-function corsHeadersFor(origin: string | null): Record<string, string> {
-  const headers: Record<string, string> = {
-    'Access-Control-Allow-Headers':
-      'authorization, x-client-info, apikey, content-type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Vary': 'Origin',
-  };
-  // Be permissive for previews while keeping known prod origins explicit.
-  if (origin && (ALLOWED_ORIGINS.includes(origin) || /\.lovable\.app$/.test(new URL(origin).hostname))) {
-    headers['Access-Control-Allow-Origin'] = origin;
-  } else {
-    headers['Access-Control-Allow-Origin'] = '*';
-  }
-  return headers;
-}
+// ----- CORS (public endpoint — uses shared allowlist + *.lovable.app preview match) -----
+import { corsHeadersFor } from '../_shared/cors.ts';
 
 function jsonResponse(body: unknown, status: number, cors: Record<string, string>): Response {
   return new Response(JSON.stringify(body), {

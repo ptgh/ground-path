@@ -38,15 +38,15 @@ async function embedQuery(text: string): Promise<number[]> {
 }
 
 Deno.serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders });
+  if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
   const guard = await requireM365Caller(req);
-  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500);
+  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500, req);
 
   let body: unknown;
-  try { body = await req.json(); } catch { return jsonResponse({ error: 'Invalid JSON' }, 400); }
+  try { body = await req.json(); } catch { return jsonResponse({ error: 'Invalid JSON' }, 400, req); }
   const parsed = BodySchema.safeParse(body);
-  if (!parsed.success) return jsonResponse({ error: parsed.error.flatten() }, 400);
+  if (!parsed.success) return jsonResponse({ error: parsed.error.flatten() }, 400, req);
 
   try {
     const embedding = await embedQuery(parsed.data.query);
@@ -69,7 +69,7 @@ Deno.serve(async (req: Request) => {
       },
       req,
     );
-    return jsonResponse({ query: parsed.data.query, results: data ?? [] });
+    return jsonResponse({ query: parsed.data.query, results: data ?? [] }, req);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     await writeAudit(
@@ -84,6 +84,6 @@ Deno.serve(async (req: Request) => {
       },
       req,
     );
-    return jsonResponse({ error: msg }, 500);
+    return jsonResponse({ error: msg }, 500, req);
   }
 });

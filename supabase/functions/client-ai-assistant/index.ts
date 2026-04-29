@@ -3,11 +3,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
+import { corsHeadersFor } from '../_shared/cors.ts';
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
@@ -237,6 +233,7 @@ const detectCrisis = (message: string): boolean => {
 };
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }

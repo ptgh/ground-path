@@ -251,10 +251,10 @@ async function triggerAckInvoke(contactFormId: string): Promise<void> {
 }
 
 Deno.serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders });
+  if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
   const guard = await requireM365Caller(req);
-  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500);
+  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500, req);
   const caller = guard.caller!;
   const serviceClient = caller.serviceClient;
 
@@ -455,7 +455,7 @@ Deno.serve(async (req: Request) => {
       },
       req,
     );
-    return jsonResponse({ messages: items });
+    return jsonResponse({ messages: items }, req);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     await writeAudit(
@@ -469,6 +469,6 @@ Deno.serve(async (req: Request) => {
       },
       req,
     );
-    return jsonResponse({ error: msg }, 502);
+    return jsonResponse({ error: msg }, 502, req);
   }
 });

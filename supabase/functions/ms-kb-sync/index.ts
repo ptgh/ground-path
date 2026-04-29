@@ -228,14 +228,14 @@ function escapeHtml(s: string): string {
  *  Main handler
  * ============================================================ */
 Deno.serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders });
+  if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
   const startedAt = Date.now();
   const cronTrigger = req.headers.get('X-Cron-Trigger');
   const triggeredBy: 'cron' | 'manual' = cronTrigger ? 'cron' : 'manual';
 
   const guard = await requireM365Caller(req);
-  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500);
+  if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500, req);
   const svc = guard.caller!.serviceClient;
 
   // Open a sync run row
@@ -250,7 +250,7 @@ Deno.serve(async (req: Request) => {
     .select('id')
     .single();
   if (runErr || !runRow) {
-    return jsonResponse({ error: `Could not open sync run: ${runErr?.message}` }, 500);
+    return jsonResponse({ error: `Could not open sync run: ${runErr?.message}` }, 500, req);
   }
   const runId = runRow.id;
 
@@ -466,7 +466,7 @@ ${errorList}
       filesFailed,
       status,
       errors: errors.slice(0, 10),
-    });
+    }, req);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     await svc.from('kb_sync_runs').update({
@@ -491,6 +491,6 @@ ${errorList}
         ? `OneDrive folder "${ROOT_PATH}" not found. Please create it under the connect@groundpath.com.au account and add documents to sync.`
         : msg,
       runId,
-    }, isMissing ? 404 : 500);
+    }, isMissing ? 404 : 500, req);
   }
 });
