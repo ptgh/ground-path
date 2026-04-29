@@ -410,7 +410,7 @@ export const ClientAIAssistant = () => {
     if (showCounsellingPrompt) {
       const lowerInput = input.toLowerCase();
       if (lowerInput.includes('book') || lowerInput.includes('session') || lowerInput.includes('counsellor') || lowerInput.includes('practitioner')) {
-        window.open('/contact', '_blank');
+        window.open('/book', '_self');
         setShowCounsellingPrompt(false);
         return;
       } else if (lowerInput.includes('continue') || lowerInput.includes('chat')) {
@@ -680,7 +680,7 @@ export const ClientAIAssistant = () => {
               <div className="flex gap-2">
                 <Button
                   size="sm"
-                  onClick={() => window.open('/contact', '_blank')}
+                  onClick={() => window.open('/book', '_self')}
                   className="text-xs bg-amber-600 hover:bg-amber-700"
                 >
                   <Calendar className="h-3 w-3 mr-1" />
@@ -915,7 +915,7 @@ export const ClientAIAssistant = () => {
                 </Button>
                 <Button
                   size="sm"
-                  onClick={() => window.open('/contact', '_blank')}
+                  onClick={() => window.open('/book', '_self')}
                   className="text-xs bg-amber-600 hover:bg-amber-700"
                 >
                   <Calendar className="h-3 w-3 mr-1" />
