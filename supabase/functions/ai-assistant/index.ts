@@ -106,6 +106,7 @@ RESPONSE STYLE:
 Always prioritize ethical practice and evidence-based guidance.`;
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });

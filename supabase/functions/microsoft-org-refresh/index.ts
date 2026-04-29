@@ -10,6 +10,7 @@ import { corsHeadersFor } from '../_shared/cors.ts';
  * Can be called on a schedule or before token expiry.
  */
 serve(async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }

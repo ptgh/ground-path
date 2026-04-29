@@ -18,6 +18,7 @@ import { corsHeadersFor } from '../_shared/cors.ts';
  *   - MICROSOFT_CLIENT_SECRET
  */
 serve(async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }

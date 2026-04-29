@@ -233,6 +233,7 @@ const detectCrisis = (message: string): boolean => {
 };
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }

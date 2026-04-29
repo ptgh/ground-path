@@ -194,6 +194,7 @@ const sendNewsletterToSubscribers = async () => {
 };
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }

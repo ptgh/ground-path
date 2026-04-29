@@ -26,6 +26,7 @@ function parseJwtPayload(token: string): Record<string, unknown> | null {
  * Does NOT create a real booking — creates a short test meeting then immediately deletes it.
  */
 serve(async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }

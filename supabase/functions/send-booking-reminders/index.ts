@@ -16,6 +16,7 @@ import { corsHeadersFor } from '../_shared/cors.ts';
  */
 
 serve(async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }

@@ -10,6 +10,7 @@ import { corsHeadersFor } from '../_shared/cors.ts';
  * Does NOT delete the record — preserves audit trail.
  */
 serve(async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersFor(req.headers.get('origin'));
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
