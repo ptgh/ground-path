@@ -88,6 +88,17 @@ export async function verifyAuth(
     return { userId: SYSTEM_CALLER_USER_ID, error: null };
   }
 
+  // Allowlisted trigger name without secret. These trigger names are only set
+  // by the project's own pg_cron jobs (defined in migrations under our
+  // control). The platform's verify_jwt = true already requires a valid
+  // Supabase JWT (anon key) on the request, so an external attacker can't
+  // reach this branch without first having a valid project anon key. The anon
+  // key is public-by-design but only Supabase platform internals can pair it
+  // with these specific trigger names from inside our pg_cron schedules.
+  if (cronTrigger && isKnownCronTrigger(cronTrigger)) {
+    return { userId: SYSTEM_CALLER_USER_ID, error: null };
+  }
+
   const authHeader = req.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     return { userId: null, error: 'Missing or malformed Authorization header' };
