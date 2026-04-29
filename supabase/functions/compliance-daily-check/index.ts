@@ -231,7 +231,8 @@ Deno.serve(async (req: Request) => {
 
   const runtimeMs = Date.now() - startedAt;
 
-  // Audit row — always written (quiet days too)
+  // Audit row — always written (quiet days too). Extends prior shape with
+  // triggered_by so the source (cron name vs admin email) is greppable.
   fireAndForget(svc.from('m365_audit_log').insert({
     user_id: caller.userId,
     user_email: caller.email,
@@ -243,8 +244,25 @@ Deno.serve(async (req: Request) => {
       items_alerted: candidates.length,
       tiers_hit: tiersHit,
       runtime_ms: runtimeMs,
+      triggered_by: triggeredBy,
     },
   }));
+
+  // Mirror to OpsLog Excel so the human-readable audit chain stays in sync
+  // with Postgres. Notes are scannable at a glance for "did the cron fire
+  // today and find anything?" — quiet days will read items_alerted=0.
+  fireAndForgetOpsLog(
+    svc,
+    { email: triggeredBy },
+    {
+      function_name: 'compliance-daily-check',
+      action: 'check',
+      target: '',
+      status: 'success',
+      duration_ms: runtimeMs,
+      notes: `tiers_hit=${tiersHit.join(',')}; items_alerted=${candidates.length}`,
+    },
+  );
 
   return jsonResponse({
     ok: true,
