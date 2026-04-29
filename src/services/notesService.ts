@@ -69,5 +69,36 @@ export const notesService = {
       .eq('id', id);
     
     if (error) throw error;
-  }
+  },
+
+  async setPinned(note: Note, pinned: boolean) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const existing = (note.conversation_data as any) || {};
+    const next = { ...existing, pinned };
+    const { data, error } = await supabase
+      .from('notes')
+      .update({ conversation_data: next })
+      .eq('id', note.id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data as Note;
+  },
+};
+
+// Shared classification helper — checks the explicit flag first, then
+// falls back to legacy heuristics (title prefix or messages array) so
+// older rows continue to be detected.
+export const isAIConversationNote = (note: Note): boolean => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data = note.conversation_data as any;
+  if (data?.type === 'ai_conversation') return true;
+  if (Array.isArray(data?.messages) && data.messages.length > 0) return true;
+  if (note.title?.toLowerCase().startsWith('ai conversation')) return true;
+  return false;
+};
+
+export const isPinned = (note: Note): boolean => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return Boolean((note.conversation_data as any)?.pinned);
 };
