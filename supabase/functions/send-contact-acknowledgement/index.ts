@@ -108,7 +108,7 @@ Deno.serve(async (req: Request) => {
       contact_form_id: row.id,
       status: row.acknowledgement_status,
       reason: 'already_acknowledged',
-      acknowledged_at: row.acknowledgement_status === 'sent' ? (row as ContactRow & { acknowledged_at?: string | null }).acknowledged_at ?? null : null,
+      acknowledged_at: row.acknowledged_at,
     }, req);
   }
 
