@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Send, User, Loader2, Trash2, Globe, Calendar, AlertTriangle, Phone, Mail, X, Clock, Square, Mic, CheckCircle2, BookOpen, DollarSign, HelpCircle, Sparkles } from 'lucide-react';
+import { MessageCircle, Send, User, Loader2, Trash2, Globe, Calendar, AlertTriangle, Phone, Mail, X, Clock, Square, Mic, CheckCircle2, BookOpen, DollarSign, HelpCircle, Sparkles, Copy, Check } from 'lucide-react';
 import VoiceCounsellingSession from './VoiceCounsellingSession';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -103,6 +103,46 @@ const renderMessageWithLinks = (text: string): React.ReactNode => {
   }
   
   return parts.length > 0 ? parts : cleanText;
+};
+
+// Tiny GSAP-animated copy button shown on each assistant message.
+// Strips markdown asterisks before copying so users get clean plain text.
+const CopyMessageButton: React.FC<{ text: string }> = ({ text }) => {
+  const [copied, setCopied] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  const handleCopy = async () => {
+    const clean = text.replace(/\*\*/g, '').replace(/\*/g, '').trim();
+    try {
+      await navigator.clipboard.writeText(clean);
+      setCopied(true);
+      if (btnRef.current) {
+        gsap.fromTo(
+          btnRef.current,
+          { scale: 0.8, rotate: -8 },
+          { scale: 1, rotate: 0, duration: 0.45, ease: 'back.out(2)' }
+        );
+      }
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      // clipboard blocked — silently no-op
+    }
+  };
+
+  return (
+    <button
+      ref={btnRef}
+      type="button"
+      onClick={handleCopy}
+      aria-label={copied ? 'Copied' : 'Copy message'}
+      title={copied ? 'Copied' : 'Copy message'}
+      className={`mt-2 inline-flex items-center justify-center h-7 w-7 rounded-md border border-border/60 bg-white/80 hover:bg-white shadow-sm transition-colors ${
+        copied ? 'text-primary border-primary/40' : 'text-muted-foreground hover:text-foreground'
+      }`}
+    >
+      {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+    </button>
+  );
 };
 
 export const ClientAIAssistant = () => {
@@ -370,7 +410,7 @@ export const ClientAIAssistant = () => {
     if (showCounsellingPrompt) {
       const lowerInput = input.toLowerCase();
       if (lowerInput.includes('book') || lowerInput.includes('session') || lowerInput.includes('counsellor') || lowerInput.includes('practitioner')) {
-        window.open('/contact', '_blank');
+        window.open('/book', '_self');
         setShowCounsellingPrompt(false);
         return;
       } else if (lowerInput.includes('continue') || lowerInput.includes('chat')) {
@@ -588,7 +628,7 @@ export const ClientAIAssistant = () => {
         
         <DialogContent 
           ref={dialogRef}
-          className="max-w-md lg:max-w-2xl w-[calc(100%-2rem)] max-h-[90vh] min-h-[520px] flex flex-col p-0 border-2 border-border shadow-2xl bg-card backdrop-blur-md rounded-2xl overflow-hidden"
+          className="max-w-md lg:max-w-2xl w-[calc(100%-2rem)] h-[85vh] max-h-[85vh] sm:h-auto sm:max-h-[85vh] sm:min-h-[520px] flex flex-col p-0 border-2 border-border shadow-2xl bg-card backdrop-blur-md rounded-2xl overflow-hidden"
         >
           {/* Crisis Banner - Shows when crisis keywords detected */}
           {showCrisisBanner && (
@@ -640,7 +680,7 @@ export const ClientAIAssistant = () => {
               <div className="flex gap-2">
                 <Button
                   size="sm"
-                  onClick={() => window.open('/contact', '_blank')}
+                  onClick={() => window.open('/book', '_self')}
                   className="text-xs bg-amber-600 hover:bg-amber-700"
                 >
                   <Calendar className="h-3 w-3 mr-1" />
@@ -801,7 +841,7 @@ export const ClientAIAssistant = () => {
           </DialogHeader>
 
           {/* Chat Messages */}
-          <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+          <ScrollArea className="flex-1 min-h-0 p-4" ref={scrollRef}>
             <div className="space-y-4">
               {messages.map((message) => (
                 <div
@@ -825,16 +865,21 @@ export const ClientAIAssistant = () => {
                       <MessageCircle className={`h-4 w-4 ${sessionAccent}`} />
                     )}
                   </div>
-                  <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
-                    message.role === 'user'
-                      ? `${sessionBg} text-white`
-                      : message.isCrisis
-                        ? 'bg-red-50 text-gray-800 border border-red-200'
-                        : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    <p className="text-sm whitespace-pre-wrap leading-relaxed">
-                      {renderMessageWithLinks(message.content)}
-                    </p>
+                  <div className={`flex flex-col max-w-[80%] ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
+                    <div className={`rounded-2xl px-4 py-2.5 ${
+                      message.role === 'user'
+                        ? `${sessionBg} text-white`
+                        : message.isCrisis
+                          ? 'bg-red-50 text-gray-800 border border-red-200'
+                          : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                        {renderMessageWithLinks(message.content)}
+                      </p>
+                    </div>
+                    {message.role === 'assistant' && !isLoading && (
+                      <CopyMessageButton text={message.content} />
+                    )}
                   </div>
                 </div>
               ))}
@@ -870,7 +915,7 @@ export const ClientAIAssistant = () => {
                 </Button>
                 <Button
                   size="sm"
-                  onClick={() => window.open('/contact', '_blank')}
+                  onClick={() => window.open('/book', '_self')}
                   className="text-xs bg-amber-600 hover:bg-amber-700"
                 >
                   <Calendar className="h-3 w-3 mr-1" />
@@ -887,7 +932,7 @@ export const ClientAIAssistant = () => {
                 <p className="text-xs text-gray-500">Quick questions:</p>
                 <Button
                   size="sm"
-                  onClick={() => { setIsOpen(false); setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 300); }}
+                  onClick={() => { setIsOpen(false); setTimeout(() => navigate('/book'), 200); }}
                   className="text-xs bg-primary hover:bg-primary/90 h-7 px-3"
                 >
                   <Calendar className="h-3 w-3 mr-1" />
