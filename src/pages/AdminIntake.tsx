@@ -257,7 +257,7 @@ const AdminIntake = () => {
     void loadAudit(row);
   };
 
-  const writeAdminAudit = async (action: 'mark_responded' | 'resend_acknowledgement', row: ContactRow, status: 'success' | 'error', errorMessage?: string) => {
+  const writeAdminAudit = async (action: 'mark_responded' | 'resend_acknowledgement' | 'force_resend_acknowledgement', row: ContactRow, status: 'success' | 'error', errorMessage?: string) => {
     await supabase.from('m365_audit_log').insert({
       function_name: 'admin-intake',
       action,
