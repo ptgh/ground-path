@@ -242,19 +242,19 @@ Deno.serve(async (req: Request) => {
   }, ctx));
 
   // Audit row for this function (downstream functions write their own).
-  fireAndForget(serviceClient.from('m365_audit_log').insert({
-    user_id: '00000000-0000-0000-0000-000000000000',
-    user_email: 'public-form',
-    function_name: 'contact-form-submit',
-    action: 'submit',
-    target: data.email,
+  // PII discipline: we log only email + intake_type + form UUID; the full
+  // payload (name/subject/message) lives in contact_forms — the audit log is
+  // observability metadata, not data duplication.
+  emitContactFormAudit({
+    serviceClient,
+    req,
+    triggeredBy,
     status: 'success',
-    request_metadata: {
-      contact_form_id: contactFormId,
-      intake_type: data.intake_type,
-      ip_present: ip !== 'unknown',
-    },
-  }));
+    email: data.email,
+    intakeType: data.intake_type,
+    contactFormId,
+    latencyMs: Date.now() - startedAt,
+  });
 
   return jsonResponse({ ok: true, contact_form_id: contactFormId }, 200, cors);
 });
