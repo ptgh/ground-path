@@ -46,7 +46,7 @@ const parseTranscript = (content?: string): ConvMessage[] => {
       // Unrecognised — treat as user text so it isn't dropped.
       return { id: `t-${idx}`, role: 'user' as const, content: trimmed };
     })
-    .filter((m): m is ConvMessage => m !== null);
+    .filter((m): m is NonNullable<typeof m> => m !== null);
 };
 
 const AIConversationViewModal: React.FC<Props> = ({ open, onOpenChange, note, onDelete }) => {
