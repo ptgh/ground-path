@@ -14,6 +14,7 @@
  */
 import {
   m365CorsHeaders, jsonResponse, requireM365Caller,
+  fireAndForgetOpsLog,
 } from '../_shared/m365.ts';
 
 /* ============================================================
