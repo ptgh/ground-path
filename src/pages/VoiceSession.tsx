@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -10,13 +9,9 @@ const COUNTRY_KEY = 'groundpath_client_country';
 
 const VoiceSessionPage = () => {
   const [showSession, setShowSession] = useState(false);
-  const navigate = useNavigate();
-
-  // Auto-open the chooser when navigated here directly (e.g. from header)
-  useEffect(() => {
-    const t = setTimeout(() => setShowSession(true), 200);
-    return () => clearTimeout(t);
-  }, []);
+  // Note: Do NOT auto-open the chooser. User must explicitly click
+  // "Start Voice Session" — landing on the page should show the section,
+  // not immediately surface the modal.
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
