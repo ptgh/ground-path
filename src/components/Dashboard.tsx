@@ -39,6 +39,7 @@ import ProfessionalProfileModal from './ProfessionalProfileModal';
 import FormHistory from './FormHistory';
 import NoteModal from './NoteModal';
 import ProfessionalResources from './dashboard/ProfessionalResources';
+import NotesPanel from './dashboard/NotesPanel';
 import ArticleManager from './dashboard/ArticleManager';
 import PractitionerApprovals from './dashboard/PractitionerApprovals';
 import { NotificationPreferencesCard } from './dashboard/NotificationPreferencesCard';
@@ -610,72 +611,7 @@ const Dashboard = () => {
 
             {/* ═══ Notes Tab ═══ */}
             <TabsContent value="notes" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div>
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <FileText className="h-4 w-4 text-primary" />
-                        Your Notes & Activities
-                      </CardTitle>
-                      <CardDescription className="mt-1">
-                        {notes.length > 0 ? `${notes.length} note${notes.length === 1 ? '' : 's'}` : 'Manage your professional notes and activities'}
-                      </CardDescription>
-                    </div>
-                    <Button 
-                      className="dashboard-cta w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground shrink-0"
-                      size="sm"
-                      onClick={() => handleNoteModal()}
-                    >
-                      <PlusCircle className="h-4 w-4 mr-1.5" />
-                      New Note
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {loadingNotes ? (
-                    <div className="space-y-3">
-                      {[1, 2, 3].map(i => (
-                        <div key={i} className="p-4 rounded-lg border border-border">
-                          <Skeleton className="h-4 w-2/3 mb-2" />
-                          <Skeleton className="h-3 w-full mb-1" />
-                          <Skeleton className="h-3 w-1/4 mt-2" />
-                        </div>
-                      ))}
-                    </div>
-                  ) : notes.length > 0 ? (
-                    <div className="space-y-2">
-                      {notes.map((note: Note) => (
-                        <div 
-                          key={note.id} 
-                          className="p-4 rounded-lg border border-border hover:border-primary/40 hover:shadow-sm cursor-pointer transition-all group"
-                          onClick={() => handleNoteModal(note)}
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0 flex-1">
-                              <h4 className="font-medium text-sm group-hover:text-primary truncate">{note.title}</h4>
-                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                                {note.content || 'No content'}
-                              </p>
-                            </div>
-                            <span className="text-[10px] text-muted-foreground shrink-0 mt-0.5">
-                              {new Date(note.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <StickyNote className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
-                      <p className="text-sm font-medium text-muted-foreground">No notes yet</p>
-                      <p className="text-xs text-muted-foreground/70 mt-1 max-w-xs mx-auto">
-                        Create your first note to start documenting client interactions and professional activities.
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <NotesPanel />
             </TabsContent>
 
             {/* ═══ Articles Tab (Admin) ═══ */}
