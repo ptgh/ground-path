@@ -44,7 +44,7 @@ import AIConversationViewModal from './AIConversationViewModal';
 import ArticleManager from './dashboard/ArticleManager';
 import PractitionerApprovals from './dashboard/PractitionerApprovals';
 import { NotificationPreferencesCard } from './dashboard/NotificationPreferencesCard';
-import { notesService, Note } from '@/services/notesService';
+import { notesService, isAIConversationNote, Note } from '@/services/notesService';
 import { ClientMessagesPanel } from './messaging/ClientMessagesPanel';
 import NativeBooking from './dashboard/NativeBooking';
 import Microsoft365Card from './dashboard/Microsoft365Card';
