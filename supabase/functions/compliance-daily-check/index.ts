@@ -14,6 +14,7 @@
  */
 import {
   m365CorsHeaders, jsonResponse, requireM365Caller,
+  fireAndForgetOpsLog,
 } from '../_shared/m365.ts';
 
 /* ============================================================
@@ -101,12 +102,27 @@ async function invokeTeamsNotify(
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
+  // Capture latency clock BEFORE any awaits so audit reflects total
+  // wall-clock time from request entry to response dispatch.
   const startedAt = Date.now();
+
+  // Resolve triggered_by up front (before guard) so we can attribute the
+  // audit row even on auth failures down the line. Cron header > admin user
+  // email lookup > null. Mirrors the pattern in send-email/index.ts.
+  const cronTrigger = req.headers.get('X-Cron-Trigger');
+  let triggeredBy: string | null = cronTrigger ?? null;
 
   const guard = await requireM365Caller(req);
   if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500, req);
   const svc = guard.caller!.serviceClient;
   const caller = guard.caller!;
+
+  // If no cron trigger header (manual admin invocation), look up the caller's
+  // email via the service client. caller.email is already populated by
+  // requireM365Caller for both cron and JWT branches, so use it directly.
+  if (!triggeredBy) {
+    triggeredBy = caller.email ?? null;
+  }
 
   // today (UTC) as YYYY-MM-DD
   const today = new Date();
@@ -215,7 +231,8 @@ Deno.serve(async (req: Request) => {
 
   const runtimeMs = Date.now() - startedAt;
 
-  // Audit row — always written (quiet days too)
+  // Audit row — always written (quiet days too). Extends prior shape with
+  // triggered_by so the source (cron name vs admin email) is greppable.
   fireAndForget(svc.from('m365_audit_log').insert({
     user_id: caller.userId,
     user_email: caller.email,
@@ -227,8 +244,25 @@ Deno.serve(async (req: Request) => {
       items_alerted: candidates.length,
       tiers_hit: tiersHit,
       runtime_ms: runtimeMs,
+      triggered_by: triggeredBy,
     },
   }));
+
+  // Mirror to OpsLog Excel so the human-readable audit chain stays in sync
+  // with Postgres. Notes are scannable at a glance for "did the cron fire
+  // today and find anything?" — quiet days will read items_alerted=0.
+  fireAndForgetOpsLog(
+    svc,
+    { email: triggeredBy },
+    {
+      function_name: 'compliance-daily-check',
+      action: 'check',
+      target: '',
+      status: 'success',
+      duration_ms: runtimeMs,
+      notes: `tiers_hit=${tiersHit.join(',')}; items_alerted=${candidates.length}`,
+    },
+  );
 
   return jsonResponse({
     ok: true,

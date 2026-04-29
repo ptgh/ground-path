@@ -20,6 +20,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.5';
 
 // ----- CORS (public endpoint — uses shared allowlist + *.lovable.app preview match) -----
 import { corsHeadersFor } from '../_shared/cors.ts';
+import { writeAudit, fireAndForgetOpsLog } from '../_shared/m365.ts';
+import { SYSTEM_CALLER_USER_ID } from '../_shared/auth.ts';
 
 function jsonResponse(body: unknown, status: number, cors: Record<string, string>): Response {
   return new Response(JSON.stringify(body), {
@@ -117,7 +119,79 @@ function escapeHtml(s: string): string {
     .replace(/\"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+/**
+ * Fire-and-forget audit writer for contact-form-submit.
+ *
+ * Mirrors the canonical pattern in send-email/index.ts: one m365_audit_log
+ * row + one OpsLog Excel row per invocation, both via EdgeRuntime.waitUntil.
+ *
+ * PII discipline: only `email`, `intake_type`, and the form UUID are logged.
+ * The form's name / subject / message body are NEVER passed in here — the
+ * full payload already lives in the contact_forms table; the audit log is
+ * observability metadata, not data duplication.
+ */
+function emitContactFormAudit(args: {
+  // deno-lint-ignore no-explicit-any
+  serviceClient: any;
+  req: Request;
+  triggeredBy: string;
+  status: 'success' | 'error';
+  email: string;
+  intakeType: string;
+  contactFormId: string;
+  latencyMs: number;
+  errorMessage?: string;
+}): void {
+  const truncatedError = (args.errorMessage ?? '').slice(0, 500);
+
+  const p = writeAudit(
+    args.serviceClient,
+    { userId: SYSTEM_CALLER_USER_ID, email: args.triggeredBy },
+    {
+      function_name: 'contact-form-submit',
+      action: 'intake',
+      target: args.email,
+      status: args.status,
+      error_message: args.status === 'error' ? truncatedError : null,
+      request_metadata: {
+        intake_id: args.contactFormId,
+        intake_type: args.intakeType,
+        intake_source: 'form',
+        triggered_by: args.triggeredBy,
+        latency_ms: args.latencyMs,
+      },
+    },
+    args.req,
+  ).catch((err) => console.error('contact-form-submit audit write failed (non-fatal):', err));
+
+  // deno-lint-ignore no-explicit-any
+  const er = (globalThis as any).EdgeRuntime;
+  if (er && typeof er.waitUntil === 'function') {
+    try { er.waitUntil(p); } catch { /* ignore */ }
+  }
+
+  // Mirror to OpsLog Excel (also fire-and-forget, swallows its own errors).
+  fireAndForgetOpsLog(
+    args.serviceClient,
+    { email: args.triggeredBy },
+    {
+      function_name: 'contact-form-submit',
+      action: 'intake',
+      target: `${args.intakeType}:${args.email}`,
+      status: args.status,
+      duration_ms: args.latencyMs,
+      notes: args.status === 'success'
+        ? `intake_id=${args.contactFormId}`
+        : `error=${truncatedError.slice(0, 200)}`,
+    },
+  );
+}
+
 Deno.serve(async (req: Request) => {
+  // Capture latency clock BEFORE any awaits / DB calls so audit reflects
+  // total wall-clock time from request entry to response dispatch.
+  const startedAt = Date.now();
+
   const origin = req.headers.get('origin');
   const cors = corsHeadersFor(origin);
 
@@ -173,19 +247,25 @@ Deno.serve(async (req: Request) => {
       updated_at: submittedAt,
     }]);
 
+  // Defensive cron-trigger read; this endpoint is public so the header
+  // shouldn't be set, but if it ever is we surface it for forensics rather
+  // than silently overwriting with the public-form sentinel.
+  const cronTrigger = req.headers.get('X-Cron-Trigger');
+  const triggeredBy: string = cronTrigger ?? 'public-form-submission';
+
   if (insertErr) {
     console.error('contact-form-submit insert failed:', insertErr);
-    // Best-effort audit on insert failure.
-    fireAndForget(serviceClient.from('m365_audit_log').insert({
-      user_id: '00000000-0000-0000-0000-000000000000',
-      user_email: 'public-form',
-      function_name: 'contact-form-submit',
-      action: 'submit',
-      target: data.email,
+    emitContactFormAudit({
+      serviceClient,
+      req,
+      triggeredBy,
       status: 'error',
-      error_message: insertErr.message,
-      request_metadata: { intake_type: data.intake_type },
-    }));
+      email: data.email,
+      intakeType: data.intake_type,
+      contactFormId,
+      latencyMs: Date.now() - startedAt,
+      errorMessage: insertErr.message,
+    });
     return jsonResponse({ error: 'Could not save your message. Please try again shortly.' }, 500, cors);
   }
 
@@ -230,19 +310,19 @@ Deno.serve(async (req: Request) => {
   }, ctx));
 
   // Audit row for this function (downstream functions write their own).
-  fireAndForget(serviceClient.from('m365_audit_log').insert({
-    user_id: '00000000-0000-0000-0000-000000000000',
-    user_email: 'public-form',
-    function_name: 'contact-form-submit',
-    action: 'submit',
-    target: data.email,
+  // PII discipline: we log only email + intake_type + form UUID; the full
+  // payload (name/subject/message) lives in contact_forms — the audit log is
+  // observability metadata, not data duplication.
+  emitContactFormAudit({
+    serviceClient,
+    req,
+    triggeredBy,
     status: 'success',
-    request_metadata: {
-      contact_form_id: contactFormId,
-      intake_type: data.intake_type,
-      ip_present: ip !== 'unknown',
-    },
-  }));
+    email: data.email,
+    intakeType: data.intake_type,
+    contactFormId,
+    latencyMs: Date.now() - startedAt,
+  });
 
   return jsonResponse({ ok: true, contact_form_id: contactFormId }, 200, cors);
 });
