@@ -1,43 +1,23 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { isKnownCronTrigger } from './cron.ts';
+import { ALLOWED_ORIGINS, corsHeadersFor } from './cors.ts';
 
-/** Production origins always permitted. */
-export const ALLOWED_ORIGINS = [
-  'https://groundpath.com.au',
-  'https://www.groundpath.com.au',
-  'https://ground-path.lovable.app',
-];
+// Re-exports for back-compat with existing callers.
+export { ALLOWED_ORIGINS, corsHeadersFor };
 
-/** Additional origins permitted during local development. */
-export const DEV_ORIGINS = ['http://localhost:8080'];
+/** Legacy alias preserved for callers that previously referenced DEV_ORIGINS. */
+export const DEV_ORIGINS = ['http://localhost:8080', 'http://localhost:5173'];
 
 /**
- * Returns CORS response headers for the given request origin.
- * Only reflects back origins that are explicitly allowed — never uses `*`.
- * Always includes `Vary: Origin` so intermediate caches handle it correctly.
- *
- * @param origin   Value of the request's `Origin` header (may be null).
- * @param allowDev When true, also permits DEV_ORIGINS (use only on user-facing functions).
+ * Back-compat wrapper around the shared `corsHeadersFor` helper.
+ * The `allowDev` flag is now a no-op — localhost origins are part of the
+ * canonical allowlist in `_shared/cors.ts`.
  */
 export function getCorsHeaders(
   origin: string | null,
-  allowDev = false,
+  _allowDev = false,
 ): Record<string, string> {
-  const allowed = allowDev
-    ? [...ALLOWED_ORIGINS, ...DEV_ORIGINS]
-    : ALLOWED_ORIGINS;
-
-  const headers: Record<string, string> = {
-    'Access-Control-Allow-Headers':
-      'authorization, x-client-info, apikey, content-type',
-    'Vary': 'Origin',
-  };
-
-  if (origin && allowed.includes(origin)) {
-    headers['Access-Control-Allow-Origin'] = origin;
-  }
-
-  return headers;
+  return corsHeadersFor(origin);
 }
 
 /** Standard 401 Unauthorized JSON response. */
