@@ -179,19 +179,25 @@ Deno.serve(async (req: Request) => {
       updated_at: submittedAt,
     }]);
 
+  // Defensive cron-trigger read; this endpoint is public so the header
+  // shouldn't be set, but if it ever is we surface it for forensics rather
+  // than silently overwriting with the public-form sentinel.
+  const cronTrigger = req.headers.get('X-Cron-Trigger');
+  const triggeredBy: string = cronTrigger ?? 'public-form-submission';
+
   if (insertErr) {
     console.error('contact-form-submit insert failed:', insertErr);
-    // Best-effort audit on insert failure.
-    fireAndForget(serviceClient.from('m365_audit_log').insert({
-      user_id: '00000000-0000-0000-0000-000000000000',
-      user_email: 'public-form',
-      function_name: 'contact-form-submit',
-      action: 'submit',
-      target: data.email,
+    emitContactFormAudit({
+      serviceClient,
+      req,
+      triggeredBy,
       status: 'error',
-      error_message: insertErr.message,
-      request_metadata: { intake_type: data.intake_type },
-    }));
+      email: data.email,
+      intakeType: data.intake_type,
+      contactFormId,
+      latencyMs: Date.now() - startedAt,
+      errorMessage: insertErr.message,
+    });
     return jsonResponse({ error: 'Could not save your message. Please try again shortly.' }, 500, cors);
   }
 
