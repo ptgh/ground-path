@@ -110,6 +110,7 @@ Deno.serve(async (req: Request) => {
         skipped: true,
         reason: `already ${row.acknowledgement_status}`,
         forced_resend: false,
+        triggered_by: triggeredBy,
       },
     }, req);
     return jsonResponse({
@@ -222,6 +223,7 @@ Deno.serve(async (req: Request) => {
       intake_source: row.intake_source,
       resend_id: resendId,
       forced_resend: force,
+      triggered_by: triggeredBy,
     },
   }, req);
 
