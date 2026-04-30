@@ -32,10 +32,16 @@ function scrubPII(input: string | undefined | null): string | undefined {
     .replace(PHONE_RE, '[phone redacted]');
 }
 
+// Sentry DSN is a public client identifier (like the Supabase anon key) — safe
+// to ship in browser JS. Hardcoded here because Lovable does not expose a
+// build-time env mechanism for VITE_* values, and Sentry confirms DSNs are
+// not secrets. To rotate, replace this string and redeploy.
+const SENTRY_DSN = 'https://5d25d2faf4c976b8691ae5e7b1397b03@o4511307835703296.ingest.de.sentry.io/4511307840487504';
+
 export function initSentry() {
   if (initialized) return;
-  const dsn = import.meta.env.VITE_SENTRY_DSN as string | undefined;
-  // No DSN = silent no-op. Do NOT throw — app must still boot.
+  const dsn = SENTRY_DSN;
+  // Empty DSN = silent no-op. Do NOT throw — app must still boot.
   if (!dsn) return;
 
   Sentry.init({
