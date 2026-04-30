@@ -38,7 +38,7 @@ const NewsletterTest = ({ isOpen, onClose }: NewsletterTestProps) => {
       {
         title: "Mental Health Assessment Tools: PHQ-9 and GAD-7 Updates",
         summary: "Updated guidelines for using PHQ-9 and GAD-7 assessments in clinical practice, including scoring interpretations and follow-up recommendations.",
-        link: "https://groundpath.com.au/professional-forms",
+        link: "https://groundpath.com.au/practitioner/forms",
         category: "ASSESSMENT TOOLS"
       },
       {
