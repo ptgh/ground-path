@@ -1,14 +1,42 @@
-// Sentry browser SDK init — only activates in production builds with VITE_SENTRY_DSN set.
-// Captures uncaught errors, console.error / console.warn, and session replays on errors.
+/**
+ * Sentry browser SDK init — third leg of observability.
+ *
+ * Complements the existing m365_audit_log (causal: what happened) and Teams
+ * alerts (what to react to). Sentry covers the "what broke" surface — uncaught
+ * exceptions, stack traces, breadcrumbs — that is otherwise invisible.
+ *
+ * Privacy posture (this is a mental health practice):
+ *   - NO session replay. Not on errors, not sampled. Recording user
+ *     interactions, even masked, is a posture we explicitly avoid.
+ *   - User identification is ID-only. Never email or name.
+ *   - beforeSend scrubs email addresses and phone numbers from event
+ *     messages and exception values via regex before transmission.
+ *
+ * Activation: silently no-ops when VITE_SENTRY_DSN is empty / undefined so
+ * the app never breaks before the user populates the secret. Dev builds DO
+ * report when DSN is set (environment: 'development') so we can verify the
+ * pipeline end-to-end before going live.
+ */
 import * as Sentry from '@sentry/react';
 
 let initialized = false;
 
+const EMAIL_RE = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+// Match common AU + international phone formats; intentionally conservative.
+const PHONE_RE = /(\+?\d[\d\s\-().]{7,}\d)/g;
+
+function scrubPII(input: string | undefined | null): string | undefined {
+  if (!input) return input ?? undefined;
+  return input
+    .replace(EMAIL_RE, '[email redacted]')
+    .replace(PHONE_RE, '[phone redacted]');
+}
+
 export function initSentry() {
   if (initialized) return;
   const dsn = import.meta.env.VITE_SENTRY_DSN as string | undefined;
-  // Skip init in dev or when DSN missing — keeps local console clean.
-  if (!dsn || import.meta.env.MODE === 'development') return;
+  // No DSN = silent no-op. Do NOT throw — app must still boot.
+  if (!dsn) return;
 
   Sentry.init({
     dsn,
@@ -16,27 +44,53 @@ export function initSentry() {
     release: (import.meta.env.VITE_APP_VERSION as string | undefined) ?? undefined,
     integrations: [
       Sentry.browserTracingIntegration(),
-      Sentry.replayIntegration({
-        maskAllText: true,
-        blockAllMedia: true,
-      }),
-      Sentry.captureConsoleIntegration({ levels: ['error', 'warn'] }),
+      Sentry.captureConsoleIntegration({ levels: ['error'] }),
     ],
     tracesSampleRate: 0.1,
+    // No session replay — privacy posture for mental-health practice.
     replaysSessionSampleRate: 0,
-    replaysOnErrorSampleRate: 1.0,
-    // Drop expected/noisy errors before they reach Sentry.
+    replaysOnErrorSampleRate: 0,
+    sendDefaultPii: false,
     beforeSend(event, hint) {
+      // Drop benign noise.
       const err = hint.originalException;
-      if (err instanceof Error) {
-        // Filter benign ResizeObserver warnings + cancelled fetches
-        if (/ResizeObserver|AbortError|cancelled/i.test(err.message)) return null;
+      if (err instanceof Error && /ResizeObserver|AbortError|cancelled/i.test(err.message)) {
+        return null;
+      }
+
+      // Scrub PII from message + exception values.
+      if (event.message) {
+        event.message = scrubPII(event.message) ?? event.message;
+      }
+      if (event.exception?.values) {
+        event.exception.values = event.exception.values.map((v) => ({
+          ...v,
+          value: scrubPII(v.value) ?? v.value,
+        }));
+      }
+      // Strip request data — query strings can carry tokens / emails.
+      if (event.request) {
+        delete event.request.cookies;
+        delete event.request.headers;
+        if (event.request.query_string) {
+          event.request.query_string = scrubPII(
+            typeof event.request.query_string === 'string'
+              ? event.request.query_string
+              : String(event.request.query_string),
+          ) ?? '';
+        }
       }
       return event;
     },
   });
 
   initialized = true;
+}
+
+/** Identify the current user. ID-only — never pass email or name. */
+export function identifyUser(userId: string | null) {
+  if (!initialized) return;
+  Sentry.setUser(userId ? { id: userId } : null);
 }
 
 export { Sentry };
