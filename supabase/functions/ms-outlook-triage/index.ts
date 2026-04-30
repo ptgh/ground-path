@@ -253,10 +253,22 @@ async function triggerAckInvoke(contactFormId: string): Promise<void> {
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
+  // Resolve triggered_by up front: cron header > admin caller email > null.
+  // Cron callers are m365-morning-outlook-triage / m365-evening-outlook-triage.
+  // Admin manual invocations from the dashboard go through the JWT branch and
+  // resolve via caller.email below. Same value used across every audit row in
+  // this invocation for forensic consistency.
+  const cronTrigger = req.headers.get('X-Cron-Trigger');
+  let triggeredBy: string | null = cronTrigger ?? null;
+
   const guard = await requireM365Caller(req);
   if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500, req);
   const caller = guard.caller!;
   const serviceClient = caller.serviceClient;
+
+  if (!triggeredBy) {
+    triggeredBy = caller.email ?? null;
+  }
 
   try {
     const data = await gatewayFetch<MessagesResponse>(
@@ -300,6 +312,7 @@ Deno.serve(async (req: Request) => {
                 matchedPattern: matched.pattern,
                 patternType: matched.pattern_type,
                 reason: matched.reason,
+                triggered_by: triggeredBy,
               },
             },
             req,
@@ -424,6 +437,7 @@ Deno.serve(async (req: Request) => {
               classification,
               deduped,
               teamsNotified,
+              triggered_by: triggeredBy,
             },
           },
           req,
@@ -451,7 +465,7 @@ Deno.serve(async (req: Request) => {
         function_name: 'ms-outlook-triage',
         action: 'list_unread',
         status: 'success',
-        request_metadata: { count: items.length },
+        request_metadata: { count: items.length, triggered_by: triggeredBy },
       },
       req,
     );
@@ -466,6 +480,7 @@ Deno.serve(async (req: Request) => {
         action: 'list_unread',
         status: 'error',
         error_message: msg,
+        request_metadata: { triggered_by: triggeredBy },
       },
       req,
     );

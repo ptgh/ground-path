@@ -54,10 +54,21 @@ async function renderTemplate(intakeType: IntakeType, name?: string): Promise<{ 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: m365CorsHeaders(req) });
 
+  // Resolve triggered_by up front: cron header > admin caller email > null.
+  // Cron header is set by internal edge-to-edge invokes (e.g. contact-form-submit,
+  // ms-outlook-triage). Admin manual resends from AdminIntake.tsx come through
+  // requireM365Caller's JWT branch and resolve via caller.email below.
+  const cronTrigger = req.headers.get('X-Cron-Trigger');
+  let triggeredBy: string | null = cronTrigger ?? null;
+
   const guard = await requireM365Caller(req);
   if (!guard.ok) return jsonResponse({ error: guard.error }, guard.status ?? 500, req);
   const caller = guard.caller!;
   const serviceClient = caller.serviceClient;
+
+  if (!triggeredBy) {
+    triggeredBy = caller.email ?? null;
+  }
 
   let contactFormId: string;
   let force = false;
@@ -99,6 +110,7 @@ Deno.serve(async (req: Request) => {
         skipped: true,
         reason: `already ${row.acknowledgement_status}`,
         forced_resend: false,
+        triggered_by: triggeredBy,
       },
     }, req);
     return jsonResponse({
@@ -211,6 +223,7 @@ Deno.serve(async (req: Request) => {
       intake_source: row.intake_source,
       resend_id: resendId,
       forced_resend: force,
+      triggered_by: triggeredBy,
     },
   }, req);
 
