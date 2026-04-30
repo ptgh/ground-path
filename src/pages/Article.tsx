@@ -1,6 +1,15 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import DOMPurify from 'dompurify';
+
+// Register a one-time hook that forces rel="noopener noreferrer" on any
+// anchor that opens in a new tab. Safe to call at module scope — DOMPurify
+// dedupes hooks by reference, and we only attach this once.
+DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+  if (node.tagName === 'A' && node.getAttribute('target') === '_blank') {
+    node.setAttribute('rel', 'noopener noreferrer');
+  }
+});
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -165,18 +174,23 @@ const Article = () => {
 
   // Hardened DOMPurify config: allow only a safe subset of formatting tags,
   // strip any inline event handlers / scripts / iframes, and forbid javascript: URLs.
-  const formattedContent = DOMPurify.sanitize(formatArticleContent(article.content), {
-    ALLOWED_TAGS: [
-      'p', 'br', 'strong', 'em', 'u', 'b', 'i',
-      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-      'ul', 'ol', 'li',
-      'a', 'blockquote', 'code', 'pre', 'span',
-    ],
-    ALLOWED_ATTR: ['href', 'title', 'target', 'rel'],
-    FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed', 'form'],
-    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'style'],
-    ALLOW_DATA_ATTR: false,
-  });
+  // Memoised on the raw HTML so we don't re-sanitise on every re-render.
+  const formattedContent = useMemo(
+    () =>
+      DOMPurify.sanitize(formatArticleContent(article.content), {
+        ALLOWED_TAGS: [
+          'p', 'br', 'strong', 'em', 'u', 'b', 'i',
+          'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+          'ul', 'ol', 'li',
+          'a', 'img', 'blockquote', 'code', 'pre', 'span',
+        ],
+        ALLOWED_ATTR: ['href', 'title', 'target', 'rel', 'src', 'alt', 'width', 'height'],
+        FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed', 'form'],
+        FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'style'],
+        ALLOW_DATA_ATTR: false,
+      }),
+    [article.content]
+  );
 
   return (
     <div className="min-h-screen bg-background">

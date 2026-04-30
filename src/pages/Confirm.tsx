@@ -59,7 +59,7 @@ const ConfirmPage = () => {
             </ul>
             <div className="space-y-2">
               <Button asChild className="w-full">
-                <a href="/professional-forms">Explore Professional Forms</a>
+                <a href="/practitioner/forms">Explore Professional Forms</a>
               </Button>
               <Button variant="outline" asChild className="w-full">
                 <a href="/">Return to Home</a>

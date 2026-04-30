@@ -190,7 +190,8 @@ const App = () => {
                 <Route path="/unsubscribe" element={<UnsubscribePage />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/verify-email" element={<Navigate to="/practitioner/auth" replace />} />
-                <Route path="/professional-forms" element={<VerifiedPractitionerRoute><ProfessionalForms /></VerifiedPractitionerRoute>} />
+                {/* Legacy URL — kept as redirect so existing bookmarks/external links resolve. */}
+                <Route path="/professional-forms" element={<Navigate to="/practitioner/forms" replace />} />
                 <Route path="/practitioner/forms" element={<VerifiedPractitionerRoute><ProfessionalForms /></VerifiedPractitionerRoute>} />
                 <Route path="/practitioner/verify" element={<ProtectedRoute><PractitionerVerify /></ProtectedRoute>} />
                 <Route path="/practitioner/forms/phq-9/fill" element={<VerifiedPractitionerRoute><PHQ9Form /></VerifiedPractitionerRoute>} />
