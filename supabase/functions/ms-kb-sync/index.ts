@@ -26,6 +26,7 @@ import {
   gatewayFetch,
   gatewayFetchBinary,
 } from '../_shared/m365.ts';
+import { captureEdgeError } from '../_shared/sentry.ts';
 
 const ROOT_PATH = '/Groundpath';
 const MAX_FILE_BYTES = 4 * 1024 * 1024; // skip files > 4MB
@@ -469,6 +470,7 @@ ${errorList}
     }, req);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
+    captureEdgeError(err, { function_name: 'ms-kb-sync', triggered_by: 'ms-kb-sync', root_path: ROOT_PATH });
     await svc.from('kb_sync_runs').update({
       finished_at: new Date().toISOString(),
       status: 'failed',
