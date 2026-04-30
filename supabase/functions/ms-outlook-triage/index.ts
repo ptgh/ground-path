@@ -465,7 +465,7 @@ Deno.serve(async (req: Request) => {
         function_name: 'ms-outlook-triage',
         action: 'list_unread',
         status: 'success',
-        request_metadata: { count: items.length },
+        request_metadata: { count: items.length, triggered_by: triggeredBy },
       },
       req,
     );
@@ -480,6 +480,7 @@ Deno.serve(async (req: Request) => {
         action: 'list_unread',
         status: 'error',
         error_message: msg,
+        request_metadata: { triggered_by: triggeredBy },
       },
       req,
     );
