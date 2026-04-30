@@ -5,6 +5,7 @@ import React from 'npm:react@18.3.1';
 import { MailingListConfirmationEmail } from './_templates/mailing-list-confirmation.tsx';
 import { getCorsHeaders, unauthorizedResponse, verifyAuth, SYSTEM_CALLER_USER_ID } from '../_shared/auth.ts';
 import { writeAudit, fireAndForgetOpsLog } from '../_shared/m365.ts';
+import { captureEdgeError } from '../_shared/sentry.ts';
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
@@ -264,6 +265,7 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error) {
     console.error('Error in send-email function:', error);
     const msg = error instanceof Error ? error.message : String(error);
+    captureEdgeError(error, { function_name: 'send-email', triggered_by: triggeredBy });
     // Only emit a generic-error audit row if we haven't already emitted one
     // for the specific Resend HTTP failure above. The duplicate-on-throw is
     // acceptable observability noise; double-counting is preferable to a

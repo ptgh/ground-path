@@ -25,6 +25,7 @@ import {
   writeAudit,
   gatewayFetch,
 } from '../_shared/m365.ts';
+import { captureEdgeError } from '../_shared/sentry.ts';
 
 interface OutlookMessage {
   id: string;
@@ -472,6 +473,7 @@ Deno.serve(async (req: Request) => {
     return jsonResponse({ messages: items }, req);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
+    captureEdgeError(err, { function_name: 'ms-outlook-triage', triggered_by: triggeredBy });
     await writeAudit(
       serviceClient,
       caller,

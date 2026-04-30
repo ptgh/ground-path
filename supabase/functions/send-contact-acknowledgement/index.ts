@@ -18,6 +18,7 @@ import * as React from 'npm:react@18.3.1';
 import {
   m365CorsHeaders, jsonResponse, requireM365Caller, writeAudit, fireAndForgetOpsLog,
 } from '../_shared/m365.ts';
+import { captureEdgeError } from '../_shared/sentry.ts';
 
 import { ClientAckEmail, clientAckText, clientAckSubject } from './_templates/client.tsx';
 import { PractitionerAckEmail, practitionerAckText, practitionerAckSubject } from './_templates/practitioner.tsx';
@@ -193,6 +194,7 @@ Deno.serve(async (req: Request) => {
       }
     } catch (err) {
       sendErr = err instanceof Error ? err.message : String(err);
+      captureEdgeError(err, { function_name: 'send-contact-acknowledgement', triggered_by: triggeredBy, intake_type: intakeType, contact_form_id: row.id });
     }
   }
 

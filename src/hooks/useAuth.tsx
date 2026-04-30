@@ -2,6 +2,7 @@ import { useState, useEffect, useContext, createContext, useCallback } from 'rea
 import type { ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { identifyUser } from '@/lib/sentry';
 
 interface Profile {
   id: string;
@@ -117,6 +118,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setRoles([]);
           setProfileLoading(false);
           setLoading(false);
+          identifyUser(null);
           return;
         }
         
@@ -124,6 +126,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user ?? null);
         setLoading(false);
         initialized = true;
+        identifyUser(session?.user?.id ?? null);
         
         if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
           queueMicrotask(() => {
@@ -145,6 +148,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       setLoading(false);
       initialized = true;
+      identifyUser(session?.user?.id ?? null);
       
       if (session?.user) {
         queueMicrotask(() => {

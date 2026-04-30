@@ -22,6 +22,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.5';
 import { corsHeadersFor } from '../_shared/cors.ts';
 import { writeAudit, fireAndForgetOpsLog } from '../_shared/m365.ts';
 import { SYSTEM_CALLER_USER_ID } from '../_shared/auth.ts';
+import { captureEdgeError } from '../_shared/sentry.ts';
 
 function jsonResponse(body: unknown, status: number, cors: Record<string, string>): Response {
   return new Response(JSON.stringify(body), {
@@ -255,6 +256,7 @@ Deno.serve(async (req: Request) => {
 
   if (insertErr) {
     console.error('contact-form-submit insert failed:', insertErr);
+    captureEdgeError(insertErr, { function_name: 'contact-form-submit', triggered_by: triggeredBy, intake_type: data.intake_type });
     emitContactFormAudit({
       serviceClient,
       req,

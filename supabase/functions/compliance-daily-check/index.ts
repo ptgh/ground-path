@@ -16,6 +16,7 @@ import {
   m365CorsHeaders, jsonResponse, requireM365Caller,
   fireAndForgetOpsLog,
 } from '../_shared/m365.ts';
+import { captureEdgeError } from '../_shared/sentry.ts';
 
 /* ============================================================
  *  Tier bands
@@ -93,6 +94,7 @@ async function invokeTeamsNotify(
     }
   } catch (err) {
     console.error('[compliance-daily-check] ms-teams-notify threw:', err);
+    captureEdgeError(err, { function_name: 'compliance-daily-check', triggered_by: 'compliance-daily-check', step: 'ms-teams-notify' });
   }
 }
 
